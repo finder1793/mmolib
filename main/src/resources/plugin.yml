@@ -1,0 +1,16 @@
+name: ${project.artifactId}
+author: Lumine Studios
+main: io.lumine.mythic.lib
+api-version: 1.13
+version: ${project.version}
+depend: []
+loadbefore: []
+description: Kind of like MMOLib, but without the generic disorders
+commands:
+  mythiclib:
+      description: MythicLib base command. Why does it need a base command? Who knows!
+      aliases: []
+permissions:
+  mythiclib.admin:
+    description: Gives access to everything!
+    default: op
