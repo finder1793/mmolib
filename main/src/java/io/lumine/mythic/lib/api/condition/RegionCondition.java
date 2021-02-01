@@ -1,5 +1,7 @@
 package io.lumine.mythic.lib.api.condition;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.WorldGuard;
 import io.lumine.mythic.lib.api.MMOLineConfig;
 import io.lumine.mythic.lib.api.condition.type.LocationCondition;
 import io.lumine.mythic.lib.api.condition.type.MMOCondition;

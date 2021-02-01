@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.listener.event;
 
-import io.lumine.utils.events.extra.ArmorEquipEvent;
-import io.lumine.utils.events.extra.ArmorType;
+
+import io.lumine.mythic.lib.api.event.ArmorEquipEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -39,7 +39,7 @@ public class ArmorEquipEventListener implements Listener {
             return;
         if (!(event.getWhoClicked() instanceof Player))
             return;
-        ArmorType newArmorType = ArmorType.matchType(shift ? event.getCurrentItem() : event.getCursor());
+        io.lumine.mythic.lib.api.event.ArmorEquipEvent.ArmorType newArmorType = ArmorEquipEvent.ArmorType.matchType(shift ? event.getCurrentItem() : event.getCursor());
         if (!shift && newArmorType != null && event.getRawSlot() != newArmorType.getSlot()) {
             // Used for drag and drop checking to make sure you aren't trying to
             // place a helmet in the boots slot.
@@ -47,7 +47,7 @@ public class ArmorEquipEventListener implements Listener {
         }
 
         if (shift) {
-            newArmorType = ArmorType.matchType(event.getCurrentItem());
+            newArmorType = ArmorEquipEvent.ArmorType.matchType(event.getCurrentItem());
             if (newArmorType != null) {
                 final boolean equipping = event.getRawSlot() != newArmorType.getSlot();
                 Player player = (Player) event.getWhoClicked();
@@ -76,16 +76,16 @@ public class ArmorEquipEventListener implements Listener {
                     // that gives a hotbar slot ;-;
                     ItemStack hotbarItem = event.getClickedInventory().getItem(event.getHotbarButton());
                     if (!isAirOrNull(hotbarItem)) {// Equipping
-                        newArmorType = ArmorType.matchType(hotbarItem);
+                        newArmorType = ArmorEquipEvent.ArmorType.matchType(hotbarItem);
                         newArmorPiece = hotbarItem;
                         oldArmorPiece = event.getClickedInventory().getItem(event.getSlot());
                     } else // Unequipping
-                        newArmorType = ArmorType.matchType(!isAirOrNull(event.getCurrentItem()) ? event.getCurrentItem() : event.getCursor());
+                        newArmorType = ArmorEquipEvent.ArmorType.matchType(!isAirOrNull(event.getCurrentItem()) ? event.getCurrentItem() : event.getCursor());
                 }
 
                 // equip with no new item going into the slot
             } else if (isAirOrNull(event.getCursor()) && !isAirOrNull(event.getCurrentItem()))
-                newArmorType = ArmorType.matchType(event.getCurrentItem());
+                newArmorType = ArmorEquipEvent.ArmorType.matchType(event.getCurrentItem());
 
             // event.getCurrentItem() == Unequip
             // event.getCursor() == Equip
@@ -105,9 +105,9 @@ public class ArmorEquipEventListener implements Listener {
         if (event.getAction() == Action.PHYSICAL || (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK))
             return;
 
-        ArmorType type = ArmorType.matchType(event.getItem());
+        ArmorEquipEvent.ArmorType type = ArmorEquipEvent.ArmorType.matchType(event.getItem());
         if (type != null && isAirOrNull(type.getItem(event.getPlayer())))
-            Bukkit.getServer().getPluginManager().callEvent(new ArmorEquipEvent(event.getPlayer(), ArmorType.matchType(event.getItem()), null, event.getItem()));
+            Bukkit.getServer().getPluginManager().callEvent(new ArmorEquipEvent(event.getPlayer(), ArmorEquipEvent.ArmorType.matchType(event.getItem()), null, event.getItem()));
         // if(armorEquipEvent.isCancelled()){
         // event.setCancelled(true);
         // player.updateInventory();
@@ -120,7 +120,7 @@ public class ArmorEquipEventListener implements Listener {
         // Old Cursor gives the item you are equipping
         // Raw slot is the ArmorType slot
         // Can't replace armor using this method making getCursor() useless.
-        ArmorType type = ArmorType.matchType(event.getOldCursor());
+        ArmorEquipEvent.ArmorType type = ArmorEquipEvent.ArmorType.matchType(event.getOldCursor());
         if (event.getRawSlots().isEmpty())
             return;// Idk if this will ever happen
         if (type != null && type.getSlot() == event.getRawSlots().stream().findFirst().orElse(0))
@@ -133,7 +133,7 @@ public class ArmorEquipEventListener implements Listener {
 
     @EventHandler
     public void onItemBreak(PlayerItemBreakEvent event) {
-        ArmorType type = ArmorType.matchType(event.getBrokenItem());
+        ArmorEquipEvent.ArmorType type = ArmorEquipEvent.ArmorType.matchType(event.getBrokenItem());
         if (type != null)
             Bukkit.getServer().getPluginManager().callEvent(new ArmorEquipEvent(event.getPlayer(), type, event.getBrokenItem(), null));
         // if(armorEquipEvent.isCancelled()){
@@ -157,12 +157,12 @@ public class ArmorEquipEventListener implements Listener {
         Player player = event.getEntity();
         for (ItemStack item : player.getInventory().getArmorContents())
             if (!isAirOrNull(item))
-                Bukkit.getServer().getPluginManager().callEvent(new ArmorEquipEvent(player, ArmorType.matchType(item), item, null));
+                Bukkit.getServer().getPluginManager().callEvent(new ArmorEquipEvent(player, ArmorEquipEvent.ArmorType.matchType(item), item, null));
     }
 
     @EventHandler
     public void onDispense(BlockDispenseArmorEvent event) {
-        ArmorType type = ArmorType.matchType(event.getItem());
+        ArmorEquipEvent.ArmorType type = ArmorEquipEvent.ArmorType.matchType(event.getItem());
         if (type != null && event.getTargetEntity() instanceof Player)
             Bukkit.getServer().getPluginManager().callEvent(new ArmorEquipEvent((Player) event.getTargetEntity(), type, null, event.getItem()));
         // if(armorEquipEvent.isCancelled()){

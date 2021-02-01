@@ -1,5 +1,7 @@
 package io.lumine.mythic.lib.comp;
 
+import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import org.bukkit.entity.Entity;
 
 public class MythicMobsHook {

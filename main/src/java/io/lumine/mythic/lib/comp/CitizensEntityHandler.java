@@ -1,6 +1,8 @@
 package io.lumine.mythic.lib.comp;
 
 import io.lumine.mythic.lib.api.EntityHandler;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 

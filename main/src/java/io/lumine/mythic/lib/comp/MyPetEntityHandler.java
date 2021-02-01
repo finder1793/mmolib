@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.comp;
 
+import de.Keyle.MyPet.api.entity.MyPetBukkitEntity;
 import io.lumine.mythic.lib.api.EntityHandler;
 import org.bukkit.entity.Entity;
 

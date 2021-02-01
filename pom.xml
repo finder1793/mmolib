@@ -3,7 +3,7 @@
   	<groupId>io.lumine</groupId>
   	<artifactId>MythicLib</artifactId>
   	<version>0.0.1-SNAPSHOT</version>
-  	<name>MythicEnchants</name>
+  	<name>MythicLib</name>
   	
   	<distributionManagement> 
 		<repository>
@@ -21,7 +21,6 @@
 	<build>
 		<finalName>${project.name}-${project.version}</finalName>
 	    <sourceDirectory>main/src/java</sourceDirectory>
-	    <testSourceDirectory>main/test/java</testSourceDirectory>
 	    <resources>
 	    	<resource>
 	    		<targetPath>.</targetPath>
@@ -76,6 +75,10 @@
             <id>lumine-repo</id>
             <url>https://mvn.lumine.io/repository/maven-public/</url>
         </repository>
+		<repository>
+			<id>everything</id>
+			<url>http://repo.citizensnpcs.co/</url>
+		</repository>
 		<repository> 
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
@@ -87,10 +90,26 @@
 		<repository>
 	        <id>sk89q-repo</id>
 	        <url>http://maven.sk89q.com/repo/</url>
-	    </repository> 
+	    </repository>
+		<repository>
+			<id>citizens-repo</id>
+			<url>https://repo.citizensnpcs.co</url>
+		</repository>
 	  	<repository>
 		    <id>papermc</id>
 		    <url>https://papermc.io/repo/repository/maven-public/</url>
+		</repository>
+		<repository>
+			<id>sk89q-repo</id>
+			<url>https://maven.enginehub.org/repo/</url>
+		</repository>
+		<repository>
+			<id>hikari-cp</id>
+			<url>https://clojars.org/repo/</url>
+		</repository>
+		<repository>
+			<id>mypet-repo</id>
+			<url>http://repo.keyle.de/</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>
@@ -106,7 +125,43 @@
             <artifactId>LumineUtils</artifactId>
             <version>1.16.1-SNAPSHOT</version>  
             <scope>compile</scope> 
-        </dependency> 
+        </dependency>
+		<dependency>
+			<groupId>de.keyle</groupId>
+			<artifactId>mypet</artifactId>
+			<version>3.11-20200830.191147-20</version>
+		</dependency>
+		<dependency>
+			<groupId>net.citizensnpcs</groupId>
+			<artifactId>citizensapi</artifactId>
+			<version>2.0.27-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sk89q.worldguard</groupId>
+			<artifactId>worldguard-bukkit</artifactId>
+			<version>7.0.2-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>4.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>io.lumine.xikage</groupId>
+			<artifactId>MythicMobs</artifactId>
+			<version>4.11.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mcmonkey</groupId>
+			<artifactId>sentinel</artifactId>
+			<version>2.2.0-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
       	<dependency>
            	<groupId>org.projectlombok</groupId>
            	<artifactId>lombok</artifactId>
