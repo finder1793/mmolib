@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.version;
 
+import io.lumine.mythic.lib.MythicLib;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -72,8 +73,8 @@ public enum VersionMaterial {
      */
     @SuppressWarnings("deprecation")
     VersionMaterial(String name_1_13, String legacy, int legacyDurability) {
-        item = MMOLib.plugin.getVersion().isStrictlyHigher(1, 12)
-                ? new ItemStack(Material.valueOf(MMOLib.plugin.getVersion().isStrictlyHigher(1, 13) ? name() : name_1_13))
+        item = MythicLib.plugin.getVersion().isStrictlyHigher(1, 12)
+                ? new ItemStack(Material.valueOf(MythicLib.plugin.getVersion().isStrictlyHigher(1, 13) ? name() : name_1_13))
                 : new ItemStack(Material.valueOf(legacy), 1, (short) legacyDurability);
     }
 
@@ -88,9 +89,9 @@ public enum VersionMaterial {
      *            Legacy material name with no durability
      */
     VersionMaterial(String name_1_14, String name_1_13, String legacy) {
-        item = new ItemStack(Material.valueOf(MMOLib.plugin.getVersion().isStrictlyHigher(1, 14) ? name()
-                : MMOLib.plugin.getVersion().isStrictlyHigher(1, 13) ? name_1_14
-                : MMOLib.plugin.getVersion().isStrictlyHigher(1, 12) ? name_1_13 : legacy));
+        item = new ItemStack(Material.valueOf(MythicLib.plugin.getVersion().isStrictlyHigher(1, 14) ? name()
+                : MythicLib.plugin.getVersion().isStrictlyHigher(1, 13) ? name_1_14
+                : MythicLib.plugin.getVersion().isStrictlyHigher(1, 12) ? name_1_13 : legacy));
     }
 
     public Material toMaterial() {

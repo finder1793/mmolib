@@ -1,6 +1,8 @@
 package io.lumine.mythic.lib.api.condition;
 
 import io.lumine.mythic.lib.api.MMOLineConfig;
+import io.lumine.mythic.lib.api.condition.type.LocationCondition;
+import io.lumine.mythic.lib.api.condition.type.MMOCondition;
 import org.bukkit.Location;
 
 import java.util.ArrayList;

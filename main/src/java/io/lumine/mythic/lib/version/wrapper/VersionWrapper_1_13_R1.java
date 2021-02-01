@@ -1,28 +1,58 @@
 package io.lumine.mythic.lib.version.wrapper;
 
+import com.google.gson.JsonParseException;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.api.MMORayTraceResult;
+import io.lumine.mythic.lib.api.item.NBTCompound;
+import io.lumine.mythic.lib.api.item.NBTItem;
+import io.lumine.mythic.lib.api.util.NBTTypeHelper;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ItemTag;
+import net.md_5.bungee.chat.ComponentSerializer;
+import net.minecraft.server.v1_16_R2.Material;
+import net.minecraft.server.v1_16_R2.World;
 import net.minecraft.server.v1_16_R2.*;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.data.Ageable;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarFlag;
+import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.craftbukkit.v1_16_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R2.event.CraftEventFactory;
+import org.bukkit.craftbukkit.v1_16_R2.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.FurnaceRecipe;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.BoundingBox;
+import org.bukkit.util.RayTraceResult;
+import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public class VersionWrapper_1_13_R1 implements VersionWrapper {
 
     @Override
     public FurnaceRecipe getFurnaceRecipe(String path, ItemStack item, Material material, float exp, int cook) {
-        return new FurnaceRecipe(new NamespacedKey(MMOLib.plugin, "mmoitems_furnace_" + path), item, material, exp, cook);
+        return new FurnaceRecipe(new NamespacedKey(MythicLib.plugin, "mmoitems_furnace_" + path), item, material, exp, cook);
+    }
+
+    @Override
+    public FurnaceRecipe getFurnaceRecipe(String path, ItemStack item, org.bukkit.Material material, float exp, int cook) {
+        return null;
     }
 
     @Override
@@ -38,6 +68,11 @@ public class VersionWrapper_1_13_R1 implements VersionWrapper {
     }
 
     @Override
+    public ItemStack textureItem(org.bukkit.Material material, int model) {
+        return null;
+    }
+
+    @Override
     public ItemStack textureItem(Material material, int model) {
         return getNBTItem(new ItemStack(material)).addTag(new ItemTag("Damage", model)).toItem();
     }
@@ -45,6 +80,16 @@ public class VersionWrapper_1_13_R1 implements VersionWrapper {
     @Override
     public Enchantment getEnchantmentFromString(String s) {
         return Enchantment.getByKey(NamespacedKey.minecraft(s));
+    }
+
+    @Override
+    public FurnaceRecipe getFurnaceRecipe(NamespacedKey key, ItemStack item, org.bukkit.Material material, float exp, int cook) {
+        return null;
+    }
+
+    @Override
+    public boolean isCropFullyGrown(org.bukkit.block.Block block) {
+        return false;
     }
 
     @Override

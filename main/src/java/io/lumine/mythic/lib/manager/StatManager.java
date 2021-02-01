@@ -1,5 +1,9 @@
 package io.lumine.mythic.lib.manager;
 
+import io.lumine.mythic.lib.api.stat.SharedStat;
+import io.lumine.mythic.lib.api.stat.StatMap;
+import io.lumine.mythic.lib.api.stat.handler.AttributeStatHandler;
+import io.lumine.mythic.lib.api.stat.handler.MovementSpeedStatHandler;
 import org.apache.commons.lang.Validate;
 import org.bukkit.attribute.Attribute;
 

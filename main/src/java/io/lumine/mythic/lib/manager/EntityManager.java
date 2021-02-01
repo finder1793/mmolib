@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.manager;
 
+import io.lumine.mythic.lib.api.EntityHandler;
 import org.bukkit.entity.Entity;
 
 import java.util.ArrayList;

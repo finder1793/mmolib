@@ -30,7 +30,7 @@ public class TemporaryStatModifier extends StatModifier implements Closable {
             public void run() {
                 ins.remove(key);
             }
-        }).runTaskLater(MMOLib.plugin, duration);
+        }).runTaskLater(MythicLib.plugin, duration);
     }
 
     @Override

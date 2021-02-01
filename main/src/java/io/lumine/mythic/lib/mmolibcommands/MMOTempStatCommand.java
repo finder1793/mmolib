@@ -1,5 +1,9 @@
 package io.lumine.mythic.lib.mmolibcommands;
 
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.stat.StatInstance;
+import io.lumine.mythic.lib.api.stat.modifier.ModifierType;
+import io.lumine.mythic.lib.api.stat.modifier.TemporaryStatModifier;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;

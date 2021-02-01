@@ -15,7 +15,7 @@ public class VersionWrapper_1_13_R2 implements VersionWrapper {
 
     @Override
     public FurnaceRecipe getFurnaceRecipe(String path, ItemStack item, Material material, float exp, int cook) {
-        return new FurnaceRecipe(new NamespacedKey(MMOLib.plugin, "mmoitems_furnace_" + path), item, material, exp, cook);
+        return new FurnaceRecipe(new NamespacedKey(MythicLib.plugin, "mmoitems_furnace_" + path), item, material, exp, cook);
     }
 
     @Override

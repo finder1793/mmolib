@@ -1,8 +1,23 @@
 package io.lumine.mythic.lib.listener;
 
+import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.api.DamageType;
+import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.stat.StatMap;
+import io.lumine.mythic.lib.comp.MythicMobsHook;
+import io.lumine.mythic.lib.gui.PluginInventory;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+
+import java.util.Random;
 
 public class AttackEffects implements Listener {
     private static final Random random = new Random();
@@ -14,8 +29,8 @@ public class AttackEffects implements Listener {
     }
 
     public void reload() {
-        critCoefficient = MMOLib.plugin.getConfig().getDouble("crit-coefficient");
-        spellCritCoefficient = MMOLib.plugin.getConfig().getDouble("spell-crit-coefficient");
+        critCoefficient = MythicLib.plugin.getConfig().getDouble("crit-coefficient");
+        spellCritCoefficient = MythicLib.plugin.getConfig().getDouble("spell-crit-coefficient");
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -41,10 +56,10 @@ public class AttackEffects implements Listener {
         for (DamageType type : event.getAttack().getTypes())
             d += stats.getStat(type.getStat()) / 100;
 
-        if (MMOLib.plugin.getVersion().getWrapper().isUndead(event.getEntity()))
+        if (MythicLib.plugin.getVersion().getWrapper().isUndead(event.getEntity()))
             d += stats.getStat("UNDEAD_DAMAGE") / 100;
 
-        if (MMOLib.plugin.hasMythicMobs()) {
+        if (MythicLib.plugin.hasMythicMobs()) {
             String faction = MythicMobsHook.getFaction(event.getEntity());
             if (faction != null)
                 d += stats.getStat("FACTION_DAMAGE_" + faction.toUpperCase()) / 100;

@@ -25,7 +25,7 @@ public class ChatInput implements Listener {
     public ChatInput(Player player, Function<String, Boolean> output) {
         this.player = player;
         this.output = output;
-        Bukkit.getPluginManager().registerEvents(this, MMOLib.plugin);
+        Bukkit.getPluginManager().registerEvents(this, MythicLib.plugin);
     }
 
     public void close() {

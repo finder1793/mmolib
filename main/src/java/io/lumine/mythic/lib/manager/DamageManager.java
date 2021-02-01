@@ -1,11 +1,20 @@
 package io.lumine.mythic.lib.manager;
 
+import io.lumine.mythic.lib.api.AttackResult;
+import io.lumine.mythic.lib.api.DamageHandler;
+import io.lumine.mythic.lib.api.RegisteredAttack;
 import org.apache.commons.lang.Validate;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 
 public class DamageManager implements Listener, DamageHandler {
@@ -74,7 +83,7 @@ public class DamageManager implements Listener, DamageHandler {
                 target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).addModifier(noKnockback);
                 target.damage(result.getDamage(), player);
             } catch (Exception anyError) {
-                MMOLib.plugin.getLogger().log(Level.WARNING, "An error occured while registering player damage");
+                MythicLib.plugin.getLogger().log(Level.WARNING, "An error occured while registering player damage");
                 anyError.printStackTrace();
             } finally {
                 target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).removeModifier(noKnockback);

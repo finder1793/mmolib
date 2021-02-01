@@ -1,5 +1,9 @@
 package io.lumine.mythic.lib.comp;
 
+import io.lumine.mythic.lib.api.AttackResult;
+import io.lumine.mythic.lib.api.DamageHandler;
+import io.lumine.mythic.lib.api.DamageType;
+import io.lumine.mythic.lib.api.RegisteredAttack;
 import org.bukkit.entity.Entity;
 
 public class MythicMobsDamageHandler implements DamageHandler {

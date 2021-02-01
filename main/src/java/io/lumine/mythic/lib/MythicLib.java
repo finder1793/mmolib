@@ -1,9 +1,31 @@
 package io.lumine.mythic.lib;
 
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.stat.handler.AttributeStatHandler;
 import io.lumine.mythic.lib.commands.BaseCommand;
+import io.lumine.mythic.lib.comp.CitizensEntityHandler;
+import io.lumine.mythic.lib.comp.MyPetEntityHandler;
+import io.lumine.mythic.lib.comp.MythicMobsDamageHandler;
+import io.lumine.mythic.lib.comp.ShopKeepersEntityHandler;
+import io.lumine.mythic.lib.comp.text.component.font.ComponentBuilder;
+import io.lumine.mythic.lib.comp.text.hexcolor.ColorParser;
+import io.lumine.mythic.lib.comp.text.hexcolor.HexColorParser;
+import io.lumine.mythic.lib.comp.text.hexcolor.SimpleColorParser;
 import io.lumine.mythic.lib.config.Configuration;
+import io.lumine.mythic.lib.gui.PluginInventory;
+import io.lumine.mythic.lib.listener.AttackEffects;
+import io.lumine.mythic.lib.listener.DamageReduction;
+import io.lumine.mythic.lib.listener.HealthScale;
+import io.lumine.mythic.lib.listener.MitigationMechanics;
+import io.lumine.mythic.lib.listener.event.PlayerAttackEventListener;
+import io.lumine.mythic.lib.manager.*;
 import io.lumine.mythic.lib.metrics.bStats;
+import io.lumine.mythic.lib.mmolibcommands.ExploreAttributesCommand;
+import io.lumine.mythic.lib.mmolibcommands.MMODebugCommand;
+import io.lumine.mythic.lib.mmolibcommands.MMOLibCommand;
+import io.lumine.mythic.lib.mmolibcommands.MMOTempStatCommand;
 import io.lumine.mythic.lib.version.ServerVersion;
+import io.lumine.mythic.lib.version.SpigotPlugin;
 import io.lumine.utils.events.extra.ArmorEquipEventListener;
 import io.lumine.utils.logging.Log;
 import io.lumine.utils.plugin.LuminePlugin;
@@ -16,7 +38,7 @@ import java.util.logging.Level;
 
 public class MythicLib extends LuminePlugin {
 
-    private static MythicLib plugin;
+    public static MythicLib plugin;
  
     @Getter private Configuration configuration; 
     //@Getter private ProfileManager profileManager;
@@ -27,9 +49,9 @@ public class MythicLib extends LuminePlugin {
     private final JsonManager jsonManager = new JsonManager();
     private final ConfigManager configManager = new ConfigManager();
 
-    private net.mmogroup.mmolib.version.ServerVersion version;
+    private ServerVersion version;
     private AttackEffects attackEffects;
-    private MitigationMecanics mitigationMecanics;
+    private MitigationMechanics mitigationMecanics;
     private ColorParser colorParser;
     private ComponentBuilder componentBuilder;
 

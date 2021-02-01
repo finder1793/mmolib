@@ -10,6 +10,7 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -73,7 +74,7 @@ public class MMODebugCommand implements CommandExecutor {
             inventory.add("boots", fromNBT(NBTItem.get(player.getEquipment().getBoots())));
 
         if(inventory.size() == 0) sender.sendMessage(ChatColor.RED + "No NBT items found");
-        else sender.spigot().sendMessage(upload(MMOLib.plugin.getJson().toString(inventory)));
+        else sender.spigot().sendMessage(upload(MythicLib.plugin.getJson().toString(inventory)));
     }
 
     private JsonObject fromNBT(NBTItem nbt) {
@@ -106,7 +107,7 @@ public class MMODebugCommand implements CommandExecutor {
                         break;
                     case 8:
                         try {
-                            JsonElement json = MMOLib.plugin.getJson().parse(nbt.get(tag).toString(), JsonElement.class);
+                            JsonElement json = MythicLib.plugin.getJson().parse(nbt.get(tag).toString(), JsonElement.class);
                             if(json.isJsonNull()) nbtData.add("null_string", json.getAsJsonNull());
                             else if(json.isJsonPrimitive()) nbtData.add("string", json.getAsJsonPrimitive());
                             else if(json.isJsonArray()) nbtData.add("string_list", json.getAsJsonArray());
@@ -117,7 +118,7 @@ public class MMODebugCommand implements CommandExecutor {
                         break;
                     case 9:
                         try {
-                            JsonElement json = MMOLib.plugin.getJson().parse(nbt.get(tag).toString(), JsonElement.class);
+                            JsonElement json = MythicLib.plugin.getJson().parse(nbt.get(tag).toString(), JsonElement.class);
                             if(json.isJsonNull()) nbtData.add("null_list", json.getAsJsonNull());
                             else if(json.isJsonPrimitive()) nbtData.add("primitive_list", json.getAsJsonPrimitive());
                             else if(json.isJsonArray()) nbtData.add("array_list", json.getAsJsonArray());
@@ -171,7 +172,7 @@ public class MMODebugCommand implements CommandExecutor {
                         break;
                     case 9:
                         try {
-                            JsonElement json = MMOLib.plugin.getJson().parse(compound.get(tag).toString(), JsonElement.class);
+                            JsonElement json = MythicLib.plugin.getJson().parse(compound.get(tag).toString(), JsonElement.class);
                             if(json.isJsonNull()) nbtData.add("null_list", json.getAsJsonNull());
                             else if(json.isJsonPrimitive()) nbtData.add("primitive_list", json.getAsJsonPrimitive());
                             else if(json.isJsonArray()) nbtData.add("array_list", json.getAsJsonArray());
@@ -216,12 +217,12 @@ public class MMODebugCommand implements CommandExecutor {
             stats.add(stat.getStat(), instance);
         }
 
-        sender.spigot().sendMessage(upload(MMOLib.plugin.getJson().toString(stats)));
+        sender.spigot().sendMessage(upload(MythicLib.plugin.getJson().toString(stats)));
     }
 
     private static void debugLog(CommandSender sender) {
         try {
-            File log = new File(MMOLib.plugin.getDataFolder(), "..\\..\\logs\\latest.log");
+            File log = new File(MythicLib.plugin.getDataFolder(), "..\\..\\logs\\latest.log");
             Scanner scanner = new Scanner(log);
             StringBuilder builder = new StringBuilder();
             while (scanner.hasNextLine())
@@ -273,7 +274,7 @@ public class MMODebugCommand implements CommandExecutor {
                 wr.flush();
             }
             String content = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
-            JsonObject json = MMOLib.plugin.getJson().parse(content, JsonObject.class);
+            JsonObject json = MythicLib.plugin.getJson().parse(content, JsonObject.class);
             if (json.has("key")) key = json.get("key").getAsString();
 
             con.disconnect();

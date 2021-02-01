@@ -15,7 +15,7 @@ public class DamageReduction implements Listener {
             return;
 
         MMOPlayerData data = MMOPlayerData.get((OfflinePlayer) event.getEntity());
-        RegisteredAttack attack = MMOLib.plugin.getDamage().findInfo(event.getEntity());
+        RegisteredAttack attack = MythicLib.plugin.getDamage().findInfo(event.getEntity());
         AttackResult result = attack == null ? new AttackResult(true, DamageType.WEAPON, DamageType.PHYSICAL) : attack.getResult();
 
         /*
@@ -59,7 +59,7 @@ public class DamageReduction implements Listener {
         }
 
         public double getAppliedDamage(double damage) {
-            String formula = MMOLib.plugin.getConfig().getString("defense-application", "#damage# * (1 - (#defense# / (#defense# + 100)))");
+            String formula = MythicLib.plugin.getConfig().getString("defense-application", "#damage# * (1 - (#defense# / (#defense# + 100)))");
             formula = formula.replace("#defense#", String.valueOf(defense));
             formula = formula.replace("#damage#", String.valueOf(damage));
             // Doesn't run the formula if there are hanging #'s

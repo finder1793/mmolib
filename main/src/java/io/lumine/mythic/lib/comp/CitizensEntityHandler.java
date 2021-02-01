@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.comp;
 
+import io.lumine.mythic.lib.api.EntityHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 

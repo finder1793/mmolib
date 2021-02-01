@@ -1,5 +1,8 @@
 package io.lumine.mythic.lib;
 
+import io.lumine.mythic.lib.api.MMOLineConfig;
+import io.lumine.mythic.lib.api.condition.RegionCondition;
+import io.lumine.mythic.lib.api.condition.type.MMOCondition;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;

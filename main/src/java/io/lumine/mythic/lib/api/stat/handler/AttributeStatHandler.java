@@ -27,7 +27,7 @@ public class AttributeStatHandler implements Consumer<StatMap> {
         removeModifiers(ins);
 
         if (updateAttributes)
-            ins.setBaseValue(MMOLib.plugin.getStats().getBaseValue(stat));
+            ins.setBaseValue(MythicLib.plugin.getStats().getBaseValue(stat));
 
         /*
          * if the attribute is a default attribute, substract default value from

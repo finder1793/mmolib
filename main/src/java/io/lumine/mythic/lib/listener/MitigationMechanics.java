@@ -1,5 +1,12 @@
 package io.lumine.mythic.lib.listener;
 
+import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.api.event.mitigation.PlayerBlockEvent;
+import io.lumine.mythic.lib.api.event.mitigation.PlayerDodgeEvent;
+import io.lumine.mythic.lib.api.event.mitigation.PlayerParryEvent;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.player.MitigationType;
+import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.version.VersionSound;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
@@ -17,9 +24,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class MitigationMecanics implements Listener {
+public class MitigationMechanics implements Listener {
     private static final Random random = new Random();
-    private static final List<DamageCause> mitigationCauses = Arrays.asList(DamageCause.PROJECTILE, DamageCause.ENTITY_ATTACK, DamageCause.ENTITY_EXPLOSION, DamageCause.ENTITY_SWEEP_ATTACK);
+    private static final List<EntityDamageEvent.DamageCause> mitigationCauses = Arrays.asList(EntityDamageEvent.DamageCause.PROJECTILE, EntityDamageEvent.DamageCause.ENTITY_ATTACK, EntityDamageEvent.DamageCause.ENTITY_EXPLOSION, EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK);
     private static final DecimalFormat digit = new DecimalFormat("0.#");
 
     private boolean dodgeKnockbackEnabled, parryKnockbackEnabled, actionBarMessage;
@@ -27,34 +34,34 @@ public class MitigationMecanics implements Listener {
     private double parryDefaultCooldown, blockDefaultCooldown, dodgeDefaultCooldown, parryMinCooldown, blockMinCooldown, dodgeMinCooldown;
     private String parryMessage, blockMessage, dodgeMessage;
 
-    public MitigationMecanics() {
+    public MitigationMechanics() {
         reload();
     }
 
     public void reload() {
-        dodgeKnockbackEnabled = MMOLib.plugin.getConfig().getBoolean("mitigation.dodge.knockback.enabled");
-        dodgeKnockbackForce = MMOLib.plugin.getConfig().getDouble("mitigation.dodge.knockback.force");
+        dodgeKnockbackEnabled = MythicLib.plugin.getConfig().getBoolean("mitigation.dodge.knockback.enabled");
+        dodgeKnockbackForce = MythicLib.plugin.getConfig().getDouble("mitigation.dodge.knockback.force");
 
-        maxDodgeRating = MMOLib.plugin.getConfig().getDouble("mitigation.dodge.rating-max");
-        maxParryRating = MMOLib.plugin.getConfig().getDouble("mitigation.parry.rating-max");
-        maxBlockRating = MMOLib.plugin.getConfig().getDouble("mitigation.block.rating-max");
-        maxBlockPower = MMOLib.plugin.getConfig().getDouble("mitigation.block.power.max");
-        defaultBlockPower = MMOLib.plugin.getConfig().getDouble("mitigation.block.power.default");
+        maxDodgeRating = MythicLib.plugin.getConfig().getDouble("mitigation.dodge.rating-max");
+        maxParryRating = MythicLib.plugin.getConfig().getDouble("mitigation.parry.rating-max");
+        maxBlockRating = MythicLib.plugin.getConfig().getDouble("mitigation.block.rating-max");
+        maxBlockPower = MythicLib.plugin.getConfig().getDouble("mitigation.block.power.max");
+        defaultBlockPower = MythicLib.plugin.getConfig().getDouble("mitigation.block.power.default");
 
-        parryDefaultCooldown = MMOLib.plugin.getConfig().getDouble("mitigation.parry.cooldown.default");
-        blockDefaultCooldown = MMOLib.plugin.getConfig().getDouble("mitigation.block.cooldown.default");
-        dodgeDefaultCooldown = MMOLib.plugin.getConfig().getDouble("mitigation.dodge.cooldown.default");
-        parryMinCooldown = MMOLib.plugin.getConfig().getDouble("mitigation.parry.cooldown.min");
-        blockMinCooldown = MMOLib.plugin.getConfig().getDouble("mitigation.block.cooldown.min");
-        dodgeMinCooldown = MMOLib.plugin.getConfig().getDouble("mitigation.dodge.cooldown.min");
+        parryDefaultCooldown = MythicLib.plugin.getConfig().getDouble("mitigation.parry.cooldown.default");
+        blockDefaultCooldown = MythicLib.plugin.getConfig().getDouble("mitigation.block.cooldown.default");
+        dodgeDefaultCooldown = MythicLib.plugin.getConfig().getDouble("mitigation.dodge.cooldown.default");
+        parryMinCooldown = MythicLib.plugin.getConfig().getDouble("mitigation.parry.cooldown.min");
+        blockMinCooldown = MythicLib.plugin.getConfig().getDouble("mitigation.block.cooldown.min");
+        dodgeMinCooldown = MythicLib.plugin.getConfig().getDouble("mitigation.dodge.cooldown.min");
 
-        parryKnockbackEnabled = MMOLib.plugin.getConfig().getBoolean("mitigation.parry.knockback.enabled");
-        parryKnockbackForce = MMOLib.plugin.getConfig().getDouble("mitigation.parry.knockback.force");
+        parryKnockbackEnabled = MythicLib.plugin.getConfig().getBoolean("mitigation.parry.knockback.enabled");
+        parryKnockbackForce = MythicLib.plugin.getConfig().getDouble("mitigation.parry.knockback.force");
 
-        parryMessage = MMOLib.plugin.getConfig().getString("mitigation.message.parry");
-        dodgeMessage = MMOLib.plugin.getConfig().getString("mitigation.message.dodge");
-        blockMessage = MMOLib.plugin.getConfig().getString("mitigation.message.block");
-        actionBarMessage = MMOLib.plugin.getConfig().getBoolean("mitigation.message.action-bar");
+        parryMessage = MythicLib.plugin.getConfig().getString("mitigation.message.parry");
+        dodgeMessage = MythicLib.plugin.getConfig().getString("mitigation.message.dodge");
+        blockMessage = MythicLib.plugin.getConfig().getString("mitigation.message.block");
+        actionBarMessage = MythicLib.plugin.getConfig().getBoolean("mitigation.message.action-bar");
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -145,7 +152,7 @@ public class MitigationMecanics implements Listener {
             format = format.replace("#" + placeholders[i].toString() + "#", placeholders[i + 1].toString());
 
         if (actionBarMessage)
-            MMOLib.plugin.getVersion().getWrapper().sendActionBar(player, format);
+            MythicLib.plugin.getVersion().getWrapper().sendActionBar(player, format);
         else
             player.sendMessage(format);
     }
@@ -166,3 +173,4 @@ public class MitigationMecanics implements Listener {
         return new Location(player.getWorld(), vec.getX(), vec.getY(), vec.getZ()).setDirection(vec).getYaw();
     }
 }
+

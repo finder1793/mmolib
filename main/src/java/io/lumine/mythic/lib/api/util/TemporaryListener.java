@@ -21,7 +21,7 @@ public abstract class TemporaryListener implements Listener {
     private boolean closed;
 
     public TemporaryListener(HandlerList... events) {
-        this(MMOLib.plugin, events);
+        this(MythicLib.plugin, events);
     }
 
     /**
@@ -43,7 +43,7 @@ public abstract class TemporaryListener implements Listener {
      * @param duration Delay before unregistration
      */
     public void close(long duration) {
-        Bukkit.getScheduler().runTaskLater(MMOLib.plugin, (Runnable) this::close, duration);
+        Bukkit.getScheduler().runTaskLater(MythicLib.plugin, (Runnable) this::close, duration);
     }
 
     /**

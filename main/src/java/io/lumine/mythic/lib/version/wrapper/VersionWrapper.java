@@ -1,5 +1,7 @@
 package io.lumine.mythic.lib.version.wrapper;
 
+import io.lumine.mythic.lib.api.MMORayTraceResult;
+import io.lumine.mythic.lib.api.item.NBTItem;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;

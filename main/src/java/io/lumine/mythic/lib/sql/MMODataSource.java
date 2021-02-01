@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.sql;
 
+import io.lumine.mythic.lib.MythicLib;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -43,7 +44,7 @@ public abstract class MMODataSource {
             supplier.accept(connection.prepareStatement(sql).executeQuery());
             connection.close();
         } catch (SQLException e) {
-            MMOLib.plugin.getLogger().log(Level.SEVERE, "MySQL Operation Failed!");
+            MythicLib.plugin.getLogger().log(Level.SEVERE, "MySQL Operation Failed!");
             e.printStackTrace();
         }
     }
@@ -58,7 +59,7 @@ public abstract class MMODataSource {
             connection.prepareStatement(sql).executeUpdate();
             connection.close();
         } catch (SQLException e) {
-            MMOLib.plugin.getLogger().log(Level.SEVERE, "MySQL Operation Failed!");
+            MythicLib.plugin.getLogger().log(Level.SEVERE, "MySQL Operation Failed!");
             e.printStackTrace();
         }
     }

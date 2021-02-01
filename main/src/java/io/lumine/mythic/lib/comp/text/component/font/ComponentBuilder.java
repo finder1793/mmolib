@@ -1,8 +1,10 @@
 package io.lumine.mythic.lib.comp.text.component.font;
 
+import io.lumine.mythic.lib.MythicLib;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * This is the builder of a finalized component.
@@ -19,7 +21,7 @@ public class ComponentBuilder extends ComponentParser {
      */
     public ComponentBuilder() {
         // Added in 1.16
-        if (MMOLib.plugin.getVersion().isStrictlyHigher(1, 15)) {
+        if (MythicLib.plugin.getVersion().isStrictlyHigher(1, 15)) {
             enabledParsers.add(new FontParser());
         }
     }

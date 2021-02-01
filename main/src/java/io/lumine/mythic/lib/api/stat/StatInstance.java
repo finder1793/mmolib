@@ -1,8 +1,12 @@
 package io.lumine.mythic.lib.api.stat;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.api.stat.modifier.Closable;
+import io.lumine.mythic.lib.api.stat.modifier.ModifierType;
+import io.lumine.mythic.lib.api.stat.modifier.StatModifier;
+import io.lumine.mythic.lib.api.stat.modifier.TemporaryStatModifier;
+
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -20,7 +24,7 @@ public class StatInstance {
     public StatInstance(StatMap map, String stat) {
         this.map = map;
         this.stat = stat;
-        this.base = MMOLib.plugin.getStats().getBaseValue(stat);
+        this.base = MythicLib.plugin.getStats().getBaseValue(stat);
     }
 
     public StatMap getMap() {
@@ -141,7 +145,7 @@ public class StatInstance {
     public void addModifier(String key, StatModifier modifier) {
         modifiers.put(key, modifier);
 
-        MMOLib.plugin.getStats().runUpdate(map, stat);
+        MythicLib.plugin.getStats().runUpdate(map, stat);
     }
 
     /***
@@ -183,7 +187,7 @@ public class StatInstance {
         }
 
         if (check)
-            MMOLib.plugin.getStats().runUpdate(map, stat);
+            MythicLib.plugin.getStats().runUpdate(map, stat);
     }
 
     /***
@@ -216,7 +220,7 @@ public class StatInstance {
             ((Closable) mod).close();
 
         modifiers.remove(key);
-        MMOLib.plugin.getStats().runUpdate(map, stat);
+        MythicLib.plugin.getStats().runUpdate(map, stat);
     }
 }
 

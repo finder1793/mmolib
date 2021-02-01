@@ -20,7 +20,7 @@ public abstract class ItemType {
         if(input.contains(".") || input.contains("%") || input.contains("?")) {
             String[] split = input.split("[.%?]");
             if(split.length != 2)
-                MMOLib.plugin.getLogger().warning("More arguments than needed, please check your configs! ( " + input + " )");
+                MythicLib.plugin.getLogger().warning("More arguments than needed, please check your configs! ( " + input + " )");
             return new MMOItemType(split[0], split[1]);
         }
         else return new VanillaType(Material.valueOf(

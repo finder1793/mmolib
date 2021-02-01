@@ -1,6 +1,9 @@
 package io.lumine.mythic.lib.api.stat;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.AttackResult;
+import io.lumine.mythic.lib.api.DamageType;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -69,7 +72,7 @@ public class StatMap {
      */
     @Deprecated
     public void updateAll() {
-        MMOLib.plugin.getStats().runUpdates(this);
+        MythicLib.plugin.getStats().runUpdates(this);
     }
 
     /***
@@ -80,7 +83,7 @@ public class StatMap {
      */
     @Deprecated
     public void update(String stat) {
-        MMOLib.plugin.getStats().runUpdate(this, stat);
+        MythicLib.plugin.getStats().runUpdate(this, stat);
     }
 
     /**
@@ -140,7 +143,7 @@ public class StatMap {
         }
 
         public void damage(LivingEntity target, double value, DamageType... types) {
-            MMOLib.plugin.getDamage().damage(player, target, new AttackResult(value, types));
+            MythicLib.plugin.getDamage().damage(player, target, new AttackResult(value, types));
         }
     }
 }

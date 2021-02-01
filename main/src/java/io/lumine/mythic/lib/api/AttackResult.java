@@ -1,10 +1,12 @@
 package io.lumine.mythic.lib.api;
 
+import io.lumine.mythic.lib.MythicLib;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 public class AttackResult {
     private double damage;
@@ -134,7 +136,7 @@ public class AttackResult {
      *            The entity being damaged
      */
     public void damage(Player player, LivingEntity target) {
-        MMOLib.plugin.getDamage().damage(player, target, this);
+        MythicLib.plugin.getDamage().damage(player, target, this);
     }
 
     @Override

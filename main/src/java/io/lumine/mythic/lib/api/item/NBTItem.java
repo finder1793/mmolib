@@ -71,7 +71,7 @@ public abstract class NBTItem {
     }
 
     public static NBTItem get(ItemStack item) {
-        return MMOLib.plugin.getVersion().getWrapper().getNBTItem(item);
+        return MythicLib.plugin.getVersion().getWrapper().getNBTItem(item);
     }
 }
 

@@ -8,7 +8,7 @@ public class ConfigManager {
     public final DecimalFormat decimal = new DecimalFormat("0.#", formatSymbols), decimals = new DecimalFormat("0.##", formatSymbols);
 
     public void reload() {
-        formatSymbols.setDecimalSeparator(getFirstChar(MMOLib.plugin.getConfig().getString("number-format.decimal-separator")));
+        formatSymbols.setDecimalSeparator(getFirstChar(MythicLib.plugin.getConfig().getString("number-format.decimal-separator")));
     }
 
     public DecimalFormat newFormat(String pattern) {

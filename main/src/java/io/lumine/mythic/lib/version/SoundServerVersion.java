@@ -1,5 +1,7 @@
 package io.lumine.mythic.lib.version;
 
+import io.lumine.mythic.lib.MythicLib;
+
 import java.util.function.Predicate;
 
 public enum SoundServerVersion {
@@ -54,7 +56,7 @@ public enum SoundServerVersion {
     }
 
     private static SoundServerVersion findVersion() {
-        ServerVersion server = MMOLib.plugin.getVersion();
+        ServerVersion server = MythicLib.plugin.getVersion();
         for (SoundServerVersion checked : values())
             if (checked.matches(server))
                 return checked;

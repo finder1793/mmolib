@@ -60,7 +60,7 @@ public class PlayerAttackEventListener implements Listener {
          * Check MMOLib registered attacks database and updates damage dealt
          * based on the value given by the Bukkit event
          */
-        RegisteredAttack custom = MMOLib.plugin.getDamage().findInfo(event.getEntity());
+        RegisteredAttack custom = MythicLib.plugin.getDamage().findInfo(event.getEntity());
         if (custom != null) {
             custom.getResult().setDamage(event.getDamage());
             return custom;

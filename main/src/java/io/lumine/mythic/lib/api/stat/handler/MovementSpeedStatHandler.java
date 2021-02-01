@@ -25,7 +25,7 @@ public class MovementSpeedStatHandler implements Consumer<StatMap> {
         if (AttributeStatHandler.updateAttributes) {
             if (Bukkit.isPrimaryThread())
                 stats.getPlayerData().getPlayer().setWalkSpeed(.2f);
-            else Bukkit.getScheduler().runTask(MMOLib.plugin, () ->
+            else Bukkit.getScheduler().runTask(MythicLib.plugin, () ->
                     stats.getPlayerData().getPlayer().setWalkSpeed(.2f));
         }
 

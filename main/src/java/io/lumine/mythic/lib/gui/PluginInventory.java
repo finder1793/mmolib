@@ -27,6 +27,6 @@ public abstract class PluginInventory implements InventoryHolder {
         if (Bukkit.isPrimaryThread())
             player.openInventory(getInventory());
         else
-            Bukkit.getScheduler().runTask(MMOLib.plugin, () -> player.openInventory(getInventory()));
+            Bukkit.getScheduler().runTask(MythicLib.plugin, () -> player.openInventory(getInventory()));
     }
 }

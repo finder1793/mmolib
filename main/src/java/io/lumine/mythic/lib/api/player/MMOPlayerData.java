@@ -1,10 +1,13 @@
 package io.lumine.mythic.lib.api.player;
 
+import io.lumine.mythic.lib.api.stat.StatMap;
 import org.apache.commons.lang.Validate;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class MMOPlayerData {

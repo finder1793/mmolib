@@ -57,7 +57,7 @@ public class StatModifier {
 
     @Override
     public String toString() {
-        return MMOLib.plugin.getMMOConfig().decimal.format(d) + (type == ModifierType.RELATIVE ? "%" : "");
+        return MythicLib.plugin.getMMOConfig().decimal.format(d) + (type == ModifierType.RELATIVE ? "%" : "");
     }
 }
 

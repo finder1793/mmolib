@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 public class MMOLibCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        MMOLib.plugin.reload();
+        MythicLib.plugin.reload();
         sender.sendMessage(ChatColor.GREEN + "> MMOLib Reloaded!");
         return true;
     }
