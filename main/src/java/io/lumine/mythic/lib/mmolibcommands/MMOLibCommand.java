@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.mmolibcommands;
 
+import io.lumine.mythic.lib.MythicLib;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

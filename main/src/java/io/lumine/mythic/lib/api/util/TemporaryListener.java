@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.api.util;
 
+import io.lumine.mythic.lib.MythicLib;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;

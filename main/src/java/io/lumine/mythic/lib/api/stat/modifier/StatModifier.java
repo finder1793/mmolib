@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.api.stat.modifier;
 
+import io.lumine.mythic.lib.MythicLib;
 import org.apache.commons.lang.Validate;
 
 public class StatModifier {

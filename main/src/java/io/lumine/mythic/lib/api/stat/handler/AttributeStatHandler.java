@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.api.stat.handler;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.stat.StatInstance;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import org.bukkit.attribute.Attribute;
@@ -36,7 +37,7 @@ public class AttributeStatHandler implements Consumer<StatMap> {
         StatInstance statIns = stats.getInstance(stat);
         double d = statIns.getTotal();
         if (d != statIns.getBase())
-            ins.addModifier(new AttributeModifier("mmolib.main", d - statIns.getBase(), Operation.ADD_NUMBER));
+            ins.addModifier(new AttributeModifier("mmolib.main", d - statIns.getBase(), AttributeModifier.Operation.ADD_NUMBER));
     }
 
     /*

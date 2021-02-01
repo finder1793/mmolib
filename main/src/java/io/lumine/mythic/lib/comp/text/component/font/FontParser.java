@@ -1,7 +1,9 @@
 package io.lumine.mythic.lib.comp.text.component.font;
 
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 

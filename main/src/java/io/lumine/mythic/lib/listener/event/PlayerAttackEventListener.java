@@ -1,5 +1,12 @@
 package io.lumine.mythic.lib.listener.event;
 
+import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.api.AttackResult;
+import io.lumine.mythic.lib.api.DamageType;
+import io.lumine.mythic.lib.api.RegisteredAttack;
+import io.lumine.mythic.lib.api.event.EntityKillEntityEvent;
+import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Damageable;

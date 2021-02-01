@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.api.itemtype;
 
+import io.lumine.mythic.lib.api.item.NBTItem;
 import org.bukkit.inventory.ItemStack;
 
 public class MMOItemType extends ItemType {

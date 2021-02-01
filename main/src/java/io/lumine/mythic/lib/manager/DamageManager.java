@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.manager;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.AttackResult;
 import io.lumine.mythic.lib.api.DamageHandler;
 import io.lumine.mythic.lib.api.RegisteredAttack;
@@ -21,7 +22,7 @@ public class DamageManager implements Listener, DamageHandler {
     private final Map<Integer, RegisteredAttack> customDamage = new HashMap<>();
     private final List<DamageHandler> handlers = new ArrayList<>();
 
-    private static final AttributeModifier noKnockback = new AttributeModifier(UUID.randomUUID(), "noKnockback", 100, Operation.ADD_NUMBER);
+    private static final AttributeModifier noKnockback = new AttributeModifier(UUID.randomUUID(), "noKnockback", 100, AttributeModifier.Operation.ADD_NUMBER);
 
     public DamageManager() {
         handlers.add(this);

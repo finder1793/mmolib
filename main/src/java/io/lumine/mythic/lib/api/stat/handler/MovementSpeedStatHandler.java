@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.api.stat.handler;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;

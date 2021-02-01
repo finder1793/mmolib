@@ -1,10 +1,23 @@
 package io.lumine.mythic.lib.listener;
 
+import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.api.AttackResult;
+import io.lumine.mythic.lib.api.DamageType;
+import io.lumine.mythic.lib.api.RegisteredAttack;
+import io.lumine.mythic.lib.api.math.EvaluatedFormula;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.stat.StatMap;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+
+import java.util.function.BiFunction;
 
 public class DamageReduction implements Listener {
     // Since mythic mobs is a soft depend, this event triggers
@@ -120,13 +133,13 @@ public class DamageReduction implements Listener {
         /*
          * Simple damage reduction types
          */
-        FIRE((result, event) -> event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FIRE_TICK),
-        FALL((result, event) -> event.getCause() == DamageCause.FALL),
+        FIRE((result, event) -> event.getCause() == EntityDamageEvent.DamageCause.FIRE || event.getCause() == EntityDamageEvent.DamageCause.FIRE_TICK),
+        FALL((result, event) -> event.getCause() == EntityDamageEvent.DamageCause.FALL),
 
         /*
          * Damage type based damage reduction types
          */
-        MAGIC((result, event) -> event.getCause() == DamageCause.MAGIC || (result != null && result.hasType(DamageType.MAGIC))),
+        MAGIC((result, event) -> event.getCause() == EntityDamageEvent.DamageCause.MAGIC || (result != null && result.hasType(DamageType.MAGIC))),
         PHYSICAL((result, event) -> event instanceof EntityDamageByEntityEvent || (result != null && result.hasType(DamageType.PHYSICAL))),
         WEAPON((result, event) -> result != null && result.hasType(DamageType.WEAPON)),
         SKILL((result, event) -> result != null && result.hasType(DamageType.SKILL)),

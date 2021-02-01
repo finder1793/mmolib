@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.api.itemtype;
 
+import io.lumine.mythic.lib.MythicLib;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

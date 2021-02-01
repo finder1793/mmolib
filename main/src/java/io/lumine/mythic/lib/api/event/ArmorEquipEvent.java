@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.api.event;
 import io.lumine.mythic.lib.version.VersionMaterial;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;

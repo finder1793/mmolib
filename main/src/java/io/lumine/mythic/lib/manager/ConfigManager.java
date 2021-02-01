@@ -1,5 +1,7 @@
 package io.lumine.mythic.lib.manager;
 
+import io.lumine.mythic.lib.MythicLib;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 

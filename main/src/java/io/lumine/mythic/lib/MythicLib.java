@@ -102,7 +102,7 @@ public class MythicLib extends LuminePlugin {
         Bukkit.getPluginManager().registerEvents(damageManager, this);
         Bukkit.getPluginManager().registerEvents(new DamageReduction(), this);
         Bukkit.getPluginManager().registerEvents(attackEffects = new AttackEffects(), this);
-        Bukkit.getPluginManager().registerEvents(mitigationMecanics = new MitigationMecanics(), this);
+        Bukkit.getPluginManager().registerEvents(mitigationMecanics = new MitigationMechanics(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerAttackEventListener(), this);
         Bukkit.getPluginManager().registerEvents(new ArmorEquipEventListener(), this);
 

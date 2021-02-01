@@ -1,5 +1,9 @@
 package io.lumine.mythic.lib.gui;
 
+import io.lumine.mythic.lib.api.explorer.ChatInput;
+import io.lumine.mythic.lib.api.explorer.ItemBuilder;
+import io.lumine.mythic.lib.api.util.AltChar;
+import io.lumine.mythic.lib.mmolibcommands.ExploreAttributesCommand;
 import io.lumine.mythic.lib.version.VersionMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -68,7 +72,7 @@ public class AttributeCreator extends PluginInventory {
                 return;
             }
 
-            explorer.getTarget().getAttribute(explorer.getExplored()).addModifier(new AttributeModifier(uuid == null ? UUID.randomUUID() : uuid, name, amount, operation == null ? Operation.ADD_NUMBER : operation, slot));
+            explorer.getTarget().getAttribute(explorer.getExplored()).addModifier(new AttributeModifier(uuid == null ? UUID.randomUUID() : uuid, name, amount, operation == null ? AttributeModifier.Operation.ADD_NUMBER : operation, slot));
             explorer.open();
             getPlayer().sendMessage(ChatColor.YELLOW + "> Attribute successfully added.");
         }
