@@ -218,13 +218,55 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- Spigot NMS versions -->
-		<dependency>
-	        <groupId>org.spigotmc</groupId>
-	        <artifactId>spigot-1.16.2</artifactId>
-	        <version>dev</version>
-	        <scope>provided</scope>
-	        <optional>true</optional>
+		<!-- Spigot NMS versions -->  
+        <dependency> 
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-1.16.4</artifactId>
+            <version>dev</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency> 
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-1.16.2</artifactId>
+            <version>dev</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-1.16.1</artifactId>
+            <version>dev</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-1.15</artifactId>
+            <version>dev</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-1.14</artifactId>
+            <version>dev</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-1.13.2</artifactId>
+            <version>dev</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-1.12.2</artifactId>
+            <version>dev</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 	</dependencies>
 </project>

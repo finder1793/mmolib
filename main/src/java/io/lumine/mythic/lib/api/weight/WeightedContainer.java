@@ -33,7 +33,7 @@ public class WeightedContainer<T> implements Iterable<WeightedObject<T>> {
             selected = o; weightedSum -= o.getWeight();
             if(weightedSum <= 0) break;
         }
-        return selected.getObject();
+        return selected.get();
     }
 
     /**
@@ -52,7 +52,7 @@ public class WeightedContainer<T> implements Iterable<WeightedObject<T>> {
         double weightedSum = rnd.nextDouble() * sum;
         List<T> list = new ArrayList<>();
         for(WeightedObject<T> o : options) {
-            list.add(o.getObject());
+            list.add(o.get());
             weightedSum -= o.getWeight();
             capacity -= o.getWeight();
             if(weightedSum <= 0 || capacity <= 0) break;
@@ -68,7 +68,7 @@ public class WeightedContainer<T> implements Iterable<WeightedObject<T>> {
      */
     public void add(double weight, T object) {
         if(weight <= 0) throw new InvalidWeightException();
-        options.add(new WeightedObject<>(object, weight));
+        options.add(new WeightedObject<T>(object, weight));
     }
 
     /**
