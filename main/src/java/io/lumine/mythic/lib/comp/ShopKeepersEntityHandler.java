@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.comp;
 
+import com.nisovin.shopkeepers.api.ShopkeepersPlugin;
 import io.lumine.mythic.lib.api.EntityHandler;
 import org.bukkit.entity.Entity;
 

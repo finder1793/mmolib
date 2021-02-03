@@ -83,7 +83,9 @@ public class MMODebugCommand implements CommandExecutor {
             inventory.add("boots", fromNBT(NBTItem.get(player.getEquipment().getBoots())));
 
         if(inventory.size() == 0) sender.sendMessage(ChatColor.RED + "No NBT items found");
-        else sender.spigot().sendMessage(upload(MythicLib.plugin.getJson().toString(inventory)));
+        //else sender.spigot().sendMessage(upload(MythicLib.plugin.getJson().toString(inventory)));
+        //TODO make the above line work
+        sender.sendMessage("Command is currently under maintenance.");
     }
 
     private JsonObject fromNBT(NBTItem nbt) {
@@ -225,8 +227,9 @@ public class MMODebugCommand implements CommandExecutor {
             instance.add("modifiers", modifiers);
             stats.add(stat.getStat(), instance);
         }
-
-        sender.spigot().sendMessage(upload(MythicLib.plugin.getJson().toString(stats)));
+        //TODO fix this debug
+        //sender.spigot().sendMessage(upload(MythicLib.plugin.getJson().toString(stats)));
+        sender.sendMessage("Command is currently under maintenance.");
     }
 
     private static void debugLog(CommandSender sender) {
@@ -237,7 +240,9 @@ public class MMODebugCommand implements CommandExecutor {
             while (scanner.hasNextLine())
                 builder.append(scanner.nextLine()).append("\n");
             scanner.close();
-            sender.spigot().sendMessage(upload(builder.toString()));
+            //TODO fix this debug
+            //sender.spigot().sendMessage(upload(builder.toString()));
+            sender.sendMessage("Command is currently under maintenance.");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             sender.sendMessage(ChatColor.RED + "Couldn't load latest.log file...");
@@ -253,7 +258,9 @@ public class MMODebugCommand implements CommandExecutor {
                 builder.append(" (Disabled)");
             builder.append("\n");
         }
-        sender.spigot().sendMessage(upload(builder.toString()));
+        //TODO fix this debug
+        //sender.spigot().sendMessage(upload(builder.toString()));
+        sender.sendMessage("Command is currently under maintenance.");
     }
 
     private static BaseComponent[] upload(String toUpload) {

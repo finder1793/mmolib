@@ -2,7 +2,6 @@ package io.lumine.mythic.lib.api.weight;
 
 import io.lumine.mythic.lib.exception.EmptyWeightListException;
 import io.lumine.mythic.lib.exception.InvalidWeightException;
-import io.lumine.utils.random.WeightedObject;
 
 import java.util.*;
 
@@ -33,7 +32,7 @@ public class WeightedContainer<T> implements Iterable<WeightedObject<T>> {
             selected = o; weightedSum -= o.getWeight();
             if(weightedSum <= 0) break;
         }
-        return selected.get();
+        return selected.getObject();
     }
 
     /**
@@ -52,7 +51,7 @@ public class WeightedContainer<T> implements Iterable<WeightedObject<T>> {
         double weightedSum = rnd.nextDouble() * sum;
         List<T> list = new ArrayList<>();
         for(WeightedObject<T> o : options) {
-            list.add(o.get());
+            list.add(o.getObject());
             weightedSum -= o.getWeight();
             capacity -= o.getWeight();
             if(weightedSum <= 0 || capacity <= 0) break;
