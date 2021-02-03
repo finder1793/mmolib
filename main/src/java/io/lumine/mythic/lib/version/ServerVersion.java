@@ -12,7 +12,7 @@ public class ServerVersion {
         String[] split = version.substring(1).split("_");
         integers = new int[] { Integer.parseInt(split[0]), Integer.parseInt(split[1]) };
 
-        versionWrapper = (VersionWrapper) Class.forName("net.mmogroup.mmolib.version.wrapper.VersionWrapper_" + version.substring(1))
+        versionWrapper = (VersionWrapper) Class.forName("io.lumine.mythic.lib.version.wrapper.VersionWrapper_" + version.substring(1))
                 .getDeclaredConstructor().newInstance();
     }
 

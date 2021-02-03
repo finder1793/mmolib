@@ -125,7 +125,7 @@ public class MythicLib extends LuminePlugin {
 
         if (version.isStrictlyHigher(1, 12))
             getCommand("exploreattributes").setExecutor(new ExploreAttributesCommand());
-        getCommand("mmolib").setExecutor(new MMOLibCommand());
+        getCommand("mythiclib").setExecutor(new MMOLibCommand());
         getCommand("mmodebug").setExecutor(new MMODebugCommand());
         getCommand("mmotempstat").setExecutor(new MMOTempStatCommand());
 

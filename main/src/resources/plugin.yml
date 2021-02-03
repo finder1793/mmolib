@@ -1,16 +1,31 @@
-name: ${project.artifactId}
+name: MythicLib
 author: Lumine Studios
-main: io.lumine.mythic.lib
+main: io.lumine.mythic.lib.MythicLib
 api-version: 1.13
 version: ${project.version}
 depend: []
-loadbefore: []
-description: Kind of like MMOLib, but without the generic disorders
+loadbefore: [MMOCore,MMOItems]
+softdepend: [MythicMobs]
+description: Kind of like mythiclib, but without the generic disorders
 commands:
   mythiclib:
-      description: MythicLib base command. Why does it need a base command? Who knows!
-      aliases: []
+    description: Reload mythiclib
+    permission: mythiclib.reload
+  exploreattributes:
+    description: Explore player attributes.
+    permission: mythiclib.explore-attributes
+  mmodebug:
+    description: Debug data by sending it straight to the devs
+    permission: mythiclib.debug
+  mmotempstat:
+    description: Add temporary stat modifier to player
+    permission: mythiclib.tempstat
 permissions:
-  mythiclib.admin:
-    description: Gives access to everything!
+  mythiclib.reload:
+    default: op
+  mythiclib.explore-attributes:
+    default: op
+  mythiclib.debug:
+    default: op
+  mythiclib.tempstat:
     default: op
