@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.api.item;
 
 import com.google.gson.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +59,7 @@ public class ItemTag {
     /**
      * Used to easily get the tag you are searching from
      */
-    public static ItemTag getTagAtPath(@NotNull String path, @NotNull ArrayList<ItemTag> from) {
+    @Nullable public static ItemTag getTagAtPath(@NotNull String path, @NotNull ArrayList<ItemTag> from) {
 
         // Look into each tag
         for (ItemTag str : from) {
@@ -325,32 +326,3 @@ public class ItemTag {
     //endregion
 }
 
-/**
- * To know what to expect when reading NBT, because
- * minecraft saves booleans as ZERO or ONE which is
- * ambiguous with INTEGER.
- */
-enum SupportedNBTTagValues {
-
-    /**
-     * A segment of text. May be a {@link JsonElement#toString()}, who knows?
-     * <p></p>
-     * In the latter case, just use {@link JsonParser#parse(String)} to read.
-     */
-    STRING,
-
-    /**
-     * A number.
-     */
-    DOUBLE,
-
-    /**
-     * Either true or false
-     */
-    BOOLEAN,
-
-    /**
-     * A number with no decimal values.
-     */
-    INTEGER
-}
