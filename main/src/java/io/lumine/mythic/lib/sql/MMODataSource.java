@@ -24,11 +24,20 @@ public abstract class MMODataSource {
             if (!cfg.getBoolean("enabled"))
                 return;
             enabled = true;
+
+            config.setPoolName("MMO-hikari");
+
             String sb = "jdbc:mysql://" + cfg.getString("host", "localhost") + ":" + cfg.getString("port", "3306") + "/"
                     + cfg.getString("database", "minecraft");
+
             config.setJdbcUrl(sb);
             config.setUsername(cfg.getString("user", "mmolover"));
             config.setPassword(cfg.getString("pass", "ILoveAria"));
+            config.setMaximumPoolSize(cfg.getInt("maxPoolSize", 10));
+            config.setMaxLifetime(cfg.getLong("maxLifeTime", 300000));
+            config.setConnectionTimeout(cfg.getLong("connectionTimeOut", 10000));
+            config.setLeakDetectionThreshold(cfg.getLong("leakDetectionThreshold", 150000));
+
             if (cfg.isConfigurationSection("properties"))
                 for (String s : cfg.getConfigurationSection("properties").getKeys(false)) {
                     config.addDataSourceProperty(s, cfg.getString("properties." + s));
@@ -41,14 +50,13 @@ public abstract class MMODataSource {
     protected abstract void load();
 
     public void getResult(String sql, Consumer<ResultSet> supplier) {
-        try {
-            Connection connection = getConnection();
-            supplier.accept(connection.prepareStatement(sql).executeQuery());
-            connection.close();
-        } catch (SQLException e) {
-            MythicLib.plugin.getLogger().log(Level.SEVERE, "MySQL Operation Failed!");
-            e.printStackTrace();
-        }
+        execute(connection -> {
+            try {
+                supplier.accept(connection.prepareStatement(sql).executeQuery());
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        });
     }
 
     public CompletableFuture<Void> getResultAsync(String sql, Consumer<ResultSet> supplier) {
@@ -56,18 +64,33 @@ public abstract class MMODataSource {
     }
 
     public void executeUpdate(String sql) {
-        try {
-            Connection connection = getConnection();
-            connection.prepareStatement(sql).executeUpdate();
-            connection.close();
-        } catch (SQLException e) {
-            MythicLib.plugin.getLogger().log(Level.SEVERE, "MySQL Operation Failed!");
-            e.printStackTrace();
-        }
+        execute(connection -> {
+            try {
+                connection.prepareStatement(sql).executeUpdate();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        });
     }
 
     public CompletableFuture<Void> executeUpdateAsync(String sql) {
         return CompletableFuture.runAsync(() -> executeUpdate(sql));
+    }
+
+    /**
+     * Retrieve a connection from pool and prepare it for use and even closes it when it's finished using it.
+     * @param execute Consumer.
+     */
+    public void execute(Consumer<Connection> execute) {
+        if (!enabled)
+            throw new IllegalStateException("Can't get SQL Connection while it's disabled!");
+
+        try (Connection connection = dataSource.getConnection()) {
+            execute.accept(connection);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
     }
 
     public Connection getConnection() throws SQLException {

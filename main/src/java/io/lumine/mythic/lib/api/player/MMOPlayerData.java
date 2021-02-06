@@ -1,9 +1,12 @@
 package io.lumine.mythic.lib.api.player;
 
 import io.lumine.mythic.lib.api.stat.StatMap;
+import lombok.Getter;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,15 +26,13 @@ public class MMOPlayerData {
 
     private static final Map<UUID, MMOPlayerData> data = new HashMap<>();
 
-    public MMOPlayerData(Player player) {
-        this.player = player;
-        this.uuid = player.getUniqueId();
+    public MMOPlayerData(UUID uniqueId) {
+        this.uuid = uniqueId;
+        updateLoginTime();
     }
 
-    @Deprecated
-    public MMOPlayerData(Player player, UUID uuid) {
-        this.player = player;
-        this.uuid = uuid;
+    public void updateLoginTime() {
+        this.lastLogin = System.currentTimeMillis();
     }
 
     public UUID getUniqueId() {
@@ -68,9 +69,15 @@ public class MMOPlayerData {
      * @return Returns the corresponding Player instance, or throws an IAE if
      *         the player is currently not online. Make sure he is online before
      *         calling this method
+     *         <br>
+     *         Note: Can return null if player is not online or if the player is not loaded completely.
      */
+    @Nullable
     public Player getPlayer() {
-        Validate.notNull(player, "Player must be online");
+        if (player == null) {
+            player = Bukkit.getPlayer(uuid);
+        }
+
         return player;
     }
 
@@ -107,13 +114,20 @@ public class MMOPlayerData {
      * MMOPlayerData instance, or caches the Player instance + refreshes the
      * lastLogin value
      *
-     * @param player The player to setup
+     * @param uniqueId Player id to be loaded.
      */
-    public static void setup(Player player) {
-        if (!data.containsKey(player.getUniqueId()))
-            data.put(player.getUniqueId(), new MMOPlayerData(player));
-        else
-            data.get(player.getUniqueId()).setPlayer(player);
+    public static void setup(UUID uniqueId) {
+        if (data.containsKey(uniqueId)) {
+            MMOPlayerData playerData = data.get(uniqueId);
+            playerData.updatePlayer();
+            playerData.updateLoginTime();
+        } else {
+            data.put(uniqueId, new MMOPlayerData(uniqueId));
+        }
+    }
+
+    private void updatePlayer() {
+        player = Bukkit.getServer().getPlayer(uuid);
     }
 
     /***
@@ -144,6 +158,21 @@ public class MMOPlayerData {
      */
     public static Collection<MMOPlayerData> getLoaded() {
         return data.values();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MMOPlayerData)) return false;
+
+        MMOPlayerData that = (MMOPlayerData) o;
+
+        return uuid.equals(that.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid.hashCode();
     }
 }
 
