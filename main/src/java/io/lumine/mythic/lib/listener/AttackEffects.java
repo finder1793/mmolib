@@ -3,7 +3,6 @@ package io.lumine.mythic.lib.listener;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.DamageType;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.comp.MythicMobsHook;
 import io.lumine.mythic.lib.gui.PluginInventory;
@@ -14,8 +13,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Random;
 
@@ -31,16 +28,6 @@ public class AttackEffects implements Listener {
     public void reload() {
         critCoefficient = MythicLib.plugin.getConfig().getDouble("crit-coefficient");
         spellCritCoefficient = MythicLib.plugin.getConfig().getDouble("spell-crit-coefficient");
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void a(PlayerJoinEvent event) {
-        MMOPlayerData.setup(event.getPlayer());
-    }
-
-    @EventHandler
-    public void b(PlayerQuitEvent event) {
-        MMOPlayerData.get(event.getPlayer()).setPlayer(null);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)

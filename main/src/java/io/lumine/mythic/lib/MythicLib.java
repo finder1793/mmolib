@@ -13,10 +13,7 @@ import io.lumine.mythic.lib.comp.text.hexcolor.HexColorParser;
 import io.lumine.mythic.lib.comp.text.hexcolor.SimpleColorParser;
 import io.lumine.mythic.lib.config.Configuration;
 import io.lumine.mythic.lib.gui.PluginInventory;
-import io.lumine.mythic.lib.listener.AttackEffects;
-import io.lumine.mythic.lib.listener.DamageReduction;
-import io.lumine.mythic.lib.listener.HealthScale;
-import io.lumine.mythic.lib.listener.MitigationMechanics;
+import io.lumine.mythic.lib.listener.*;
 import io.lumine.mythic.lib.listener.event.PlayerAttackEventListener;
 import io.lumine.mythic.lib.manager.*;
 import io.lumine.mythic.lib.metrics.bStats;
@@ -99,6 +96,8 @@ public class MythicLib extends LuminePlugin {
             getLogger().warning("(Your config version: '" + configVersion + "' | Expected config version: '" + defConfigVersion + "')");
         }
 
+        Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
+
         Bukkit.getPluginManager().registerEvents(damageManager, this);
         Bukkit.getPluginManager().registerEvents(new DamageReduction(), this);
         Bukkit.getPluginManager().registerEvents(attackEffects = new AttackEffects(), this);
@@ -131,7 +130,7 @@ public class MythicLib extends LuminePlugin {
 
         if (getConfig().getBoolean("fix-player-attributes")) AttributeStatHandler.updateAttributes = true;
 
-        Bukkit.getOnlinePlayers().forEach(MMOPlayerData::setup);
+        Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.setup(player.getUniqueId()));
 
         configManager.reload();
 
