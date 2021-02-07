@@ -11,7 +11,6 @@ import io.lumine.mythic.lib.comp.text.component.font.ComponentBuilder;
 import io.lumine.mythic.lib.comp.text.hexcolor.ColorParser;
 import io.lumine.mythic.lib.comp.text.hexcolor.HexColorParser;
 import io.lumine.mythic.lib.comp.text.hexcolor.SimpleColorParser;
-import io.lumine.mythic.lib.config.Configuration;
 import io.lumine.mythic.lib.gui.PluginInventory;
 import io.lumine.mythic.lib.listener.AttackEffects;
 import io.lumine.mythic.lib.listener.DamageReduction;
@@ -29,7 +28,6 @@ import io.lumine.mythic.lib.version.SpigotPlugin;
 import io.lumine.utils.events.extra.ArmorEquipEventListener;
 import io.lumine.utils.logging.Log;
 import io.lumine.utils.plugin.LuminePlugin;
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -39,8 +37,7 @@ import java.util.logging.Level;
 public class MythicLib extends LuminePlugin {
 
     public static MythicLib plugin;
- 
-    @Getter private Configuration configuration; 
+
     //@Getter private ProfileManager profileManager;
 
     private final DamageManager damageManager = new DamageManager();
@@ -80,7 +77,7 @@ public class MythicLib extends LuminePlugin {
         Log.info(ChatColor.AQUA + "+ Infecting Server with MythicLib for Spigot/Paper");
         Log.info(ChatColor.GOLD + "-------------------------------------------------");
 
-        this.bind(this.configuration = new Configuration(this));
+        //this.bind(this.configuration = new Configuration(this));
         //this.profileManager = new ProfileManager(this);
 
         //this.bind(this.profileManager);
