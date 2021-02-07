@@ -134,13 +134,15 @@
 			<groupId>de.keyle</groupId>
 			<artifactId>mypet</artifactId>
 			<version>3.11-20200830.191147-20</version>
+			<scope>provided</scope>
+            <optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>net.citizensnpcs</groupId>
 			<artifactId>citizensapi</artifactId>
 			<version>2.0.27-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>compile</scope>
+            <scope>provided</scope>
+            <optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.sk89q.worldguard</groupId>
@@ -152,6 +154,8 @@
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
 			<version>4.0.1</version>
+			<scope>provided</scope>
+            <optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>io.lumine.xikage</groupId>
@@ -163,6 +167,8 @@
 			<groupId>com.nisovin.shopkeepers</groupId>
 			<artifactId>Shopkeepers</artifactId>
 			<version>2.12.0</version>
+			<scope>provided</scope>
+            <optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.mcmonkey</groupId>
