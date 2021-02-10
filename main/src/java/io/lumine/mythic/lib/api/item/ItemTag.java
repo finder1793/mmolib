@@ -64,11 +64,15 @@ public class ItemTag {
         // Look into each tag
         for (ItemTag str : from) {
 
-            // Correct path?
-            if (path.equals(str.getPath())) {
+            // Not null eh
+            if (str != null) {
 
-                // Ya that one
-                return str;
+                // Correct path?
+                if (path.equals(str.getPath())) {
+
+                    // Ya that one
+                    return str;
+                }
             }
         }
         return null;
@@ -79,7 +83,10 @@ public class ItemTag {
      * @param expect It is ambiguous between BOOLEAN and INTEGER, so cant just make it smart.
      *               Please indicate what you expect this path to provide.
      */
-    @NotNull public static ItemTag getTagAtPath(@NotNull String path, @NotNull NBTItem from, @NotNull SupportedNBTTagValues expect) {
+    @Nullable public static ItemTag getTagAtPath(@NotNull String path, @NotNull NBTItem from, @NotNull SupportedNBTTagValues expect) {
+
+        // Not there? Not loaded!
+        if (!from.hasTag(path)) { return null; }
 
         // Obtain based on what to expect
         switch (expect) {
