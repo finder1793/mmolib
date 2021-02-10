@@ -11,6 +11,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 public class MMOTempStatCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -30,8 +32,9 @@ public class MMOTempStatCommand implements CommandExecutor {
         double value = Double.parseDouble(type == ModifierType.RELATIVE ? args[2].substring(0, args[2].length() - 1) : args[2]);
         Long duration = Long.parseLong(args[3]);
 
-        TemporaryStatModifier tempModifier = new TemporaryStatModifier(value, duration, type, "mmolibTemp", statInstance);
-        statInstance.addModifier("mmolibTemp", tempModifier);
+        String tempStatKey = UUID.randomUUID().toString();
+        TemporaryStatModifier tempModifier = new TemporaryStatModifier(value, duration, type, tempStatKey, statInstance);
+        statInstance.addModifier(tempStatKey, tempModifier);
 
         return true;
     }
