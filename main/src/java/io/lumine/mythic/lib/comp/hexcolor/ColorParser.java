@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.comp.text.hexcolor;
+package io.lumine.mythic.lib.comp.hexcolor;
 
 public interface ColorParser {
 

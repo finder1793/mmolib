@@ -7,10 +7,9 @@ import io.lumine.mythic.lib.comp.CitizensEntityHandler;
 import io.lumine.mythic.lib.comp.MyPetEntityHandler;
 import io.lumine.mythic.lib.comp.MythicMobsDamageHandler;
 import io.lumine.mythic.lib.comp.ShopKeepersEntityHandler;
-import io.lumine.mythic.lib.comp.text.component.font.ComponentBuilder;
-import io.lumine.mythic.lib.comp.text.hexcolor.ColorParser;
-import io.lumine.mythic.lib.comp.text.hexcolor.HexColorParser;
-import io.lumine.mythic.lib.comp.text.hexcolor.SimpleColorParser;
+import io.lumine.mythic.lib.comp.hexcolor.ColorParser;
+import io.lumine.mythic.lib.comp.hexcolor.HexColorParser;
+import io.lumine.mythic.lib.comp.hexcolor.SimpleColorParser;
 import io.lumine.mythic.lib.gui.PluginInventory;
 import io.lumine.mythic.lib.listener.*;
 import io.lumine.mythic.lib.listener.event.PlayerAttackEventListener;
@@ -47,7 +46,6 @@ public class MythicLib extends LuminePlugin {
     private AttackEffects attackEffects;
     private MitigationMechanics mitigationMecanics;
     private ColorParser colorParser;
-    private ComponentBuilder componentBuilder;
 
     private boolean hasMythicMobs = false;
 
@@ -65,7 +63,6 @@ public class MythicLib extends LuminePlugin {
         }
 
         colorParser = version.isBelowOrEqual(1, 15) ? new SimpleColorParser() : new HexColorParser();
-        componentBuilder = new ComponentBuilder();
     }
      
     @Override
@@ -173,10 +170,6 @@ public class MythicLib extends LuminePlugin {
 
     public ConfigManager getMMOConfig() {
         return configManager;
-    }
-
-    public ComponentBuilder getComponentBuilder() {
-        return componentBuilder;
     }
 
     /**
