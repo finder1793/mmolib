@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.comp.text.hexcolor;
+package io.lumine.mythic.lib.comp.hexcolor;
 
 import net.md_5.bungee.api.ChatColor;
 

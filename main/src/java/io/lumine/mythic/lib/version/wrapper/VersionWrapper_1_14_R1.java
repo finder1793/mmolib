@@ -3,6 +3,9 @@ package io.lumine.mythic.lib.version.wrapper;
 import com.google.gson.JsonParseException;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import io.lumine.utils.text.Component;
+import io.lumine.utils.text.serializer.gson.GsonComponentSerializer;
+import io.lumine.utils.text.serializer.legacy.LegacyComponentSerializer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_14_R1.BlockPosition;
@@ -257,64 +260,44 @@ public class VersionWrapper_1_14_R1 implements VersionWrapper {
 		}
 
 		@Override
-		public BaseComponent getDisplayNameComponent() {
-			BaseComponent displayName = null;
+		public Component getDisplayNameComponent() {
 
-			// Checks if the name exists
 			if (compound.getCompound("display").hasKey("Name")) {
-				try {
-					// The string is the raw json of the component from the nbt.
-					// Serializer converts it into the BaseComponent Object
-					displayName = ComponentSerializer.parse(compound.getCompound("display").getString("Name"))[0];
-				} catch (JsonParseException ignored) {
-					// I DON'T CARE ABOUT THIS :)
-				}
+				return GsonComponentSerializer.gson().deserialize(compound.getCompound("display").getString("Name"));
 			}
-			// Returns null if doesn't exist.
-			return displayName;
+			return LegacyComponentSerializer.legacyAmpersand().deserialize(item.getItemMeta().getDisplayName());
 		}
 
 		@Override
 		// Replaces the current name component with the passed parameter.
-		public void setDisplayNameComponent(BaseComponent component) {
-			compound.getCompound("display").setString("Name", ComponentSerializer.toString(component));
+		public void setDisplayNameComponent(Component component) {
+			compound.getCompound("display").setString("Name", GsonComponentSerializer.gson().serialize(component));
 		}
 
 		@Override
-		public List<BaseComponent> getLoreComponents() {
-			List<BaseComponent> lore = null;
+		public List<Component> getLoreComponents() {
+			List<Component> lore = new ArrayList<>();
 
-			// Checks if the lore exists
 			if (compound.getCompound("display").hasKey("Lore")) {
-				try {
-					// Gets the non serialized lore from the nbt.
-					// "NBT.TAG_STRING" HAS to be there
-					NBTTagList list = compound.getCompound("display").getList("Lore", NBT.TAG_STRING);
-					lore = new ArrayList<>(list.size());
-					for (int index = 0; index < list.size(); index++) {
-
-						// The string is the raw json of the component from the nbt.
-						// Serializer converts it into the BaseComponent Object
-						lore.add(ComponentSerializer.parse(list.getString(index))[0]);
-					}
-				} catch (JsonParseException ignored) {
-					// I DON'T CARE ABOUT THIS :)
-				}
+				NBTTagList strings = compound.getCompound("display").getList("Lore", NBT.TAG_STRING);
+				for (int i = 0; i < strings.size(); i++)
+					lore.add(GsonComponentSerializer.gson().deserialize(strings.getString(i)));
 			}
-			// Returns null if doesn't exist.
+
 			return lore;
 		}
 
 		@Override
 		// Replaces the current lore component with the passed parameter.
-		public void setLoreComponents(List<BaseComponent> components) {
+		public void setLoreComponents(List<Component> components) {
 			NBTTagList lore = new NBTTagList();
 
-			for (BaseComponent component : components)
-				lore.add(new NBTTagString(ComponentSerializer.toString(component)));
+			for (Component component : components)
+				lore.add(new NBTTagString(GsonComponentSerializer.gson().serialize(component)));
 
 			compound.getCompound("display").set("Lore", lore);
 		}
+
 
 		@Override
 		public NBTItem_v1_14_R1 cancelVanillaAttributeModifiers() {

@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.api.item;
 
 import io.lumine.mythic.lib.MythicLib;
-import net.md_5.bungee.api.chat.BaseComponent;
+import io.lumine.utils.text.Component;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
@@ -43,13 +43,13 @@ public abstract class NBTItem {
 
     public abstract int getTypeId(String path);
 
-    public abstract BaseComponent getDisplayNameComponent();
+    public abstract Component getDisplayNameComponent();
 
-    public abstract void setDisplayNameComponent(BaseComponent component);
+    public abstract void setDisplayNameComponent(Component component);
 
-    public abstract List<BaseComponent> getLoreComponents();
+    public abstract List<Component> getLoreComponents();
 
-    public abstract void setLoreComponents(List<BaseComponent> components);
+    public abstract void setLoreComponents(List<Component> components);
 
     @Deprecated
     public abstract NBTItem cancelVanillaAttributeModifiers();
