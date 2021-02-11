@@ -73,7 +73,6 @@ public class MythicLib extends LuminePlugin {
 
         //this.bind(this.configuration = new Configuration(this));
         //this.profileManager = new ProfileManager(this);
-
         //this.bind(this.profileManager);
 
         registerCommand("mythiclib", new BaseCommand(this));
