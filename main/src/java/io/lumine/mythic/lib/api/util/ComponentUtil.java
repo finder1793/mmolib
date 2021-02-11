@@ -6,7 +6,7 @@ import io.lumine.utils.text.serializer.legacy.LegacyComponentSerializer;
 import io.lumine.utils.text.serializer.plain.PlainComponentSerializer;
 
 public class ComponentUtil {
-    public Component fromString(String text) {
+    public static Component fromString(String text) {
         return LegacyComponentSerializer.legacyAmpersand().deserialize(MythicLib.inst().parseColors(text));
     }
 
