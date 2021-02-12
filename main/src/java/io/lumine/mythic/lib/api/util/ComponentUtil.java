@@ -18,7 +18,7 @@ public class ComponentUtil {
     }
 
     // Fuck everyone who uses legacy color codes for making me do this.
-    // I forgive nobody.
+    // I forgive nobody. :(
     public Component fromLegacy(String text) {
         return MiniMessage.get().deserialize(MiniMessage.get().serialize(
                 ampersandRGB.deserialize(MythicLib.inst().parseColors(text))));
