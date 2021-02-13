@@ -53,7 +53,7 @@ public class ComponentUtil {
     }
 
     @NotNull
-    public Component legacyMiniMessage(String text) {
+    public static Component legacyMiniMessage(String text) {
         return MiniMessage.get().deserialize(legacyColorParser.replace(text));
     }
 }
