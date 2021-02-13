@@ -2,35 +2,37 @@ package io.lumine.mythic.lib.api.util;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.utils.text.Component;
+import io.lumine.utils.text.format.TextDecoration;
 import io.lumine.utils.text.minimessage.MiniMessage;
 import io.lumine.utils.text.serializer.legacy.LegacyComponentSerializer;
 import io.lumine.utils.text.serializer.plain.PlainComponentSerializer;
-import org.apache.commons.lang3.text.StrSubstitutor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.TreeMap;
 
 public class ComponentUtil {
+    private static final String PATTERN = "<(?:#|HEX)([a-fA-F0-9]{6})>";
     private static final Map<String, String> legacyColors = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     static {
+        // The resets are created to imitate legacy behavior
         // COLOR CODES
-        legacyColors.put("&0", "<black>");
-        legacyColors.put("&1", "<dark_blue>");
-        legacyColors.put("&2", "<dark_green>");
-        legacyColors.put("&3", "<dark_aqua>");
-        legacyColors.put("&4", "<dark_red>");
-        legacyColors.put("&5", "<dark_purple>");
-        legacyColors.put("&6", "<gold>");
-        legacyColors.put("&7", "<gray>");
-        legacyColors.put("&8", "<dark_gray>");
-        legacyColors.put("&9", "<blue>");
-        legacyColors.put("&a", "<green>");
-        legacyColors.put("&b", "<aqua>");
-        legacyColors.put("&c", "<red>");
-        legacyColors.put("&d", "<light_purple>");
-        legacyColors.put("&e", "<yellow>");
-        legacyColors.put("&f", "<white>");
+        legacyColors.put("&0", "<reset><black>");
+        legacyColors.put("&1", "<reset><dark_blue>");
+        legacyColors.put("&2", "<reset><dark_green>");
+        legacyColors.put("&3", "<reset><dark_aqua>");
+        legacyColors.put("&4", "<reset><dark_red>");
+        legacyColors.put("&5", "<reset><dark_purple>");
+        legacyColors.put("&6", "<reset><gold>");
+        legacyColors.put("&7", "<reset><gray>");
+        legacyColors.put("&8", "<reset><dark_gray>");
+        legacyColors.put("&9", "<reset><blue>");
+        legacyColors.put("&a", "<reset><green>");
+        legacyColors.put("&b", "<reset><aqua>");
+        legacyColors.put("&c", "<reset><red>");
+        legacyColors.put("&d", "<reset><light_purple>");
+        legacyColors.put("&e", "<reset><yellow>");
+        legacyColors.put("&f", "<reset><white>");
         // FORMATTING CODES
         legacyColors.put("&k", "<obfuscated>");
         legacyColors.put("&l", "<bold>");
@@ -41,11 +43,9 @@ public class ComponentUtil {
         legacyColors.put("&r", "<reset>");
     }
 
-    private static final LegacyComponentSerializer ampersandRGB = LegacyComponentSerializer.builder().character('&').hexCharacter('#').hexColors().build();
-    private static final StrSubstitutor legacyColorParser = new StrSubstitutor(legacyColors);
-
     public static Component fromString(String text) {
-        return ampersandRGB.deserialize(MythicLib.inst().parseColors(text));
+        return LegacyComponentSerializer.legacySection().deserialize(MythicLib.inst().parseColors(text))
+                .decoration(TextDecoration.ITALIC, false);
     }
 
     public static String toPlainString(Component component) {
@@ -54,6 +54,9 @@ public class ComponentUtil {
 
     @NotNull
     public static Component legacyMiniMessage(String text) {
-        return MiniMessage.get().deserialize(legacyColorParser.replace(text));
+        for (Map.Entry<String,String> entry:legacyColors.entrySet()){
+             text = text.replace(entry.getKey(), entry.getValue());
+        }
+        return MiniMessage.get().parse(text.replaceAll(PATTERN, "<reset><#$1>"));
     }
 }
