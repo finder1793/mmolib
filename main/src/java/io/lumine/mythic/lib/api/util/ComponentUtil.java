@@ -1,11 +1,12 @@
 package io.lumine.mythic.lib.api.util;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.utils.text.Component;
-import io.lumine.utils.text.format.TextDecoration;
-import io.lumine.utils.text.minimessage.MiniMessage;
-import io.lumine.utils.text.serializer.legacy.LegacyComponentSerializer;
-import io.lumine.utils.text.serializer.plain.PlainComponentSerializer;
+import io.lumine.utils.adventure.text.Component;
+import io.lumine.utils.adventure.text.format.TextDecoration;
+import io.lumine.utils.adventure.text.minimessage.MiniMessage;
+import io.lumine.utils.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import io.lumine.utils.adventure.text.serializer.plain.PlainComponentSerializer;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;

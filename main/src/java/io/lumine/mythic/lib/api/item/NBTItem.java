@@ -1,7 +1,8 @@
 package io.lumine.mythic.lib.api.item;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.utils.text.Component;
+import io.lumine.utils.adventure.text.Component;
+
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
