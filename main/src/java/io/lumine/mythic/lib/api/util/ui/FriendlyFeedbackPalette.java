@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.api.util.ui;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.utils.version.ServerVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -199,7 +200,7 @@ public abstract class FriendlyFeedbackPalette {
     @NotNull public String parseForPlayer(@NotNull String messaeg) {
 
         // If below 1.16, parse as console (which is guaranteed to have no HEX colors)
-        if (!MythicLib.plugin.getVersion().isStrictlyHigher(1, 16)) { return parseForConsole(messaeg); }
+        if (ServerVersion.get().getMinor() < 16) { return parseForConsole(messaeg); }
 
         // Ay
         return messaeg
