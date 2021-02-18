@@ -75,19 +75,29 @@ public class FriendlyFeedbackProvider {
      */
     public void Log(@NotNull FriendlyFeedbackCategory category, @Nullable String message, String... replaces) {
 
+        // Add, simple
+        getFeedbackOf(category).add(GetMessage(message, replaces));
+    }
+
+    /**
+     * Gets a message from these arguments, applying prefix if needed! <p>
+     * (Wont include palette yet, that is applied immediately before actually sending)
+     */
+    @Nullable public FriendlyFeedbackMessage GetMessage(@Nullable String message, String... replaces) {
+
         // Cancel if null
-        if (message == null) { return; }
-        if (message.isEmpty()) { return; }
+        if (message == null) { return null; }
+        if (message.isEmpty()) { return null; }
 
         // Bake message
         for (int i = 0; i < replaces.length; i++) { message = message.replace("{" + i + "}", replaces[i]); }
 
-        // Build
+        // Build with prefix
         FriendlyFeedbackMessage msg = prefixSample.clone();
         msg.setMessage("$b" + message);
 
-        // Add prefix and add
-        getFeedbackOf(category).add(msg);
+        // That's the result
+        return msg;
     }
 
     /**

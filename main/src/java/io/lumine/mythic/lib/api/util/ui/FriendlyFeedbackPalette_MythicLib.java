@@ -34,7 +34,7 @@ public class FriendlyFeedbackPalette_MythicLib extends FriendlyFeedbackPalette {
     @NotNull String failureHighlightConsole = ChatColor.RED.toString();
 
     // Prefix
-    @NotNull String brandPrefix = "§x§5§7§3§9§2§5[§f§f§a§e§0§0MythicLib§x§5§7§3§9§2§5]";
+    @NotNull String brandPrefix = "§x§5§7§3§9§2§5[§f§f§a§e§0§0MythicLib#s§x§5§7§3§9§2§5]";
     @NotNull String brandPrefixConsole = "§8[§6MythicLib#s§8]";
 
     // Subdivision Color Code
