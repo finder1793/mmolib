@@ -41,7 +41,7 @@ public class MythicLib extends LuminePlugin {
     private final StatManager statManager = new StatManager();
     private final JsonManager jsonManager = new JsonManager();
     private final ConfigManager configManager = new ConfigManager();
- 
+  
     private ServerVersion version;
     private AttackEffects attackEffects;
     private MitigationMechanics mitigationMecanics;
