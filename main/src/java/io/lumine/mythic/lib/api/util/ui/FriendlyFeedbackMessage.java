@@ -1,6 +1,5 @@
 package io.lumine.mythic.lib.api.util.ui;
 
-import io.lumine.mythic.lib.MythicLib;
 import io.lumine.utils.version.ServerVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -116,7 +115,7 @@ public class FriendlyFeedbackMessage implements Cloneable {
      *   in previous minecraft versions because it is assumed
      *   that the console colors have no HEX
      */
-    public String forPlayer(@NotNull FriendlyFeedbackPalette pal) {
+    @NotNull public String forPlayer(@NotNull FriendlyFeedbackPalette pal) {
 
         // If below 1.16, parse as console (which is guaranteed to have no HEX colors)
         if (ServerVersion.get().getMinor() < 16) { return forConsole(pal); }
@@ -146,7 +145,7 @@ public class FriendlyFeedbackMessage implements Cloneable {
      * Will also use this method if parsing a message in a version
      * of minecraft less than 1.16
      */
-    public String forConsole(@NotNull FriendlyFeedbackPalette pal) {
+    @NotNull public String forConsole(@NotNull FriendlyFeedbackPalette pal) {
         StringBuilder actualMessage = new StringBuilder();
 
         // Add appropriate prefix

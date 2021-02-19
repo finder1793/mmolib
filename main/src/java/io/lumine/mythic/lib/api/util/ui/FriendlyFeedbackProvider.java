@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.api.util.ui;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.utils.version.ServerVersion;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -11,9 +12,10 @@ import java.util.HashMap;
 
 /**
  * In our case, us developers, Java throws {@link Exception}s at us when we fuck something up.
- * <p></p>
  * Normal users don't need to be blasted with such technical messages, but they also
- * make mistakes. This interface is meant to provide a better user experience by telling
+ * make mistakes.
+ * <p></p>
+ * This interface is meant to provide a better user experience by telling
  * the user why their input has failed with easier implementation in our side (not having
  * to check the input before trying to use it elsewhere).
  * <p></p>
@@ -75,6 +77,10 @@ public class FriendlyFeedbackProvider {
      */
     public void Log(@NotNull FriendlyFeedbackCategory category, @Nullable String message, String... replaces) {
 
+        // Cancel if null
+        if (message == null) { return; }
+        if (message.isEmpty()) { return; }
+
         // Add, simple
         getFeedbackOf(category).add(GetMessage(message, replaces));
     }
@@ -83,40 +89,17 @@ public class FriendlyFeedbackProvider {
      * Gets a message from these arguments, applying prefix if needed! <p>
      * (Wont include palette yet, that is applied immediately before actually sending)
      */
-    @Nullable public FriendlyFeedbackMessage GetMessage(@Nullable String message, String... replaces) {
-
-        // Cancel if null
-        if (message == null) { return null; }
-        if (message.isEmpty()) { return null; }
-
-        // Bake message
-        for (int i = 0; i < replaces.length; i++) { message = message.replace("{" + i + "}", replaces[i]); }
-
-        // Build with prefix
-        FriendlyFeedbackMessage msg = prefixSample.clone();
-        msg.setMessage("$b" + message);
+    @NotNull public FriendlyFeedbackMessage GetMessage(@NotNull String message, String... replaces) {
 
         // That's the result
-        return msg;
+        return GenerateMessage(prefixSample, message, replaces);
     }
 
     /**
-     * Include a message to be sent later under this category.
-     * <b>This does not actually send a message</b>
+     * Shorthand for: <p><code>if (ffp != null) { ffp.Log(category, message, replaces);</code></p>
      * <p></p>
-     * Fails silently if the message is <code>null</code> or empty.
-     * <p></p>
-     * The first <code>$b</code> is included. Check out the codes
-     * accepted in the description of {@link FriendlyFeedbackPalette}
-     * <p></p>
-     * Fails silently if the provided FFP is <code>null</code>.
-     * @param replaces The (ordered) list of string variables to be replaced.
-     *                 <p></p>
-     *                 Suppose your <code>message</code> is
-     *                 <b><code>"Your input $i{0}$b is not a number!"</code></b>
-     *                 <p></p>
-     *                 This means that the first element of the array will be
-     *                 inserted in the place of that <code>{0}</code>.
+     * To read what this actually does, the description is in {@link #Log(FriendlyFeedbackCategory, String, String...)}
+     * @param ffp FriendlyFeedbackProvided that may be null.
      */
     public static void Log(@Nullable FriendlyFeedbackProvider ffp, @NotNull FriendlyFeedbackCategory category, @Nullable String message, String... replaces) { if (ffp != null) { ffp.Log(category, message, replaces); } }
 
@@ -140,7 +123,7 @@ public class FriendlyFeedbackProvider {
 
     //region Sending Messages
     /**
-     * Sends all stored messages to the console.
+     * Sends all stored messages to both a console and a player.
      */
     public void SendAllTo(@NotNull Player player, @NotNull ConsoleCommandSender console) {
 
@@ -163,7 +146,7 @@ public class FriendlyFeedbackProvider {
     }
 
     /**
-     * Sends all stored messages to the console.
+     * Sends all stored messages to a player.
      */
     public void SendAllTo(@NotNull Player player) {
 
@@ -210,6 +193,114 @@ public class FriendlyFeedbackProvider {
             // Send to console
             console.sendMessage(MythicLib.plugin.parseColors(msg.forConsole(getPalette())));
         }
+    }
+    //endregion
+
+    //region Ease-Of-Use Utils
+    /**
+     * Generates a {@link FriendlyFeedbackMessage} from the string and args you provide.
+     * Remember that the first <code>$b</code> is included.
+     * @param message Actual message you are sending.
+     *                <p></p>
+     *                For example:
+     *                <p><code>Hey! You forgot your $e{0}$b! Come back!</code></p>
+     * @param replaces What to replace each variable of the message with.
+     *                 <p></p>
+     *                 For example:
+     *                 <p><code>Lunchbox</code> (That, as the index zero of this array, will replace the variable <code>{0}</code>)</p>
+     * @return A wrapped message. Colors have not parsed yet (Notice that you didn't even specify a palette).
+     */
+    @NotNull public static FriendlyFeedbackMessage GenerateMessage(@NotNull String message, String... replaces) {
+
+        // That's the result
+        return GenerateMessage(null, message, replaces);
+    }
+
+    /**
+     * Generates a {@link FriendlyFeedbackMessage} from the string and args you provide.
+     * Remember that the first <code>$b</code> is included.
+     * @param prefixTemplate A dummy, empty message with the following information:
+     *                       <p> > Will the message be prefixed?
+     *                       </p> > Which subdivision to put in the prefix?
+     * @param message Actual message you are sending.
+     *                <p></p>
+     *                For example:
+     *                <p><code>Hey! You forgot your $e{0}$b! Come back!</code></p>
+     * @param replaces What to replace each variable of the message with.
+     *                 <p></p>
+     *                 For example:
+     *                 <p><code>Lunchbox</code> (That, as the index zero of this array, will replace the variable <code>{0}</code>)</p>
+     * @return A message with prefix information. Colors have not parsed yet (Notice that you didn't even specify a palette).
+     */
+    @NotNull public static FriendlyFeedbackMessage GenerateMessage(@Nullable FriendlyFeedbackMessage prefixTemplate, @NotNull String message, String... replaces) {
+
+        // Fresh (non-prefixed) message if unspecified.
+        if (prefixTemplate == null) { prefixTemplate = new FriendlyFeedbackMessage(""); }
+
+        // Bake message
+        for (int i = 0; i < replaces.length; i++) { message = message.replace("{" + i + "}", replaces[i]); }
+
+        // Build with prefix
+        FriendlyFeedbackMessage msg = prefixTemplate.clone();
+        msg.setMessage("$b" + message);
+
+        // That's the result
+        return msg;
+    }
+
+    /**
+     * Straight up get the styled message ready to be sent to the console!
+     * <p></p>
+     * Only parses {@link FriendlyFeedbackPalette} style codes, you may parse other
+     * color codes afterwards.
+     * @param palette Palette to style the color codes of the message.
+     * @param message Actual message you are sending.
+     *                <p></p>
+     *                For example:
+     *                <p><code>Hey! You forgot your $e{0}$b! Come back!</code></p>
+     * @param replaces What to replace each variable of the message with.
+     *                 <p></p>
+     *                 For example:
+     *                 <p><code>Lunchbox</code> (That, as the index zero of this array, will replace the variable <code>{0}</code>)</p>
+     * @return A message ready to be sent to the console (or a pre 1.16 client that supports no HEX codes).
+     */
+    @NotNull public static String QuickForConsole(@NotNull FriendlyFeedbackPalette palette, @NotNull String message, String... replaces) {
+
+        // Generate
+        FriendlyFeedbackMessage msg = GenerateMessage(null, message, replaces);
+
+        // Style and send
+        return msg.forConsole(palette);
+    }
+
+    /**
+     * Straight up get the styled message ready to be sent to a player!
+     * <p></p>
+     * Only parses {@link FriendlyFeedbackPalette} style codes, you may parse other
+     * color codes afterwards.
+     * @param palette Palette to style the color codes of the message.
+     * @param message Actual message you are sending.
+     *                <p></p>
+     *                For example:
+     *                <p><code>Hey! You forgot your $e{0}$b! Come back!</code></p>
+     * @param replaces What to replace each variable of the message with.
+     *                 <p></p>
+     *                 For example:
+     *                 <p><code>Lunchbox</code> (That, as the index zero of this array, will replace the variable <code>{0}</code>)</p>
+     * @return A message ready to be sent to a player. As always, if mc version is less than 1.16,
+     *         it instead delegates to {@link #QuickForConsole(FriendlyFeedbackPalette, String, String...)} which
+     *         is assumed t have no HEX codes.
+     */
+    @NotNull public static String QuickForPlayer(@NotNull FriendlyFeedbackPalette palette, @NotNull String message, String... replaces) {
+
+        // Choose
+        if (ServerVersion.get().getMinor() < 16) { return QuickForConsole(palette, message, replaces); }
+
+        // Generate
+        FriendlyFeedbackMessage msg = GenerateMessage(null, message, replaces);
+
+        // Style and send
+        return msg.forPlayer(palette);
     }
     //endregion
 }
