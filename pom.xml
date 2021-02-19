@@ -2,7 +2,7 @@
   	<modelVersion>4.0.0</modelVersion>
   	<groupId>io.lumine</groupId>
   	<artifactId>MythicLib</artifactId>
-  	<version>1.0.7</version>
+  	<version>1.0.8-SNAPSHOT</version>
   	<name>MythicLib</name>
   	
   	<distributionManagement> 
@@ -127,7 +127,7 @@
     	<dependency>
             <groupId>io.lumine</groupId>
             <artifactId>LumineUtils</artifactId>
-            <version>1.16.1-SNAPSHOT</version>  
+            <version>1.16.1-20210216.230253-14</version>  
             <scope>compile</scope> 
         </dependency>
 		<dependency>
