@@ -53,7 +53,7 @@ public class PlusMinusPercent {
      */
     public double apply(double base) {
 
-        // Titration brUH
+        // Stores a copy of the constant that may be freely modified through this method (makes math easier)
         double oV = value;
 
         // Is it multiplicative?
@@ -82,6 +82,41 @@ public class PlusMinusPercent {
         }
     }
 
+    /**
+     *  Does the opposite operation represented by this <b>except</b> if its a <i>set</i> in which all previous information is lost.
+     *  <p></p>
+     *  Reverts the operation represented by this, if called {@link #apply(double)} right before.
+     */
+    public double reverse(double base) {
+
+        // Stores a copy of the constant that may be freely modified through this method (makes math easier)
+        double oV = value;
+
+        // Is it multiplicative?
+        if (multiply) {
+
+            // Relative is on base 100%; so +50% means it multiplies by 1.5; while -50% is *0.5
+            if (relative) { oV += 1; }
+
+            return base / oV;
+
+            // Its not a multiplicative, its scalar
+        } else {
+
+            // If it is relative to the source
+            if (relative) {
+
+                // Just shift by the source
+                return  base - oV;
+
+                // Otherwise its a straight up set
+            } else {
+
+                // Thets the set
+                return base;
+            }
+        }
+    }
 
     public void setConstant(double c) { value = c; }
     public void setAdditive(boolean additivity) { relative = additivity; }

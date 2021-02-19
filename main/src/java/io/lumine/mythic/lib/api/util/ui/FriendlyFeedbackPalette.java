@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
  * <p><code><b>$b</b></code> Normal Body Text
  * </p><code><b>$e</b></code> Example Value / Recommendation
  * <p><code><b>$i</b></code> User Input
+ * <p><code><b>$u</b></code> User Input
  * </p><code><b>$r</b></code> Operation Result
  * <p><code><b>$s</b></code> Success
  * </p><code><b>$f</b></code> Failure
@@ -207,6 +208,7 @@ public abstract class FriendlyFeedbackPalette {
                 .replace("$b", getBodyFormat())
                 .replace("$e", getExampleFormat())
                 .replace("$i", getInputFormat())
+                .replace("$u", getInputFormat())
                 .replace("$s", getSuccessFormat())
                 .replace("$f", getFailureFormat())
                 .replace("$r", getResultFormat());
@@ -227,6 +229,7 @@ public abstract class FriendlyFeedbackPalette {
                 .replace("$b", consoleBodyFormat())
                 .replace("$e", consoleExampleFormat())
                 .replace("$i", consoleInputFormat())
+                .replace("$u", consoleInputFormat())
                 .replace("$s", consoleSuccessFormat())
                 .replace("$f", consoleFailureFormat())
                 .replace("$r", consoleResultFormat());
