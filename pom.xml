@@ -127,8 +127,14 @@
     	<dependency>
             <groupId>io.lumine</groupId>
             <artifactId>LumineUtils</artifactId>
-            <version>1.16.1-20210216.230253-14</version>  
+            <version>1.16.1-SNAPSHOT</version>  
             <scope>compile</scope> 
+            <exclusions>
+		        <exclusion>
+		            <artifactId>*</artifactId>
+		            <groupId>*</groupId>
+		        </exclusion>
+		    </exclusions>
         </dependency>
 		<dependency>
 			<groupId>de.keyle</groupId>
