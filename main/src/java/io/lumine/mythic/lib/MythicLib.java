@@ -33,7 +33,7 @@ import java.util.logging.Level;
 public class MythicLib extends LuminePlugin {
 
     public static MythicLib plugin;
-
+ 
     //@Getter private ProfileManager profileManager;
  
     private final DamageManager damageManager = new DamageManager();
