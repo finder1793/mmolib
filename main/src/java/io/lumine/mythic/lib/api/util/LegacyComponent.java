@@ -1,9 +1,12 @@
 package io.lumine.mythic.lib.api.util;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.utils.adventure.text.Component;
+import io.lumine.utils.adventure.text.format.TextDecoration;
 import io.lumine.utils.adventure.text.minimessage.MiniMessage;
 
 import io.lumine.utils.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import io.lumine.utils.adventure.text.serializer.plain.PlainComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -64,8 +67,11 @@ public class LegacyComponent {
          *
          * 4. Minimessage then parses the string into the final component.
          *
+         * 5. Sets to not be italic unless it is stated.
          */
-        return MiniMessage.get().parse(MiniMessage.get().serialize(
-                SERIALIZER.deserialize(text.replaceAll(PATTERN, "<reset><#$1>"))));
-    }
+        return Component.text()
+                .append(MiniMessage.get().parse(MiniMessage.get().serialize(
+                        SERIALIZER.deserialize(text.replaceAll(PATTERN, "<reset><#$1>")))))
+                .decoration(TextDecoration.ITALIC, false)
+                .build(); }
 }
