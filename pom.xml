@@ -2,7 +2,7 @@
   	<modelVersion>4.0.0</modelVersion>
   	<groupId>io.lumine</groupId>
   	<artifactId>MythicLib</artifactId>
-  	<version>1.0.8-SNAPSHOT</version>
+  	<version>1.0.9-SNAPSHOT</version>
   	<name>MythicLib</name>
   	
   	<distributionManagement> 
@@ -84,20 +84,6 @@
                 </executions>
             </plugin>
 		</plugins>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.2.0</version>
-					<configuration>
-						<failOnWarnings>true</failOnWarnings>
-						<show>public</show>
-						<quiet>true</quiet>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
 	<repositories>
 		<repository>

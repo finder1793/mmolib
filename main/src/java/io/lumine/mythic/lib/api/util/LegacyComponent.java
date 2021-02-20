@@ -1,22 +1,18 @@
 package io.lumine.mythic.lib.api.util;
 
-import io.lumine.mythic.lib.MythicLib;
 import io.lumine.utils.adventure.text.Component;
-import io.lumine.utils.adventure.text.format.TextDecoration;
 import io.lumine.utils.adventure.text.minimessage.MiniMessage;
-import io.lumine.utils.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import io.lumine.utils.adventure.text.serializer.plain.PlainComponentSerializer;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.TreeMap;
 
-public class ComponentUtil {
+public class LegacyComponent {
     private static final String PATTERN = "<(?:#|HEX)([a-fA-F0-9]{6})>";
     private static final Map<String, String> legacyColors = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     static {
-        // The resets are created to imitate legacy behavior
+        // The resets are created to imitate legacy behavior, not because I am a psychopath.
         // COLOR CODES
         legacyColors.put("&0", "<reset><black>");
         legacyColors.put("&1", "<reset><dark_blue>");
@@ -44,18 +40,9 @@ public class ComponentUtil {
         legacyColors.put("&r", "<reset>");
     }
 
-    public static Component fromString(String text) {
-        return LegacyComponentSerializer.legacySection().deserialize(MythicLib.inst().parseColors(text))
-                .decoration(TextDecoration.ITALIC, false);
-    }
-
-    public static String toPlainString(Component component) {
-        return PlainComponentSerializer.plain().serialize(component);
-    }
-
     @NotNull
-    public static Component legacyMiniMessage(String text) {
-        for (Map.Entry<String,String> entry:legacyColors.entrySet()){
+    public static Component parse(String text) {
+        for (Map.Entry<String,String> entry : legacyColors.entrySet()){
              text = text.replace(entry.getKey(), entry.getValue());
         }
         return MiniMessage.get().parse(text.replaceAll(PATTERN, "<reset><#$1>"));
