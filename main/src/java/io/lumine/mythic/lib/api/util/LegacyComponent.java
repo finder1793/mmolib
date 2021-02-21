@@ -1,12 +1,11 @@
 package io.lumine.mythic.lib.api.util;
 
-import io.lumine.mythic.lib.MythicLib;
 import io.lumine.utils.adventure.text.Component;
+import io.lumine.utils.adventure.text.format.NamedTextColor;
 import io.lumine.utils.adventure.text.format.TextDecoration;
 import io.lumine.utils.adventure.text.minimessage.MiniMessage;
 
 import io.lumine.utils.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import io.lumine.utils.adventure.text.serializer.plain.PlainComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -72,6 +71,6 @@ public class LegacyComponent {
         return Component.text()
                 .append(MiniMessage.get().parse(MiniMessage.get().serialize(
                         SERIALIZER.deserialize(text.replaceAll(PATTERN, "<reset><#$1>")))))
-                .decoration(TextDecoration.ITALIC, false)
+                .decoration(TextDecoration.ITALIC, false).colorIfAbsent(NamedTextColor.WHITE)
                 .build(); }
 }

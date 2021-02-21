@@ -265,7 +265,7 @@ public class VersionWrapper_1_15_R1 implements VersionWrapper {
 			if (compound.getCompound("display").hasKey("Name")) {
 				return GsonComponentSerializer.gson().deserialize(compound.getCompound("display").getString("Name"));
 			}
-			return LegacyComponentSerializer.legacyAmpersand().deserialize(item.getItemMeta().getDisplayName());
+			return Component.empty();
 		}
 
 		@Override
