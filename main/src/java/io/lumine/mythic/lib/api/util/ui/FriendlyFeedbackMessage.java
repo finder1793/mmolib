@@ -125,11 +125,11 @@ public class FriendlyFeedbackMessage implements Cloneable {
         if (hasPrefix()) {
 
             // Add (accounting for subdivision)
-            actualMessage.append(pal.getPrefix(getSubdivision()));
+            actualMessage.append(pal.parseForPlayer(pal.getPrefix(getSubdivision())));
         }
 
         // Add colored message
-        actualMessage.append(pal.parseForPlayer(getMessage()));
+        actualMessage.append(pal.parseForPlayer(pal.parseForPlayer(getMessage())));
 
         // Return built
         return actualMessage.toString();
@@ -152,11 +152,11 @@ public class FriendlyFeedbackMessage implements Cloneable {
         if (hasPrefix()) {
 
             // Add (accounting for subdivision)
-            actualMessage.append(pal.consolePrefix(getSubdivision()));
+            actualMessage.append(pal.parseForConsole(pal.consolePrefix(getSubdivision())));
         }
 
         // Add colored message
-        actualMessage.append(pal.parseForConsole(getMessage()));
+        actualMessage.append(pal.parseForConsole(pal.parseForConsole(getMessage())));
 
         // Return built
         return actualMessage.toString();
