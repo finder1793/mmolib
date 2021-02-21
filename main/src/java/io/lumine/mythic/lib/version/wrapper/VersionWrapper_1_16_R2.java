@@ -262,7 +262,6 @@ public class VersionWrapper_1_16_R2 implements VersionWrapper {
 
 		@Override
 		public Component getDisplayNameComponent() {
-
 			if (compound.getCompound("display").hasKey("Name")) {
 				return GsonComponentSerializer.gson().deserialize(compound.getCompound("display").getString("Name"));
 			}
@@ -272,7 +271,10 @@ public class VersionWrapper_1_16_R2 implements VersionWrapper {
 		@Override
 		// Replaces the current name component with the passed parameter.
 		public void setDisplayNameComponent(Component component) {
-			compound.getCompound("display").setString("Name", GsonComponentSerializer.gson().serialize(component));
+			if (component != null)
+				compound.getCompound("display").setString("Name", GsonComponentSerializer.gson().serialize(component));
+			else
+				compound.getCompound("display").remove("Name");
 		}
 
 		@Override
@@ -292,11 +294,15 @@ public class VersionWrapper_1_16_R2 implements VersionWrapper {
 		// Replaces the current lore component with the passed parameter.
 		public void setLoreComponents(List<Component> components) {
 			NBTTagList lore = new NBTTagList();
+			if (components != null && !components.isEmpty()) {
+				for (Component component : components)
+					lore.add(NBTTagString.a(GsonComponentSerializer.gson().serialize(component)));
 
-			for (Component component : components)
-				lore.add(NBTTagString.a(GsonComponentSerializer.gson().serialize(component)));
-
-			compound.getCompound("display").set("Lore", lore);
+				compound.getCompound("display").set("Lore", lore);
+			}
+			else {
+				compound.getCompound("display").remove("Lore");
+			}
 		}
 
 		@Override
