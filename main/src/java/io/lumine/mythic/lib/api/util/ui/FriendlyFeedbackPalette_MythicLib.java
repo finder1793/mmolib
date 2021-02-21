@@ -9,35 +9,27 @@ import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("unused")
 public class FriendlyFeedbackPalette_MythicLib extends FriendlyFeedbackPalette {
 
-    // Most text of the message
-    @NotNull String bodyFormat = "§x§8§7§8§5§7§2";
-    @NotNull String bodyFormatConsole = ChatColor.GRAY.toString();
+    @NotNull @Override public String getBodyFormat() { return "§x§8§7§8§5§7§2"; }
+    @NotNull @Override public String consoleBodyFormat() { return ChatColor.GRAY.toString(); }
 
-    // Examples highlight
-    @NotNull String exampleHighlight = "§x§f§f§d§8§3§b";
-    @NotNull String exampleHighlightConsole = ChatColor.GOLD.toString();
+    @NotNull @Override public String getExampleFormat() { return "§x§f§f§d§8§3§b"; }
+    @NotNull @Override public String consoleExampleFormat() { return ChatColor.GOLD.toString(); }
 
-    // User Input Highlight
-    @NotNull String inputHighlight = "§x§f§c§f§f§7§8";
-    @NotNull String inputHighlightConsole = ChatColor.YELLOW.toString();
+    @NotNull @Override public String getInputFormat() { return "§x§f§c§f§f§7§8"; }
+    @NotNull @Override public String consoleInputFormat() { return ChatColor.YELLOW.toString(); }
 
-    // Operation Result Highlight
-    @NotNull String resultHighlight = "§x§d§9§f§f§6§9";
-    @NotNull String resultHighlightConsole = ChatColor.AQUA.toString();
+    @NotNull @Override public String getResultFormat() { return "§x§d§9§f§f§6§9"; }
+    @NotNull @Override public String consoleResultFormat() { return ChatColor.AQUA.toString(); }
 
-    // Success
-    @NotNull String successHighlight = "§x§0§0§f§f§0§0";
-    @NotNull String successHighlightConsole = ChatColor.GREEN.toString();
+    @NotNull @Override public String getSuccessFormat() { return "§x§0§0§f§f§0§0"; }
+    @NotNull @Override public String consoleSuccessFormat() { return ChatColor.GREEN.toString(); }
 
-    // Failure
-    @NotNull String failureHighlight = "§x§f§f§4§7§4§7";
-    @NotNull String failureHighlightConsole = ChatColor.RED.toString();
+    @NotNull @Override public String getFailureFormat() { return "§x§f§f§4§7§4§7"; }
+    @NotNull @Override public String consoleFailureFormat() { return ChatColor.RED.toString(); }
 
-    // Prefix
-    @NotNull String brandPrefix = "§x§5§7§3§9§2§5[§f§f§a§e§0§0MythicLib#s§x§5§7§3§9§2§5]";
-    @NotNull String brandPrefixConsole = "§8[§6MythicLib#s§8]";
+    @NotNull @Override public String getRawPrefix() { return "§x§5§7§3§9§2§5[§f§f§a§e§0§0MythicLib#s§x§5§7§3§9§2§5]"; }
+    @NotNull @Override public String getRawPrefixConsole() { return "§8[§6MythicLib#s§8]"; }
 
-    // Subdivision Color Code
-    @NotNull String subdivisionFormat = "§x§e§b§8§2§3§1§o";
-    @NotNull String subdivisionFormatConsole = "§c§o";
+    @NotNull @Override public String getSubdivisionFormat() { return "§x§e§b§8§2§3§1§o"; }
+    @NotNull @Override public String consoleSubdivisionFormat() { return "§c§o"; }
 }

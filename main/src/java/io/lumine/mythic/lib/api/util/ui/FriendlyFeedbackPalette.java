@@ -22,26 +22,22 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Gunging
  */
-@SuppressWarnings({"NotNullFieldNotInitialized", "unused", "SpellCheckingInspection"})
+@SuppressWarnings({"unused", "SpellCheckingInspection"})
 public abstract class FriendlyFeedbackPalette {
 
-    @NotNull String bodyFormat;
-    @NotNull String bodyFormatConsole;
     /**
      * Most of your message will be colored this way, it is the base text colour (with no highlighting of any kind).
      * <p></p>
      * Preferably a neutral color, not too dark nor too light (consider dark and light consoles).
      */
-    @NotNull public String getBodyFormat() { return bodyFormat; }
+    @NotNull public abstract String getBodyFormat();
     /**
      * <b>Body Format</b> but when messages are sent to the console, since it doesnt
      * support HEX color codes (while allowing to send messages in HEX to players!)
      * @see #getBodyFormat()
      */
-    @NotNull public String consoleBodyFormat() { return bodyFormatConsole; }
+    @NotNull public abstract String consoleBodyFormat();
 
-    @NotNull String exampleHighlight;
-    @NotNull String exampleHighlightConsole;
     /**
      * If you are going to provide an example/recommended value to the
      * user, highlight it this way with <b>$e</b>.
@@ -49,16 +45,14 @@ public abstract class FriendlyFeedbackPalette {
      * Example:
      * <p><code>Log("You should try setting consumeOnUse to <b>$etrue</b>")</code></p>
      */
-    @NotNull public String getExampleFormat() { return exampleHighlight; }
+    @NotNull public abstract String getExampleFormat();
     /**
      * <b>Example Format</b> but when messages are sent to the console, since it doesnt
      * support HEX color codes (while allowing to send messages in HEX to players!)
      * @see #getExampleFormat()
      */
-    @NotNull public String consoleExampleFormat() { return exampleHighlightConsole; }
+    @NotNull public abstract String consoleExampleFormat();
 
-    @NotNull String inputHighlight;
-    @NotNull String inputHighlightConsole;
     /**
      * Tell the user what they are telling you with <b>$u</b>.
      * <p></p>
@@ -70,16 +64,14 @@ public abstract class FriendlyFeedbackPalette {
      * Example:
      * <p><code>Log("Expected a number instead of <b>$u" + userInput</b>)</code></p>
      */
-    @NotNull public String getInputFormat() { return inputHighlight; }
+    @NotNull public abstract String getInputFormat();
     /**
      * <b>Input Format</b> but when messages are sent to the console, since it doesnt
      * support HEX color codes (while allowing to send messages in HEX to players!)
      * @see #getInputFormat()
      */
-    @NotNull public String consoleInputFormat() { return inputHighlightConsole; }
+    @NotNull public abstract String consoleInputFormat();
 
-    @NotNull String resultHighlight;
-    @NotNull String resultHighlightConsole;
     /**
      * Tell the user the result of your operation with <b>$r</b>.
      * <p></p>
@@ -88,16 +80,14 @@ public abstract class FriendlyFeedbackPalette {
      * Example:
      * <p><code>Log("Searched ores near you and found <b>$r" + oresFound</b>)</code></p>
      */
-    @NotNull public String getResultFormat() { return resultHighlight; }
+    @NotNull public abstract String getResultFormat();
     /**
      * <b>Result Format</b> but when messages are sent to the console, since it doesnt
      * support HEX color codes (while allowing to send messages in HEX to players!)
      * @see #getResultFormat()
      */
-    @NotNull public String consoleResultFormat() { return resultHighlightConsole; }
+    @NotNull public abstract String consoleResultFormat();
 
-    @NotNull String successHighlight;
-    @NotNull String successHighlightConsole;
     /**
      * Sometimes one must be clearer when specifying if an operation
      * completed sucessfully. In such cases, highlight a word
@@ -106,16 +96,14 @@ public abstract class FriendlyFeedbackPalette {
      * Example:
      * <p><code>Log("That animal <b>$smatched</b> $bthe name specified.")</code></p>
      */
-    @NotNull public String getSuccessFormat() { return successHighlight; }
+    @NotNull public abstract String getSuccessFormat();
     /**
      * <b>Success Format</b> but when messages are sent to the console, since it doesnt
      * support HEX color codes (while allowing to send messages in HEX to players!)
      * @see #getSuccessFormat()
      */
-    @NotNull public String consoleSuccessFormat() { return successHighlightConsole; }
+    @NotNull public abstract String consoleSuccessFormat();
 
-    @NotNull String failureHighlight;
-    @NotNull String failureHighlightConsole;
     /**
      * Sometimes one must be clearer when specifying if an operation
      * failed or was cancelled. In such cases, highlight a word
@@ -124,18 +112,16 @@ public abstract class FriendlyFeedbackPalette {
      * Example:
      * <p><code>Log("That animal <b>$fdid not match</b> $bthe name specified.")</code></p>
      */
-    @NotNull public String getFailureFormat() { return failureHighlight; }
+    @NotNull public abstract String getFailureFormat();
     /**
      * <b>Failure Format</b> but when messages are sent to the console, since it doesnt
      * support HEX color codes (while allowing to send messages in HEX to players!)
      * @see #getFailureFormat()
      */
-    @NotNull public String consoleFailureFormat() { return failureHighlightConsole; }
+    @NotNull public abstract String consoleFailureFormat();
 
-    @NotNull String brandPrefix;
-    @NotNull String brandPrefixConsole;
     /**
-     * Probably the prefix of your plugin, or some brand-like trademark.
+     * Probably the prefix of your plugin, or some brand-like trademark in its raw form.
      * <p></p>
      * The symbol key <b>#s</b> stands for some 'subdivision' which will
      * be inserted if not null.
@@ -143,19 +129,29 @@ public abstract class FriendlyFeedbackPalette {
      * Example: (<code>&3[&eGooP#s&3] </code>)<p>
      * <i>Note the space in this prefix example.</i>
      */
+    @NotNull public abstract String getRawPrefix();
+    /**
+     * Ready-to-use prefix for a message, with optional subdivision text included
+     */
     @NotNull String getPrefix(@Nullable String subdivision) {
 
         if (subdivision != null) {
 
             // Append subdibivision
-            return brandPrefix.replace("#s", " " + getSubdivisionFormat() + subdivision);
+            return getRawPrefix().replace("#s", " " + getSubdivisionFormat() + subdivision);
 
         } else {
 
             // Remove #s
-            return brandPrefix.replace("#s", "");
+            return getRawPrefix().replace("#s", "");
         }
     }
+    /**
+     * <b>Prefix</b> but when messages are sent to the console, since it doesnt
+     * support HEX color codes (while allowing to send messages in HEX to players!)
+     * @see #getRawPrefix()
+     */
+    @NotNull public abstract String getRawPrefixConsole();
     /**
      * <b>Prefix</b> but when messages are sent to the console, since it doesnt
      * support HEX color codes (while allowing to send messages in HEX to players!)
@@ -166,29 +162,26 @@ public abstract class FriendlyFeedbackPalette {
         if (subdivision != null) {
 
             // Append subdibivision
-            return brandPrefixConsole.replace("#s", " " + consoleSubdivisionFormat() + subdivision);
+            return getRawPrefixConsole().replace("#s", " " + consoleSubdivisionFormat() + subdivision);
 
         } else {
 
             // Remove #s
-            return brandPrefixConsole.replace("#s", "");
+            return getRawPrefixConsole().replace("#s", "");
         }
     }
-
-    @NotNull String subdivisionFormat;
-    @NotNull String subdivisionFormatConsole;
     /**
      * In your prefix, you may specify a word or something for the sub-product
      * or whatever (which is fancy), but is not always displayed. If it is,
      * it will be preceded by this color code.
      */
-    @NotNull String getSubdivisionFormat() { return subdivisionFormat; }
+    @NotNull public abstract String getSubdivisionFormat();
     /**
      * <b>Subdivision Format</b> but when messages are sent to the console, since it doesnt
      * support HEX color codes (while allowing to send messages in HEX to players!)
      * @see #getSubdivisionFormat()
      */
-    @NotNull public String consoleSubdivisionFormat() { return subdivisionFormatConsole; }
+    @NotNull public abstract  String consoleSubdivisionFormat();
 
     /**
      *   Parses a message intended to be read in-game.
@@ -213,7 +206,6 @@ public abstract class FriendlyFeedbackPalette {
                 .replace("$f", getFailureFormat())
                 .replace("$r", getResultFormat());
     }
-
     /**
      * Parses a message intended to be read through the console.
      * Consoles do'nt support many colors, in fact, they support
