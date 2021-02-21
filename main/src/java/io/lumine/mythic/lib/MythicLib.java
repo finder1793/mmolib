@@ -1,5 +1,10 @@
 package io.lumine.mythic.lib;
 
+import io.lumine.utils.holograms.BukkitHologramFactory;
+import io.lumine.utils.holograms.HologramFactory;
+import io.lumine.utils.scoreboard.PacketScoreboardProvider;
+import io.lumine.utils.scoreboard.ScoreboardProvider;
+import lombok.Getter;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.handler.AttributeStatHandler;
 import io.lumine.mythic.lib.commands.BaseCommand;
@@ -46,6 +51,9 @@ public class MythicLib extends LuminePlugin {
     private AttackEffects attackEffects;
     private MitigationMechanics mitigationMecanics;
     private ColorParser colorParser;
+    
+    @Getter private ScoreboardProvider scoreboardProvider;
+    @Getter private HologramFactory hologramProvider;
 
     private boolean hasMythicMobs = false;
 
@@ -89,6 +97,12 @@ public class MythicLib extends LuminePlugin {
             getLogger().warning("(Your config version: '" + configVersion + "' | Expected config version: '" + defConfigVersion + "')");
         }
 
+        this.scoreboardProvider = new PacketScoreboardProvider(this);
+        this.provideService(ScoreboardProvider.class, this.scoreboardProvider);
+        
+        this.hologramProvider = new BukkitHologramFactory();
+        this.provideService(HologramFactory.class, this.hologramProvider);
+        
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
 
         Bukkit.getPluginManager().registerEvents(damageManager, this);
