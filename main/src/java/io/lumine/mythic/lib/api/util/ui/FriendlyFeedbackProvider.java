@@ -238,7 +238,7 @@ public class FriendlyFeedbackProvider {
         if (prefixTemplate == null) { prefixTemplate = new FriendlyFeedbackMessage(""); }
 
         // Bake message
-        for (int i = 0; i < replaces.length; i++) { message = message.replace("{" + i + "}", replaces[i]); }
+        for (int i = 0; i < replaces.length; i++) { String rep = replaces[i]; if (rep == null) { rep = ""; } message = message.replace("{" + i + "}", rep); }
 
         // Build with prefix
         FriendlyFeedbackMessage msg = prefixTemplate.clone();
