@@ -23,6 +23,8 @@ public class MovementSpeedStatHandler implements Consumer<StatMap> {
         double coef = 1 - Math.min(.8, Math.max(0, stats.getInstance("SPEED_MALUS_REDUCTION").getTotal() / 100));
 
         // fix player walk speed
+
+
         if (AttributeStatHandler.updateAttributes) {
             if (Bukkit.isPrimaryThread())
                 stats.getPlayerData().getPlayer().setWalkSpeed(.2f);
