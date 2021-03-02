@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.api.util.ui;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -285,6 +286,42 @@ public class SilentNumbers {
 
         // No
         return null;
+    }
+
+    /**
+     * Chops a long description into several parts (use for nice lore idk)
+     * @param colorPrefix Will be placed at the beginning of each line
+     */
+    @NotNull public static ArrayList<String> Chop(@NotNull String longString, int paragraphWide, @NotNull String colorPrefix) {
+
+        // Ret
+        ArrayList<String> ret = new ArrayList<>();
+        boolean skip = false;
+
+        // While longer
+        while (longString.length() > paragraphWide) {
+
+            // Skip
+            skip = true;
+
+            // Get the wide
+            int idx = longString.lastIndexOf(" ", paragraphWide + 1);
+
+            // Chop
+            ret.add(colorPrefix + longString.substring(0, idx));
+
+            // Update
+            longString = longString.substring(idx + 1);
+
+            // Add final.
+            if (longString.length() <= paragraphWide) { ret.add(colorPrefix + longString); }
+        }
+
+        // Wasnt long at all
+        if (!skip) { ret.add(colorPrefix + longString); }
+
+        // Thats it
+        return ret;
     }
     //endregion
 }
