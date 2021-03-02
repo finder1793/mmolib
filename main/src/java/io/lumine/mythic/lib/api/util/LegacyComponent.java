@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class LegacyComponent {
     private static final String PATTERN = "<(?:#|HEX)([a-fA-F0-9]{6})>";
-
     @NotNull
     public static Component parse(String text) {
         return MiniMessage.get().parse(ChatColor.translateAlternateColorCodes('&', text.replaceAll(PATTERN, "<#$1>")));
