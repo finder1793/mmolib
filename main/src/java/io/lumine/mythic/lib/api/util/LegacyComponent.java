@@ -13,7 +13,7 @@ public class LegacyComponent {
         Component component = MiniMessage.get().parse(ChatColor
                 .translateAlternateColorCodes('&', text.replaceAll(PATTERN, "<#$1>")));
 
-        if(component.decorations().get(TextDecoration.ITALIC) == TextDecoration.State.NOT_SET && component.color() != null)
+        if (component.decorations().get(TextDecoration.ITALIC) == TextDecoration.State.NOT_SET)
             component = component.decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE);
 
         return component;
