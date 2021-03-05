@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.api.util;
 
 import io.lumine.utils.adventure.text.Component;
+import io.lumine.utils.adventure.text.format.NamedTextColor;
 import io.lumine.utils.adventure.text.format.TextDecoration;
 import io.lumine.utils.adventure.text.minimessage.MiniMessage;
 import net.md_5.bungee.api.ChatColor;
@@ -16,6 +17,6 @@ public class LegacyComponent {
         if (component.decorations().get(TextDecoration.ITALIC) == TextDecoration.State.NOT_SET)
             component = component.decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE);
 
-        return component;
+        return component.colorIfAbsent(NamedTextColor.WHITE);
     }
 }
