@@ -9,13 +9,11 @@ import io.lumine.utils.adventure.text.serializer.legacy.LegacyComponentSerialize
 import org.jetbrains.annotations.NotNull;
 
 public class LegacyComponent {
-    private static final String PATTERN = "<(?:#|HEX)([a-fA-F0-9]{6})>";
     private static final LegacyComponentSerializer unusualSectionRGB = LegacyComponentSerializer.builder().character('§').hexCharacter('#').hexColors()
             .useUnusualXRepeatedCharacterHexFormat().build();
 
     @NotNull
     public static Component parse(String text) {
-
         Component component = MiniMessage.get().parse(MiniMessageSerializer.serialize(unusualSectionRGB.
                 deserialize(MythicLib.inst().parseColors(text))));
 
