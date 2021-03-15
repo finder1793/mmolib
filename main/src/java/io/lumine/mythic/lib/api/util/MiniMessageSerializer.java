@@ -35,12 +35,12 @@ import static io.lumine.utils.adventure.text.minimessage.Tokens.TAG_START;
 import static io.lumine.utils.adventure.text.minimessage.Tokens.TRANSLATABLE;
 import static io.lumine.utils.adventure.text.minimessage.Tokens.UNDERLINED;
 
-final class MiniMessageSerializer {
+public class MiniMessageSerializer {
 
     private MiniMessageSerializer() {
     }
 
-    static @NonNull String serialize(final @NonNull Component component) {
+    public static @NonNull String serialize(final @NonNull Component component) {
         final StringBuilder sb = new StringBuilder();
 
         final List<Component> components = new ArrayList<>();
