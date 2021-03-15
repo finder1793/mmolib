@@ -14,9 +14,8 @@ import static org.junit.Assert.assertEquals;
 
 public class ColorTest {
 
-    // The problem is the white tag does not end.
     @Test
-    public void testBug() {
+    public void testWhite() {
         //final String text = "&8&m--&f&l &nGeneral&8 &m--";
         final String text = "<gray><strikethrough>--</gray></strikethrough> <white><bold><underlined>General</white></bold></underlined> <gray><strikethrough>--";
         //TextComponent deserialize = LegacyComponentSerializer.legacyAmpersand().deserialize(text);

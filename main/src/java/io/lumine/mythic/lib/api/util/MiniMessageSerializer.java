@@ -61,7 +61,6 @@ public class MiniMessageSerializer {
             }
 
             // ## color
-            // ### white is not important
             if(comp.color() != null && (prevComp == null || prevComp.color() != comp.color())) {
                 sb.append(startColor(Objects.requireNonNull(comp.color())));
             }
@@ -131,11 +130,8 @@ public class MiniMessageSerializer {
             }
 
             // ## color
-            // ### only end color if next comp is white and current isn't
-            if(nextComp != null && comp.color() != NamedTextColor.WHITE && comp.color() != null) {
-                if(nextComp.color() == NamedTextColor.WHITE || nextComp.color() == null) {
-                    sb.append(endColor(Objects.requireNonNull(comp.color())));
-                }
+            if(nextComp != null && comp.color() != null) {
+                sb.append(endColor(Objects.requireNonNull(comp.color())));
             }
 
             // ## decoration
