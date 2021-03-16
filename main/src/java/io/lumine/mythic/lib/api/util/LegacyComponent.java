@@ -14,7 +14,7 @@ public class LegacyComponent {
 
     @NotNull
     public static Component parse(String text) {
-        Component component = MiniMessage.get().parse(MiniMessageSerializer.serialize(unusualSectionRGB.
+        Component component = MiniMessage.get().parse(NestedSerializer.serialize(unusualSectionRGB.
                 deserialize(MythicLib.inst().parseColors(text))));
 
         if (component.decorations().get(TextDecoration.ITALIC) == TextDecoration.State.NOT_SET)
