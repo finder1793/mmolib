@@ -1,6 +1,5 @@
 package io.lumine.mythic.lib.api.util.ui;
 
-import io.lumine.mythic.lib.MythicLib;
 import io.lumine.utils.version.ServerVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

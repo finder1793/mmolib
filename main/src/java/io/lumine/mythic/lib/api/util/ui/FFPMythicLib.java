@@ -5,9 +5,11 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * 'Whats the difference between a villain and a super villain?'
+ *
+ * @author Gunging
  */
 @SuppressWarnings("unused")
-public class FriendlyFeedbackPalette_MythicLib extends FriendlyFeedbackPalette {
+public class FFPMythicLib extends FriendlyFeedbackPalette {
 
     @NotNull @Override public String getBodyFormat() { return "§x§8§7§8§5§7§2"; }
     @NotNull @Override public String consoleBodyFormat() { return ChatColor.GRAY.toString(); }
@@ -27,9 +29,12 @@ public class FriendlyFeedbackPalette_MythicLib extends FriendlyFeedbackPalette {
     @NotNull @Override public String getFailureFormat() { return "§x§f§f§4§7§4§7"; }
     @NotNull @Override public String consoleFailureFormat() { return ChatColor.RED.toString(); }
 
-    @NotNull @Override public String getRawPrefix() { return "§x§5§7§3§9§2§5[§f§f§a§e§0§0MythicLib#s§x§5§7§3§9§2§5]"; }
-    @NotNull @Override public String getRawPrefixConsole() { return "§8[§6MythicLib#s§8]"; }
+    @NotNull @Override public String getRawPrefix() { return "§x§5§7§3§9§2§5[§f§f§a§e§0§0MythicLib#s§x§5§7§3§9§2§5] "; }
+    @NotNull @Override public String getRawPrefixConsole() { return "§8[§6MythicLib#s§8] "; }
 
     @NotNull @Override public String getSubdivisionFormat() { return "§x§e§b§8§2§3§1§o"; }
     @NotNull @Override public String consoleSubdivisionFormat() { return "§c§o"; }
+
+    private final static FFPMythicLib ffp = new FFPMythicLib();
+    public static FFPMythicLib get() { return ffp;}
 }

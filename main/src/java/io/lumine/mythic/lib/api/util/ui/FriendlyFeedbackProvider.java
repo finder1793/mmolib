@@ -51,12 +51,22 @@ public class FriendlyFeedbackProvider {
     /**
      * Get the feedback of this category that has been registered.
      * <p></p>
-     * Will return an emtpy array if no messages have been issued concerning this topic.
+     * Will return an empty array if no messages have been issued concerning this topic.
      */
     @NotNull public ArrayList<FriendlyFeedbackMessage> getFeedbackOf(@NotNull FriendlyFeedbackCategory category) {
 
         // Make sure it is registered
         return feedback.computeIfAbsent(category, k -> new ArrayList<>());
+    }
+    /**
+     * Clears the feedback of this category that has been registered.
+     * <p></p>
+     * Will not do anything if theres no feedback
+     */
+    public void clearFeedbackOf(@NotNull FriendlyFeedbackCategory category) {
+
+        // Make sure it is registered
+        feedback.put(category, new ArrayList<>());
     }
 
     /**
@@ -75,33 +85,41 @@ public class FriendlyFeedbackProvider {
      *                 This means that the first element of the array will be
      *                 inserted in the place of that <code>{0}</code>.
      */
-    public void Log(@NotNull FriendlyFeedbackCategory category, @Nullable String message, String... replaces) {
+    public void log(@NotNull FriendlyFeedbackCategory category, @Nullable String message, String... replaces) {
 
         // Cancel if null
         if (message == null) { return; }
         if (message.isEmpty()) { return; }
 
         // Add, simple
-        getFeedbackOf(category).add(GetMessage(message, replaces));
+        getFeedbackOf(category).add(getMessage(message, replaces));
     }
 
     /**
      * Gets a message from these arguments, applying prefix if needed! <p>
      * (Wont include palette yet, that is applied immediately before actually sending)
      */
-    @NotNull public FriendlyFeedbackMessage GetMessage(@NotNull String message, String... replaces) {
+    @NotNull public FriendlyFeedbackMessage getMessage(@NotNull String message, String... replaces) {
 
         // That's the result
-        return GenerateMessage(prefixSample, message, replaces);
+        return generateMessage(prefixSample, message, replaces);
     }
 
     /**
      * Shorthand for: <p><code>if (ffp != null) { ffp.Log(category, message, replaces);</code></p>
      * <p></p>
-     * To read what this actually does, the description is in {@link #Log(FriendlyFeedbackCategory, String, String...)}
+     * To read what this actually does, the description is in {@link #log(FriendlyFeedbackCategory, String, String...)}
+     * <p></p>
+     * <b>It is convention to end all your logs in a period and a space</b> so that, if anything else gets added on top,
+     * we don't have to worry about it looking like this:
+     * <p><code>You messed that up man, try againEncountered error at file 3.Give me the plant</code></p>
+     * <p></p>
+     * Instead of like this:
+     * <p><code>You messed that up man, try again. Encountered error at file 3. Give me the plant</code></p>
+     *
      * @param ffp FriendlyFeedbackProvided that may be null.
      */
-    public static void Log(@Nullable FriendlyFeedbackProvider ffp, @NotNull FriendlyFeedbackCategory category, @Nullable String message, String... replaces) { if (ffp != null) { ffp.Log(category, message, replaces); } }
+    public static void log(@Nullable FriendlyFeedbackProvider ffp, @NotNull FriendlyFeedbackCategory category, @Nullable String message, String... replaces) { if (ffp != null) { ffp.log(category, message, replaces); } }
 
     @NotNull FriendlyFeedbackMessage prefixSample = new FriendlyFeedbackMessage("");
     /**
@@ -113,54 +131,64 @@ public class FriendlyFeedbackProvider {
      * @param usePrefix Whether to actually use prefix
      * @param subdivision A subdivision to add to the prefix
      */
-    public void ActivatePrefix(boolean usePrefix, @Nullable String subdivision) {
+    public void activatePrefix(boolean usePrefix, @Nullable String subdivision) {
 
         // If used
         prefixSample.togglePrefix(usePrefix);
         prefixSample.setSubdivision(subdivision);
     }
+
+    /**
+     * @return How many messages are in this category
+     */
+    public int messagesTotal(@NotNull FriendlyFeedbackCategory ofCategory) { return getFeedbackOf(ofCategory).size(); }
+
+    /**
+     * @return How many messages are in this Friendly Feedback Provider
+     */
+    public int messagesTotal() { int t = 0; for (FriendlyFeedbackCategory cat : FriendlyFeedbackCategory.values()) { t+= messagesTotal(cat); } return t; }
     //endregion
 
     //region Sending Messages
     /**
      * Sends all stored messages to both a console and a player.
      */
-    public void SendAllTo(@NotNull Player player, @NotNull ConsoleCommandSender console) {
+    public void sendAllTo(@NotNull Player player, @NotNull ConsoleCommandSender console) {
 
         // For each category
         for (FriendlyFeedbackCategory cat : feedback.keySet()) {
 
             // Log all
-            SendTo(cat, player);
-            SendTo(cat, console);
+            sendTo(cat, player);
+            sendTo(cat, console);
         }
     }
     /**
      * Sends all stored messages of this category to both a console and a player.
      */
-    public void SendTo(@NotNull FriendlyFeedbackCategory category, @NotNull Player player, @NotNull ConsoleCommandSender console) {
+    public void sendTo(@NotNull FriendlyFeedbackCategory category, @NotNull Player player, @NotNull ConsoleCommandSender console) {
 
         // Send to both I guess
-        SendTo(category, player);
-        SendTo(category, console);
+        sendTo(category, player);
+        sendTo(category, console);
     }
 
     /**
      * Sends all stored messages to a player.
      */
-    public void SendAllTo(@NotNull Player player) {
+    public void sendAllTo(@NotNull Player player) {
 
         // For each category
         for (FriendlyFeedbackCategory cat : feedback.keySet()) {
 
             // Log all
-            SendTo(cat, player);
+            sendTo(cat, player);
         }
     }
     /**
      * Sends all stored messages of this category to a player.
      */
-    public void SendTo(@NotNull FriendlyFeedbackCategory category, @NotNull Player player) {
+    public void sendTo(@NotNull FriendlyFeedbackCategory category, @NotNull Player player) {
 
         // Get List and foreach
         for (FriendlyFeedbackMessage msg : getFeedbackOf(category)) {
@@ -173,19 +201,19 @@ public class FriendlyFeedbackProvider {
     /**
      * Sends all stored messages to the console.
      */
-    public void SendAllTo(@NotNull ConsoleCommandSender console) {
+    public void sendAllTo(@NotNull ConsoleCommandSender console) {
 
         // For each category
         for (FriendlyFeedbackCategory cat : feedback.keySet()) {
 
             // Log all
-            SendTo(cat, console);
+            sendTo(cat, console);
         }
     }
     /**
      * Sends all stored messages of this category to the console.
      */
-    public void SendTo(@NotNull FriendlyFeedbackCategory category, @NotNull ConsoleCommandSender console) {
+    public void sendTo(@NotNull FriendlyFeedbackCategory category, @NotNull ConsoleCommandSender console) {
 
         // Get List and foreach
         for (FriendlyFeedbackMessage msg : getFeedbackOf(category)) {
@@ -210,10 +238,10 @@ public class FriendlyFeedbackProvider {
      *                 <p><code>Lunchbox</code> (That, as the index zero of this array, will replace the variable <code>{0}</code>)</p>
      * @return A wrapped message. Colors have not parsed yet (Notice that you didn't even specify a palette).
      */
-    @NotNull public static FriendlyFeedbackMessage GenerateMessage(@NotNull String message, String... replaces) {
+    @NotNull public static FriendlyFeedbackMessage generateMessage(@NotNull String message, String... replaces) {
 
         // That's the result
-        return GenerateMessage(null, message, replaces);
+        return generateMessage(null, message, replaces);
     }
 
     /**
@@ -232,7 +260,7 @@ public class FriendlyFeedbackProvider {
      *                 <p><code>Lunchbox</code> (That, as the index zero of this array, will replace the variable <code>{0}</code>)</p>
      * @return A message with prefix information. Colors have not parsed yet (Notice that you didn't even specify a palette).
      */
-    @NotNull public static FriendlyFeedbackMessage GenerateMessage(@Nullable FriendlyFeedbackMessage prefixTemplate, @NotNull String message, String... replaces) {
+    @NotNull public static FriendlyFeedbackMessage generateMessage(@Nullable FriendlyFeedbackMessage prefixTemplate, @NotNull String message, String... replaces) {
 
         // Fresh (non-prefixed) message if unspecified.
         if (prefixTemplate == null) { prefixTemplate = new FriendlyFeedbackMessage(""); }
@@ -273,10 +301,10 @@ public class FriendlyFeedbackProvider {
      *                 <p><code>Lunchbox</code> (That, as the index zero of this array, will replace the variable <code>{0}</code>)</p>
      * @return A message ready to be sent to the console (or a pre 1.16 client that supports no HEX codes).
      */
-    @NotNull public static String QuickForConsole(@NotNull FriendlyFeedbackPalette palette, @NotNull String message, String... replaces) {
+    @NotNull public static String quickForConsole(@NotNull FriendlyFeedbackPalette palette, @NotNull String message, String... replaces) {
 
         // Generate
-        FriendlyFeedbackMessage msg = GenerateMessage(null, message, replaces);
+        FriendlyFeedbackMessage msg = generateMessage(null, message, replaces);
 
         // Style and send
         return msg.forConsole(palette);
@@ -297,16 +325,16 @@ public class FriendlyFeedbackProvider {
      *                 For example:
      *                 <p><code>Lunchbox</code> (That, as the index zero of this array, will replace the variable <code>{0}</code>)</p>
      * @return A message ready to be sent to a player. As always, if mc version is less than 1.16,
-     *         it instead delegates to {@link #QuickForConsole(FriendlyFeedbackPalette, String, String...)} which
+     *         it instead delegates to {@link #quickForConsole(FriendlyFeedbackPalette, String, String...)} which
      *         is assumed t have no HEX codes.
      */
-    @NotNull public static String QuickForPlayer(@NotNull FriendlyFeedbackPalette palette, @NotNull String message, String... replaces) {
+    @NotNull public static String quickForPlayer(@NotNull FriendlyFeedbackPalette palette, @NotNull String message, String... replaces) {
 
         // Choose
-        if (ServerVersion.get().getMinor() < 16) { return QuickForConsole(palette, message, replaces); }
+        if (ServerVersion.get().getMinor() < 16) { return quickForConsole(palette, message, replaces); }
 
         // Generate
-        FriendlyFeedbackMessage msg = GenerateMessage(null, message, replaces);
+        FriendlyFeedbackMessage msg = generateMessage(null, message, replaces);
 
         // Style and send
         return msg.forPlayer(palette);

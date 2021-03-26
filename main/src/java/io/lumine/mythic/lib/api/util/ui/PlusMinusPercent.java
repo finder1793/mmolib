@@ -165,7 +165,13 @@ public class PlusMinusPercent {
     public static PlusMinusPercent getFromString(@Nullable String pmp, @Nullable FriendlyFeedbackProvider ffp) {
 
         // Parsing errors before any parsing errors could have existed...
-        if (pmp == null) { return null; }
+        if (pmp == null) {
+
+            // Appendable Message
+            FriendlyFeedbackProvider.log(ffp, FriendlyFeedbackCategory.ERROR,
+                    "No value provided to parse PlusMinusPercent. ");
+            return null;
+        }
 
         // Interpret the user's input
         boolean relativity = false;
@@ -207,8 +213,8 @@ public class PlusMinusPercent {
         } else {
 
             // Appendable Message
-            FriendlyFeedbackProvider.Log(ffp, FriendlyFeedbackCategory.ERROR,
-                    "Cant parse numeric value from '$r{0}$b' (The numeric part of $i{1}$b: After removing ±, n, and %)", unsignedArg, pmp);
+            FriendlyFeedbackProvider.log(ffp, FriendlyFeedbackCategory.ERROR,
+                    "Cant parse numeric value from '$r{0}$b' (The numeric part of $i{1}$b: After removing ±, n, and %). ", unsignedArg, pmp);
             return null;
         }
 
@@ -236,7 +242,7 @@ public class PlusMinusPercent {
         if (isMultiplicative()) { val *= 100; }
 
         // Append thay
-        str.append(SilentNumbers.ReadableRounding(val, 2));
+        str.append(SilentNumbers.readableRounding(val, 2));
 
         // Append percent
         if (isMultiplicative()) { str.append('%'); }

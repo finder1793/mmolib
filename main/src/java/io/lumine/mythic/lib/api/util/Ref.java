@@ -1,5 +1,8 @@
 package io.lumine.mythic.lib.api.util;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * For any other C# dev out there who may not be familiar with lambdas
  * and all that, I present to you the Java version of the <code>ref</code>
@@ -14,12 +17,12 @@ public class Ref<E> {
      * Value wrapped by this Ref. Modify it anywhere, and the original
      * Ref reference will know about it.
      */
-    E ref;
+    @Nullable E ref;
 
     /**
      * Initialize the value of this <code>ref</code>.
      */
-    public Ref(E e ) { ref = e; }
+    public Ref(@Nullable E e ) { ref = e; }
 
     /**
      * A ref with a null value.
@@ -29,12 +32,19 @@ public class Ref<E> {
     /**
      * The value enclosed within this ref
      */
-    public E getValue() { return ref; }
+    @Nullable public E getValue() { return ref; }
+
+    /**
+     * The value enclosed within this ref, or the default if its null.
+     */
+    @NotNull public E getValue(@NotNull E def) { if (ref == null) { return def; } else { return ref; } }
 
     /**
      * Change the value enclosed within this ref.
      */
-    public void setValue( E e ){ this.ref = e; }
+    public void setValue(@Nullable E e ){ this.ref = e; }
+
+    public static <S> void setValue(@Nullable Ref<S> ref, @Nullable S value) { if (ref != null) { ref.setValue(value); } }
 
     //region Example Code Snippet
     /**

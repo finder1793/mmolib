@@ -34,21 +34,6 @@
 	    	</resource>
 	    </resources>
 	    <plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<configuration>
-					<sourcepath>${project.build.directory}/delombok</sourcepath>
-				</configuration>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 	      	<plugin>
 	        	<artifactId>maven-compiler-plugin</artifactId>
 	        	<version>3.1</version>
@@ -83,7 +68,30 @@
                     </execution>
                 </executions>
             </plugin>
+			<!--
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			-->
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>3.2.0</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 	<repositories>
 		<repository>
@@ -128,7 +136,12 @@
 		</repository>
 		<repository>
 			<id>shopkeepers</id>
-			<url>https://nexus.lichtspiele.org/repository/releases/</url>
+			<url>https://jitpack.io/#Shopkeepers/Shopkeepers/</url>
+			<!-- <url>https://nexus.lichtspiele.org/repository/releases/</url> -->
+		</repository>
+		<repository>
+			<id>placeholderapi</id>
+			<url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>
@@ -220,15 +233,15 @@
             <scope>provided</scope>
         </dependency>
 		<dependency>
-		    <groupId>org.spigotmc</groupId>
-		    <artifactId>spigot-api</artifactId>
-		    <version>1.16.2-R0.1-SNAPSHOT</version>
-		    <scope>provided</scope>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>1.16.5-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.16.5-R0.1-SNAPSHOT</version>
+			<version>1.16.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -288,5 +301,13 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
+
+		<!-- Popular Plugins -->
+		<dependency>
+			<groupId>me.clip</groupId>
+			<artifactId>placeholderapi</artifactId>
+			<version>2.10.7</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 </project>

@@ -1,10 +1,20 @@
 package io.lumine.mythic.lib.api.util.ui;
 
+import io.lumine.mythic.lib.api.util.ToStringLambda;
+import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
+import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * A few methods to attempt to parse Strings into Numbers. Also a few methods to parse Math into Strings.
@@ -99,7 +109,7 @@ public class SilentNumbers {
         if (i == null) { return null; }
 
         // Well attempt to parse that...
-        try { return Integer.parseInt(RemoveDecimalZeros(i));
+        try { return Integer.parseInt(removeDecimalZeros(i));
 
         // That's an L
         } catch (NumberFormatException ignored) { return null; }
@@ -110,14 +120,36 @@ public class SilentNumbers {
     /**
      * Rounds a double to any amount of decimal places.
      */
-    public static double Round(double number, int decimals) {
+    public static double round(double number, int decimals) {
         long rounded = Math.round(number * Math.pow(10, decimals));
         return rounded / Math.pow(10, decimals);
     }
     /**
      * Rounds a double into an integer
      */
-    public static int Round(double number) { return (int) Math.round(number); }
+    public static int round(double number) { return (int) Math.round(number); }
+    /**
+     * Floors a double to any amount of decimal places.
+     */
+    public static double floor(double number, int decimals) {
+        double rounded = Math.floor(number * Math.pow(10, decimals));
+        return rounded / Math.pow(10, decimals);
+    }
+    /**
+     * Floors a double into an integer
+     */
+    public static int floor(double number) { return (int) Math.floor(number); }
+    /**
+     * Ceils a double to any amount of decimal places.
+     */
+    public static double ceil(double number, int decimals) {
+        double rounded = Math.ceil(number * Math.pow(10, decimals));
+        return rounded / Math.pow(10, decimals);
+    }
+    /**
+     * Ceils a double into an integer
+     */
+    public static int ceil(double number) { return (int) Math.ceil(number); }
 
     /**
      * Returns:
@@ -133,6 +165,40 @@ public class SilentNumbers {
      * Is this integer equal to <code>0.0</code>?
      */
     public static boolean BooleanParse(double value) { return value != 0D; }
+
+    /**
+     * RNG Roll
+     * @param decimal Chance where 0 = 0% and 1 = 100%
+     * @return <code>true</code> if roll succeeds
+     */
+    public static boolean rollSuccess(double decimal) {
+
+        // If a number between 0 and 1 is less than the provided
+        return Math.random() <= decimal;
+    }
+
+    /**
+     * RNG Roll
+     * @param percent Chance where 0 = 0% and 100 = 100%
+     * @return <code>true</code> if roll succeeds
+     */
+    public static boolean rollSuccessPercent(double percent) {
+
+        // If a number between 0 and 1 is less than the provided
+        return Math.random() <= (percent / 100D);
+    }
+
+    /**
+     * Get a double number between these two
+     * @param minInclusive Minimum range
+     * @param maxExclusive Maximum range
+     * @return A number between the two specified
+     */
+    public static double randomRange(double minInclusive, double maxExclusive) {
+
+        // Scale to the range of them and add the min range.
+        return (Math.random() * (maxExclusive - minInclusive)) + minInclusive;
+    }
     //endregion
 
     //region Nice UI Functions
@@ -151,7 +217,7 @@ public class SilentNumbers {
      *
      * @author Gunging
      */
-    @NotNull public static String RemoveDecimalZeros(@NotNull String source) {
+    @NotNull public static String removeDecimalZeros(@NotNull String source) {
 
         // Does it have a decimal to begin with?
         if (source.contains(".")) {
@@ -195,10 +261,10 @@ public class SilentNumbers {
      *
      * @author Gunging
      */
-    @NotNull public static String ReadableRounding(double something, int decimals) {
+    @NotNull public static String readableRounding(double something, int decimals) {
 
         // Round to decimals ig
-        return RemoveDecimalZeros(String.valueOf(Round(something, decimals)));
+        return removeDecimalZeros(String.valueOf(round(something, decimals)));
     }
 
     /**
@@ -211,7 +277,7 @@ public class SilentNumbers {
      *
      * @author Gunging
      */
-    @NotNull public static String NicestTimeValueFrom(double seconds) {
+    @NotNull public static String nicestTimeValueFrom(double seconds) {
 
         // If more than 1 minute
         if (seconds > 60) {
@@ -229,7 +295,7 @@ public class SilentNumbers {
                 if (difference < 0.34) {
 
                     // Return as minutes alv
-                    return ReadableRounding(Round(seconds / 3600.0D, 1),1) + "h";
+                    return readableRounding(round(seconds / 3600.0D, 1),1) + "h";
                 }
 
                 // Difference was kinda sensitive. Will evaluate as minutes I guess
@@ -238,7 +304,7 @@ public class SilentNumbers {
                 if (seconds > 60000) {
 
                     // Return as minutes alv
-                    return ReadableRounding(Round(seconds / 3600.0D, 2), 1) + "h";
+                    return readableRounding(round(seconds / 3600.0D, 2), 1) + "h";
                 }
             }
 
@@ -252,7 +318,7 @@ public class SilentNumbers {
             if (difference < 0.34) {
 
                 // Return as minutes alv
-                return ReadableRounding(Round(seconds / 60.0D, 1), 1) + "m";
+                return readableRounding(round(seconds / 60.0D, 1), 1) + "m";
             }
 
             // Difference was kinda sensitive. Will use seconds
@@ -261,12 +327,12 @@ public class SilentNumbers {
             if (seconds > 1000) {
 
                 // Return as minutes alv
-                return ReadableRounding(Round(seconds / 60.0D, 2), 1) + "m";
+                return readableRounding(round(seconds / 60.0D, 2), 1) + "m";
             }
         }
 
         // Return as seconds alv
-        return ReadableRounding(Round(seconds, 1), 1) + "s";
+        return readableRounding(round(seconds, 1), 1) + "s";
     }
 
     /**
@@ -292,7 +358,7 @@ public class SilentNumbers {
      * Chops a long description into several parts (use for nice lore idk)
      * @param colorPrefix Will be placed at the beginning of each line
      */
-    @NotNull public static ArrayList<String> Chop(@NotNull String longString, int paragraphWide, @NotNull String colorPrefix) {
+    @NotNull public static ArrayList<String> chop(@NotNull String longString, int paragraphWide, @NotNull String colorPrefix) {
 
         // Ret
         ArrayList<String> ret = new ArrayList<>();
@@ -317,11 +383,353 @@ public class SilentNumbers {
             if (longString.length() <= paragraphWide) { ret.add(colorPrefix + longString); }
         }
 
-        // Wasnt long at all
+        // Wasn't long at all
         if (!skip) { ret.add(colorPrefix + longString); }
 
-        // Thats it
+        // That's it
         return ret;
+    }
+
+    /**
+     * You see how the tab completer filters out commands as you write?
+     * This method does exactly that.
+     * @param source List of all the entries
+     * @param filter Characters that the entries must match
+     * @param ignoreCaps Should ignore caps?
+     * @return The list, but filtered. Will be empty if nothing matched.
+     */
+    @NotNull public static ArrayList<String> smartFilter(@NotNull ArrayList<String> source, @NotNull String filter, boolean ignoreCaps) {
+
+        // Actual list
+        @NotNull ArrayList<String> starts = new ArrayList<>();
+        @NotNull ArrayList<String> contains = new ArrayList<>();
+
+        // Lowercase
+        if (ignoreCaps) { filter = filter.toLowerCase(); }
+
+        // Filter the original list and build into the returned one
+        for (String str : source) {
+
+            // Lowercase
+            if (ignoreCaps) { str = str.toLowerCase(); }
+
+            // Does it start with? (More important, will display first)
+            if (str.startsWith(filter)) {
+
+                // Add
+                starts.add(str);
+
+                // Doesn't start with it, but does it contain them?
+            } else if (str.contains(filter)) {
+
+                // Add
+                contains.add(str);
+            }
+        }
+
+        // Combine arrays
+        starts.addAll(contains);
+
+        // That's it
+        return starts;
+    }
+
+    /**
+     * This thing just makes this component list into an array list.
+     *
+     * @param components All the things you want to add. <b><code>null</code> entries will be skipped</b>
+     * @param <S> The type of components, obviously.
+     *
+     * @return An array list with all the things you specified (that may be empty
+     *         if you didn't specify anything or all is <code>null</code>)
+     */
+    @SafeVarargs @NotNull public static <S> ArrayList<S> toArrayList(S... components) {
+
+        // Create
+        ArrayList<S> ret = new ArrayList<>();
+
+        // Add if non-null
+        for (S comp : components) { if (comp != null) { ret.add(comp); } }
+
+        // That's it
+        return ret;
+    }
+
+    /**
+     * This thing just makes this component list into an array list.
+     *
+     * @param append All the things you want to add. <b><code>null</code> entries will be skipped</b>
+     * @param <S> The type of components, obviously.
+     *
+     * @return An array list plus all the things you specified.
+     */
+    @SafeVarargs @NotNull public static <S> ArrayList<S> addAll(@Nullable ArrayList<S> list, @Nullable S... append) {
+
+        // Null?
+        if (list == null) { list = new ArrayList<>(); }
+
+        // Add
+        ArrayList<S> finalList = list;
+        if (append == null) { return finalList; }
+        Arrays.asList(append).forEach(s -> {if (s != null) { finalList.add(s); }});
+
+        // That's it
+        return finalList;
+    }
+
+    /**
+     * Why is it so hard to get an enchantment? I cant be the only one who
+     * is lazy about thinking if I should use the key or the name of the
+     * namespace .-.
+     */
+    @Contract("null -> null")
+    @Nullable public static Enchantment getEnchantment(@Nullable String name) {
+        if (name == null) { return null; }
+
+        // All right get by key in lowercase
+        return Enchantment.getByKey(NamespacedKey.minecraft(name.toLowerCase().replace(" ", "_").replace("-","_")));
+    }
+
+    /**
+     * Only works well in the range -3999 to +3999
+     */
+    @NotNull public static String toRomanNumerals(int value) {
+
+        // Zero did not exist back then .-.
+        if (value == 0) { return "0"; }
+
+        // Just go through this method and negate
+        if (value < 0) { return "-" + toRomanNumerals(-value); }
+
+        // Get the greatest number applicable
+        int gr8st = romanNumeralValues.floorKey(value);
+
+        // Exact? That's it
+        if (value == gr8st) { return romanNumeralValues.get(gr8st); }
+
+        // Compute remainder
+        return romanNumeralValues.get(gr8st) + toRomanNumerals(value - gr8st);
+    }
+    private final static TreeMap<Integer, String> romanNumeralValues = new TreeMap<Integer, String>() {{
+        put(1000, "M");
+        put(900, "CM");
+        put(500, "D");
+        put(400, "CD");
+        put(100, "C");
+        put(90, "XC");
+        put(50, "L");
+        put(40, "XL");
+        put(10, "X");
+        put(9, "IX");
+        put(5, "V");
+        put(4, "IV");
+        put(1, "I");
+    }};
+
+    /**
+     * Returns true if list 1 has every entry of list 2.
+     * @param list1 The list that may have more entries than needed.
+     * @param list2 The list that has all the must-have entries.
+     *
+     * @return If list 1 has at least all the entries of list 2
+     */
+    public static <S> boolean hasAll(@NotNull List<S> list1, @NotNull List<S> list2) {
+
+        // A single missing and this is over!
+        for (S str : list2) { if (!list1.contains(str)) { return false; } }
+
+        // Success
+        return true;
+    }
+
+    /**
+     * @return Really tries hard to give you this item's name. Will give you the best it can.
+     */
+    @SuppressWarnings("ConstantConditions")
+    @NotNull public static String getItemName(@Nullable ItemStack item) {
+
+        // Null?
+        if (item == null) { return "null"; }
+
+        // Amount?
+        int amount = item.getAmount();
+        String amountText = "\u00a7f" + amount + "x";
+
+        // Does it have meta
+        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+
+            // Has display name?
+            return amountText + "\u00a7r\u00a7f" + item.getItemMeta().getDisplayName();
+        }
+
+        // Return type
+        return amountText + "\u00a7r\u00a7f" + titleCaseConversion(item.getType().toString().replace("_", " "));
+    }
+
+    /**
+     * @return The item name of this item stack if it has one.
+     */
+    @SuppressWarnings("ConstantConditions")
+    @Nullable public static String findItemName(@Nullable ItemStack item) {
+        if (item == null) { return null; }
+        if (!item.hasItemMeta()) { return null; }
+        if (!item.getItemMeta().hasDisplayName()) { return null; }
+
+        // Yes
+        return item.getItemMeta().getDisplayName();
+    }
+    /**
+     * @return Renames this item, foolproofly
+     */
+    @SuppressWarnings("ConstantConditions")
+    @NotNull public static ItemStack setItemName(@NotNull ItemStack item, @Nullable String name) {
+        if (!item.hasItemMeta()) { return item; }
+        ItemMeta itemMeta = item.getItemMeta();
+        itemMeta.setDisplayName(name);
+        item.setItemMeta(itemMeta);
+        return item;
+    }
+
+    /**
+     * Explained by itself
+     * @param inputString SOMETHING LIKE THIS
+     * @return Something Like This
+     */
+    @NotNull public static String titleCaseConversion(@NotNull String inputString) {
+
+        /*
+         * Clearly not my code, but not searching for this
+         * online would be wasting my time reinventing the
+         * wheel. Just look at that lol
+         */
+
+        if (StringUtils.isBlank(inputString)) { return ""; }
+
+        if (StringUtils.length(inputString) == 1) { return inputString.toUpperCase(); }
+
+        StringBuffer resultPlaceHolder = new StringBuffer(inputString.length());
+
+        Stream.of(inputString.split(" ")).forEach(stringPart -> {
+            if (stringPart.length() > 1)
+                resultPlaceHolder.append(stringPart.substring(0, 1)
+                        .toUpperCase())
+                        .append(stringPart.substring(1)
+                                .toLowerCase());
+            else
+                resultPlaceHolder.append(stringPart.toUpperCase());
+
+            resultPlaceHolder.append(" ");
+        });
+
+        return StringUtils.trim(resultPlaceHolder.toString());
+    }
+
+    /**
+     * Appends each string of a list of strings one after another.
+     *
+     * @param list A list containing several strings
+     *
+     * @param separator A separator to append in between members.
+     *
+     * @return A single string containing all the members of the list.
+     *         <p></p>
+     *         <code>null</code> strings are passed as <code>"null"</code>
+     */
+    @NotNull public static String collapseList(@NotNull ArrayList<String> list, @NotNull String separator) {
+
+        //Yes
+        StringBuilder sb = new StringBuilder();
+        boolean af = false;
+
+        // Add every list
+        for (String str : list) {
+
+            if (str == null) { str = "null"; }
+
+            // Append separator except before the very first one
+            if (af) { sb.append(separator); }
+            af = true;
+
+            // Append string element
+            sb.append(str);
+        }
+
+        // Bake
+        return sb.toString();
+    }
+
+    /**
+     * Ever wished to write your own toString method on the spot?
+     *
+     * Well now you can with this handy transcriber.
+     * <p></p>
+     * Check this example out:
+     * <p></p>
+     * <code>
+     * ArrayList<String> itemNames = SilentNumbers.transcribeList(itemsList, (o)->SilentNumbers.getItemName( ((ItemStack)o) ));
+     * </code>
+     *
+     * @param list List of objects
+     * @param conversion Method to apply to each entry of the list
+     *
+     * @return A string list containing strings processed by the method you provided.
+     */
+    @NotNull public static ArrayList<String> transcribeList(@NotNull List<?> list, @NotNull ToStringLambda conversion) {
+
+        // Yes
+        ArrayList<String> ret = new ArrayList<>();
+
+        // Transcribe
+        for (Object str : list) {
+
+            // Yes
+            ret.add(conversion.rewrite(str));
+        }
+
+        // That's it
+        return ret;
+    }
+
+    /**
+     * Sometimes, we deal with null (nonexistent) or AIR
+     * Item Stacks and such, and we just want to know if
+     * the item is neither of those.
+     *
+     * @param item ItemStack to test
+     *
+     * @return If this can't be considered an 'actual' item.
+     */
+    public static boolean isAir(@Nullable ItemStack item) {
+        if (item == null) { return true; }
+        switch (item.getType()) {
+            case AIR:
+            case CAVE_AIR:
+            case VOID_AIR:
+                return true;
+
+            default: return false;
+        }
+    }
+
+    /**
+     * Runs a command through the console
+     *
+     * @param sender Execute command as whom
+     *
+     * @param command Command to execute
+     *
+     * @param senderLocation Location of the sender, will be used to parse
+     *                       relative co-ordinates in MythicLib commands.
+     */
+    public static void executeCommand(@NotNull CommandSender sender, @NotNull String command, @Nullable Location senderLocation) {
+
+        /*
+         * Eventually we'll append the sender location right before the command string, which
+         * will allow use of ~ ~ ~ or ^ ^ ^ s instead of co-ordinates. But for now, nothing.
+         */
+
+        // Dispatch Command
+        Bukkit.dispatchCommand(sender, command);
     }
     //endregion
 }

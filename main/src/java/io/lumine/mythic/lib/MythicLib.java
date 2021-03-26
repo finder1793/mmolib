@@ -1,5 +1,12 @@
 package io.lumine.mythic.lib;
 
+import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
+import io.lumine.mythic.lib.api.crafting.uifilters.EnchantmentUIFilter;
+import io.lumine.mythic.lib.api.crafting.uifilters.IngredientUIFilter;
+import io.lumine.mythic.lib.api.crafting.uimanager.UIFilterManager;
+import io.lumine.mythic.lib.api.crafting.uifilters.VanillaUIFilter;
+import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
+import io.lumine.mythic.lib.comp.*;
 import io.lumine.utils.holograms.BukkitHologramFactory;
 import io.lumine.utils.holograms.HologramFactory;
 import io.lumine.utils.scoreboard.PacketScoreboardProvider;
@@ -8,10 +15,6 @@ import lombok.Getter;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.handler.AttributeStatHandler;
 import io.lumine.mythic.lib.commands.BaseCommand;
-import io.lumine.mythic.lib.comp.CitizensEntityHandler;
-import io.lumine.mythic.lib.comp.MyPetEntityHandler;
-import io.lumine.mythic.lib.comp.MythicMobsDamageHandler;
-import io.lumine.mythic.lib.comp.ShopKeepersEntityHandler;
 import io.lumine.mythic.lib.comp.hexcolor.ColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.HexColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.SimpleColorParser;
@@ -31,6 +34,7 @@ import io.lumine.utils.logging.Log;
 import io.lumine.utils.plugin.LuminePlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 
 import java.util.logging.Level;
@@ -110,6 +114,7 @@ public class MythicLib extends LuminePlugin {
         Bukkit.getPluginManager().registerEvents(mitigationMecanics = new MitigationMechanics(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerAttackEventListener(), this);
         Bukkit.getPluginManager().registerEvents(new ArmorEquipEventListener(), this);
+        Bukkit.getPluginManager().registerEvents(new MythicCraftingManager(), this);
 
         if (getConfig().getBoolean("health-scale.enabled"))
             Bukkit.getPluginManager().registerEvents(new HealthScale(getConfig().getDouble("health-scale.scale")), this);
@@ -121,6 +126,9 @@ public class MythicLib extends LuminePlugin {
 
         if (Bukkit.getPluginManager().getPlugin("Citizens") != null)
             entityManager.registerHandler(new CitizensEntityHandler());
+
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            MythicPlaceholders.registerPlaceholder(new PlaceholderAPIHook()); }
 
         if (Bukkit.getPluginManager().getPlugin("ShopKeepers") != null)
             entityManager.registerHandler(new ShopKeepersEntityHandler());

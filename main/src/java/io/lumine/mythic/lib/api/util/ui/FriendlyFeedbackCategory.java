@@ -2,6 +2,8 @@ package io.lumine.mythic.lib.api.util.ui;
 
 /**
  * When you must tell the user something, what kind of topic does it relate to?
+ *
+ * @author Gunging
  */
 public enum FriendlyFeedbackCategory {
 
@@ -35,11 +37,16 @@ public enum FriendlyFeedbackCategory {
      * messages concerning serious syntax errors.
      * <p></p>
      * These errors will never get fixed unless the user themselves
-     * correct their input - Under no cirmumstances their input is
+     * correct their input - Under no circumstances their input is
      * correct.
      * <p></p>
      * Like attempting to parse '<code>Potato</code>' as a number.
      * @see #FAILURE
      */
-    ERROR
+    ERROR,
+
+    /**
+     * Avoid using as much as possible.
+     */
+    OTHER
 }
