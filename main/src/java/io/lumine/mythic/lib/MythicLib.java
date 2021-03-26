@@ -39,7 +39,7 @@ public class MythicLib extends LuminePlugin {
     public static MythicLib plugin;
  
     //@Getter private ProfileManager profileManager;
- 
+  
     private final DamageManager damageManager = new DamageManager();
     private final EntityManager entityManager = new EntityManager();
     private final StatManager statManager = new StatManager();
