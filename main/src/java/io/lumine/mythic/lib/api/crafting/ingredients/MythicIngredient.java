@@ -509,7 +509,7 @@ public class MythicIngredient implements Cloneable {
      *
      * @return One random item that would satisfy this recipe
      */
-    @Nullable public ItemStack getRandomSubstituteItem() {
+    @Nullable public ItemStack getRandomSubstituteItem(@Nullable FriendlyFeedbackProvider ffp) {
 
         // No fully defined item? L
         if (!isDefinesItem()) { return null; }
@@ -524,7 +524,7 @@ public class MythicIngredient implements Cloneable {
         if (chosen == null) { return null; }
 
         // Generate Item Stack yes
-        return chosen.getItemStack(null);
+        return chosen.getItemStack(ffp);
     }
     /**
      * @return One random item that would satisfy this recipe, as a provided UI filter.

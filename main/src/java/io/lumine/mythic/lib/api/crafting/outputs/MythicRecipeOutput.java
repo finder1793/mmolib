@@ -120,6 +120,16 @@ public abstract class MythicRecipeOutput {
         }
     }
 
+    /**
+     * Overwrites the contents of the original inventory by those in the overwrite inventory,
+     * only where the overwrite inventory has something else than <code>null</code> specified.
+     * <p></p>
+     * This does not apply to the actual real vanilla inventory.
+     *
+     * @param original Original Mythic Inventory
+     * @param overwrite Overwrite Mythic Inventory
+     * @param multiplier Number of times you are crafting
+     */
     void processInventory(@NotNull MythicRecipeInventory original, @NotNull MythicRecipeInventory overwrite, int multiplier) {
         for (int h = 0; h < original.getHeight(); h++) {
             for (int w = 0; w < original.getWidth(); w++) {

@@ -271,6 +271,7 @@ public class MythicCraftingManager implements Listener {
         //RDR//log("\u00a78RDR \u00a744\u00a77 Computing Crafting Action...");
         //ISPM//for (int i = 0; i < inven.getSize(); i++) { MythicCraftingManager.log("\u00a78Pre Computation \u00a7f@" + i + " \u00a7f" + SilentNumbers.getItemName(inven.getItem(i))); }
 
+        boolean cResultSlot = mapping.isResultSlot(event.getSlot());
         /*
          * Now that we know there is a reason for MythicLib's crafting system
          * to kick in (there are live recipes for this station), we must see
@@ -284,7 +285,7 @@ public class MythicCraftingManager implements Listener {
          * fuel before the player clicks the result button. We'll get to those
          * eventually.
          */
-        if (mapping.isResultSlot(event.getSlot())) {
+        if (cResultSlot) {
 
             /*
              * All right, since the result slot was clicked, there is no need to check
@@ -352,7 +353,7 @@ public class MythicCraftingManager implements Listener {
              * when the player clicks air, and has air in their cursor, effectively
              * leaving the ingredient layout unchanged.
              */
-            if (event.getAction() == InventoryAction.NOTHING) { return; }
+            if (event.getAction() == InventoryAction.NOTHING && !cResultSlot) { return; }
 
             (new BukkitRunnable() {
                 public void run() {

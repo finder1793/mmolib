@@ -94,7 +94,7 @@ public class MROCommand extends MythicRecipeOutput {
         this.commands = SilentNumbers.addAll(null, commands);
 
         // Fail
-        if (display.getRandomSubstituteItem() == null) { throw new IllegalArgumentException(FriendlyFeedbackProvider.quickForConsole(FFPMythicLib.get(), "Could not generate $fCommand Recipe Result$b: You must specify a valid UIFilter that generates an Item Stack!")); }
+        if (display.getRandomSubstituteItem(null) == null) { throw new IllegalArgumentException(FriendlyFeedbackProvider.quickForConsole(FFPMythicLib.get(), "Could not generate $fCommand Recipe Result$b: You must specify a valid UIFilter that generates an Item Stack!")); }
 
         // Is it deterministic?
         if (display.getSubstitutes().size() == 1) {
@@ -129,7 +129,7 @@ public class MROCommand extends MythicRecipeOutput {
 
     @NotNull @Override public MythicRecipeInventory applyDisplay(@NotNull MythicRecipeInventory inventory) {
         ItemStack git = getDisplayItem();
-        if (git == null) { git = getDisplay().getRandomSubstituteItem(); }
+        if (git == null) { git = getDisplay().getRandomSubstituteItem(null); }
         MythicRecipeInventory edited = inventory.clone();
         edited.clean();
         edited.setItemAt(0, 0, git);

@@ -184,6 +184,10 @@ public class MRORecipe extends MythicRecipeOutput {
             // Does not define an item? I sleep
             if (!ingredient.isDefinesItem()) { continue; }
 
+            // Any errors yo?
+            FriendlyFeedbackProvider ffp = new FriendlyFeedbackProvider(FFPMythicLib.get());
+            ffp.activatePrefix(true, recipeFFPPrefix);
+
             /*
              * First we must get the material of the base, a dummy
              * item basically (since this is for display) which we
@@ -194,18 +198,7 @@ public class MRORecipe extends MythicRecipeOutput {
              * description will be used instead, replacing the meta of
              * this item entirely.
              */
-            ProvidedUIFilter poof = mmIngredient.getIngredient().getRandomSubstitute(true);
-            Validate.isTrue(poof != null, "Ingredient is flagged as defined, but no substitute defines items.");
-
-            // All right get the UIFilter
-            UIFilter filter = poof.getParent();
-
-            // Any errors yo?
-            FriendlyFeedbackProvider ffp = new FriendlyFeedbackProvider(FFPMythicLib.get());
-            ffp.activatePrefix(true, recipeFFPPrefix);
-
-            // Give it to me
-            ItemStack gen = filter.getItemStack(poof.getArgument(), poof.getData(), ffp);
+            ItemStack gen = mmIngredient.getIngredient().getRandomSubstituteItem(ffp);
 
             // Valid?
             if (gen != null) {
@@ -306,6 +299,10 @@ public class MRORecipe extends MythicRecipeOutput {
             // Does not define an item? I sleep
             if (!ingredient.isDefinesItem()) { continue; }
 
+            // Any errors yo?
+            FriendlyFeedbackProvider ffp = new FriendlyFeedbackProvider(FFPMythicLib.get());
+            ffp.activatePrefix(true, recipeFFPPrefix);
+
             /*
              * First we must get the material of the base, a dummy
              * item basically (since this is for display) which we
@@ -316,18 +313,7 @@ public class MRORecipe extends MythicRecipeOutput {
              * description will be used instead, replacing the meta of
              * this item entirely.
              */
-            ProvidedUIFilter poof = mmIngredient.getIngredient().getRandomSubstitute(true);
-            Validate.isTrue(poof != null, "Ingredient is flagged as defined, but no substitute defines items.");
-
-            // All right get the UIFilter
-            UIFilter filter = poof.getParent();
-
-            // Any errors yo?
-            FriendlyFeedbackProvider ffp = new FriendlyFeedbackProvider(FFPMythicLib.get());
-            ffp.activatePrefix(true, recipeFFPPrefix);
-
-            // Give it to me
-            ItemStack gen = filter.getItemStack(poof.getArgument(), poof.getData(), ffp);
+            ItemStack gen = mmIngredient.getIngredient().getRandomSubstituteItem(ffp);
 
             // Valid?
             if (gen != null) {
@@ -412,15 +398,6 @@ public class MRORecipe extends MythicRecipeOutput {
     @Override
     public void applyResult(@NotNull MythicRecipeInventory resultInventory, @NotNull MythicBlueprintInventory otherInventories, @NotNull MythicCachedResult cache, @NotNull InventoryClickEvent eventTrigger, @NotNull VanillaInventoryMapping map, int times) {
 
-        /*
-         * For the case of crafting one item, if the player clicks with
-         * something in their cursor, the event is cancelled because otherwise
-         * it would overwrite what they have.
-         *
-         * Basically, if NOT AIR and the event action is...
-         */
-        if (!SilentNumbers.isAir(eventTrigger.getCursor()) && (eventTrigger.getAction() != InventoryAction.MOVE_TO_OTHER_INVENTORY)) { return; }
-
         //RDR//MythicCraftingManager.log("\u00a78RDR \u00a746\u00a77 Running Result Event");
         /*
          * Listen, we'll take it from here. Cancel the original event.
@@ -442,9 +419,17 @@ public class MRORecipe extends MythicRecipeOutput {
          * 2 Move it to those inventory slots
          */
         if (times == 1 && (eventTrigger.getAction() != InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
-
-            // Cancel if the cursor item is not null
-            if (!SilentNumbers.isAir(eventTrigger.getCursor())) { return; }
+            /*
+             * When crafting with the cursor, we must make sure that:
+             *
+             * 1 The player is holding nothing in the cursor
+             * or
+             *
+             * 2 The item in their cursor is stackable with the result
+             * and
+             * 3 The max stacks would not be exceeded
+             */
+            ItemStack currentInCursor = eventTrigger.getCursor();
 
             /*
              * Set the result into the result slots.
@@ -468,6 +453,32 @@ public class MRORecipe extends MythicRecipeOutput {
             ItemStack cursor = resultInventory.getItemAt(map.getResultWidth(eventTrigger.getSlot()), map.getResultHeight(eventTrigger.getSlot()));
             if (cursor == null) { cursor = new ItemStack(Material.AIR); }
             ItemStack actualCursor = cursor.clone();
+
+            /*
+             * All right, so, can the actual cursor stack with the current?
+             */
+            if (!SilentNumbers.isAir(currentInCursor)) {
+
+                // Aye so they could stack
+                if (currentInCursor.isSimilar(actualCursor)) {
+
+                    // Exceeds max stacks?
+                    int cAmount = currentInCursor.getAmount();
+                    int aAmount = actualCursor.getAmount();
+                    int maxAmount = actualCursor.getMaxStackSize();
+
+                    // Cancel if their sum would exceed the max
+                    if (cAmount + aAmount > maxAmount) { return; }
+
+                    // All right recalculate amount then
+                    actualCursor.setAmount(cAmount + aAmount);
+
+                } else {
+
+                    // Cancel this operation
+                    return;
+                }
+            }
 
             //RR//MythicCraftingManager.log("\u00a78Result \u00a74C\u00a77 Found for cursor " + SilentNumbers.getItemName(actualCursor));
 

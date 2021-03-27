@@ -88,7 +88,7 @@ public class IngredientUIFilter implements UIFilter {
         // Get ingredient
         MythicIngredient ingredient = MythicIngredient.get(argument);
 
-        return ingredient.getRandomSubstituteItem();
+        return ingredient.getRandomSubstituteItem(null);
     }
 
     @NotNull

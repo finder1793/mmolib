@@ -131,8 +131,15 @@ public class ProvidedUIFilter implements Comparable<ProvidedUIFilter> {
      */
     @Nullable public ItemStack getItemStack(@Nullable FriendlyFeedbackProvider ffp) {
 
-        // Check through parent
-        return getParent().getItemStack(getArgument(), getData(), ffp);
+        // Attempt to generate
+        ItemStack gen = getParent().getItemStack(getArgument(), getData(), ffp);
+
+        // If null, null
+        if (gen == null) { return null; }
+
+        // Set correct amount
+        gen.setAmount(getAmount(0));
+        return gen;
     }
 
     /**
