@@ -39,6 +39,22 @@ public class ShapedIngredient extends MythicRecipeIngredient implements Cloneabl
     }
 
     /**
+     * Positional ingredients have a little more information:
+     *
+     * @param ingredient {@inheritDoc}
+     *
+     * @param horizontalOffset The horizontal shift in slots, always positive (rightward).
+     * @param verticalOffset The vertical shift in slots, always negative (downward).
+     */
+    public ShapedIngredient(@NotNull ProvidedUIFilter ingredient, int horizontalOffset, int verticalOffset) {
+        super(ingredient);
+
+        // Get those horizontal and vertical offsets
+        setHorizontalOffset(horizontalOffset);
+        setVerticalOffset(verticalOffset);
+    }
+
+    /**
      * This ingredient now in a recipe? Let it be known.
      */
      @Nullable
