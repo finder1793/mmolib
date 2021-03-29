@@ -366,8 +366,8 @@ public class MRORecipe extends MythicRecipeOutput {
     @NotNull
     @Override
     public MythicRecipeInventory applyDisplay(@NotNull MythicRecipeInventory inventory) {
-        //BB//MythicCraftingManager.log("\u00a78MROResult \u00a7aB\u00a77 Building Display: ");
-        //BB//for (String str : inventory.toStrings("\u00a78MROResult \u00a7aC-")) { MythicCraftingManager.log(str); }
+        //BBB//MythicCraftingManager.log("\u00a78MROResult \u00a7aB\u00a77 Building Display: ");
+        //BBB//for (String str : inventory.toStrings("\u00a78MROResult \u00a7aC-")) { MythicCraftingManager.log(str); }
 
         // Attempt to get generated
         MythicRecipeInventory result = getDeterminateDisplay();
@@ -390,7 +390,7 @@ public class MRORecipe extends MythicRecipeOutput {
 
             } }
 
-        //BB//for (String str : ret.toStrings("\u00a78MROResult \u00a7aR-")) { MythicCraftingManager.log(str); }
+        //BBB//for (String str : ret.toStrings("\u00a78MROResult \u00a7aR-")) { MythicCraftingManager.log(str); }
         // That's it
         return ret;
     }
