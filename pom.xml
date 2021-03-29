@@ -238,12 +238,14 @@
 			<version>1.16.5-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
 			<version>1.16.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
@@ -302,12 +304,14 @@
             <optional>true</optional>
         </dependency>
 
-		<!-- Popular Plugins -->
+		<!-- Popular Plugins  -->
+		<!--
 		<dependency>
 			<groupId>me.clip</groupId>
 			<artifactId>placeholderapi</artifactId>
 			<version>2.10.7</version>
 			<scope>provided</scope>
 		</dependency>
+		-->
 	</dependencies>
 </project>
