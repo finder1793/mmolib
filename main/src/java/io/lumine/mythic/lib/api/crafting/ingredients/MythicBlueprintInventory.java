@@ -46,14 +46,14 @@ public class MythicBlueprintInventory {
     @NotNull final HashMap<String, MythicRecipeInventory> sideInventories = new HashMap<>();
     /**
      * <b>It is imperative that you know this name is indeed that of a contained side
-     * inventory, use {@link #hasSideCheck(String)} to corroborate before calling this.</b>
+     * inventory, use {@link #hasSideInventories(String)} to corroborate before calling this.</b>
      *
      * @return The side inventory associated to this string.
      */
-    @NotNull public MythicRecipeInventory getSideCheck(@NotNull String ofName) {
+    @NotNull public MythicRecipeInventory getSideInventory(@NotNull String ofName) {
 
         // Bruh
-        Validate.isTrue(hasSideCheck(ofName), "You may not query for a side inventory that does not exist.");
+        Validate.isTrue(hasSideInventories(ofName), "You may not query for a side inventory that does not exist.");
 
         // Well was it?
         return sideInventories.get(ofName);
@@ -63,7 +63,7 @@ public class MythicBlueprintInventory {
      * @param ofName What name
      * @return <code>true</code> if there is information for a side inventory of this name.
      */
-    public boolean hasSideCheck(@NotNull String ofName) { return sideInventories.containsKey(ofName); }
+    public boolean hasSideInventories(@NotNull String ofName) { return sideInventories.containsKey(ofName); }
 
     /**
      * Blueprint Inventories contain information on the contents of every

@@ -30,7 +30,7 @@ public abstract class MythicRecipeOutput {
      *
      * @return The inventory how it should display instead.
      */
-    @NotNull public abstract MythicRecipeInventory applyDisplay(@NotNull MythicRecipeInventory inventory);
+    @NotNull public abstract MythicRecipeInventory applyDisplay(@NotNull MythicBlueprintInventory inventory, @NotNull InventoryClickEvent eventTrigger, @NotNull VanillaInventoryMapping mapping);
 
     /**
      * When this recipe is actually crafted, what is the actual result of this recipe?
@@ -90,7 +90,7 @@ public abstract class MythicRecipeOutput {
      * @param map The Vanilla Mapping to use
      * @param times The amount of times the player is crafting this recipe.
      */
-    void consumeIngredients(@NotNull MythicBlueprintInventory originalInventories, @NotNull MythicCachedResult cache, @NotNull Inventory inven, @NotNull VanillaInventoryMapping map, int times) {
+    public void consumeIngredients(@NotNull MythicBlueprintInventory originalInventories, @NotNull MythicCachedResult cache, @NotNull Inventory inven, @NotNull VanillaInventoryMapping map, int times) {
 
         /*
          * Consume the crafted ingredients, we will perform the operation on the
@@ -105,13 +105,13 @@ public abstract class MythicRecipeOutput {
         for (String sideName : originalInventories.getSideInventoryNames()) {
 
             // Find the original
-            MythicRecipeInventory side = originalInventories.getSideCheck(sideName);
+            MythicRecipeInventory side = originalInventories.getSideInventory(sideName);
 
             // If contained
-            if (cache.getResultOfOperation().hasSideCheck(sideName)) {
+            if (cache.getResultOfOperation().hasSideInventories(sideName)) {
 
                 // Get side result and process it
-                MythicRecipeInventory sideResult = cache.getResultOfOperation().getSideCheck(sideName);
+                MythicRecipeInventory sideResult = cache.getResultOfOperation().getSideInventory(sideName);
                 processInventory(side, sideResult, times);
 
                 // Apply
@@ -130,7 +130,7 @@ public abstract class MythicRecipeOutput {
      * @param overwrite Overwrite Mythic Inventory
      * @param multiplier Number of times you are crafting
      */
-    void processInventory(@NotNull MythicRecipeInventory original, @NotNull MythicRecipeInventory overwrite, int multiplier) {
+    public void processInventory(@NotNull MythicRecipeInventory original, @NotNull MythicRecipeInventory overwrite, int multiplier) {
         for (int h = 0; h < original.getHeight(); h++) {
             for (int w = 0; w < original.getWidth(); w++) {
 

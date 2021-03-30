@@ -166,8 +166,7 @@ public class MythicCraftingManager implements Listener {
         //EVENT//log("  \u00a78|\u00a7a|\u00a77 Action \u00a7f" + event.getAction().toString());
         //EVENT//log("  \u00a78|\u00a7a|\u00a77 Current \u00a7f" + SilentNumbers.getItemName(event.getCurrentItem()));
         //EVENT//log("  \u00a78|\u00a7a|\u00a77 Cursor \u00a7f" + SilentNumbers.getItemName(event.getCursor()));
-        //EVENT//log("  \u00a78|\u00a7a|\u00a77 Slot \u00a7f" + clickedSlot);
-        //EVENT//log("  \u00a78|\u00a7a|\u00a77 Result \u00a7f" + SilentNumbers.getItemName(event.getInventory().getResult()));
+        //EVENT//log("  \u00a78|\u00a7a|\u00a77 Slot \u00a7f" + event.getSlot());
         //EVENT//log("  \u00a78>\u00a7a>\u00a77 Slot Contents: \u00a7f");
         //EVENT//for (int s = 0; s < event.getInventory().getSize(); s++) { log("     \u00a78:\u00a7a:\u00a77 #" + s + " \u00a7f" + SilentNumbers.getItemName(event.getInventory().getItem(s))); }
 
@@ -176,7 +175,7 @@ public class MythicCraftingManager implements Listener {
         if ((mapping == null) || (mapping.getIntendedStation() == null)) { return; }
         //CRAFT//log("\u00a78Click \u00a76M\u00a77 Found Mapping \u00a7f" + mapping.getClass().getSimpleName());
 
-        //RDR//log("\u00a78RDR \u00a742\u00a77 Inventory Identified, supported.");
+        //RDR//log("\u00a78RDR \u00a742\u00a77 Inventory Identified, supported - \u00a7c" + mapping.getClass().getName());
         //MPP//try { log("\u00a78Mapping Test Yes \u00a7bMain\u00a77 Is slot? \u00a7e" + mapping.getMainWidth(event.getSlot()) + ":" + (-mapping.getMainHeight(event.getSlot()))); } catch (IllegalArgumentException ignored) {}
         //MPP//try { log("\u00a78Mapping Test Yes \u00a7bResult\u00a77 Is slot? \u00a7e" + mapping.getResultWidth(event.getSlot()) + ":" + (-mapping.getResultHeight(event.getSlot()))); } catch (IllegalArgumentException ignored) {}
 
@@ -361,7 +360,7 @@ public class MythicCraftingManager implements Listener {
                     //ISPM//for (int i = 0; i < inven.getSize(); i++) { MythicCraftingManager.log("\u00a78After Tick \u00a7d@" + i + " \u00a7f" + SilentNumbers.getItemName(inven.getItem(i))); }
 
                     ArrayList<Player> p = new ArrayList<>(); for (HumanEntity e : viewers) {if (e instanceof Player) { p.add((Player) e);}}
-                    displayResult(mapping, inven, liveRecipes, p, event.getWhoClicked().getUniqueId());
+                    displayResult(mapping, inven, liveRecipes, p, event.getWhoClicked().getUniqueId(), event);
 
                     //ISPM//for (int i = 0; i < inven.getSize(); i++) { MythicCraftingManager.log("\u00a78Post Display \u00a7c@" + i + " \u00a7f" + SilentNumbers.getItemName(inven.getItem(i))); }
                 }
@@ -399,7 +398,7 @@ public class MythicCraftingManager implements Listener {
      * @return If any recipe was matched
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean displayResult(@NotNull VanillaInventoryMapping mapping, @NotNull Inventory inven, @NotNull ArrayList<MythicRecipeBlueprint> liveRecipes, @NotNull ArrayList<Player> viewers, @NotNull UUID uuid) {
+    public boolean displayResult(@NotNull VanillaInventoryMapping mapping, @NotNull Inventory inven, @NotNull ArrayList<MythicRecipeBlueprint> liveRecipes, @NotNull ArrayList<Player> viewers, @NotNull UUID uuid, @NotNull InventoryClickEvent eventTrigger) {
 
         /*
          * Read the contents, create the blueprint. Important that this happens
@@ -423,7 +422,7 @@ public class MythicCraftingManager implements Listener {
                 MythicRecipeOutput output = blueprint.getResult();
 
                 // Obtain what must be displayed (the hint of what you are crafting)
-                MythicRecipeInventory finalResult = output.applyDisplay(finalBlueprint.getResultInventory());
+                MythicRecipeInventory finalResult = output.applyDisplay(finalBlueprint, eventTrigger, mapping);
 
                 // Cache the result (To further evaluate when actually crafting)
                 //CRAFT//log("\u00a78Display \u00a76C\u00a77 Creating cache");

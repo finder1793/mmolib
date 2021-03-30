@@ -4,6 +4,7 @@ import io.lumine.mythic.lib.api.crafting.ingredients.MythicBlueprintInventory;
 import io.lumine.mythic.lib.api.crafting.ingredients.MythicRecipeInventory;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicRecipeStation;
+import io.lumine.utils.version.ServerVersion;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -385,6 +386,12 @@ public abstract class VanillaInventoryMapping {
      * @throws IllegalArgumentException Always
      */
     void throwSideInventoryException(@NotNull String name) throws IllegalArgumentException { throw new IllegalArgumentException("No such side inventory of name '" + name + "' for mapping " + getClass().getSimpleName()); }
+    /**
+     * Throws the 'Side Inventory not Found' Exception if the side inventory is, well if its not found.
+     *
+     * @param side The side inventory being requested.
+     */
+    void considerThrowingSideException(@NotNull String side) { if (!getSideInventoryNames().contains(side)) { throwSideInventoryException(side); } }
     //endregion
 
     //region Apply to inventory
@@ -644,9 +651,9 @@ public abstract class VanillaInventoryMapping {
 
         // Register
         vanillaMappings.put(InventoryType.WORKBENCH, new WorkbenchMapping());
-
-        // Register
         vanillaMappings.put(InventoryType.CRAFTING, new CraftingMapping());
+        vanillaMappings.put(InventoryType.FURNACE, new FurnaceMapping());
+        if (ServerVersion.get().getMinor() >= 16) { vanillaMappings.put(InventoryType.valueOf("SMITHING"), new SmithingStationMapping()); }
     }
     /**
      * Get the mapping pertaining to this crafting station.

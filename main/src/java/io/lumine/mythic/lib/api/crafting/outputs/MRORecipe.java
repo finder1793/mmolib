@@ -14,7 +14,6 @@ import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackCategory;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackProvider;
 import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import io.lumine.utils.items.ItemFactory;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -365,7 +364,7 @@ public class MRORecipe extends MythicRecipeOutput {
      */
     @NotNull
     @Override
-    public MythicRecipeInventory applyDisplay(@NotNull MythicRecipeInventory inventory) {
+    public MythicRecipeInventory applyDisplay(@NotNull MythicBlueprintInventory inventory, @NotNull InventoryClickEvent eventTrigger, @NotNull VanillaInventoryMapping mapping) {
         //BBB//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78MROResult \u00a7aB\u00a77 Building Display: ");
         //BBB//for (String str : inventory.toStrings("\u00a78MROResult \u00a7aC-")) { io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log(str); }
 
@@ -376,11 +375,11 @@ public class MRORecipe extends MythicRecipeOutput {
         if (result == null) { result = generateDisplay(); }
 
         // Paste into current inventory
-        MythicRecipeInventory ret = inventory.clone();
+        MythicRecipeInventory ret = inventory.getResultInventory().clone();
 
         // For every inventory slot
-        for (int h = 0; h < inventory.getHeight(); h++) {
-            for (int w = 0; w < inventory.getWidth(); w++) {
+        for (int h = 0; h < inventory.getResultInventory().getHeight(); h++) {
+            for (int w = 0; w < inventory.getResultInventory().getWidth(); w++) {
 
                 // Any item in the result?
                 ItemStack item = result.getItemAt(w, -h);
@@ -406,7 +405,7 @@ public class MRORecipe extends MythicRecipeOutput {
          * Did anyone cancel it? Well I guess we'll touch nothing then, but you also cant craft this item >:I
          */
         eventTrigger.setCancelled(true);
-        if (times > 1 && !(eventTrigger.getWhoClicked() instanceof Player)) { return; }
+        if (!(eventTrigger.getWhoClicked() instanceof Player)) { return; }
         MythicCraftItemEvent preEvent = new MythicCraftItemEvent(eventTrigger, resultInventory, map, otherInventories, cache);
         Bukkit.getPluginManager().callEvent(preEvent);
         if (preEvent.isCancelled()) { return; }
@@ -570,7 +569,7 @@ public class MRORecipe extends MythicRecipeOutput {
      *
      * @return All the ItemStacks participating in this inventory
      */
-    static ArrayList<ItemStack> toItemsList(@NotNull MythicRecipeInventory inventory) {
+    public static ArrayList<ItemStack> toItemsList(@NotNull MythicRecipeInventory inventory) {
 
         // Count all the different items
         ArrayList<ItemStack> ret = new ArrayList<>();
@@ -616,7 +615,7 @@ public class MRORecipe extends MythicRecipeOutput {
      *         <p></p>
      *         <code>null</code> If the item stacks don't fit.
      */
-    @Nullable HashMap<Integer, ItemStack> distributeInInventory(@NotNull Inventory inven, @NotNull ArrayList<ItemStack> contents, @Nullable HashMap<Integer, ItemStack> olderResult) {
+    public static @Nullable HashMap<Integer, ItemStack> distributeInInventory(@NotNull Inventory inven, @NotNull ArrayList<ItemStack> contents, @Nullable HashMap<Integer, ItemStack> olderResult) {
 
         // Organize
         ArrayList<ItemStack> out = notRepeated(contents);
@@ -763,7 +762,7 @@ public class MRORecipe extends MythicRecipeOutput {
      *         This will effectively combine stacks, but will end up splitting them
      *         anyway if they surpass their {@link Material#getMaxStackSize()}.
      */
-    @NotNull ArrayList<ItemStack> notRepeated(@NotNull ArrayList<ItemStack> contents) {
+    public static @NotNull ArrayList<ItemStack> notRepeated(@NotNull ArrayList<ItemStack> contents) {
 
         // Fill
         ArrayList<ItemStack> ret = new ArrayList<>();
@@ -830,7 +829,7 @@ public class MRORecipe extends MythicRecipeOutput {
      *
      * @return Cloned and as the desired amount
      */
-    @NotNull ItemStack asAmount(@NotNull ItemStack comp, int amount) {
+    public static @NotNull ItemStack asAmount(@NotNull ItemStack comp, int amount) {
         ItemStack s = comp.clone();
         s.setAmount(amount);
         return s;

@@ -106,17 +106,17 @@ public class MythicRecipeBlueprint {
      *
      * @return A new list, with a copy of every name of the side check inventories.
      */
-    @NotNull public ArrayList<String> getSideCheckNames() { return new ArrayList<>(sideChecks.keySet()); }
+    @NotNull public ArrayList<String> getSideInventoryNames() { return new ArrayList<>(sideChecks.keySet()); }
     /**
      * <b>It is imperative that you know this name is indeed that of a contained side
-     * check, use {@link #hasSideCheck(String)} to corroborate before calling this.</b>
+     * check, use {@link #hasSideInventory(String)} to corroborate before calling this.</b>
      *
      * @return The side check associated to this string.
      */
     @NotNull public MythicRecipe getSideCheck(@NotNull String ofName) {
 
         // Bruh
-        Validate.isTrue(hasSideCheck(ofName), "You may not query for a side recipe that does not exist.");
+        Validate.isTrue(hasSideInventory(ofName), "You may not query for a side recipe that does not exist.");
 
         // Well was it?
         return sideChecks.get(ofName);
@@ -126,7 +126,18 @@ public class MythicRecipeBlueprint {
      * @param ofName What name
      * @return <code>true</code> if there is a side inventory expected of this name.
      */
-    public boolean hasSideCheck(@NotNull String ofName) { return sideChecks.containsKey(ofName); }
+    public boolean hasSideInventory(@NotNull String ofName) { return sideChecks.containsKey(ofName); }
+    /**
+     * Registers a check that must be fulfilled
+     *
+     * @param ofName The name of the side inventory, 'fuel' for furnace for example
+     * @param recipe The recipe that will check this side inventory
+     */
+    public void addSideCheck(@NotNull String ofName, @NotNull MythicRecipe recipe) {
+
+        // Put
+        sideChecks.put(ofName, recipe);
+    }
 
     /**
      * Do all the checks return true upon inspecting this collection of inventories?
@@ -142,7 +153,7 @@ public class MythicRecipeBlueprint {
     @Nullable public MythicBlueprintInventory matches(@NotNull MythicBlueprintInventory inventories, @Nullable Ref<Integer> maxTimes) {
 
         // Does the blueprint have information to check with the side checks. That's an automatic no
-        if (!SilentNumbers.hasAll(inventories.getSideInventoryNames(), getSideCheckNames())) {
+        if (!SilentNumbers.hasAll(inventories.getSideInventoryNames(), getSideInventoryNames())) {
             //MCH//MythicCraftingManager.log("\u00a78Matching \u00a7cS\u00a77 Incorrect side inventory amount. \u00a74No match.");
             return null;
         }
@@ -162,11 +173,11 @@ public class MythicRecipeBlueprint {
 
         // Check every side inventory
         Integer limitingSideReactions = null;
-        for (String side : getSideCheckNames()) {
+        for (String side : getSideInventoryNames()) {
 
             // Get side result
             Ref<Integer> sideTimes = new Ref<>();
-            MythicRecipeInventory sideResult = getSideCheck(side).matches(inventories.getSideCheck(side), sideTimes);
+            MythicRecipeInventory sideResult = getSideCheck(side).matches(inventories.getSideInventory(side), sideTimes);
 
             // First failure and you're out
             if (sideResult == null) {

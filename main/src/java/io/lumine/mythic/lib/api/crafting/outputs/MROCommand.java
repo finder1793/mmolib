@@ -127,10 +127,10 @@ public class MROCommand extends MythicRecipeOutput {
         }
     }
 
-    @NotNull @Override public MythicRecipeInventory applyDisplay(@NotNull MythicRecipeInventory inventory) {
+    @NotNull @Override public MythicRecipeInventory applyDisplay(@NotNull MythicBlueprintInventory inventory, @NotNull InventoryClickEvent eventTrigger, @NotNull VanillaInventoryMapping mapping) {
         ItemStack git = getDisplayItem();
         if (git == null) { git = getDisplay().getRandomSubstituteItem(null); }
-        MythicRecipeInventory edited = inventory.clone();
+        MythicRecipeInventory edited = inventory.getResultInventory().clone();
         edited.clean();
         edited.setItemAt(0, 0, git);
         return edited; }

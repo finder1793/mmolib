@@ -144,7 +144,11 @@ public class MythicCachedResult {
      * Cache the result of correctly evaluating a recipe to display it.
      *
      * @param operationIdentifier Unique ID of this result so that it is unmistakable.
-     * @param resultOfOperation The cached result of the operation.
+     * @param resultOfOperation The cached result of the operation. <br>
+     *                          This contains information only on the final
+     *                          amounts of each item upon crafting once, but
+     *                          not on the output of the recipe, as the MythicRecipeOutput
+     *                          has not been called.
      * @param operation The operation information. Just in case
      *
      * @param resultInventoryDisplay To correctly link this cached result, and to easily destroy
