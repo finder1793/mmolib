@@ -104,7 +104,7 @@ public class ShapelessRequester {
 
         // Decide where to put the item operational id
         boolean reg = false;
-        for (int i : dibAmountOrder) {
+        for (int i = 0; i < dibAmountOrder.size(); i++) {
 
             // Get p, which is the ith entry in the dib order
             Integer p = dibAmountOrder.get(i);
