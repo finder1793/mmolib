@@ -187,6 +187,20 @@ public interface UIFilter {
     @Nullable ItemStack getItemStack(@NotNull String argument, @NotNull String data, @Nullable FriendlyFeedbackProvider ffp);
 
     /**
+     * Generate an ItemStack to display in the recipe book or before an item
+     * is crafted, this shall not be used for items that the player will obtain.
+     *
+     * @param argument First string that the user will provide
+     * @param data Second string that the user will provide
+     * @param ffp Tell the user why this could not generate an item using this.
+     * @return <code>null</code> if anything goes wrong. Please do not throw exceptions.
+     *
+     * @see #fullyDefinesItem()
+     * @see #determinateGeneration()
+     */
+    @NotNull ItemStack getDisplayStack(@NotNull String argument, @NotNull String data, @Nullable FriendlyFeedbackProvider ffp);
+
+    /**
      * Describe the meaning of the user providing these two strings.
      * <p>Think of it as, the user asks
      * </p>'<code>what does <b>v EMERALD 0</b> mean?</code>'

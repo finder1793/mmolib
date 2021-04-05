@@ -6,6 +6,8 @@ import io.lumine.mythic.lib.api.crafting.uimanager.ProvidedUIFilter;
 import io.lumine.mythic.lib.api.crafting.uifilters.UIFilter;
 import io.lumine.mythic.lib.api.util.Ref;
 import io.lumine.mythic.lib.api.util.ui.*;
+import io.lumine.utils.items.ItemFactory;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -525,6 +527,18 @@ public class MythicIngredient implements Cloneable {
 
         // Generate Item Stack yes
         return chosen.getItemStack(ffp);
+    }
+    @NotNull public ItemStack getRandomDisplayItem(@Nullable FriendlyFeedbackProvider ffp) {
+
+        // What will it be?
+        ItemStack result = null;
+
+        // An editable array of disposable ingredients
+        ProvidedUIFilter chosen = getRandomSubstitute(false);
+        if (chosen == null) { return ItemFactory.of(Material.STRUCTURE_VOID).name("\u00a74Internal Error:\u00a73 No Substitute").lore("\u00a76MythicLib \u00a7eio.lumine.mythic.lib.api.crafting.ingredients.MythicIngredient.getRandomDisplayItem()").build(); }
+
+        // Generate Item Stack yes
+        return chosen.getDisplayStack(ffp);
     }
     /**
      * @return One random item that would satisfy this recipe, as a provided UI filter.

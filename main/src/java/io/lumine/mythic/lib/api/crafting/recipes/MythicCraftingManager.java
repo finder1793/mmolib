@@ -36,7 +36,7 @@ import java.util.UUID;
  */
 public class MythicCraftingManager implements Listener {
     //region debug
-    //public static void log(String message) { MythicLib.plugin.getServer().getConsoleSender().sendMessage(MythicLib.plugin.parseColors(message)); }
+    public static void log(String message) { MythicLib.plugin.getServer().getConsoleSender().sendMessage(MythicLib.plugin.parseColors(message)); }
     //endregion
 
     //region Initialization

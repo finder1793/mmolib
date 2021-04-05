@@ -12,11 +12,14 @@ import io.lumine.mythic.lib.api.util.ui.FFPMythicLib;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackProvider;
 import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import org.apache.commons.lang.Validate;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 
 /**
@@ -27,7 +30,7 @@ import java.util.logging.Level;
  *
  * @author Gunging
  */
-public class ShapedRecipe extends MythicRecipe {
+public class ShapedRecipe extends MythicRecipe implements VanillaBookableRecipe {
 
     /**
      * A Mythic Recipe that checks for an ordered pattern of items
@@ -639,5 +642,120 @@ public class ShapedRecipe extends MythicRecipe {
             // That's it
             return ret;
         }
+    }
+
+    @NotNull
+    @Override
+    public Recipe getBukkitRecipe(@NotNull NamespacedKey recipeName, @NotNull ItemStack recipeResult) throws IllegalArgumentException {
+        //BKT//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("Building bukkit recipe of \u00a7e" + getName());
+
+        // Create bukkit recipe yay
+        org.bukkit.inventory.ShapedRecipe ret = new org.bukkit.inventory.ShapedRecipe(recipeName, recipeResult);
+
+        HashMap<Integer, HashMap<Integer, ShapedIngredient>> recipeContents = new HashMap<>();
+        HashMap<Integer, String> rowStrings = new HashMap<>();
+        int greatestH = 0;
+        int greatestW = 0;
+
+        for (int h = 0; h < getHeight() && h < 3; h++) {
+
+            char[] chars;
+            switch (h) {
+                case 0:  chars = new char[] {'A', 'B', 'C'}; break;
+                case 1:  chars = new char[] {'D', 'E', 'F'}; break;
+                default: chars = new char[] {'G', 'H', 'I'}; break; }
+
+            // Create hashmap of row
+            HashMap<Integer, ShapedIngredient> rowContents = new HashMap<>();
+
+            // String builder
+            StringBuilder rowString = new StringBuilder();
+
+            // Fill
+            for (int w = 0; w < getWidth() && w < 3; w++) {
+
+                // Get
+                ShapedIngredient get = getIngredientAt(w, -h);
+
+                // Fill ingredient (might be null)
+                rowContents.put(w, get);
+                greatestW = w;
+
+                // AIR
+                if (
+                        // If its not null
+                        get != null &&
+
+                        // And its only component is not AIR (supposing it only has one)
+                        !(get.getIngredient().getSubstitutes().size() == 1 &&
+                        get.getIngredient().getSubstitutes().get(0).isAir())) {
+
+                    // Store char of place
+                    rowString.append(chars[w]);
+
+                // Skip
+                } else { rowString.append(" ");}
+
+                //BKT//String foundName = get == null ? "null" : get.getIngredient().getName();
+                //BKT//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78{\u00a7b" + w + " " + h + "\u00a78}\u00a77 Found \u00a79" + foundName);
+            }
+
+            // Store
+            String row = rowString.toString();
+            boolean notBlanc = false;
+            for (char c : row.toCharArray()) { if (c != ' ') { notBlanc = true; break; }
+                //BKT//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78-\u00a7c- \u00a77Row \u00a7b" + h + "\u00a77 is blanc. ");
+                }
+
+            // Include
+            if (notBlanc) {
+                rowStrings.put(h, rowString.toString());
+                recipeContents.put(h, rowContents);
+                greatestH = h;
+
+                //BKT//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78-\u00a7a- \u00a77Included row \u00a7b" + h + "\u00a77 as \u00a7e" + rowString.toString());
+            } }
+
+        // Bake
+        String[] rowsBaked = new String[greatestH + 1];
+        for (Integer r : rowStrings.keySet()) { rowsBaked[r] = rowStrings.get(r); }
+        for (int s = 0; s < rowsBaked.length; s++) {
+            if (rowsBaked[s] == null) {
+                switch (greatestW) {
+                    default:
+                        rowsBaked[s] = " ";
+                    case 1:
+                        rowsBaked[s] = "  ";
+                    case 2:
+                        rowsBaked[s] = "   ";
+                } } }
+
+        // Insert shape yea
+        ret.shape(rowsBaked);
+
+        // Same thing yeet
+        for (int h = 0; h < getHeight(); h++) {
+
+            char[] chars;
+            switch (h) {
+                case 0:  chars = new char[] {'A', 'B', 'C'}; break;
+                case 1:  chars = new char[] {'D', 'E', 'F'}; break;
+                default: chars = new char[] {'G', 'H', 'I'}; break; }
+
+            // Get row
+            HashMap<Integer, ShapedIngredient> rowContent = recipeContents.get(h);
+
+            for (int w = 0; w < getWidth(); w++) {
+
+                // Get ingredient
+                ShapedIngredient ingredient = rowContent.get(w);
+                if (ingredient == null) { continue; }
+
+                // Insert but miss me with that 'missing char' trash
+                try { ret.setIngredient(chars[w], ingredient.toBukkit()); } catch (IllegalArgumentException ignored) {}
+
+            } }
+
+        return ret;
     }
 }

@@ -5,6 +5,7 @@ import io.lumine.mythic.lib.api.crafting.event.MythicCraftItemEvent;
 import io.lumine.mythic.lib.api.crafting.ingredients.*;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicCachedResult;
 import io.lumine.mythic.lib.api.crafting.recipes.ShapedRecipe;
+import io.lumine.mythic.lib.api.crafting.recipes.VanillaBookableOutput;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.VanillaInventoryMapping;
 import io.lumine.mythic.lib.api.crafting.uifilters.IngredientUIFilter;
 import io.lumine.mythic.lib.api.crafting.uifilters.UIFilter;
@@ -14,6 +15,7 @@ import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackCategory;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackProvider;
 import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import io.lumine.utils.items.ItemFactory;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -44,7 +46,7 @@ import java.util.HashMap;
  * 
  * @author Gunging
  */
-public class MRORecipe extends MythicRecipeOutput {
+public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutput {
 
     /**
      * The recipe output of this. It is shaped because I
@@ -197,51 +199,41 @@ public class MRORecipe extends MythicRecipeOutput {
              * description will be used instead, replacing the meta of
              * this item entirely.
              */
-            ItemStack gen = mmIngredient.getIngredient().getRandomSubstituteItem(ffp);
+            ItemStack gen = mmIngredient.getIngredient().getRandomDisplayItem(ffp);
 
-            // Valid?
-            if (gen != null) {
+            // How many substitutes do the ingredient have?
+            if (ingredient.getSubstitutes().size() > 1) {
 
-                // How many substitutes do the ingredient have?
-                if (ingredient.getSubstitutes().size() > 1) {
+                // Ok have to edit gen; We'll get gen's type.
+                ItemStack result = SilentNumbers.setItemName(new ItemStack(gen.getType()), SilentNumbers.findItemName(gen));
 
-                    // Ok have to edit gen; We'll get gen's type.
-                    ItemStack result = SilentNumbers.setItemName(new ItemStack(gen.getType()), SilentNumbers.findItemName(gen));
+                // Get the description from the ingredient
+                ArrayList<String> desc = new ArrayList<>();
+                for (String str : (new IngredientUIFilter().getDescription(ingredient.getName(), ""))) {
 
-                    // Get the description from the ingredient
-                    ArrayList<String> desc = new ArrayList<>();
-                    for (String str : (new IngredientUIFilter().getDescription(ingredient.getName(), ""))) {
-
-                        // Parse
-                        desc.add(MythicLib.plugin.parseColors(FriendlyFeedbackProvider.quickForPlayer(FFPMythicLib.get(), str)));
-                    }
-
-                    // Replace gen
-                    gen = ItemFactory.of(result).lore(desc).build();
+                    // Parse
+                    desc.add(MythicLib.plugin.parseColors(FriendlyFeedbackProvider.quickForPlayer(FFPMythicLib.get(), str)));
                 }
 
-                // Get current row
-                ItemStack[] row = rowsInformation.get(-shaped.getVerticalOffset());
-                if (row == null) { row = new ItemStack[(shaped.getHorizontalOffset() + 1)]; }
-                if (row.length < (shaped.getHorizontalOffset() + 1)) {
-                    ItemStack[] newRow = new ItemStack[(shaped.getHorizontalOffset() + 1)];
-                    //noinspection ManualArrayCopy
-                    for (int r = 0; r < row.length; r++) { newRow[r] = row[r]; }
-                    row = newRow;
-                }
-
-                // Yes
-                row[shaped.getHorizontalOffset()] = gen;
-
-                // Put
-                rowsInformation.put(-shaped.getVerticalOffset(), row);
-
-            // Log those
-            } else {
-
-                // All those invalid ones should log.
-                ffp.sendTo(FriendlyFeedbackCategory.ERROR, MythicLib.plugin.getServer().getConsoleSender());
+                // Replace gen
+                gen = ItemFactory.of(result).lore(desc).build();
             }
+
+            // Get current row
+            ItemStack[] row = rowsInformation.get(-shaped.getVerticalOffset());
+            if (row == null) { row = new ItemStack[(shaped.getHorizontalOffset() + 1)]; }
+            if (row.length < (shaped.getHorizontalOffset() + 1)) {
+                ItemStack[] newRow = new ItemStack[(shaped.getHorizontalOffset() + 1)];
+                //noinspection ManualArrayCopy
+                for (int r = 0; r < row.length; r++) { newRow[r] = row[r]; }
+                row = newRow;
+            }
+
+            // Yes
+            row[shaped.getHorizontalOffset()] = gen;
+
+            // Put
+            rowsInformation.put(-shaped.getVerticalOffset(), row);
         }
 
         // Add all rows into new
@@ -397,7 +389,7 @@ public class MRORecipe extends MythicRecipeOutput {
     @Override
     public void applyResult(@NotNull MythicRecipeInventory resultInventory, @NotNull MythicBlueprintInventory otherInventories, @NotNull MythicCachedResult cache, @NotNull InventoryClickEvent eventTrigger, @NotNull VanillaInventoryMapping map, int times) {
 
-        //RDR//MythicCraftingManager.log("\u00a78RDR \u00a746\u00a77 Running Result Event");
+        //RDR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78RDR \u00a746\u00a77 Running Result Event");
         /*
          * Listen, we'll take it from here. Cancel the original event.
          *
@@ -433,7 +425,7 @@ public class MRORecipe extends MythicRecipeOutput {
             /*
              * Set the result into the result slots.
              */
-            //RDR//MythicCraftingManager.log("\u00a78RDR \u00a747\u00a77 Reading/Generating Result");
+            //RDR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78RDR \u00a747\u00a77 Reading/Generating Result");
 
             // Build the result
             MythicRecipeInventory result = getDeterminateResult();
@@ -442,11 +434,11 @@ public class MRORecipe extends MythicRecipeOutput {
             //RR//for (String str : result.toStrings("\u00a78Result \u00a79RR-")) { MythicCraftingManager.log(str); }
 
             // Apply the result
-            //RDR//MythicCraftingManager.log("\u00a78RDR \u00a748\u00a77 Processing Result Inventory");
+            //RDR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78RDR \u00a748\u00a77 Processing Result Inventory");
             processInventory(resultInventory, result, times);
             //RR//for (String str : resultInventory.toStrings("\u00a78Result \u00a79PR-")) { MythicCraftingManager.log(str); }
 
-            //RDR//MythicCraftingManager.log("\u00a78RDR \u00a749\u00a77 Finding item to put on cursor");
+            //RDR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78RDR \u00a749\u00a77 Finding item to put on cursor");
 
             // Get the zeroth entry, which will be put in the players cursor >:o
             ItemStack cursor = resultInventory.getItemAt(map.getResultWidth(eventTrigger.getSlot()), map.getResultHeight(eventTrigger.getSlot()));
@@ -479,13 +471,13 @@ public class MRORecipe extends MythicRecipeOutput {
                 }
             }
 
-            //RR//MythicCraftingManager.log("\u00a78Result \u00a74C\u00a77 Found for cursor " + SilentNumbers.getItemName(actualCursor));
+            //RR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78Result \u00a74C\u00a77 Found for cursor " + SilentNumbers.getItemName(actualCursor));
 
             // Deleting original item (now its going to be on cursor so)
             cursor.setAmount(0);
 
             // Apply result to the inventory
-            //RDR//MythicCraftingManager.log("\u00a78RDR \u00a7410\u00a77 Actually applying to result inventory through map");
+            //RDR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78RDR \u00a7410\u00a77 Actually applying to result inventory through map");
             map.applyToResultInventory(eventTrigger.getInventory(), resultInventory, false);
 
             // Apply result to the cursor
@@ -497,7 +489,7 @@ public class MRORecipe extends MythicRecipeOutput {
             /*
              * Set the result into the result slots.
              */
-            //RDR//MythicCraftingManager.log("\u00a78RDR \u00a747\u00a77 Reading/Generating Result");
+            //RDR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78RDR \u00a747\u00a77 Reading/Generating Result");
 
             // Build the result
             MythicRecipeInventory generatedResult = getDeterminateResult();
@@ -509,7 +501,7 @@ public class MRORecipe extends MythicRecipeOutput {
 
             // For every time
             for (int t = 1; t <= times; t++) {
-                //RDR//MythicCraftingManager.log("\u00a78RDR \u00a748\u00a77 Iteration \u00a7c#" + t);
+                //RDR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78RDR \u00a748\u00a77 Iteration \u00a7c#" + t);
 
                 // Local of these
                 MythicRecipeInventory localResult = generatedResult;
@@ -834,4 +826,17 @@ public class MRORecipe extends MythicRecipeOutput {
         s.setAmount(amount);
         return s;
     }
+
+    @NotNull
+    @Override
+    public ItemStack getBukkitRecipeResult() throws IllegalArgumentException {
+
+        // Generate display
+        MythicRecipeInventory localResult = getDeterminateDisplay();
+        if (localResult == null) { localResult = generateDisplay(); }
+
+        // Get first yo
+        ItemStack first = localResult.getFirst();
+        Validate.isTrue(first != null, "MRORecipe output cannot just not generate any Item Stacks");
+        return first; }
 }

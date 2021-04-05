@@ -4,6 +4,7 @@ import io.lumine.mythic.lib.api.crafting.uimanager.UIFilterManager;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackCategory;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackProvider;
 import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
+import io.lumine.utils.items.ItemFactory;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -107,6 +108,23 @@ public class VanillaUIFilter implements UIFilter {
 
     @NotNull
     @Override
+    public ItemStack getDisplayStack(@NotNull String argument, @NotNull String data, @Nullable FriendlyFeedbackProvider ffp) {
+
+        // Check that its valid
+        if (!isValid(argument, data, ffp)) { return ItemFactory.of(Material.BARRIER).name("\u00a7cInvalid Material \u00a7e" + argument).build(); }
+
+        // Alr get material
+        Material mat = Material.valueOf(argument.toUpperCase().replace(" ", "_").replace("-", "_"));
+
+        FriendlyFeedbackProvider.log(ffp, FriendlyFeedbackCategory.SUCCESS,
+                "Successfully generated $r{0}$b. ", mat.toString().toLowerCase().replace("_", " "));
+
+        // Just simple like thay
+        return ItemFactory.of(mat).lore(getDescription(argument, data)).build();
+    }
+
+    @NotNull
+    @Override
     public ArrayList<String> getDescription(@NotNull String argument, @NotNull String data) {
 
         // Check validity
@@ -116,7 +134,7 @@ public class VanillaUIFilter implements UIFilter {
         Material mat = Material.valueOf(argument.toUpperCase().replace(" ", "_").replace("-", "_"));
 
         // Description is thus
-        return SilentNumbers.toArrayList("This item must be a vanilla $r" + mat.toString().toLowerCase().replace("_", " ") + "$b.");
+        return SilentNumbers.toArrayList("This item must be a $r" + mat.toString().toLowerCase().replace("_", " ") + "$b.");
     }
 
     @Override public boolean determinateGeneration() { return true; }

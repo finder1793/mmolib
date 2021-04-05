@@ -1,9 +1,17 @@
 package io.lumine.mythic.lib.api.crafting.ingredients;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.crafting.uifilters.IngredientUIFilter;
 import io.lumine.mythic.lib.api.crafting.uifilters.UIFilter;
 import io.lumine.mythic.lib.api.crafting.uimanager.ProvidedUIFilter;
+import io.lumine.mythic.lib.api.util.ui.FFPMythicLib;
+import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackCategory;
+import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackProvider;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.RecipeChoice;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
 
 /**
  * Different kinds of recipes require different specifications in their ingredients,
@@ -60,5 +68,30 @@ public class MythicRecipeIngredient {
             // Create with only this filter
             this.ingredient = new MythicIngredient(ingredient.toString(), ingredient);
         }
+    }
+
+    /**
+     * @return Transforms this ingredient into a bukkit ingredient to display in the book.
+     */
+    @NotNull public RecipeChoice toBukkit() {
+
+        // Alr include
+        ArrayList<ItemStack> choices = new ArrayList<>();
+        for (ProvidedUIFilter substitute : getIngredient().getSubstitutes()) {
+
+            //FriendlyFeedbackProvider ffp = null;
+            FriendlyFeedbackProvider ffp = new FriendlyFeedbackProvider(FFPMythicLib.get());
+            ffp.activatePrefix(true, "Ingredient \u00a7b" + getIngredient().getName());
+
+            // Add display ItemStack
+            choices.add(substitute.getDisplayStack(ffp));
+
+            // Send errors to the console yea
+            ffp.sendTo(FriendlyFeedbackCategory.ERROR, MythicLib.plugin.getServer().getConsoleSender());
+            ffp.sendTo(FriendlyFeedbackCategory.FAILURE, MythicLib.plugin.getServer().getConsoleSender());
+        }
+
+        // Create recipe choice
+        return new RecipeChoice.ExactChoice(choices);
     }
 }

@@ -8,6 +8,8 @@ import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackCategory;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackProvider;
 import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import io.lumine.mythic.lib.version.VersionMaterial;
+import io.lumine.utils.items.ItemFactory;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -89,6 +91,20 @@ public class IngredientUIFilter implements UIFilter {
         MythicIngredient ingredient = MythicIngredient.get(argument);
 
         return ingredient.getRandomSubstituteItem(null);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @NotNull
+    @Override
+    public ItemStack getDisplayStack(@NotNull String argument, @NotNull String data, @Nullable FriendlyFeedbackProvider ffp) {
+
+        // Check that its valid
+        if (!isValid(argument, data, ffp)) { return ItemFactory.of(Material.BARRIER).name("\u00a7cInvalid MythicIngredient").build(); }
+
+        // Get ingredient
+        MythicIngredient ingredient = MythicIngredient.get(argument);
+
+        return ingredient.getRandomDisplayItem(null);
     }
 
     @NotNull

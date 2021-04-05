@@ -1,10 +1,13 @@
 package io.lumine.mythic.lib.api.crafting.recipes;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.crafting.ingredients.*;
 import io.lumine.mythic.lib.api.crafting.outputs.MythicRecipeOutput;
 import io.lumine.mythic.lib.api.util.Ref;
 import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,7 +66,34 @@ public class MythicRecipeBlueprint {
     public MythicRecipeBlueprint(@NotNull MythicRecipe mainCheck, @NotNull MythicRecipeOutput result) {
         this.mainCheck = mainCheck;
         this.result = result;
+        nk = new NamespacedKey(MythicLib.plugin, getMainCheck().getName());
+        canDisplayInRecipeBook = getMainCheck() instanceof VanillaBookableRecipe && getResult() instanceof VanillaBookableOutput;
     }
+
+    /**
+     * Namespace under which this recipe may register onto the Recipe Book
+     */
+    @NotNull final NamespacedKey nk;
+
+    /**
+     * Namespace under which this recipe may register onto the Recipe Book
+     */
+    @NotNull
+    public NamespacedKey getNk() {
+        return nk;
+    }
+
+    /**
+     * Can this be displayed to players in the recipe book?
+     */
+    public boolean canDisplayInRecipeBook() {
+        return canDisplayInRecipeBook;
+    }
+
+    /**
+     * Can this be displayed to players in the recipe book?
+     */
+    final boolean canDisplayInRecipeBook;
 
     /**
      * For ease of implementation, It is required that there be at last one Non-null
@@ -218,15 +248,39 @@ public class MythicRecipeBlueprint {
     /**
      * Players may access this in vanilla stations.
      *
+     * @param forStation For which station you are activating this. Will not register the recipe onto the recipe book.
+     *
      * @see #disable()
      */
-    public void deploy(@NotNull MythicRecipeStation forStation) {
+    public void deploy(@NotNull MythicRecipeStation forStation) { deploy(forStation, null); }
+    /**
+     * Players may access this in vanilla stations. Also sets the recipe book live if possible
+     *
+     * @param forStation For which station you are activating this
+     *
+     * @param recipeName The Namespaced Key (if it was set live onto the recipe book) so you can remove
+     *                   the recipe when your plugin reloads these kinds of things.
+     *                   <p></p>
+     *                   If <code>null</code>, the recipe wont be included in the crafting book.
+     *
+     * @see #disable()
+     */
+    public void deploy(@NotNull MythicRecipeStation forStation, @Nullable Ref<NamespacedKey> recipeName) {
         MythicCraftingManager.deployBlueprint(this, forStation);
 
         //DPY//MythicCraftingManager.log("\u00a78Deploy \u00a7eA\u00a77 Recipe now live: \u00a76" + getMainCheck().getName() + "\u00a7e/\u00a76" + ((io.lumine.mythic.lib.api.crafting.outputs.MRORecipe) getResult()).getOutput().getName());
         //DPY//for (MythicRecipeIngredient ingredient : getMainCheck().getIngredients()) {  String loc = ""; if (ingredient instanceof ShapedIngredient) { loc = "\u00a73" + ((ShapedIngredient) ingredient).getHorizontalOffset() + ":" + (-((ShapedIngredient) ingredient).getVerticalOffset());} MythicCraftingManager.log("\u00a78Deploy " + loc + " \u00a7e-I\u00a77 " + ingredient.getIngredient().getName()); }
         //DPY//for (MythicRecipeIngredient ingredient : ((io.lumine.mythic.lib.api.crafting.outputs.MRORecipe) getResult()).getOutput().getIngredients()) {  String loc = ""; if (ingredient instanceof ShapedIngredient) { loc = "\u00a73" + ((ShapedIngredient) ingredient).getHorizontalOffset() + ":" + (-((ShapedIngredient) ingredient).getVerticalOffset());} MythicCraftingManager.log("\u00a78Deploy " + loc + " \u00a7e-R\u00a77 " + ingredient.getIngredient().getName()); }
-    }
+
+        // Main and result are vanilla bookable?
+        if (canDisplayInRecipeBook() && recipeName != null) {
+            recipeName.setValue(nk);
+
+            //DPY//MythicCraftingManager.log("\u00a78Deploy \u00a7eB\u00a77 Booked under namespace\u00a79 " + nk.toString());
+
+            // The name of the main check is used as namespace key
+            Bukkit.addRecipe(((VanillaBookableRecipe) getMainCheck()).getBukkitRecipe(getNk(),
+                    ((VanillaBookableOutput) getResult()).getBukkitRecipeResult())); } }
 
     /**
      * @return For which stations has this blueprint been set live, which vanilla
@@ -246,7 +300,7 @@ public class MythicRecipeBlueprint {
     /**
      * Players may no longer access this in vanilla stations.
      *
-     * @see #deploy(MythicRecipeStation)
+     * @see #deploy(MythicRecipeStation,Ref)
      */
     public void disable() {  for (MythicRecipeStation st : getDeployedFor()) { MythicCraftingManager.disableBlueprint(this, st); } deployedFor.clear(); }
 }

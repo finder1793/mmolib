@@ -126,7 +126,7 @@ public class ProvidedUIFilter implements Comparable<ProvidedUIFilter> {
     }
 
     /**
-     * Performs the comparison within using the parent filter.
+     * Performs the generation  within using the parent filter.
      * @see UIFilter#getItemStack(String, String, FriendlyFeedbackProvider)
      */
     @Nullable public ItemStack getItemStack(@Nullable FriendlyFeedbackProvider ffp) {
@@ -139,6 +139,22 @@ public class ProvidedUIFilter implements Comparable<ProvidedUIFilter> {
 
         // Set correct amount
         gen.setAmount(getAmount(0));
+        return gen;
+    }
+
+    /**
+     * Generates an item that does not necessarily match this filter,
+     * but contains its description in the lore in the worst case scenario.
+     *
+     * @see UIFilter#getItemStack(String, String, FriendlyFeedbackProvider)
+     */
+    @NotNull public ItemStack getDisplayStack(@Nullable FriendlyFeedbackProvider ffp) {
+
+        // Attempt to generate
+        ItemStack gen = getParent().getDisplayStack(getArgument(), getData(), ffp);
+
+        // Set correct amount
+        gen.setAmount(getAmount(1));
         return gen;
     }
 
@@ -299,6 +315,9 @@ public class ProvidedUIFilter implements Comparable<ProvidedUIFilter> {
      *         range specified).
      */
     public boolean checkAmount(double amount) {
+
+        // Air checks always succeed on amount
+        if (isAir()) { return true; }
 
         // Delegate to general
         return checkAmount(getAmountRange(), amount);

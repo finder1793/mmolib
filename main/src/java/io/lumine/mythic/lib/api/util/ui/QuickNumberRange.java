@@ -66,6 +66,21 @@ public class QuickNumberRange {
     }
 
     /**
+     * @param def Value to use if this has no bounds
+     * @return This but as an int, in the following priority:
+     *         <p></p>
+     *         1: Lower bound <br>
+     *         2: Upper bound <br>
+     *         3: def
+     */
+    @SuppressWarnings("ConstantConditions")
+    public double getAsDouble(double def) {
+        if (hasMin()) { return getMinimumInclusive(); }
+        if (hasMax()) { return getMaximumInclusive(); }
+        return def;
+    }
+
+    /**
      * Supported Formats:
      * <p><code>[m]..[M]</code>  (Vanilla range, the way used in command selectors)
      * </p><code>[n]</code> (Just a number; basically <code>=</code> operator)

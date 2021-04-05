@@ -12,7 +12,9 @@ import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackProvider;
 import io.lumine.mythic.lib.api.util.ui.QuickNumberRange;
 import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import io.lumine.mythic.lib.version.VersionMaterial;
+import io.lumine.utils.items.ItemFactory;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -139,6 +141,12 @@ public class RecipeUIFilter implements UIFilter {
         // This may only be used only as a reader
         return null;
     }
+
+    @NotNull
+    @Override
+    public ItemStack getDisplayStack(@NotNull String argument, @NotNull String data, @Nullable FriendlyFeedbackProvider ffp) {
+
+        return ItemFactory.of(Material.CRAFTING_TABLE).name("\u00a7aMythicRecipe \u00a7e " + argument).lore(getDescription(argument, data)).build(); }
 
     @NotNull
     @Override

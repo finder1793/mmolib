@@ -2,6 +2,8 @@ package io.lumine.mythic.lib.api.crafting.uifilters;
 
 import io.lumine.mythic.lib.api.crafting.uimanager.UIFilterManager;
 import io.lumine.mythic.lib.api.util.ui.*;
+import io.lumine.utils.items.ItemFactory;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -122,6 +124,22 @@ public class EnchantmentUIFilter implements UIFilter {
                 "Enchantment UIFilter $fcannot generate an item. ");
 
         return null;
+    }
+
+    @NotNull
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public ItemStack getDisplayStack(@NotNull String argument, @NotNull String data, @Nullable FriendlyFeedbackProvider ffp) {
+
+        // Check that its valid
+        if (!isValid(argument, data, ffp)) { return ItemFactory.of(Material.BARRIER).name("\u00a7cInvalid Enchantment \u00a7e" + argument + " " + data).build(); }
+
+        // Read
+        Enchantment wench = SilentNumbers.getEnchantment(argument);
+        QuickNumberRange expectedLevel = QuickNumberRange.getFromString(data);
+
+        // Return that ig
+        return ItemFactory.of(Material.GOLDEN_APPLE).name("\u00a73Any Item").enchant(wench, SilentNumbers.round(expectedLevel.getAsDouble(1))).lore(getDescription(argument, data)).build();
     }
 
     @NotNull

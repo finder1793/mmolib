@@ -6,7 +6,9 @@ import io.lumine.mythic.lib.api.util.Ref;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackProvider;
 import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import org.apache.commons.lang.Validate;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +26,7 @@ import java.util.Collections;
  * @author Gunging
  */
 @SuppressWarnings("unused")
-public class ShapelessRecipe extends MythicRecipe {
+public class ShapelessRecipe extends MythicRecipe implements VanillaBookableRecipe {
 
     /**
      * A Mythic Recipe that checks for an specified amount of items
@@ -359,6 +361,25 @@ public class ShapelessRecipe extends MythicRecipe {
             } }
 
         // That's eet
+        return ret;
+    }
+
+    @NotNull
+    @Override
+    public Recipe getBukkitRecipe(@NotNull NamespacedKey recipeName, @NotNull ItemStack recipeResult) throws IllegalArgumentException {
+
+        // Create bukkit recipe yay
+        org.bukkit.inventory.ShapelessRecipe ret = new org.bukkit.inventory.ShapelessRecipe(recipeName, recipeResult);
+
+        // Add all ingredients ig
+        for (MythicRecipeIngredient ingredient : getIngredients()) {
+
+            // Skip ig
+            if (ingredient == null) { continue; }
+
+            // Add
+            ret.addIngredient(ingredient.toBukkit()); }
+
         return ret;
     }
 }

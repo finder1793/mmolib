@@ -106,20 +106,17 @@ public class MROCommand extends MythicRecipeOutput {
             if (sub != null) {
 
                 // Generate iem
-                ItemStack gen = sub.getItemStack(null);
+                ItemStack gen = sub.getDisplayStack(null);
 
-                if (gen != null) {
+                // Apply changes
+                @NotNull ItemMeta gMeta = Objects.requireNonNull(gen.getItemMeta());
 
-                    // Apply changes
-                    @NotNull ItemMeta gMeta = Objects.requireNonNull(gen.getItemMeta());
+                // Edit Stack
+                if (displayedName != null) { gMeta.setDisplayName(MythicLib.plugin.parseColors(displayedName)); }
+                if (description != null) { gMeta.setLore(this.description); }
 
-                    // Edit Stack
-                    if (displayedName != null) { gMeta.setDisplayName(MythicLib.plugin.parseColors(displayedName)); }
-                    if (description != null) { gMeta.setLore(this.description); }
-
-                    // Put
-                    gen.setItemMeta(gMeta);
-                }
+                // Put
+                gen.setItemMeta(gMeta);
 
                 // Set
                 displayItem = gen;
@@ -129,7 +126,7 @@ public class MROCommand extends MythicRecipeOutput {
 
     @NotNull @Override public MythicRecipeInventory applyDisplay(@NotNull MythicBlueprintInventory inventory, @NotNull InventoryClickEvent eventTrigger, @NotNull VanillaInventoryMapping mapping) {
         ItemStack git = getDisplayItem();
-        if (git == null) { git = getDisplay().getRandomSubstituteItem(null); }
+        if (git == null) { git = getDisplay().getRandomDisplayItem(null); }
         MythicRecipeInventory edited = inventory.getResultInventory().clone();
         edited.clean();
         edited.setItemAt(0, 0, git);
