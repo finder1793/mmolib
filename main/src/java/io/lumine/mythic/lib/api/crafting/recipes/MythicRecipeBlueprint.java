@@ -4,6 +4,8 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.crafting.ingredients.*;
 import io.lumine.mythic.lib.api.crafting.outputs.MythicRecipeOutput;
 import io.lumine.mythic.lib.api.util.Ref;
+import io.lumine.mythic.lib.api.util.ui.FFPMythicLib;
+import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackProvider;
 import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -274,13 +276,31 @@ public class MythicRecipeBlueprint {
 
         // Main and result are vanilla bookable?
         if (canDisplayInRecipeBook() && recipeName != null) {
-            recipeName.setValue(nk);
 
             //DPY//MythicCraftingManager.log("\u00a78Deploy \u00a7eB\u00a77 Booked under namespace\u00a79 " + nk.toString());
 
-            // The name of the main check is used as namespace key
-            Bukkit.addRecipe(((VanillaBookableRecipe) getMainCheck()).getBukkitRecipe(getNk(),
-                    ((VanillaBookableOutput) getResult()).getBukkitRecipeResult())); } }
+            try {
+
+                // The name of the main check is used as namespace key
+                Bukkit.addRecipe(((VanillaBookableRecipe) getMainCheck()).getBukkitRecipe(getNk(),
+                        ((VanillaBookableOutput) getResult()).getBukkitRecipeResult()));
+
+                recipeName.setValue(nk);
+            } catch (IllegalArgumentException | IllegalStateException runtimeException) {
+
+                if (runtimeException instanceof IllegalStateException) {
+
+                    // Log duplicate recipe
+                    MythicLib.plugin.getServer().getConsoleSender().sendMessage(FriendlyFeedbackProvider.quickForConsole(FFPMythicLib.get(),
+                            "Could not register recipe for crafting book: Recipe of name '$u{0}$b' already registered.", getNk().getKey()));
+                } else {
+
+                    // Log error
+                    MythicLib.plugin.getServer().getConsoleSender().sendMessage(FriendlyFeedbackProvider.quickForConsole(FFPMythicLib.get(),
+                            "Could not register recipe for crafting book: ", ((IllegalArgumentException) runtimeException).getMessage()));
+                }
+            }
+        } }
 
     /**
      * @return For which stations has this blueprint been set live, which vanilla

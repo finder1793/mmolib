@@ -47,6 +47,12 @@ public class ItemTag {
         this.value = value;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ItemTag)) { return false; }
+        if (!((ItemTag) obj).getValue().equals(getValue())) { return false; }
+        return ((ItemTag) obj).getPath().equals(getPath()); }
+
     @NotNull public String getPath() {
         return path;
     }
