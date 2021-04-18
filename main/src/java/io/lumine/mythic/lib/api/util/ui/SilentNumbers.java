@@ -731,5 +731,96 @@ public class SilentNumbers {
         // Dispatch Command
         Bukkit.dispatchCommand(sender, command);
     }
+
+    /**
+     * Need not necessarily within {}s, will crop them out if they are there.
+     */
+    @NotNull public static String unwrapFromCurlyBrackets(@NotNull String source) {
+
+        // Unwrap if Existing
+        if (source.endsWith("}")) { source = source.substring(0, source.length() -1); }
+        if (source.startsWith("{")) { source = source.substring(1); }
+
+        return source;
+    }
+    /**
+     * A brackets tab is the name I came up with at 3am for a list between brakcets.
+     *
+     * Example (vanilla selectors): <code>@a[distance=..10,tag=Whatever,limit=4]</code>
+     *
+     * @param source The whole thing; Ex <code>@a[distance=..10,tag=Whatever,limit=4]</code>
+     *
+     * @param tag The tag you're interested in; Ex <code>limit</code>
+     *
+     * @return if there was no tag included, or incorrect format, null. Otherwise, the parsed value; Ex <code>4</code>
+     */
+    @Nullable public static Integer integerFromBracketsTab(@NotNull String source, String tag) {
+
+        // Parses
+        return IntegerParse(valueFromBracketsTab(source, tag));
+    }
+    /**
+     * A brackets tab is the name I came up with at 3am for a list between brackets.
+     *
+     * Example (vanilla selectors): <code>@a[distance=..10,tag=Whatever]</code>
+     * </p>
+     *
+     * @param source The whole thing; Ex <code>@a[distance=..10,tag=Whatever]</code>
+     *
+     * @param tag The tag you're interested in; Ex <code>distance</code>
+     *
+     * @return if there was no tag included, or incorrect format, null. Otherwise, a QuickNumberRange class parsing the value; Ex <code>..10</code>
+     */
+    @Nullable public static QuickNumberRange rangeFromBracketsTab(@NotNull String source, @NotNull String tag) {
+
+        // Parse
+        return QuickNumberRange.getFromString(valueFromBracketsTab(source, tag));
+    }
+    /**
+     * A brackets tab is the name I came up with at 3am for a list between brackets.
+     *
+     * Example (vanilla selectors): <code>@a[distance=..10,tag=Whatever]</code>
+     * </p>
+     *
+     * @param source The whole thing; Ex <code>@a[distance=..10,tag=Whatever]</code>
+     *
+     * @param tag The tag you're interested in; Ex <code>distance</code>
+     *
+     * @return if there was no tag included, or incorrect format, null. Otherwise, the string value; Ex <code>..10</code>
+     */
+    @Nullable public static String valueFromBracketsTab(@NotNull String source, @NotNull String tag) {
+
+        //PRSE//Log("Searching for \u00a7e" + tag + "= \u00a77 within \u00a79" + source);
+        int limitSt = source.indexOf(tag + "=");
+        if (limitSt > 0) {
+
+            // Crop the hell of it
+            String limitCropB4 = source.substring(limitSt + tag.length() + 1);
+
+            // Find the end, may it be a , or a ]; Whichever comes first
+            int limitCropEnd = -1;
+
+            // Find closing curly bracket I guess; Must begin with a curly bracket for that.
+            int curlyIndex = -1;
+            if (limitCropB4.startsWith("{")) { curlyIndex = limitCropB4.indexOf("}");}
+            if (curlyIndex == -1) { curlyIndex = 0; }
+
+            // Get the index of a comma, starting after the closing bracket.
+            int limitCropComma = limitCropB4.indexOf(",", curlyIndex);
+
+            int limitCropClose = limitCropB4.indexOf("]");
+            if (limitCropComma > 0) { limitCropEnd = limitCropComma; }
+            if (limitCropClose > 0) { if (limitCropEnd > 0) { if (limitCropClose < limitCropEnd) { limitCropEnd = limitCropClose; } } else { limitCropEnd = limitCropClose; } }
+
+            // Found an end?
+            if (limitCropEnd > 0) {
+
+                // Parse I guess
+                return limitCropB4.substring(0, limitCropEnd);
+            }
+        }
+
+        return null;
+    }
     //endregion
 }
