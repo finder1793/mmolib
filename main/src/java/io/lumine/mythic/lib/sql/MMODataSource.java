@@ -1,18 +1,13 @@
 package io.lumine.mythic.lib.sql;
 
-import io.lumine.mythic.lib.MythicLib;
 import io.lumine.utils.storage.sql.hikari.HikariConfig;
 import io.lumine.utils.storage.sql.hikari.HikariDataSource;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 
 public abstract class MMODataSource {
     protected final HikariConfig config = new HikariConfig();
@@ -53,7 +48,11 @@ public abstract class MMODataSource {
     public void getResult(String sql, Consumer<ResultSet> supplier) {
         execute(connection -> {
             try {
-                supplier.accept(connection.prepareStatement(sql).executeQuery());
+                try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                        supplier.accept(resultSet);
+                    }
+                }
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
@@ -67,7 +66,9 @@ public abstract class MMODataSource {
     public void executeUpdate(String sql) {
         execute(connection -> {
             try {
-                connection.prepareStatement(sql).executeUpdate();
+                try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                    preparedStatement.executeUpdate();
+                }
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
