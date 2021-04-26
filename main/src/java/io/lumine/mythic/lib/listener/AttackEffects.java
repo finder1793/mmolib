@@ -35,7 +35,7 @@ public class AttackEffects implements Listener {
 
         /*
          * damage modifiers. they do not stack geometrically (not 1.1 x 1.2 ...
-         * but rather * (1 + ( 0.1 + 0.2 ... )). damage is multiplied after
+         * but rather * (1 + ( 0.1 + 0.2 ... )). damages is multiplied after
          * adding up all the percent based damage stats
          */
         double d = 0;
