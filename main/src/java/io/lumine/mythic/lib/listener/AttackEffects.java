@@ -26,8 +26,8 @@ public class AttackEffects implements Listener {
     }
 
     public void reload() {
-        critCoefficient = MythicLib.plugin.getConfig().getDouble("crit-coefficient");
-        spellCritCoefficient = MythicLib.plugin.getConfig().getDouble("spell-crit-coefficient");
+        critCoefficient = MythicLib.plugin.getConfig().getDouble("crit-coefficient", 0.25);
+        spellCritCoefficient = MythicLib.plugin.getConfig().getDouble("spell-crit-coefficient", 0.25);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
