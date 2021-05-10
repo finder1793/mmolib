@@ -120,7 +120,7 @@ public class VanillaUIFilter implements UIFilter {
                 "Successfully generated $r{0}$b. ", mat.toString().toLowerCase().replace("_", " "));
 
         // Just simple like thay
-        return ItemFactory.of(mat).lore(getDescription(argument, data)).build();
+        return new ItemStack(mat);
     }
 
     @NotNull

@@ -1,10 +1,12 @@
 package io.lumine.mythic.lib.api.crafting.uimanager;
 
+import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.crafting.uifilters.UIFilter;
 import io.lumine.mythic.lib.api.crafting.uifilters.VanillaUIFilter;
 import io.lumine.mythic.lib.api.util.ui.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -155,6 +157,12 @@ public class ProvidedUIFilter implements Comparable<ProvidedUIFilter> {
 
         // Set correct amount
         gen.setAmount(getAmount(1));
+
+        // Gen
+        if (gen.getAmount() > 1) {
+            ItemMeta itemMeta = gen.getItemMeta();
+            if (itemMeta != null) { itemMeta.setDisplayName(SilentNumbers.getItemName(gen)); gen.setItemMeta(itemMeta); } }
+
         return gen;
     }
 
@@ -286,8 +294,8 @@ public class ProvidedUIFilter implements Comparable<ProvidedUIFilter> {
             return def;
         }
 
-        // If there is range, it is guaranteed to have a minimum
-        return SilentNumbers.round(amountRange.getMinimumInclusive());
+        // If its not a range, the minimum equals the maximum so
+        return SilentNumbers.round(getAmountRange().getMinimumInclusive());
     }
     /**
      * The amount specified by the user.

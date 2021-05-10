@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.api.item;
 
 import com.google.gson.*;
+import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -205,7 +206,7 @@ public class ItemTag {
                 for (Object e : (List) t.getValue()) {
 
                     // Add I guess
-                    if (e instanceof Number) { JSONception.add((Number) t.getValue()); }
+                    if (e instanceof Number) { JSONception.add(SilentNumbers.readableRounding(((Number) t.getValue()).doubleValue(), 3)); }
                     else if (e instanceof String) { JSONception.add((String) t.getValue()); }
                     else if (e instanceof Boolean) { JSONception.add((Boolean) t.getValue()); }
                 }
