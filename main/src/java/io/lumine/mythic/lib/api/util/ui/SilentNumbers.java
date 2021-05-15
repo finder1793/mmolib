@@ -4,6 +4,7 @@ import io.lumine.mythic.lib.api.util.ToStringLambda;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -821,6 +822,21 @@ public class SilentNumbers {
         }
 
         return null;
+    }
+
+    /**
+     * Isn't it annoying to have to write that try-catch block all the time?
+     * Well no more, this thing will just return null if the material is invalid!
+     * <br>
+     * It automatically makes it uppercase and replaces spaces/dashes for underscores.
+     *
+     * @param mat String that should be a {@link Material}
+     *
+     * @return The string parsed into a material
+     */
+    @Nullable public static Material getMaterial(@Nullable String mat) {
+        if (mat == null) { return null; }
+        try { return Material.valueOf(mat.toUpperCase().replace(" ", "_").replace("-","_")); } catch (IllegalArgumentException ignored) { return null; }
     }
     //endregion
 }
