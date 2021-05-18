@@ -67,10 +67,11 @@ public class QuickNumberRange {
 
     /**
      * @param def Value to use if this has no bounds
-     * @return This but as an int, in the following priority:
+     *
+     * @return This its simplest form, in the following priority:
      *         <p></p>
-     *         1: Lower bound <br>
-     *         2: Upper bound <br>
+     *         1: Lower bound, if there is one <br>
+     *         2: Upper bound, if there is one <br>
      *         3: def
      */
     @SuppressWarnings("ConstantConditions")

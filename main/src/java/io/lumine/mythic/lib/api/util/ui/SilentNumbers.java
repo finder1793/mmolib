@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.api.util.ui;
 
+import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.util.ToStringLambda;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -791,12 +792,13 @@ public class SilentNumbers {
      */
     @Nullable public static String valueFromBracketsTab(@NotNull String source, @NotNull String tag) {
 
-        //PRSE//Log("Searching for \u00a7e" + tag + "= \u00a77 within \u00a79" + source);
+        //PRS// MythicCraftingManager.log("\u00a7e>\u00a78>\u00a77 Searching for \u00a7e" + tag + "=\u00a77 within \u00a79" + source);
         int limitSt = source.indexOf(tag + "=");
-        if (limitSt > 0) {
+        if (limitSt >= 0) {
 
             // Crop the hell of it
             String limitCropB4 = source.substring(limitSt + tag.length() + 1);
+            //PRS// MythicCraftingManager.log(" \u00a7e>\u00a77 Pre:\u00a76 " + limitCropB4);
 
             // Find the end, may it be a , or a ]; Whichever comes first
             int limitCropEnd = -1;
@@ -813,12 +815,13 @@ public class SilentNumbers {
             if (limitCropComma > 0) { limitCropEnd = limitCropComma; }
             if (limitCropClose > 0) { if (limitCropEnd > 0) { if (limitCropClose < limitCropEnd) { limitCropEnd = limitCropClose; } } else { limitCropEnd = limitCropClose; } }
 
-            // Found an end?
-            if (limitCropEnd > 0) {
+            //PRS// MythicCraftingManager.log(" \u00a7e>\u00a77 Lim:\u00a76 " + limitCropEnd);
 
-                // Parse I guess
-                return limitCropB4.substring(0, limitCropEnd);
-            }
+            // I suppose that, if no comma nor ] was encountered, we may as well just not crop it
+            if (limitCropEnd == -1) { return limitCropB4; }
+
+            // Found an end? Crop
+            return limitCropB4.substring(0, limitCropEnd);
         }
 
         return null;
