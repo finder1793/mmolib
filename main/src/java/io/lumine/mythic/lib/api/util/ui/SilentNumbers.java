@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -690,6 +691,33 @@ public class SilentNumbers {
 
         // That's it
         return ret;
+    }
+
+    /**
+     * Basically {@link String#split(String)} method but:
+     * <br> #1 Returns an ArrayList instead
+     * <br> #2 If the string does not contain the sequence, the returned array will contain only the string itself.
+     *
+     * @param str String to split
+     * @param seq Sequence to match
+     * @return The string split by the sequence
+     */
+    @NotNull public static ArrayList<String> split(@NotNull String str, @NotNull String seq) {
+
+        // If contained
+        if (str.contains(seq)) {
+
+            // New with only one entry
+            ArrayList<String> ret = new ArrayList<>();
+            ret.add(str);
+            return ret;
+
+        } else {
+
+            // Split that shit
+            return toArrayList(str.split(Pattern.quote(seq)));
+        }
+
     }
 
     /**
