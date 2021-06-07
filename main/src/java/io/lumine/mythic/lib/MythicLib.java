@@ -1,20 +1,11 @@
 package io.lumine.mythic.lib;
 
 import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
-import io.lumine.mythic.lib.api.crafting.uifilters.EnchantmentUIFilter;
-import io.lumine.mythic.lib.api.crafting.uifilters.IngredientUIFilter;
-import io.lumine.mythic.lib.api.crafting.uimanager.UIFilterManager;
-import io.lumine.mythic.lib.api.crafting.uifilters.VanillaUIFilter;
 import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
-import io.lumine.mythic.lib.comp.*;
-import io.lumine.utils.holograms.BukkitHologramFactory;
-import io.lumine.utils.holograms.HologramFactory;
-import io.lumine.utils.scoreboard.PacketScoreboardProvider;
-import io.lumine.utils.scoreboard.ScoreboardProvider;
-import lombok.Getter;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.handler.AttributeStatHandler;
 import io.lumine.mythic.lib.commands.BaseCommand;
+import io.lumine.mythic.lib.comp.*;
 import io.lumine.mythic.lib.comp.hexcolor.ColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.HexColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.SimpleColorParser;
@@ -30,11 +21,15 @@ import io.lumine.mythic.lib.mmolibcommands.MMOTempStatCommand;
 import io.lumine.mythic.lib.version.ServerVersion;
 import io.lumine.mythic.lib.version.SpigotPlugin;
 import io.lumine.utils.events.extra.ArmorEquipEventListener;
+import io.lumine.utils.holograms.BukkitHologramFactory;
+import io.lumine.utils.holograms.HologramFactory;
 import io.lumine.utils.logging.Log;
 import io.lumine.utils.plugin.LuminePlugin;
+import io.lumine.utils.scoreboard.PacketScoreboardProvider;
+import io.lumine.utils.scoreboard.ScoreboardProvider;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 
 import java.util.logging.Level;
@@ -74,6 +69,7 @@ public class MythicLib extends LuminePlugin {
         }
 
         colorParser = version.isBelowOrEqual(1, 15) ? new SimpleColorParser() : new HexColorParser();
+        
     }
      
     @Override
