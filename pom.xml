@@ -23,35 +23,35 @@
 	    <sourceDirectory>main/src/java</sourceDirectory>
 	    <resources>
 	    	<resource>
-	    		<targetPath>.</targetPath>
-	    		<filtering>true</filtering>
-	    		<directory>${basedir}/main/src/resources</directory>
-	    		<includes> 
-	    			<include>plugin.yml</include>
-	    			<include>config.yml</include>
-	    			<include>readme.txt</include>
-	    		</includes>
-	    	</resource>
-	    </resources>
-	    <plugins>
-	      	<plugin>
-	        	<artifactId>maven-compiler-plugin</artifactId>
-	        	<version>3.1</version>
-	        	<configuration>
-	          		<source>1.8</source> 
-	          		<target>1.8</target>
-	        	</configuration>
+				<targetPath>.</targetPath>
+				<filtering>true</filtering>
+				<directory>${basedir}/main/src/resources</directory>
+				<includes>
+					<include>plugin.yml</include>
+					<include>config.yml</include>
+					<include>readme.txt</include>
+				</includes>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>8</source>
+					<target>8</target>
+				</configuration>
 			</plugin>
 			<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
-                <executions> 
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.2.4</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
                         <configuration>
                         	<relocations>
 					          	<relocation>
@@ -93,6 +93,7 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+
 	<repositories>
 		<repository>
             <id>lumine-repo</id>
@@ -144,12 +145,14 @@
 			<url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
 		</repository>
 	</repositories>
+
 	<pluginRepositories> 
 	    <pluginRepository>
 	        <id>apache.snapshots</id>
 	        <url>https://repository.apache.org/snapshots/</url>
 	    </pluginRepository>
 	</pluginRepositories>
+
 	<dependencies>
     	<!-- Main dependencies -->
     	<dependency>
@@ -188,7 +191,7 @@
 			<artifactId>Shopkeepers</artifactId>
 			<version>2.12.0</version>
 			<scope>provided</scope>
-            <optional>true</optional>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.mcmonkey</groupId>
@@ -197,11 +200,11 @@
 			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
-      	<dependency>
-           	<groupId>org.projectlombok</groupId>
-           	<artifactId>lombok</artifactId>
-           	<version>1.18.12</version>
-           	<scope>provided</scope>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.20</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -228,33 +231,28 @@
  
 		<!-- Spigot API -->
 		<dependency>
-            <groupId>com.destroystokyo.paper</groupId>
-            <artifactId>paper-api</artifactId>
-            <version>1.16.2-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
+			<groupId>com.destroystokyo.paper</groupId>
+			<artifactId>paper-api</artifactId>
+			<version>1.16.2-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
 			<version>1.16.5-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
-		<!--
+
 		<dependency>
 			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>1.16.2-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		-->
-		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>1.13-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
+			<artifactId>spigot-source</artifactId>
+			<version>1.17</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/spigot-1.17-source.jar</systemPath>
 		</dependency>
 
-		<!-- Spigot NMS versions -->  
+		<!-- Spigot NMS versions -->
         <dependency> 
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-1.16.4</artifactId>
@@ -297,13 +295,13 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-1.12.2</artifactId>
-            <version>dev</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-1.12.2</artifactId>
+			<version>dev</version>
+			<scope>provided</scope>
+			<optional>true</optional>
+		</dependency>
 
 		<!-- Popular Plugins  -->
 		<!--

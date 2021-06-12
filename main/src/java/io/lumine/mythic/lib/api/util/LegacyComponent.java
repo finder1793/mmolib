@@ -9,7 +9,7 @@ import io.lumine.utils.adventure.text.serializer.legacy.LegacyComponentSerialize
 import org.jetbrains.annotations.NotNull;
 
 public class LegacyComponent {
-    private static final LegacyComponentSerializer unusualSectionRGB = LegacyComponentSerializer.builder().character('§').hexCharacter('#').hexColors()
+    private static final LegacyComponentSerializer unusualSectionRGB = LegacyComponentSerializer.builder().character("§".toCharArray()[0]).hexCharacter('#').hexColors()
             .useUnusualXRepeatedCharacterHexFormat().build();
 
     @NotNull
