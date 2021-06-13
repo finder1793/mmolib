@@ -2,7 +2,7 @@
   	<modelVersion>4.0.0</modelVersion>
   	<groupId>io.lumine</groupId>
   	<artifactId>MythicLib</artifactId>
-  	<version>1.0.19</version>
+  	<version>1.1.0</version>
   	<name>MythicLib</name>
   	
   	<distributionManagement> 
@@ -244,15 +244,16 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-source</artifactId>
-			<version>1.17</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/spigot-1.17-source.jar</systemPath>
-		</dependency>
+
 
 		<!-- Spigot NMS versions -->
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-1.17</artifactId>
+			<version>dev</version>
+			<scope>provided</scope>
+			<optional>true</optional>
+		</dependency>
         <dependency> 
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-1.16.4</artifactId>

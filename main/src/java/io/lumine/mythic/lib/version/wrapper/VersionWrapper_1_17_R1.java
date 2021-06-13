@@ -47,7 +47,6 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -91,7 +90,7 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 
 	@Override
 	public void setActiveContainerDefault(Player player) {
-		/*toNMS(player).activeContainer = toNMS(player).defaultContainer;*/
+		/*toNMS(player).activeContainer = toNMS(player).defaultContainer;s*/
 	}
 
 	@Override
