@@ -90,7 +90,7 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 
 	@Override
 	public void setActiveContainerDefault(Player player) {
-		/*toNMS(player).activeContainer = toNMS(player).defaultContainer;*/
+		/*toNMS(player).activeContainer = toNMS(player).defaultContainer;s*/
 	}
 
 	@Override
