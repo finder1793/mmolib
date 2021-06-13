@@ -11,6 +11,13 @@ public class StatModifier {
         this(d, ModifierType.FLAT);
     }
 
+    /**
+     * Simple stat modifier, either flat (like +10 Atk Damage) or
+     * relative (+10% Atk Damage, scaling with current Atk Damage)
+     *
+     * @param d    Stat modifier value
+     * @param type Stat Type, either flat or relative
+     */
     public StatModifier(double d, ModifierType type) {
         this.d = d;
         this.type = type;
@@ -20,7 +27,7 @@ public class StatModifier {
         this(mod.d, mod.type);
     }
 
-    /***
+    /**
      * Used to parse a StatModifier from a string in a configuration section.
      * Throws IAE
      *
@@ -35,7 +42,7 @@ public class StatModifier {
         d = Double.parseDouble(type == ModifierType.RELATIVE ? str.substring(0, str.length() - 1) : str);
     }
 
-    /***
+    /**
      * Used to multiply some existing stat modifier by a constant, usually an
      * integer, for instance when modifiers scale with the number of players (in
      * a party, etc)
