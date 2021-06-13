@@ -273,16 +273,15 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigotsource</artifactId>
-			<version>1.17</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/spigot-1.17-src.jar</systemPath>
-		</dependency>
 
 		<!-- Spigot NMS versions -->
-
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-1.17</artifactId>
+			<version>dev</version>
+			<scope>provided</scope>
+			<optional>true</optional>
+		</dependency>
         <dependency> 
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-1.16.4</artifactId>
