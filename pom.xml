@@ -2,7 +2,7 @@
   	<modelVersion>4.0.0</modelVersion>
   	<groupId>io.lumine</groupId>
   	<artifactId>MythicLib</artifactId>
-  	<version>1.1.0</version>
+  	<version>1.0.19</version>
   	<name>MythicLib</name>
   	
   	<distributionManagement> 
@@ -95,55 +95,68 @@
 	</build>
 
 	<repositories>
+
 		<repository>
             <id>lumine-repo</id>
             <url>https://mvn.lumine.io/repository/maven-public/</url>
         </repository>
+
 		<repository>
 			<id>everything</id>
 			<url>https://repo.citizensnpcs.co/</url>
 		</repository>
+
 		<repository> 
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
+
 		<repository>
 			<id>aikar</id>
 			<url>https://repo.aikar.co/nexus/content/groups/aikar/</url>
 		</repository>
+
 		<repository>
 			<id>citizens-repo</id>
 			<url>https://repo.citizensnpcs.co</url>
 		</repository>
+
 	  	<repository>
 		    <id>papermc</id>
 		    <url>https://papermc.io/repo/repository/maven-public/</url>
 		</repository>
+
 		<repository>
 			<id>sk89q-repo</id>
 			<url>https://maven.enginehub.org/repo/</url>
 		</repository>
+
 		<repository>
 			<id>hikari-cp</id>
 			<url>https://clojars.org/repo/</url>
 		</repository>
+
 		<repository>
 			<id>mypet-repo</id>
 			<url>https://repo.keyle.de/</url>
 		</repository>
+
 		<repository>
 			<id>mojang</id>
 			<url>https://libraries.minecraft.net/</url>
 		</repository>
+
 		<repository>
 			<id>shopkeepers</id>
 			<url>https://jitpack.io/#Shopkeepers/Shopkeepers/</url>
 			<!-- <url>https://nexus.lichtspiele.org/repository/releases/</url> -->
 		</repository>
+
 		<repository>
 			<id>placeholderapi</id>
 			<url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
 		</repository>
+
 	</repositories>
 
 	<pluginRepositories> 
@@ -154,6 +167,7 @@
 	</pluginRepositories>
 
 	<dependencies>
+
     	<!-- Main dependencies -->
     	<dependency>
             <groupId>io.lumine</groupId>
@@ -167,6 +181,7 @@
 		        </exclusion>
 		    </exclusions>
         </dependency>
+
 		<dependency>
 			<groupId>net.citizensnpcs</groupId>
 			<artifactId>citizensapi</artifactId>
@@ -174,18 +189,21 @@
             <scope>provided</scope>
             <optional>true</optional>
 		</dependency>
+
 		<dependency>
 			<groupId>com.sk89q.worldguard</groupId>
 			<artifactId>worldguard-bukkit</artifactId>
 			<version>7.0.2-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>io.lumine.xikage</groupId>
 			<artifactId>MythicMobs</artifactId>
 			<version>4.11.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>com.nisovin.shopkeepers</groupId>
 			<artifactId>Shopkeepers</artifactId>
@@ -193,6 +211,7 @@
 			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
+
 		<dependency>
 			<groupId>org.mcmonkey</groupId>
 			<artifactId>sentinel</artifactId>
@@ -200,12 +219,14 @@
 			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>1.18.20</version>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
@@ -245,15 +266,23 @@
 		</dependency>
 
 
-
-		<!-- Spigot NMS versions -->
 		<dependency>
 			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-1.17</artifactId>
-			<version>dev</version>
+			<artifactId>spigot-api</artifactId>
+			<version>1.16.5-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
-			<optional>true</optional>
 		</dependency>
+
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigotsource</artifactId>
+			<version>1.17</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/spigot-1.17-src.jar</systemPath>
+		</dependency>
+
+		<!-- Spigot NMS versions -->
+
         <dependency> 
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-1.16.4</artifactId>
@@ -261,6 +290,7 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
+
         <dependency> 
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-1.16.2</artifactId>
@@ -268,6 +298,7 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
+
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-1.16.1</artifactId>
@@ -275,6 +306,7 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
+
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-1.15</artifactId>
@@ -282,6 +314,7 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
+
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-1.14</artifactId>
@@ -289,6 +322,7 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
+
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-1.13.2</artifactId>
@@ -296,6 +330,7 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
+
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-1.12.2</artifactId>
@@ -304,14 +339,5 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- Popular Plugins  -->
-		<!--
-		<dependency>
-			<groupId>me.clip</groupId>
-			<artifactId>placeholderapi</artifactId>
-			<version>2.10.7</version>
-			<scope>provided</scope>
-		</dependency>
-		-->
 	</dependencies>
 </project>
