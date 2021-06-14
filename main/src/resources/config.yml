@@ -23,6 +23,14 @@ crit-coefficient: 2.0
 # Same but for skill damage.
 spell-crit-coefficient: 1.5
 
+# Put that option to true if you are updating to MMOLib 1.1+
+# Don't use it if you are using MMOLib for the first time.
+# Requires a reload when changed.
+#
+# That option makes sure players all have their base
+# attribute value set to the default attribute base value.
+fix-player-attributes: false
+
 # Edit general plugin number formatting here.
 number-format:
   decimal-separator: .

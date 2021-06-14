@@ -15,13 +15,16 @@ public class StatInstance {
     private final String stat;
     private final Map<String, StatModifier> modifiers = new HashMap<>();
 
-    /**
-     * Base value is really important because of relative stat modifiers. If
+    /*
+     * base value is cached whenever the class is instances because the stat
+     * needs to take it into account.
      */
+    private final double base;
 
     public StatInstance(StatMap map, String stat) {
         this.map = map;
         this.stat = stat;
+        this.base = MythicLib.plugin.getStats().getBaseValue(stat);
     }
 
     public StatMap getMap() {
@@ -40,11 +43,8 @@ public class StatInstance {
         return getBase();
     }
 
-    /**
-     * @return Finds the base stat value
-     */
     public double getBase() {
-        return MythicLib.inst().getStats().getBaseValue(stat, map);
+        return base;
     }
 
     /***
@@ -54,7 +54,7 @@ public class StatInstance {
      *         modifiers.
      */
     public double getTotal() {
-        double d = getBase();
+        double d = base;
 
         for (StatModifier attr : modifiers.values())
             if (attr.getType() == ModifierType.FLAT)
@@ -69,7 +69,7 @@ public class StatInstance {
 
     /***
      * @param modification
-     *            A modification to any stat modifier before taking it into
+     *            a modification to any stat modifier before taking it into
      *            account in stat calculation. This can be used for instance to
      *            reduce debuffs, by checking if a stat modifier has a negative
      *            value and returning a modifier with a reduced absolute value
@@ -80,7 +80,7 @@ public class StatInstance {
      *         modifiers.
      */
     public double getTotal(Function<StatModifier, StatModifier> modification) {
-        double d = getBase();
+        double d = base;
 
         for (StatModifier attr : modifiers.values())
             if (attr.getType() == ModifierType.FLAT)
