@@ -5,14 +5,26 @@ import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.handler.AttributeStatHandler;
 import io.lumine.mythic.lib.commands.BaseCommand;
-import io.lumine.mythic.lib.comp.*;
+import io.lumine.mythic.lib.comp.CitizensEntityHandler;
+import io.lumine.mythic.lib.comp.MyPetEntityHandler;
+import io.lumine.mythic.lib.comp.MythicMobsDamageHandler;
+import io.lumine.mythic.lib.comp.PlaceholderAPIHook;
+import io.lumine.mythic.lib.comp.ShopKeepersEntityHandler;
 import io.lumine.mythic.lib.comp.hexcolor.ColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.HexColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.SimpleColorParser;
 import io.lumine.mythic.lib.gui.PluginInventory;
-import io.lumine.mythic.lib.listener.*;
+import io.lumine.mythic.lib.listener.AttackEffects;
+import io.lumine.mythic.lib.listener.DamageReduction;
+import io.lumine.mythic.lib.listener.HealthScale;
+import io.lumine.mythic.lib.listener.MitigationMechanics;
+import io.lumine.mythic.lib.listener.PlayerListener;
 import io.lumine.mythic.lib.listener.event.PlayerAttackEventListener;
-import io.lumine.mythic.lib.manager.*;
+import io.lumine.mythic.lib.manager.ConfigManager;
+import io.lumine.mythic.lib.manager.DamageManager;
+import io.lumine.mythic.lib.manager.EntityManager;
+import io.lumine.mythic.lib.manager.JsonManager;
+import io.lumine.mythic.lib.manager.StatManager;
 import io.lumine.mythic.lib.metrics.bStats;
 import io.lumine.mythic.lib.mmolibcommands.ExploreAttributesCommand;
 import io.lumine.mythic.lib.mmolibcommands.MMODebugCommand;
@@ -35,172 +47,176 @@ import org.bukkit.entity.Player;
 import java.util.logging.Level;
 
 public class MythicLib extends LuminePlugin {
-    public static MythicLib plugin;
- 
-    //@Getter private ProfileManager profileManager;
-  
-    private final DamageManager damageManager = new DamageManager();
-    private final EntityManager entityManager = new EntityManager();
-    private final StatManager statManager = new StatManager();
-    private final JsonManager jsonManager = new JsonManager();
-    private final ConfigManager configManager = new ConfigManager();
-  
-    private ServerVersion version;
-    private AttackEffects attackEffects;
-    private MitigationMechanics mitigationMecanics;
-    private ColorParser colorParser;
-    
-    @Getter private ScoreboardProvider scoreboardProvider;
-    @Getter private HologramFactory hologramProvider;
+	public static MythicLib plugin;
 
-    private boolean hasMythicMobs = false;
+	//@Getter private ProfileManager profileManager;
 
-    @Override
-    public void load() {
-        plugin = this;
+	private final DamageManager damageManager = new DamageManager();
+	private final EntityManager entityManager = new EntityManager();
+	private final StatManager statManager = new StatManager();
+	private final JsonManager jsonManager = new JsonManager();
+	private final ConfigManager configManager = new ConfigManager();
 
-        try {
-            version = new ServerVersion(Bukkit.getServer().getClass());
-            getLogger().log(Level.INFO, "Detected Bukkit Version: " + version.toString());
-        } catch (Exception exception) {
-            getLogger().log(Level.INFO, net.md_5.bungee.api.ChatColor.RED + "Your server version is not compatible.");
-            Bukkit.getPluginManager().disablePlugin(this);
-            return;
-        }
+	private ServerVersion version;
+	private AttackEffects attackEffects;
+	private MitigationMechanics mitigationMecanics;
+	private ColorParser colorParser;
 
-        colorParser = version.isBelowOrEqual(1, 15) ? new SimpleColorParser() : new HexColorParser();
-        
-    }
-     
-    @Override
-    public void enable() {
-        Log.info(ChatColor.GOLD + "-------------------------------------------------");
-        Log.info(ChatColor.AQUA + "+ Infecting Server with MythicLib for Spigot/Paper");
-        Log.info(ChatColor.GOLD + "-------------------------------------------------");
+	@Getter
+	private ScoreboardProvider scoreboardProvider;
+	@Getter
+	private HologramFactory hologramProvider;
 
-        //this.bind(this.configuration = new Configuration(this));
-        //this.profileManager = new ProfileManager(this);
-        //this.bind(this.profileManager);
+	private boolean hasMythicMobs = false;
 
-        registerCommand("mythiclib", new BaseCommand(this));
+	@Override
+	public void load() {
+		plugin = this;
 
-        new bStats(this);
+		try {
+			version = new ServerVersion(Bukkit.getServer().getClass());
+			getLogger().log(Level.INFO, "Detected Bukkit Version: " + version.toString());
+		} catch (Exception exception) {
+			getLogger().log(Level.INFO, net.md_5.bungee.api.ChatColor.RED + "Your server version is not compatible.");
+			Bukkit.getPluginManager().disablePlugin(this);
+			return;
+		}
 
-        new SpigotPlugin(73855, this).checkForUpdate();
-        saveDefaultConfig();
+		colorParser = version.isBelowOrEqual(1, 15) ? new SimpleColorParser() : new HexColorParser();
 
-        final int configVersion = getConfig().contains("config-version", true) ? getConfig().getInt("config-version") : -1;
-        final int defConfigVersion = getConfig().getDefaults().getInt("config-version");
-        if (configVersion != defConfigVersion) {
-            getLogger().warning("You may be using an outdated config.yml!");
-            getLogger().warning("(Your config version: '" + configVersion + "' | Expected config version: '" + defConfigVersion + "')");
-        }
+	}
 
-        this.scoreboardProvider = new PacketScoreboardProvider(this);
-        this.provideService(ScoreboardProvider.class, this.scoreboardProvider);
-        
-        this.hologramProvider = new BukkitHologramFactory();
-        this.provideService(HologramFactory.class, this.hologramProvider);
-        
-        Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
+	@Override
+	public void enable() {
+		Log.info(ChatColor.GOLD + "-------------------------------------------------");
+		Log.info(ChatColor.AQUA + "+ Infecting Server with MythicLib for Spigot/Paper");
+		Log.info(ChatColor.GOLD + "-------------------------------------------------");
 
-        Bukkit.getPluginManager().registerEvents(damageManager, this);
-        Bukkit.getPluginManager().registerEvents(new DamageReduction(), this);
-        Bukkit.getPluginManager().registerEvents(attackEffects = new AttackEffects(), this);
-        Bukkit.getPluginManager().registerEvents(mitigationMecanics = new MitigationMechanics(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerAttackEventListener(), this);
-        Bukkit.getPluginManager().registerEvents(new ArmorEquipEventListener(), this);
-        Bukkit.getPluginManager().registerEvents(new MythicCraftingManager(), this);
+		//this.bind(this.configuration = new Configuration(this));
+		//this.profileManager = new ProfileManager(this);
+		//this.bind(this.profileManager);
 
-        if (getConfig().getBoolean("health-scale.enabled"))
-            Bukkit.getPluginManager().registerEvents(new HealthScale(getConfig().getDouble("health-scale.scale")), this);
+		registerCommand("mythiclib", new BaseCommand(this));
 
-        if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null) {
-            damageManager.registerHandler(new MythicMobsDamageHandler());
-            this.hasMythicMobs = true;
-        }
+		new bStats(this);
 
-        if (Bukkit.getPluginManager().getPlugin("Citizens") != null)
-            entityManager.registerHandler(new CitizensEntityHandler());
+		new SpigotPlugin(73855, this).checkForUpdate();
+		saveDefaultConfig();
 
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            MythicPlaceholders.registerPlaceholder(new PlaceholderAPIHook()); }
+		final int configVersion = getConfig().contains("config-version", true) ? getConfig().getInt("config-version") : -1;
+		final int defConfigVersion = getConfig().getDefaults().getInt("config-version");
+		if (configVersion != defConfigVersion) {
+			getLogger().warning("You may be using an outdated config.yml!");
+			getLogger().warning("(Your config version: '" + configVersion + "' | Expected config version: '" + defConfigVersion + "')");
+		}
 
-        if (Bukkit.getPluginManager().getPlugin("ShopKeepers") != null)
-            entityManager.registerHandler(new ShopKeepersEntityHandler());
+		this.scoreboardProvider = new PacketScoreboardProvider(this);
+		this.provideService(ScoreboardProvider.class, this.scoreboardProvider);
 
-        if (Bukkit.getPluginManager().getPlugin("MyPet") != null)
-            entityManager.registerHandler(new MyPetEntityHandler());
+		this.hologramProvider = new BukkitHologramFactory();
+		this.provideService(HologramFactory.class, this.hologramProvider);
 
-        if (version.isStrictlyHigher(1, 12))
-            getCommand("exploreattributes").setExecutor(new ExploreAttributesCommand());
-        getCommand("mythiclib").setExecutor(new MMOLibCommand());
-        getCommand("mmodebug").setExecutor(new MMODebugCommand());
-        getCommand("mmotempstat").setExecutor(new MMOTempStatCommand());
+		Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
 
-        if (getConfig().getBoolean("fix-player-attributes")) AttributeStatHandler.updateAttributes = true;
+		Bukkit.getPluginManager().registerEvents(damageManager, this);
+		Bukkit.getPluginManager().registerEvents(new DamageReduction(), this);
+		Bukkit.getPluginManager().registerEvents(attackEffects = new AttackEffects(), this);
+		Bukkit.getPluginManager().registerEvents(mitigationMecanics = new MitigationMechanics(), this);
+		Bukkit.getPluginManager().registerEvents(new PlayerAttackEventListener(), this);
+		Bukkit.getPluginManager().registerEvents(new ArmorEquipEventListener(), this);
+		Bukkit.getPluginManager().registerEvents(new MythicCraftingManager(), this);
 
-        Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.setup(player.getUniqueId()));
+		if (getConfig().getBoolean("health-scale.enabled"))
+			Bukkit.getPluginManager().registerEvents(new HealthScale(getConfig().getDouble("health-scale.scale")), this);
 
-        configManager.reload();
+		if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null) {
+			damageManager.registerHandler(new MythicMobsDamageHandler());
+			this.hasMythicMobs = true;
+		}
 
-    }
+		if (Bukkit.getPluginManager().getPlugin("Citizens") != null)
+			entityManager.registerHandler(new CitizensEntityHandler());
 
-    public void reload() {
-        reloadConfig();
-        configManager.reload();
-        attackEffects.reload();
-        mitigationMecanics.reload();
-    }
+		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+			MythicPlaceholders.registerPlaceholder(new PlaceholderAPIHook());
+		}
 
-    @Override
-    public void disable() {
-        //this.configuration.unload();
-        for (Player player : Bukkit.getOnlinePlayers())
-            if (player.getOpenInventory() != null && player.getOpenInventory().getTopInventory().getHolder() != null && player.getOpenInventory().getTopInventory().getHolder() instanceof PluginInventory)
-                player.closeInventory();
-    }
-    
-    public static MythicLib inst()    {
-        return plugin;
-    }
-    public ServerVersion getVersion() {
-        return version;
-    }
+		if (Bukkit.getPluginManager().getPlugin("ShopKeepers") != null)
+			entityManager.registerHandler(new ShopKeepersEntityHandler());
 
-    public JsonManager getJson() {
-        return jsonManager;
-    }
+		if (Bukkit.getPluginManager().getPlugin("MyPet") != null)
+			entityManager.registerHandler(new MyPetEntityHandler());
 
-    public DamageManager getDamage() {
-        return damageManager;
-    }
+		if (version.isStrictlyHigher(1, 12))
+			getCommand("exploreattributes").setExecutor(new ExploreAttributesCommand());
+		getCommand("mythiclib").setExecutor(new MMOLibCommand());
+		getCommand("mmodebug").setExecutor(new MMODebugCommand());
+		getCommand("mmotempstat").setExecutor(new MMOTempStatCommand());
 
-    public EntityManager getEntities() {
-        return entityManager;
-    }
+		if (getConfig().getBoolean("fix-player-attributes")) AttributeStatHandler.updateAttributes = true;
 
-    public StatManager getStats() {
-        return statManager;
-    }
+		Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.setup(player.getUniqueId()));
 
-    public ConfigManager getMMOConfig() {
-        return configManager;
-    }
+		configManager.reload();
 
-    /**
-     * @param format The string to format
-     * @return String with parsed (hex) color codes
-     */
-    public String parseColors(String format) {
-        return colorParser.parseColorCodes(format);
-    }
+	}
 
-    /*
-     * saving if mythic mobs is enabled because it gets called every player
-     * attack event
-     */
-    public boolean hasMythicMobs() {
-        return hasMythicMobs;
-    }
+	public void reload() {
+		reloadConfig();
+		configManager.reload();
+		attackEffects.reload();
+		mitigationMecanics.reload();
+	}
+
+	@Override
+	public void disable() {
+		//this.configuration.unload();
+		for (Player player : Bukkit.getOnlinePlayers())
+			if (player.getOpenInventory() != null && player.getOpenInventory().getTopInventory().getHolder() != null && player.getOpenInventory().getTopInventory().getHolder() instanceof PluginInventory)
+				player.closeInventory();
+	}
+
+	public static MythicLib inst() {
+		return plugin;
+	}
+
+	public ServerVersion getVersion() {
+		return version;
+	}
+
+	public JsonManager getJson() {
+		return jsonManager;
+	}
+
+	public DamageManager getDamage() {
+		return damageManager;
+	}
+
+	public EntityManager getEntities() {
+		return entityManager;
+	}
+
+	public StatManager getStats() {
+		return statManager;
+	}
+
+	public ConfigManager getMMOConfig() {
+		return configManager;
+	}
+
+	/**
+	 * @param format The string to format
+	 * @return String with parsed (hex) color codes
+	 */
+	public String parseColors(String format) {
+		return colorParser.parseColorCodes(format);
+	}
+
+	/*
+	 * saving if mythic mobs is enabled because it gets called every player
+	 * attack event
+	 */
+	public boolean hasMythicMobs() {
+		return hasMythicMobs;
+	}
 }
