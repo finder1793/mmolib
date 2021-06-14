@@ -17,12 +17,20 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.network.chat.ChatMessage;
 import net.minecraft.network.chat.ChatMessageType;
 import net.minecraft.network.chat.IChatBaseComponent;
+import net.minecraft.network.protocol.game.PacketPlayInArmAnimation;
+import net.minecraft.network.protocol.game.PacketPlayOutAnimation;
 import net.minecraft.network.protocol.game.PacketPlayOutChat;
 import net.minecraft.network.protocol.game.PacketPlayOutCloseWindow;
+import net.minecraft.resources.MinecraftKey;
 import net.minecraft.server.level.EntityPlayer;
+import net.minecraft.server.level.WorldServer;
+import net.minecraft.server.network.PlayerConnection;
+import net.minecraft.sounds.SoundEffect;
+import net.minecraft.world.EnumHand;
 import net.minecraft.world.inventory.Container;
 import net.minecraft.world.inventory.ContainerAccess;
 import net.minecraft.world.inventory.ContainerAnvil;
+import net.minecraft.world.level.block.SoundEffectType;
 import net.minecraft.world.level.block.entity.TileEntitySkull;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -33,6 +41,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_17_R1.event.CraftEventFactory;
 import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_17_R1.util.CraftMagicNumbers.NBT;
 import org.bukkit.enchantments.Enchantment;
@@ -47,6 +56,7 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -69,18 +79,17 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 
 	@Override
 	public int getNextContainerId(Player player) {
-		/*	return toNMS(player).nextContainerCounter();*/
-		return 0;
+		return toNMS(player).nextContainerCounter();
 	}
 
 	@Override
 	public void handleInventoryCloseEvent(Player player) {
-		/*CraftEventFactory.handleInventoryCloseEvent(toNMS(player));*/
+		CraftEventFactory.handleInventoryCloseEvent(toNMS(player));
 	}
 
 	@Override
 	public void sendPacketOpenWindow(Player player, int containerId) {
-		/*toNMS(player).playerConnection.sendPacket(new PacketPlayOutOpenWindow(containerId, Containers.ANVIL, new ChatMessage("Repair & Name")));*/
+		/**toNMS(player).playerConnection.sendPacket(new PacketPlayOutOpenWindow(containerId, Container.b, new ChatMessage("Repair & Name")));**/
 	}
 
 	@Override
@@ -90,7 +99,7 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 
 	@Override
 	public void setActiveContainerDefault(Player player) {
-		/*toNMS(player).activeContainer = toNMS(player).defaultContainer;s*/
+		/**toNMS(player).activeContainer = toNMS(player).defaultContainer;**/
 	}
 
 	@Override
@@ -371,19 +380,19 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 
 	@Override
 	public void playArmAnimation(Player player) {
-		/*EntityPlayer p = ((CraftPlayer) player).getHandle();
-		PlayerConnection connection = p.playerConnection;
+		EntityPlayer p = ((CraftPlayer) player).getHandle();
+		PlayerConnection connection = p.b;
 		PacketPlayOutAnimation armSwing = new PacketPlayOutAnimation(p, 0);
 		connection.sendPacket(armSwing);
-		connection.a(new PacketPlayInArmAnimation(EnumHand.MAIN_HAND));*/
+		connection.a(new PacketPlayInArmAnimation(EnumHand.a));
 	}
 
 	@Override
 	public Sound getBlockPlaceSound(Block block) {
-		/*try {
-			World nmsWorld = ((CraftWorld) block.getWorld()).getHandle();
+		try {
+			WorldServer nmsWorld = ((CraftWorld) block.getWorld()).getHandle();
 
-			net.minecraft.server.v1_17_R1.Block nmsBlock = nmsWorld.getType(new BlockPosition(block.getX(), block.getY(), block.getZ())).getBlock();
+			net.minecraft.world.level.block.Block nmsBlock = nmsWorld.getType(new BlockPosition(block.getX(), block.getY(), block.getZ())).getBlock();
 			SoundEffectType soundEffectType = nmsBlock.getStepSound(nmsBlock.getBlockData());
 
 			Field breakSound = SoundEffectType.class.getDeclaredField("Z");
@@ -397,7 +406,7 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 			return Sound.valueOf(nmsString.getKey().replace(".", "_").toUpperCase());
 		} catch (IllegalAccessException | NoSuchFieldException ex) {
 			ex.printStackTrace();
-		}*/
+		}
 		return null;
 	}
 
