@@ -32,7 +32,12 @@ import net.minecraft.world.inventory.ContainerAccess;
 import net.minecraft.world.inventory.ContainerAnvil;
 import net.minecraft.world.level.block.SoundEffectType;
 import net.minecraft.world.level.block.entity.TileEntitySkull;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.FluidCollisionMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.boss.BarColor;
@@ -67,14 +72,12 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 
 	@Override
 	public void sendJson(Player player, String message) {
-		((CraftPlayer) player).getHandle().b
-				.sendPacket(new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a(message), ChatMessageType.a, UUID.randomUUID()));
+		((CraftPlayer) player).getHandle().b.sendPacket(new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a(message), ChatMessageType.a, UUID.randomUUID()));
 	}
 
 	@Override
 	public void sendActionBar(Player player, String message) {
-		((CraftPlayer) player).getHandle().b
-				.sendPacket(new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + message + "\"}"), ChatMessageType.b, UUID.randomUUID()));
+		((CraftPlayer) player).getHandle().b.sendPacket(new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + message + "\"}"), ChatMessageType.b, UUID.randomUUID()));
 	}
 
 	@Override
@@ -147,8 +150,7 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 
 	private class AnvilContainer extends ContainerAnvil {
 		public AnvilContainer(Player player) {
-			super(getNextContainerId(player), ((CraftPlayer) player).getHandle().getInventory(),
-					ContainerAccess.at(((CraftWorld) player.getWorld()).getHandle(), new BlockPosition(0, 0, 0)));
+			super(getNextContainerId(player), ((CraftPlayer) player).getHandle().getInventory(), ContainerAccess.at(((CraftWorld) player.getWorld()).getHandle(), new BlockPosition(0, 0, 0)));
 			this.checkReachable = false;
 			setTitle(new ChatMessage("Repair & Name"));
 		}
@@ -208,19 +210,14 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 		@Override
 		public NBTItem addTag(List<ItemTag> tags) {
 			tags.forEach(tag -> {
-				if (tag.getValue() instanceof Boolean)
-					compound.setBoolean(tag.getPath(), (boolean) tag.getValue());
-				else if (tag.getValue() instanceof Double)
-					compound.setDouble(tag.getPath(), (double) tag.getValue());
-				else if (tag.getValue() instanceof String)
-					compound.setString(tag.getPath(), (String) tag.getValue());
-				else if (tag.getValue() instanceof Integer)
-					compound.setInt(tag.getPath(), (int) tag.getValue());
+				if (tag.getValue() instanceof Boolean) compound.setBoolean(tag.getPath(), (boolean) tag.getValue());
+				else if (tag.getValue() instanceof Double) compound.setDouble(tag.getPath(), (double) tag.getValue());
+				else if (tag.getValue() instanceof String) compound.setString(tag.getPath(), (String) tag.getValue());
+				else if (tag.getValue() instanceof Integer) compound.setInt(tag.getPath(), (int) tag.getValue());
 				else if (tag.getValue() instanceof List<?>) {
 					NBTTagList tagList = new NBTTagList();
 					for (Object s : (List<?>) tag.getValue())
-						if (s instanceof String)
-							tagList.add(NBTTagString.a((String) s));
+						if (s instanceof String) tagList.add(NBTTagString.a((String) s));
 					compound.set(tag.getPath(), tagList);
 				}
 			});
@@ -263,8 +260,7 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 		public void setDisplayNameComponent(Component component) {
 			if (component != null)
 				compound.getCompound("display").setString("Name", GsonComponentSerializer.gson().serialize(component));
-			else
-				compound.getCompound("display").remove("Name");
+			else compound.getCompound("display").remove("Name");
 		}
 
 		@Override
@@ -368,12 +364,9 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 	public double distanceSquaredFromBoundingBox(Entity entity, Location loc) {
 		BoundingBox box = entity.getBoundingBox().expand(.2, .2, .2, .2, .2, .2);
 
-		double dx = loc.getX() > box.getMinX() && loc.getX() < box.getMaxX() ? 0
-				: Math.min(Math.abs(box.getMinX() - loc.getX()), Math.abs(box.getMaxX() - loc.getX()));
-		double dy = loc.getY() > box.getMinY() && loc.getY() < box.getMaxY() ? 0
-				: Math.min(Math.abs(box.getMinY() - loc.getY()), Math.abs(box.getMaxY() - loc.getY()));
-		double dz = loc.getZ() > box.getMinZ() && loc.getZ() < box.getMaxZ() ? 0
-				: Math.min(Math.abs(box.getMinZ() - loc.getZ()), Math.abs(box.getMaxZ() - loc.getZ()));
+		double dx = loc.getX() > box.getMinX() && loc.getX() < box.getMaxX() ? 0 : Math.min(Math.abs(box.getMinX() - loc.getX()), Math.abs(box.getMaxX() - loc.getX()));
+		double dy = loc.getY() > box.getMinY() && loc.getY() < box.getMaxY() ? 0 : Math.min(Math.abs(box.getMinY() - loc.getY()), Math.abs(box.getMaxY() - loc.getY()));
+		double dz = loc.getZ() > box.getMinZ() && loc.getZ() < box.getMaxZ() ? 0 : Math.min(Math.abs(box.getMinZ() - loc.getZ()), Math.abs(box.getMaxZ() - loc.getZ()));
 
 		return dx * dx + dx * dy + dz * dz;
 	}
@@ -412,17 +405,14 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 
 	@Override
 	public String getSkullValue(Block block) {
-		TileEntitySkull skullTile = (TileEntitySkull) ((CraftWorld) block.getWorld()).getHandle()
-				.getTileEntity(new BlockPosition(block.getX(), block.getY(), block.getZ()));
-		if (skullTile.d == null)
-			return "";
+		TileEntitySkull skullTile = (TileEntitySkull) ((CraftWorld) block.getWorld()).getHandle().getTileEntity(new BlockPosition(block.getX(), block.getY(), block.getZ()));
+		if (skullTile.d == null) return "";
 		return skullTile.d.getProperties().get("textures").iterator().next().getValue();
 	}
 
 	@Override
 	public void setSkullValue(Block block, String value) {
-		TileEntitySkull skullTile = (TileEntitySkull) ((CraftWorld) block.getWorld()).getHandle()
-				.getTileEntity(new BlockPosition(block.getX(), block.getY(), block.getZ()));
+		TileEntitySkull skullTile = (TileEntitySkull) ((CraftWorld) block.getWorld()).getHandle().getTileEntity(new BlockPosition(block.getX(), block.getY(), block.getZ()));
 		GameProfile profile = new GameProfile(UUID.randomUUID(), null);
 		profile.getProperties().put("textures", new Property("textures", value));
 		skullTile.setGameProfile(profile);
@@ -437,8 +427,7 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 	@Override
 	public MMORayTraceResult rayTrace(Location loc, Vector direction, double range, Predicate<Entity> option) {
 		RayTraceResult hit = loc.getWorld().rayTrace(loc, direction, range, FluidCollisionMode.NEVER, true, .2, option);
-		return new MMORayTraceResult(hit != null ? (LivingEntity) hit.getHitEntity() : null,
-				hit != null ? hit.getHitPosition().distance(loc.toVector()) : range);
+		return new MMORayTraceResult(hit != null ? (LivingEntity) hit.getHitEntity() : null, hit != null ? hit.getHitPosition().distance(loc.toVector()) : range);
 	}
 
 	@Override
@@ -483,8 +472,6 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 	@Override
 	public boolean isUndead(Entity entity) {
 		EntityType type = entity.getType();
-		return type == EntityType.SKELETON || type == EntityType.STRAY || type == EntityType.WITHER_SKELETON || type == EntityType.ZOMBIE
-				|| type == EntityType.DROWNED || type == EntityType.HUSK || type.name().equals("PIG_ZOMBIE") || type == EntityType.ZOMBIE_VILLAGER
-				|| type == EntityType.PHANTOM || type == EntityType.WITHER || type == EntityType.SKELETON_HORSE || type == EntityType.ZOMBIE_HORSE;
+		return type == EntityType.SKELETON || type == EntityType.STRAY || type == EntityType.WITHER_SKELETON || type == EntityType.ZOMBIE || type == EntityType.DROWNED || type == EntityType.HUSK || type.name().equals("PIG_ZOMBIE") || type == EntityType.ZOMBIE_VILLAGER || type == EntityType.PHANTOM || type == EntityType.WITHER || type == EntityType.SKELETON_HORSE || type == EntityType.ZOMBIE_HORSE;
 	}
 }
