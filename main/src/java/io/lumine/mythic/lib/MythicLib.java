@@ -8,7 +8,6 @@ import io.lumine.mythic.lib.commands.BaseCommand;
 import io.lumine.mythic.lib.comp.CitizensEntityHandler;
 import io.lumine.mythic.lib.comp.MythicMobsDamageHandler;
 import io.lumine.mythic.lib.comp.PlaceholderAPIHook;
-import io.lumine.mythic.lib.comp.ShopKeepersEntityHandler;
 import io.lumine.mythic.lib.comp.hexcolor.ColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.HexColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.SimpleColorParser;
@@ -132,8 +131,8 @@ public class MythicLib extends LuminePlugin {
 			MythicPlaceholders.registerPlaceholder(new PlaceholderAPIHook());
 		}
 
-		if (Bukkit.getPluginManager().getPlugin("ShopKeepers") != null)
-			entityManager.registerHandler(new ShopKeepersEntityHandler());
+//		if (Bukkit.getPluginManager().getPlugin("ShopKeepers") != null)
+//			entityManager.registerHandler(new ShopKeepersEntityHandler());
 
 
 		if (version.isStrictlyHigher(1, 12))
