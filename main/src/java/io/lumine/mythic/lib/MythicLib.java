@@ -6,7 +6,6 @@ import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.handler.AttributeStatHandler;
 import io.lumine.mythic.lib.commands.BaseCommand;
 import io.lumine.mythic.lib.comp.CitizensEntityHandler;
-import io.lumine.mythic.lib.comp.MyPetEntityHandler;
 import io.lumine.mythic.lib.comp.MythicMobsDamageHandler;
 import io.lumine.mythic.lib.comp.PlaceholderAPIHook;
 import io.lumine.mythic.lib.comp.ShopKeepersEntityHandler;
@@ -14,17 +13,9 @@ import io.lumine.mythic.lib.comp.hexcolor.ColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.HexColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.SimpleColorParser;
 import io.lumine.mythic.lib.gui.PluginInventory;
-import io.lumine.mythic.lib.listener.AttackEffects;
-import io.lumine.mythic.lib.listener.DamageReduction;
-import io.lumine.mythic.lib.listener.HealthScale;
-import io.lumine.mythic.lib.listener.MitigationMechanics;
-import io.lumine.mythic.lib.listener.PlayerListener;
+import io.lumine.mythic.lib.listener.*;
 import io.lumine.mythic.lib.listener.event.PlayerAttackEventListener;
-import io.lumine.mythic.lib.manager.ConfigManager;
-import io.lumine.mythic.lib.manager.DamageManager;
-import io.lumine.mythic.lib.manager.EntityManager;
-import io.lumine.mythic.lib.manager.JsonManager;
-import io.lumine.mythic.lib.manager.StatManager;
+import io.lumine.mythic.lib.manager.*;
 import io.lumine.mythic.lib.metrics.bStats;
 import io.lumine.mythic.lib.mmolibcommands.ExploreAttributesCommand;
 import io.lumine.mythic.lib.mmolibcommands.MMODebugCommand;
@@ -144,8 +135,6 @@ public class MythicLib extends LuminePlugin {
 		if (Bukkit.getPluginManager().getPlugin("ShopKeepers") != null)
 			entityManager.registerHandler(new ShopKeepersEntityHandler());
 
-		if (Bukkit.getPluginManager().getPlugin("MyPet") != null)
-			entityManager.registerHandler(new MyPetEntityHandler());
 
 		if (version.isStrictlyHigher(1, 12))
 			getCommand("exploreattributes").setExecutor(new ExploreAttributesCommand());
