@@ -63,10 +63,6 @@ public class StatInstance {
     public double getFilteredTotal(Predicate<StatModifier> filter) {
         double d = getBase();
 
-        if (stat == "ATTACK_SPEED")
-            for (StatModifier attr : modifiers.values())
-                System.out.println("Final -> " + attr.getSource()+" " + attr.getSlot()+" " + attr.getValue());
-
         for (StatModifier attr : modifiers.values())
             if (attr.getType() == ModifierType.FLAT && filter.test(attr))
                 d += attr.getValue();
