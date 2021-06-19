@@ -5,7 +5,7 @@ package io.lumine.mythic.lib.api.stat.modifier;
  * Listener) and needs to perform a specific script whenever the modifier is
  * removed from a StatMap
  *
- * @author cympe
+ * @author indyuce
  */
 public interface Closable {
 

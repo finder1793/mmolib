@@ -69,6 +69,8 @@ public class StatMap {
      * in MMOLib, MMOLib needs to perform a further attribute modifier update.
      * This method runs all the updates for the vanilla-attribute-based MMOLib
      * stats.
+     *
+     * Performance heavy method
      */
     @Deprecated
     public void updateAll() {

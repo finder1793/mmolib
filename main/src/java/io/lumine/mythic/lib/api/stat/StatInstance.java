@@ -203,5 +203,54 @@ public class StatInstance {
         modifiers.remove(key);
         MythicLib.plugin.getStats().runUpdate(map, stat);
     }
+
+    public ModifierPacket newPacket() {
+        return new ModifierPacket();
+    }
+
+    /**
+     * Allows to first add as many modifiers as needed and only THEN update the
+     * stat instance to avoid sending too many udpates at one time which can
+     * be performance heavy for attribute based stats.
+     *
+     * @author indyuce
+     */
+    public class ModifierPacket {
+
+        /**
+         * Registers a stat modifier and run the required player stat updates
+         *
+         * @param key      The string key of the stat
+         * @param modifier The stat modifier being registered
+         */
+        public void addModifier(String key, StatModifier modifier) {
+            modifiers.put(key, modifier);
+        }
+
+        /**
+         * Iterates through registered stat modifiers and unregisters them if a
+         * certain condition based on their string key is met
+         *
+         * @param condition Condition on the modifier key, if it should be unregistered or
+         *                  not
+         */
+        public void removeIf(Predicate<String> condition) {
+            for (Iterator<Map.Entry<String, StatModifier>> iterator = modifiers.entrySet().iterator(); iterator.hasNext(); ) {
+                Map.Entry<String, StatModifier> entry = iterator.next();
+                if (condition.test(entry.getKey())) {
+
+                    StatModifier modifier = entry.getValue();
+                    if (modifier instanceof Closable)
+                        ((Closable) modifier).close();
+
+                    iterator.remove();
+                }
+            }
+        }
+
+        public void runUpdate() {
+            MythicLib.plugin.getStats().runUpdate(map, stat);
+        }
+    }
 }
 
