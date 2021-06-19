@@ -11,30 +11,19 @@ package io.lumine.mythic.lib.api.stat.modifier;
 public enum ModifierSource {
 
     /**
-     * When the modifier is added because of
+     * Modifier given by a melee weapon. These modifiers should only
+     * be taken into account when the player wears the item in the main hand.
      */
-
-    OTHER,
-
-    /**
-     * Not used by MMOItems or MythicCore. Modifier granted when equipping an accessory
-     */
-    ACCESSORY,
+    MELEE_WEAPON,
 
     /**
-     * Modifier given when equipping any armor piece.
+     * Modifier given by a ranged weapon. Ranged weapons are handled separately
+     * in MMOItems so MythicLib must not add the corresponding attribute modifiers.
      */
-    ARMOR,
+    RANGED_WEAPON,
 
     /**
-     * Modifier given when holding an item in main hand. One of the
-     * two most important modifier sources, cf class definition
+     * Modifier given by anything else
      */
-    MAIN_HAND,
-
-    /**
-     * Modifier given when holding an item in off hand. One of the
-     * two most important modifier sources, cf class definition
-     */
-    OFF_HAND;
+    OTHER;
 }

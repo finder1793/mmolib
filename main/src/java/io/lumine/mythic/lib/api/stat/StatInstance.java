@@ -2,7 +2,6 @@ package io.lumine.mythic.lib.api.stat;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.stat.modifier.Closable;
-import io.lumine.mythic.lib.api.stat.modifier.ModifierSource;
 import io.lumine.mythic.lib.api.stat.modifier.ModifierType;
 import io.lumine.mythic.lib.api.stat.modifier.StatModifier;
 
@@ -53,31 +52,30 @@ public class StatInstance {
     }
 
     /**
-     * @param ignored Modifier sources which are ignored for the final stat value calculation.
+     * @param filter
+     *            Filters stat modifications taken into account for the calculation
+     *
      * @return The final stat value taking into account the default stat value
-     * as well as the stat modifiers. The relative stat modifiers are
-     * applied afterwards, onto the sum of the base value + flat
-     * modifiers.
+     *         as well as the stat modifiers. The relative stat modifiers are
+     *         applied afterwards, onto the sum of the base value + flat
+     *         modifiers.
      */
-    public double getTotal(ModifierSource... ignored) {
+    public double getFilteredTotal(Predicate<StatModifier> filter) {
         double d = getBase();
 
+        if (stat == "ATTACK_SPEED")
+            for (StatModifier attr : modifiers.values())
+                System.out.println("Final -> " + attr.getSource()+" " + attr.getSlot()+" " + attr.getValue());
+
         for (StatModifier attr : modifiers.values())
-            if (attr.getType() == ModifierType.FLAT && matches(attr.getSource(), ignored))
+            if (attr.getType() == ModifierType.FLAT && filter.test(attr))
                 d += attr.getValue();
 
         for (StatModifier attr : modifiers.values())
-            if (attr.getType() == ModifierType.RELATIVE && matches(attr.getSource(), ignored))
+            if (attr.getType() == ModifierType.RELATIVE&& filter.test(attr))
                 d *= 1 + attr.getValue() / 100;
 
         return d;
-    }
-
-    private boolean matches(ModifierSource checked, ModifierSource[] ignored) {
-        for (ModifierSource igno : ignored)
-            if (igno == checked)
-                return false;
-        return true;
     }
 
     /**

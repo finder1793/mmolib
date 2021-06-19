@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.api.stat.modifier;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.stat.StatInstance;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -24,8 +25,8 @@ public class TemporaryStatModifier extends StatModifier implements Closable {
      * @param ins
      *            The StatInstance the modifier must be registered in
      */
-    public TemporaryStatModifier(double d, long duration, ModifierType type, ModifierSource source, String key, StatInstance ins) {
-        super(d, type, source);
+    public TemporaryStatModifier(double d, long duration, ModifierType type, EquipmentSlot slot, ModifierSource source, String key, StatInstance ins) {
+        super(d, type, slot, source);
 
         (runnable = new BukkitRunnable() {
             public void run() {
@@ -35,11 +36,11 @@ public class TemporaryStatModifier extends StatModifier implements Closable {
     }
 
     /**
-     * @deprecated Use the constructor with a ModifierSource instead.
+     * @deprecated Use the constructor with an EquipmentSlot and ModifierSource instead.
      */
     @Deprecated
     public TemporaryStatModifier(double d, long duration, ModifierType type, String key, StatInstance ins) {
-        this(d, duration, type, ModifierSource.OTHER, key, ins);
+        this(d, duration, type, EquipmentSlot.OTHER, ModifierSource.OTHER, key, ins);
     }
 
     @Override
