@@ -24,14 +24,22 @@ public class TemporaryStatModifier extends StatModifier implements Closable {
      * @param ins
      *            The StatInstance the modifier must be registered in
      */
-    public TemporaryStatModifier(double d, long duration, ModifierType type, String key, StatInstance ins) {
-        super(d, type);
+    public TemporaryStatModifier(double d, long duration, ModifierType type, ModifierSource source, String key, StatInstance ins) {
+        super(d, type, source);
 
         (runnable = new BukkitRunnable() {
             public void run() {
                 ins.remove(key);
             }
         }).runTaskLater(MythicLib.plugin, duration);
+    }
+
+    /**
+     * @deprecated Use the constructor with a ModifierSource instead.
+     */
+    @Deprecated
+    public TemporaryStatModifier(double d, long duration, ModifierType type, String key, StatInstance ins) {
+        this(d, duration, type, ModifierSource.OTHER, key, ins);
     }
 
     @Override

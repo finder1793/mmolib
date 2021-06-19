@@ -246,15 +246,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-
-		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>1.16.5-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-
-
 		<!-- Spigot NMS versions -->
 		<dependency>
 			<groupId>org.spigotmc</groupId>
@@ -263,6 +254,7 @@
 			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
+
         <dependency> 
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-1.16.4</artifactId>

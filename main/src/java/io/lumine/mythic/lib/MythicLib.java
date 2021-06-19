@@ -78,9 +78,6 @@ public class MythicLib extends LuminePlugin {
 
 	@Override
 	public void enable() {
-		Log.info(ChatColor.GOLD + "-------------------------------------------------");
-		Log.info(ChatColor.AQUA + "+ Infecting Server with MythicLib for Spigot/Paper");
-		Log.info(ChatColor.GOLD + "-------------------------------------------------");
 
 		//this.bind(this.configuration = new Configuration(this));
 		//this.profileManager = new ProfileManager(this);
@@ -134,14 +131,11 @@ public class MythicLib extends LuminePlugin {
 //		if (Bukkit.getPluginManager().getPlugin("ShopKeepers") != null)
 //			entityManager.registerHandler(new ShopKeepersEntityHandler());
 
-
 		if (version.isStrictlyHigher(1, 12))
 			getCommand("exploreattributes").setExecutor(new ExploreAttributesCommand());
 		getCommand("mythiclib").setExecutor(new MMOLibCommand());
 		getCommand("mmodebug").setExecutor(new MMODebugCommand());
 		getCommand("mmotempstat").setExecutor(new MMOTempStatCommand());
-
-		if (getConfig().getBoolean("fix-player-attributes")) AttributeStatHandler.updateAttributes = true;
 
 		Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.setup(player.getUniqueId()));
 
