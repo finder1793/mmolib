@@ -3,7 +3,6 @@ package io.lumine.mythic.lib;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.api.stat.handler.AttributeStatHandler;
 import io.lumine.mythic.lib.commands.BaseCommand;
 import io.lumine.mythic.lib.comp.CitizensEntityHandler;
 import io.lumine.mythic.lib.comp.MythicMobsDamageHandler;
@@ -25,13 +24,11 @@ import io.lumine.mythic.lib.version.SpigotPlugin;
 import io.lumine.utils.events.extra.ArmorEquipEventListener;
 import io.lumine.utils.holograms.BukkitHologramFactory;
 import io.lumine.utils.holograms.HologramFactory;
-import io.lumine.utils.logging.Log;
 import io.lumine.utils.plugin.LuminePlugin;
 import io.lumine.utils.scoreboard.PacketScoreboardProvider;
 import io.lumine.utils.scoreboard.ScoreboardProvider;
 import lombok.Getter;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.logging.Level;
@@ -49,7 +46,7 @@ public class MythicLib extends LuminePlugin {
 
 	private ServerVersion version;
 	private AttackEffects attackEffects;
-	private MitigationMechanics mitigationMecanics;
+	private MitigationMechanics mitigationMechanics;
 	private ColorParser colorParser;
 
 	@Getter
@@ -108,13 +105,13 @@ public class MythicLib extends LuminePlugin {
 		Bukkit.getPluginManager().registerEvents(damageManager, this);
 		Bukkit.getPluginManager().registerEvents(new DamageReduction(), this);
 		Bukkit.getPluginManager().registerEvents(attackEffects = new AttackEffects(), this);
-		Bukkit.getPluginManager().registerEvents(mitigationMecanics = new MitigationMechanics(), this);
+		Bukkit.getPluginManager().registerEvents(mitigationMechanics = new MitigationMechanics(), this);
 		Bukkit.getPluginManager().registerEvents(new PlayerAttackEventListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ArmorEquipEventListener(), this);
 		Bukkit.getPluginManager().registerEvents(new MythicCraftingManager(), this);
 
 		if (getConfig().getBoolean("health-scale.enabled"))
-			Bukkit.getPluginManager().registerEvents(new HealthScale(getConfig().getDouble("health-scale.scale")), this);
+			Bukkit.getPluginManager().registerEvents(new HealthScale(getConfig().getDouble("health-scale.scale"), getConfig().getInt("health-scale.delay", 0)), this);
 
 		if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null) {
 			damageManager.registerHandler(new MythicMobsDamageHandler());
@@ -147,7 +144,7 @@ public class MythicLib extends LuminePlugin {
 		reloadConfig();
 		configManager.reload();
 		attackEffects.reload();
-		mitigationMecanics.reload();
+		mitigationMechanics.reload();
 	}
 
 	@Override
