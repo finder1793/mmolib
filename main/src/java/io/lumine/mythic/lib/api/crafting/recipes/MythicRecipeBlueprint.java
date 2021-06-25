@@ -73,6 +73,24 @@ public class MythicRecipeBlueprint {
     }
 
     /**
+     * A Blueprint has input recipes that must be matched to produce the output.
+     *
+     * The output may be produced for two different scenarios:
+     * <p>As a preview
+     * </p>As an actual result
+     *
+     * @param mainCheck The main recipe to check, required.
+     * @param result The result that will happen if the player accepts the recipe,
+     *               which may also have information on how to display it for preview.
+     */
+    public MythicRecipeBlueprint(@NotNull MythicRecipe mainCheck, @NotNull MythicRecipeOutput result, @NotNull NamespacedKey key) {
+        this.mainCheck = mainCheck;
+        this.result = result;
+        nk = key;
+        canDisplayInRecipeBook = getMainCheck() instanceof VanillaBookableRecipe && getResult() instanceof VanillaBookableOutput;
+    }
+
+    /**
      * Namespace under which this recipe may register onto the Recipe Book
      */
     @NotNull final NamespacedKey nk;
@@ -80,8 +98,7 @@ public class MythicRecipeBlueprint {
     /**
      * Namespace under which this recipe may register onto the Recipe Book
      */
-    @NotNull
-    public NamespacedKey getNk() {
+    @NotNull public NamespacedKey getNk() {
         return nk;
     }
 
@@ -91,22 +108,10 @@ public class MythicRecipeBlueprint {
     public boolean canDisplayInRecipeBook() {
         return canDisplayInRecipeBook;
     }
-
     /**
      * Can this be displayed to players in the recipe book?
      */
     final boolean canDisplayInRecipeBook;
-
-    /**
-     * For ease of implementation, It is required that there be at last one Non-null
-     * main recipe to check an inventory. This is that one.
-     */
-    @NotNull final MythicRecipe mainCheck;
-    /**
-     * For ease of implementation, It is required that there be at last one Non-null
-     * main recipe to check an inventory. This is that one.
-     */
-    @NotNull public MythicRecipe getMainCheck() { return mainCheck; }
 
     /**
      * What will happen if all the checks return <code>true</code>?
@@ -127,6 +132,17 @@ public class MythicRecipeBlueprint {
      */
     @NotNull
     public MythicRecipeOutput getResult() { return result; }
+
+    /**
+     * For ease of implementation, It is required that there be at last one Non-null
+     * main recipe to check an inventory. This is that one.
+     */
+    @NotNull final MythicRecipe mainCheck;
+    /**
+     * For ease of implementation, It is required that there be at last one Non-null
+     * main recipe to check an inventory. This is that one.
+     */
+    @NotNull public MythicRecipe getMainCheck() { return mainCheck; }
 
     /**
      * Optional, any mount of 'fuel' recipes. Each recipe will contain
@@ -246,7 +262,6 @@ public class MythicRecipeBlueprint {
         return ret;
     }
 
-
     /**
      * Players may access this in vanilla stations.
      *
@@ -286,6 +301,7 @@ public class MythicRecipeBlueprint {
                         ((VanillaBookableOutput) getResult()).getBukkitRecipeResult()));
 
                 recipeName.setValue(nk);
+
             } catch (IllegalArgumentException | IllegalStateException runtimeException) {
 
                 if (runtimeException instanceof IllegalStateException) {

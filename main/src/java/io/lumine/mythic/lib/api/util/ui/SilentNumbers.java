@@ -546,17 +546,20 @@ public class SilentNumbers {
     }
 
     /**
+     * @param item Item to get name from
+     * @param includeAmount Include the amount in the name?
+     *
      * @return Really tries hard to give you this item's name. Will give you the best it can.
      */
     @SuppressWarnings("ConstantConditions")
-    @NotNull public static String getItemName(@Nullable ItemStack item) {
+    @NotNull public static String getItemName(@Nullable ItemStack item, boolean includeAmount) {
 
         // Null?
         if (item == null) { return "null"; }
 
         // Amount?
-        int amount = item.getAmount();
-        String amountText = "\u00a7f" + amount + "x";
+        String amountText = "";
+        if (includeAmount) { amountText = "\u00a7f" + item.getAmount() + "x"; }
 
         // Does it have meta
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
@@ -568,6 +571,13 @@ public class SilentNumbers {
         // Return type
         return amountText + "\u00a7r\u00a7f" + titleCaseConversion(item.getType().toString().replace("_", " "));
     }
+
+    /**
+     * @param item Item to get name from
+     *
+     * @return Really tries hard to give you this item's name. Will give you the best it can.
+     */
+    @NotNull public static String getItemName(@Nullable ItemStack item) { return getItemName(item, true); }
 
     /**
      * @return The item name of this item stack if it has one.

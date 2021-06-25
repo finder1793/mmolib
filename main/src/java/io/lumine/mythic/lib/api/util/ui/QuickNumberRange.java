@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
  * @author Gunging
  */
 @SuppressWarnings("unused")
-public class QuickNumberRange {
+public class QuickNumberRange implements Cloneable {
 
     /**
      * If defined, this indicates the lower range the user specified.
@@ -306,5 +306,9 @@ public class QuickNumberRange {
         // Build
         return "$r" + minn + " $bto$r " + maxn;
     }
+
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    @Override
+    public QuickNumberRange clone() { return new QuickNumberRange(getMinimumInclusive(), getMaximumInclusive()); }
 }
 

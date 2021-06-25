@@ -42,10 +42,9 @@ public abstract class MythicRecipeOutput {
      * including subtracting the ingredients used to craft.
      * <p></p>
      * Other logic that this method must handle:
-     * <p><code>*</code> Restricting the amount of times this is getting crafted
-     * </p><code>*</code> Putting the items in the correct places (even cursor)
      * <p><code>*</code> Calculating how many times it actually gets crafted (supposing the extra times don't fit)
      * </p><code>*</code> Putting the items in the correct places (even cursor)
+     * <p><code>*</code> Giving overflow items to the player directly
      *
      * @param resultInventory Inventory of the result, carries information on what
      *                  is already there I suppose. A bit redundant since you
@@ -70,7 +69,7 @@ public abstract class MythicRecipeOutput {
      *              ingredients must be consumed to carry this out into completion.
      *              <p></p>
      *              Note that <b>this may exceed the inventory space of the player</b>
-     *              and this is accounted for in this method.
+     *              and you must account for it in this method.
      *
      */
     public abstract void applyResult(@NotNull MythicRecipeInventory resultInventory, @NotNull MythicBlueprintInventory otherInventories, @NotNull MythicCachedResult cache, @NotNull InventoryClickEvent eventTrigger, @NotNull VanillaInventoryMapping map, int times);

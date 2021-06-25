@@ -3,9 +3,7 @@ package io.lumine.mythic.lib.api.crafting.outputs;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.crafting.event.MythicCraftItemEvent;
 import io.lumine.mythic.lib.api.crafting.ingredients.*;
-import io.lumine.mythic.lib.api.crafting.recipes.MythicCachedResult;
-import io.lumine.mythic.lib.api.crafting.recipes.ShapedRecipe;
-import io.lumine.mythic.lib.api.crafting.recipes.VanillaBookableOutput;
+import io.lumine.mythic.lib.api.crafting.recipes.*;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.VanillaInventoryMapping;
 import io.lumine.mythic.lib.api.crafting.uifilters.IngredientUIFilter;
 import io.lumine.mythic.lib.api.crafting.uifilters.UIFilter;
@@ -46,6 +44,7 @@ import java.util.HashMap;
  * 
  * @author Gunging
  */
+@SuppressWarnings("unused")
 public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutput {
 
     /**
@@ -71,6 +70,152 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
         // Analyze
         analyzeDetermination();
     }
+
+    //region Advanced Variant
+
+    /**
+     * Advanced variant of MRORecipe which activates MAIN section consumption.
+     * Its the only way to assign a value to the Main Input Consumption!
+     *
+     * @param output Output recipe for the RESULT section of the mapping ({@link VanillaInventoryMapping#applyToResultInventory(Inventory, MythicRecipeInventory, boolean)})
+     * @param mainInput Consumption of Input applied to the MAIN section of the mapping (Milk bucket turns into Empty bucket when crafting cake).
+     */
+    public MRORecipe(@NotNull ShapedRecipe output, @Nullable ShapedRecipe mainInput) {
+        this.output = output;
+        recipeFFPPrefix = "Mythic Recipe $u" + getOutput().getName();
+        mainInputConsumption = mainInput;
+    }
+
+    /**
+     * If this is not null, then the ingredients themselves will change as this output resolves
+     * (like milk buckets turning into normal buckets when crafting a cake).
+     */
+    @Nullable MythicRecipe mainInputConsumption;
+    /**
+     * If this is not null, then the ingredients themselves will change as this output resolves
+     * (like milk buckets turning into normal buckets when crafting a cake).
+     */
+    @Nullable public MythicRecipe getMainInputConsumption() { return mainInputConsumption; }
+
+    /**
+     * Optional, any mount of 'fuel' recipes. Each recipe will contain
+     * information on it being required or whatever.
+     */
+    @NotNull final HashMap<String, MythicRecipe> sideInputConsumptions = new HashMap<>();
+    /**
+     * What are the expected side inventory names?
+     *
+     * @return A new list, with a copy of every name of the side check inventories.
+     */
+    @NotNull public ArrayList<String> getSideConsumptionNames() { return new ArrayList<>(sideInputConsumptions.keySet()); }
+    /**
+     * <b>It is imperative that you know this name is indeed that of a contained side
+     * check, use {@link #hasSideConsumption(String)} to corroborate before calling this.</b>
+     *
+     * @return The side check associated to this string.
+     */
+    @NotNull public MythicRecipe getSideConsumption(@NotNull String ofName) {
+
+        // Bruh
+        Validate.isTrue(hasSideConsumption(ofName), "You may not query for a side recipe that does not exist.");
+
+        // Well was it?
+        return sideInputConsumptions.get(ofName);
+    }
+    /**
+     * Is there any side recipe associated to this inventory name?
+     * @param ofName What name
+     * @return <code>true</code> if there is a side inventory expected of this name.
+     */
+    public boolean hasSideConsumption(@NotNull String ofName) { return sideInputConsumptions.containsKey(ofName); }
+    /**
+     * Registers a check that must be fulfilled
+     *
+     * @param ofName The name of the side inventory, 'fuel' for furnace for example
+     * @param recipe The recipe that will check this side inventory
+     */
+    public void addSideConsumption(@NotNull String ofName, @NotNull MythicRecipe recipe) {
+
+        // Put
+        sideInputConsumptions.put(ofName, recipe);
+    }
+
+
+    /**
+     * Generates a new, independent MythicRecipeInventory
+     * from the recipe, with random output where possible.
+     *
+     * @return A new result to be given to the player.
+     */
+    @NotNull MythicRecipeInventory generateResultOf(@NotNull MythicRecipe mythicRecipe) {
+
+        // Rows yes
+        HashMap<Integer, ItemStack[]> rowsInformation = new HashMap<>();
+
+        // Ok it doesn't exist lets build it
+        for (MythicRecipeIngredient mmIngredient : mythicRecipe.getIngredients()) {
+
+            // Ignore
+            if (mmIngredient == null) { continue; }
+
+            // Identify Ingredient
+            ShapedIngredient shaped = ((ShapedIngredient) mmIngredient);
+            MythicIngredient ingredient = mmIngredient.getIngredient();
+
+            // Does not define an item? I sleep
+            if (!ingredient.isDefinesItem()) { continue; }
+
+            // Any errors yo?
+            FriendlyFeedbackProvider ffp = new FriendlyFeedbackProvider(FFPMythicLib.get());
+            ffp.activatePrefix(true, recipeFFPPrefix);
+
+            /*
+             * First we must get the material of the base, a dummy
+             * item basically (since this is for display) which we
+             * may only display if its the only substitute of this
+             * ingredient.
+             *
+             * If the ingredient has more substitutes, the ingredient
+             * description will be used instead, replacing the meta of
+             * this item entirely.
+             */
+            ItemStack gen = mmIngredient.getIngredient().getRandomSubstituteItem(ffp);
+
+            // Valid?
+            if (gen != null) {
+
+                // Get current row
+                ItemStack[] row = rowsInformation.get(-shaped.getVerticalOffset());
+                if (row == null) { row = new ItemStack[(shaped.getHorizontalOffset() + 1)]; }
+                if (row.length < (shaped.getHorizontalOffset() + 1)) {
+                    ItemStack[] newRow = new ItemStack[(shaped.getHorizontalOffset() + 1)];
+                    //noinspection ManualArrayCopy
+                    for (int r = 0; r < row.length; r++) { newRow[r] = row[r]; }
+                    row = newRow;
+                }
+
+                // Yes
+                row[shaped.getHorizontalOffset()] = gen;
+
+                // Put
+                rowsInformation.put(-shaped.getVerticalOffset(), row);
+
+                // Log those
+            } else {
+
+                // All those invalid ones should log.
+                ffp.sendTo(FriendlyFeedbackCategory.ERROR, MythicLib.plugin.getServer().getConsoleSender());
+            }
+        }
+
+        // Add all rows into new
+        MythicRecipeInventory ret = new MythicRecipeInventory();
+        for (Integer h : rowsInformation.keySet()) { ret.setRow(h, rowsInformation.get(h)); }
+
+        // Yes
+        return ret;
+    }
+    //endregion
 
     /**
      * Is this output fully completely determinate?
@@ -274,71 +419,8 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
      */
     @NotNull MythicRecipeInventory generateResult() {
 
-        // Rows yes
-        HashMap<Integer, ItemStack[]> rowsInformation = new HashMap<>();
-
-        // Ok it doesn't exist lets build it
-        for (MythicRecipeIngredient mmIngredient : getOutput().getIngredients()) {
-
-            // Ignore
-            if (mmIngredient == null) { continue; }
-
-            // Identify Ingredient
-            ShapedIngredient shaped = ((ShapedIngredient) mmIngredient);
-            MythicIngredient ingredient = mmIngredient.getIngredient();
-
-            // Does not define an item? I sleep
-            if (!ingredient.isDefinesItem()) { continue; }
-
-            // Any errors yo?
-            FriendlyFeedbackProvider ffp = new FriendlyFeedbackProvider(FFPMythicLib.get());
-            ffp.activatePrefix(true, recipeFFPPrefix);
-
-            /*
-             * First we must get the material of the base, a dummy
-             * item basically (since this is for display) which we
-             * may only display if its the only substitute of this
-             * ingredient.
-             *
-             * If the ingredient has more substitutes, the ingredient
-             * description will be used instead, replacing the meta of
-             * this item entirely.
-             */
-            ItemStack gen = mmIngredient.getIngredient().getRandomSubstituteItem(ffp);
-
-            // Valid?
-            if (gen != null) {
-
-                // Get current row
-                ItemStack[] row = rowsInformation.get(-shaped.getVerticalOffset());
-                if (row == null) { row = new ItemStack[(shaped.getHorizontalOffset() + 1)]; }
-                if (row.length < (shaped.getHorizontalOffset() + 1)) {
-                    ItemStack[] newRow = new ItemStack[(shaped.getHorizontalOffset() + 1)];
-                    //noinspection ManualArrayCopy
-                    for (int r = 0; r < row.length; r++) { newRow[r] = row[r]; }
-                    row = newRow;
-                }
-
-                // Yes
-                row[shaped.getHorizontalOffset()] = gen;
-
-                // Put
-                rowsInformation.put(-shaped.getVerticalOffset(), row);
-
-            // Log those
-            } else {
-
-                // All those invalid ones should log.
-                ffp.sendTo(FriendlyFeedbackCategory.ERROR, MythicLib.plugin.getServer().getConsoleSender());
-            }
-        }
-
-        // Add all rows into new
-        MythicRecipeInventory ret = new MythicRecipeInventory();
-        for (Integer h : rowsInformation.keySet()) { ret.setRow(h, rowsInformation.get(h)); }
-
         // Yes
-        return ret;
+        return generateResultOf(getOutput());
     }
 
     /**

@@ -19,7 +19,7 @@ import java.util.ArrayList;
  * @author Gunging
  */
 @SuppressWarnings("unused")
-public class ProvidedUIFilter implements Comparable<ProvidedUIFilter> {
+public class ProvidedUIFilter implements Comparable<ProvidedUIFilter>, Cloneable {
 
     /**
      * Probably want to get this using {@link UIFilterManager#getUIFilter(String, FriendlyFeedbackProvider)}
@@ -47,10 +47,23 @@ public class ProvidedUIFilter implements Comparable<ProvidedUIFilter> {
     public ProvidedUIFilter(@NotNull UIFilter matchOperator, @NotNull String arg, @NotNull String dat, int amount) { parent = matchOperator; argument = arg; data = dat; setAmount(amount); }
 
     /**
+     * Probably want to get this using {@link UIFilterManager#getUIFilter(String, FriendlyFeedbackProvider)}
+     * rather than through this constructor tbh.
+     *
+     * @param matchOperator Which UIFilter to use to perform comparisons?
+     * @param arg The Argument specified
+     * @param dat The Data specified
+     * @param amount The Amount Specified
+     *
+     * @see #getFromString(String, FriendlyFeedbackProvider)
+     */
+    public ProvidedUIFilter(@NotNull UIFilter matchOperator, @NotNull String arg, @NotNull String dat, @Nullable QuickNumberRange amount) { parent = matchOperator; argument = arg; data = dat; setAmountRange(amount); }
+
+    /**
      * Commodity method to call {@link UIFilterManager#getUIFilter(String, FriendlyFeedbackProvider)}
      */
     @Nullable
-    public static ProvidedUIFilter getFromString(@NotNull String compound, @Nullable FriendlyFeedbackProvider ffp) {
+    public static ProvidedUIFilter getFromString(@Nullable String compound, @Nullable FriendlyFeedbackProvider ffp) {
 
         // Yes
         return UIFilterManager.getUIFilter(compound, ffp);
@@ -197,7 +210,8 @@ public class ProvidedUIFilter implements Comparable<ProvidedUIFilter> {
     @Override
     public String toString() {
         if (asString != null) { return asString; }
-        asString = getParent().getIdentifier() + " " + getArgument() + " " + getData() + " " + getAmountRange();
+        String amount = (getAmountRange() == null ? "1.." : getAmountRange().toString());
+        asString = getParent().getIdentifier() + " " + getArgument() + " " + getData() + " " + amount;
         return asString;
     }
 
@@ -365,5 +379,12 @@ public class ProvidedUIFilter implements Comparable<ProvidedUIFilter> {
          * <0 if this is less than 'comparate'
          */
         return getAmount(0) - comparate.getAmount(0);
+    }
+
+    @Override
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    public ProvidedUIFilter clone() {
+        QuickNumberRange amr = getAmountRange() != null ? getAmountRange().clone() : null;
+        return new ProvidedUIFilter(getParent(), getArgument(), getData(), amr);
     }
 }

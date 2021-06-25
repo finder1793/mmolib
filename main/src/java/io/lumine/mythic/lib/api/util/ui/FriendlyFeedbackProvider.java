@@ -70,6 +70,13 @@ public class FriendlyFeedbackProvider {
     }
 
     /**
+     * Clears all the feedback stored in this FFP.
+     * <p></p>
+     * Will not do anything if theres no feedback
+     */
+    public void clearFeedback() { feedback.clear(); }
+
+    /**
      * Include a message to be sent later under this category.
      * <b>This does not actually send a message</b>
      * <p></p>
