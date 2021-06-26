@@ -15,6 +15,7 @@ import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import io.lumine.utils.items.ItemFactory;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
@@ -81,8 +82,7 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
      * @param mainInput Consumption of Input applied to the MAIN section of the mapping (Milk bucket turns into Empty bucket when crafting cake).
      */
     public MRORecipe(@NotNull ShapedRecipe output, @Nullable ShapedRecipe mainInput) {
-        this.output = output;
-        recipeFFPPrefix = "Mythic Recipe $u" + getOutput().getName();
+        this(output);
         mainInputConsumption = mainInput;
     }
 
@@ -96,6 +96,22 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
      * (like milk buckets turning into normal buckets when crafting a cake).
      */
     @Nullable public MythicRecipe getMainInputConsumption() { return mainInputConsumption; }
+    /**
+     * @param mic If this is not null, then the ingredients themselves will change as this output resolves
+     *            (like milk buckets turning into normal buckets when crafting a cake).
+     */
+    public void setMainInputConsumption(@Nullable MythicRecipe mic) {
+        mainInputConsumption = ifEmptyNull(mic);
+
+        // Analyze
+        analyzeDetermination();
+    }
+
+    /**
+     * @return If the ingredients themselves will change as this output resolves
+     *         (like milk buckets turning into normal buckets when crafting a cake).
+     */
+    public boolean hasInputConsumption() { return sideInputConsumptions.size() > 0 || mainInputConsumption != null; }
 
     /**
      * Optional, any mount of 'fuel' recipes. Each recipe will contain
@@ -129,15 +145,27 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
      */
     public boolean hasSideConsumption(@NotNull String ofName) { return sideInputConsumptions.containsKey(ofName); }
     /**
-     * Registers a check that must be fulfilled
+     * Registers a check that must be fulfilled.
+     * <br><br>
+     * If the recipe is empty or null, the entry will be removed.
      *
      * @param ofName The name of the side inventory, 'fuel' for furnace for example
      * @param recipe The recipe that will check this side inventory
      */
-    public void addSideConsumption(@NotNull String ofName, @NotNull MythicRecipe recipe) {
+    public void setSideConsumption(@NotNull String ofName, @Nullable MythicRecipe recipe) {
+
+        // Counter
+        if (ifEmptyNull(recipe) == null) {
+
+            // Remove
+            sideInputConsumptions.remove(ofName);
+            return; }
 
         // Put
         sideInputConsumptions.put(ofName, recipe);
+
+        // Analyze
+        analyzeDetermination();
     }
 
 
@@ -215,6 +243,27 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
         // Yes
         return ret;
     }
+
+
+    /**
+     * @param mic Some mythic recipe
+     *
+     * @return <code>null</code> if there is not a single actual item in this MythicRecipe,
+     *         or the MythicRecipe itself.
+     */
+    @Nullable public MythicRecipe ifEmptyNull(@Nullable MythicRecipe mic) {
+
+        // Null is just null
+        if (mic == null) { return null; }
+
+        // Anything not air will count a success
+        for (MythicRecipeIngredient mri : mic.getIngredients()) {
+            if (mri == null) { continue; }
+            if (mri.getIngredient().isDefinesItem()) { return mic; } }
+
+        // Nope, nothing that wasnt air
+        return null;
+    }
     //endregion
 
     /**
@@ -230,8 +279,40 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
      */
     public void analyzeDetermination() {
 
+        //RR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78Result \u00a79AD\u00a77 Analyzing for indeterminate output...");
+
+        // Add all the output
+        ArrayList<MythicRecipeIngredient> ultimateOutput = new ArrayList<>(getOutput().getIngredients());
+
+        //RR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78Result \u00a79AD+\u00a77 Total \u00a7e" + ultimateOutput.size() + "\u00a77 result output.");
+
+        // Add all the input consumption
+        if (hasInputConsumption()) {
+
+            // Anything in the main consumption?
+            if (getMainInputConsumption() != null) {
+
+                // Include those
+                ultimateOutput.addAll(getMainInputConsumption().getIngredients());
+            }
+
+            //RR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78Result \u00a79AD+\u00a77 Total \u00a7e" + ultimateOutput.size() + "\u00a77 with main consumptions.");
+
+            // What about sides?
+            for (String sideName : getSideConsumptionNames()) {
+
+                // All right
+                MythicRecipe sideConsumption = getSideConsumption(sideName);
+
+                // Add those too
+                ultimateOutput.addAll(sideConsumption.getIngredients());
+            }
+
+            //RR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78Result \u00a79AD+\u00a77 Total \u00a7e" + ultimateOutput.size() + "\u00a77 with side consumptions.");
+        }
+
         // See every recipe ingredient
-        for (MythicRecipeIngredient mIngredient : getOutput().getIngredients()) {
+        for (MythicRecipeIngredient mIngredient : ultimateOutput) {
 
             // It must be
             ShapedIngredient shaped = (ShapedIngredient) mIngredient;
@@ -245,12 +326,17 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
             // Ignore
             if (!ingredient.isDefinesItem()) { continue; }
 
+            //RR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78Result \u00a79AD\u00a77 Considering\u00a7a " + ingredient.getName());
+
             /*
              * Just examine the number of substitutes.
              *
              * Is there more than 1? Then this is random. Done.
              */
             if (ingredient.getSubstitutes().size() > 1) {
+
+                //RR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78Result \u00a79AD++\u00a77 Multiple substitutes ~\u00a7c RANDOM");
+
                 random = true;
                 determinateDisplay = null;
                 return; }
@@ -268,10 +354,20 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
              */
 
             // That's a success for this one
-            if (filter.determinateGeneration()) { continue; }
+            if (filter.determinateGeneration()) {
+
+                //RR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78Result \u00a79AD++\u00a78 Absolutely Determinate UIFilter");
+
+                continue; }
 
             // Well is it determinate with these filters? Then succeed
-            if (filter.partialDeterminateGeneration(poof.getArgument(), poof.getData())) { continue; }
+            if (filter.partialDeterminateGeneration(poof.getArgument(), poof.getData())) {
+
+                //RR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78Result \u00a79AD++\u00a78 Determinate Data Arguments");
+
+                continue; }
+
+            //RR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78Result \u00a79AD++\u00a77 Indeterminate UIFilter ~\u00a7c RANDOM");
 
             // Was indeterminate
             random = true;
@@ -279,6 +375,7 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
             return;
         }
 
+        //RR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78Result \u00a79AD++\u00a77 No indeterminate ingredient found ~\u00a76 DETERMINATE");
 
         // That's it, all of the filters are fully defined.
         random = false;
@@ -400,14 +497,19 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
 
         // Hey hey hey hey
         if (isRandom()) {
+
+            //RR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78Result \u00a79DR\u00a77 Known to be Random");
             determinateResult = null;
             return null;
         }
 
         // That's right yea
-        if (determinateResult != null) { return determinateResult.clone(); }
+        if (determinateResult != null) {
+            //RR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78Result \u00a79DR\u00a77 Returned Clone");
+            return determinateResult.clone(); }
 
         // Generate new if null
+        //RR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78Result \u00a79DR\u00a77 Generated first Determinate");
         determinateResult = generateResult();
         return determinateResult.clone();
     }
@@ -490,6 +592,18 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
          * Otherwise, this stuff will have to
          * 1 Calculate how many times until it runs out of inventory slots
          * 2 Move it to those inventory slots
+         *
+         *
+         * If this is the 'advanced' form which spits more output back into the crafting area
+         * (like milk buckets turning into empty buckets when crafting a cake), when crafting
+         * once the output will be dropped to the ground if it cant be placed anywhere else.
+         * On all other conditions:
+         *   1  Output will be put first into the crafting table itself, if any of the
+         *      stacks ran out.
+         *
+         *   2  Output will teleport to the player's inventory.
+         *
+         *   3  Crafting 'to completion' will stop when the player cant carry more output.
          */
         if (times == 1 && (eventTrigger.getAction() != InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
             /*
@@ -500,6 +614,7 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
              *
              * 2 The item in their cursor is stackable with the result
              * and
+             *
              * 3 The max stacks would not be exceeded
              */
             ItemStack currentInCursor = eventTrigger.getCursor();
@@ -565,6 +680,60 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
             // Apply result to the cursor
             eventTrigger.getView().setCursor(actualCursor);
 
+            /*
+             * Remove one of each ingredient (or however many are necessary)
+             */
+            consumeIngredients(otherInventories, cache, eventTrigger.getInventory(), map, times);
+
+            /*
+             * Ok now, the ingredients have been consumed, the item is now in the cursor of the player.
+             *
+             * We must now read each of the affected inventories again and apply them with changes.
+             */
+            if (hasInputConsumption()) {
+
+                // Items to spit back to the player
+                ArrayList<ItemStack> inputConsumptionOverflow = new ArrayList<>();
+
+                // Changes in the main inventory?
+                if (getMainInputConsumption() != null) {
+
+                    // Extract the new values
+                    MythicRecipeInventory mainRead = map.getMainMythicInventory(eventTrigger.getInventory());
+
+                    // Generate a result from the main input consumption
+                    MythicRecipeInventory addedStuff = generateResultOf(getMainInputConsumption());
+
+                    // Include overflow
+                    inputConsumptionOverflow.addAll(stackWhatsPossible(mainRead, addedStuff));
+
+                    // Apply
+                    map.applyToMainInventory(eventTrigger.getInventory(), mainRead, false);
+                }
+
+                // All side
+                for (String sideName : getSideConsumptionNames()) {
+
+                    // Valid right?
+                    if (!map.getSideInventoryNames().contains(sideName)) { continue; }
+
+                    // Extract the new values
+                    MythicRecipeInventory sideRead = map.getSideMythicInventory(sideName, eventTrigger.getInventory());
+
+                    // Generate a result from the main input consumption
+                    MythicRecipeInventory addedStuff = generateResultOf(getSideConsumption(sideName));
+
+                    // Include overflow
+                    inputConsumptionOverflow.addAll(stackWhatsPossible(sideRead, addedStuff));
+
+                    // Apply
+                    map.applyToSideInventory(eventTrigger.getInventory(), sideRead, sideName, false);
+                }
+
+                // Distribute in inventory call
+                distributeInInventoryOrDrop(eventTrigger.getWhoClicked().getInventory(), inputConsumptionOverflow, eventTrigger.getWhoClicked().getLocation());
+            }
+
         // Player is crafting to completion - move to inventory style.
         } else {
 
@@ -574,9 +743,6 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
             //RDR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78RDR \u00a747\u00a77 Reading/Generating Result");
 
             // Build the result
-            MythicRecipeInventory generatedResult = getDeterminateResult();
-            ArrayList<ItemStack> outputItems = null;
-            if (generatedResult != null) { outputItems = toItemsList(generatedResult); }
             HashMap<Integer, ItemStack> modifiedInventory = null;
             Inventory inven = eventTrigger.getWhoClicked().getInventory();
             int trueTimes = 0;
@@ -585,20 +751,52 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
             for (int t = 1; t <= times; t++) {
                 //RDR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78RDR \u00a748\u00a77 Iteration \u00a7c#" + t);
 
-                // Local of these
-                MythicRecipeInventory localResult = generatedResult;
-                ArrayList<ItemStack> localOutput = outputItems;
-
-                // Generate
+                // Get the result of this iteration, already cloned within the method if applicable
+                MythicRecipeInventory localResult = getDeterminateResult();
                 if (localResult == null) {
 
                     //RR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78Result \u00a79RR\u00a77 Indeterminate, Generated New");
 
                     // Generate new
-                    localResult = generateResult();
-                    localOutput = toItemsList(localResult); }
+                    localResult = generateResult(); }
 
-                //RR//for (String str : localResult.toStrings("\u00a78Result \u00a79RR-")) { io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log(str); }
+                // Generate output items
+                ArrayList<ItemStack> localOutput = toItemsList(localResult);
+
+                /*
+                 * Is this generating other kinds of output? Account for them
+                 */
+                if (hasInputConsumption()) {
+
+                    // Changes in the main inventory?
+                    if (getMainInputConsumption() != null) {
+
+                        // Generate a result from the main input consumption
+                        MythicRecipeInventory addedStuff = generateResultOf(getMainInputConsumption());
+
+                        // Add these to the output
+                        localOutput.addAll(toItemsList(addedStuff));
+                    }
+
+                    // All side
+                    for (String sideName : getSideConsumptionNames()) {
+
+                        // Valid right?
+                        if (!map.getSideInventoryNames().contains(sideName)) { continue; }
+
+                        // Generate a result from the main input consumption
+                        MythicRecipeInventory addedStuff = generateResultOf(getSideConsumption(sideName));
+
+                        // Include overflow
+                        localOutput.addAll(toItemsList(addedStuff));
+                    }
+                }
+
+                //RR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78Result \u00a79RR\u00a7b Result Items");
+                //RR//for (String str : localResult.toStrings("\u00a78Result \u00a79RR- ")) { io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log(str); }
+
+                //RR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78Result \u00a79RR\u00a7a Output Items");
+                //RR//for (String str : SilentNumbers.transcribeList(localOutput, s -> "\u00a78Result \u00a72RR- " + SilentNumbers.getItemName(((ItemStack) s)))) { io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log(str); }
 
                 // Send to
                 HashMap<Integer, ItemStack> localIterationResult = distributeInInventory(inven, localOutput, modifiedInventory);
@@ -632,10 +830,11 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
 
                 // Set
                 inven.setItem(s, putt); }
+
+            // Consume ingredients
+            consumeIngredients(otherInventories, cache, eventTrigger.getInventory(), map, times);
         }
 
-        // Consume ingredients
-        consumeIngredients(otherInventories, cache, eventTrigger.getInventory(), map, times);
     }
 
     /**
@@ -689,7 +888,7 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
      *         <p></p>
      *         <code>null</code> If the item stacks don't fit.
      */
-    public static @Nullable HashMap<Integer, ItemStack> distributeInInventory(@NotNull Inventory inven, @NotNull ArrayList<ItemStack> contents, @Nullable HashMap<Integer, ItemStack> olderResult) {
+    @Nullable public static HashMap<Integer, ItemStack> distributeInInventory(@NotNull Inventory inven, @NotNull ArrayList<ItemStack> contents, @Nullable HashMap<Integer, ItemStack> olderResult) {
 
         // Organize
         ArrayList<ItemStack> out = notRepeated(contents);
@@ -828,6 +1027,52 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
     }
 
     /**
+     * Will attempt to put all these items in this inventory, will drop them at
+     * the location if it fails to put them all there.
+     *
+     * @param inven Receiving <b>player</b> Inventory
+     *
+     * @param contents Items to fit
+     *
+     * @param dropLocation Location to drop
+     */
+    public static void distributeInInventoryOrDrop(@NotNull Inventory inven, @NotNull ArrayList<ItemStack> contents, @NotNull Location dropLocation) {
+
+        // Wrong inventory
+        if (inven.getSize() < 35) { throw new IndexOutOfBoundsException("Passing non-player inventory to this method; Expected a player's inventory"); }
+
+        // Distribute
+        HashMap<Integer, ItemStack> localIterationResult = distributeInInventory(inven, contents, null);
+
+        // Distributive Success?
+        if (localIterationResult != null) {
+
+            // Put in inventory yes
+            for (Integer s : localIterationResult.keySet()) {
+
+                // Get Item
+                ItemStack putt = localIterationResult.get(s);
+                //RR//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78Result \u00a79IS\u00a77 Putting \u00a7b@" + s + "\u00a77 a " + SilentNumbers.getItemName(putt));
+
+                if (SilentNumbers.isAir(putt)) { continue; }
+
+                // Set
+                inven.setItem(s, putt); }
+
+        // Do not fit, drop them all
+        } else {
+
+            // Drop all
+            for (ItemStack item : contents) {
+
+                // Ew
+                if (item == null || !item.getType().isItem()) { continue; }
+
+                // Drop
+                dropLocation.getWorld().dropItem(dropLocation, item); } }
+    }
+
+    /**
      * @param contents 'Repeatable' ItemStacks, will ignore those that are null or AIR
      *
      * @return Them re-ordered so that they are completely stacked (up to, obviously,
@@ -921,4 +1166,104 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
         ItemStack first = localResult.getFirst();
         Validate.isTrue(first != null, "MRORecipe output cannot just not generate any Item Stacks");
         return first; }
+
+    /**
+     * Suppose you have an inventory and you want to put all the items from it
+     * onto another inventory, but without deleting any item from the receiving
+     * inventory.
+     * <br><br>
+     * This method will stack all possible items in the receiving inventory, and
+     * return a list of all items that could not be stacked.
+     *
+     * @param receivingInventory Inventory receiving all these items.
+     *
+     *                           Will be edited.
+     *
+     * @param addedStuff Inventory of items to put onto the receiving inventory.
+     *
+     * @return The items that did not fit
+     */
+    @NotNull public static ArrayList<ItemStack> stackWhatsPossible(@NotNull MythicRecipeInventory receivingInventory, @NotNull MythicRecipeInventory addedStuff) {
+
+        // The extra items
+        ArrayList<ItemStack> inputConsumptionOverflow = new ArrayList<>();
+
+        // For every slot
+        for (int h = 0; h < addedStuff.getHeight(); h++) {
+            for (int w = 0; w < addedStuff.getWidth(); w++) {
+
+                // Find item there
+                ItemStack resultItem = addedStuff.getItemAt(w, -h);
+
+                // Must be neither null nor air
+                if (SilentNumbers.isAir(resultItem)) { continue; }
+
+                // All right, can it stack with
+                ItemStack currentItem = receivingInventory.getItemAt(w, -h);
+
+                /*
+                 * All right, so, can the actual cursor stack with the current?
+                 */
+                if (!SilentNumbers.isAir(currentItem)) {
+
+                    // Aye so they could stack
+                    if (currentItem.isSimilar(resultItem)) {
+
+                        // Exceeds max stacks?
+                        int cAmount = currentItem.getAmount();
+                        int aAmount = resultItem.getAmount();
+                        int maxAmount = resultItem.getMaxStackSize();
+
+                        // Cancel if their sum would exceed the max
+                        if (cAmount + aAmount > maxAmount) {
+
+                            // Set the amount to max
+                            currentItem.setAmount(maxAmount);
+
+                            // Put into the inventory already
+                            receivingInventory.setItemAt(w, -h, currentItem);
+
+                            // How much amount not added?
+                            int addedAmount = maxAmount - cAmount;
+                            int remainder = aAmount - addedAmount;
+
+                            // Considerable?
+                            if (remainder > 0) {
+
+                                // Set the remainder to the difference
+                                resultItem.setAmount(remainder);
+
+                                // Include in garbage collection
+                                inputConsumptionOverflow.add(resultItem);
+                            }
+
+                            // The sum of their amounts does not exceed the max
+                        } else {
+
+                            // All right recalculate amount then
+                            resultItem.setAmount(cAmount + aAmount);
+
+                            // Put into the inventory already
+                            receivingInventory.setItemAt(w, -h, resultItem);
+                        }
+
+                        // The item currently there does not stack with this
+                    } else {
+
+                        // Send it to the garbage collection
+                        inputConsumptionOverflow.add(resultItem);
+                    }
+
+                    // The item currently there is air
+                } else {
+
+                    // Put into the inventory already
+                    receivingInventory.setItemAt(w, -h, resultItem);
+                }
+
+            } }
+
+        // Well that's the remaining stuff
+        return inputConsumptionOverflow;
+    }
 }

@@ -84,7 +84,14 @@ public abstract class MythicRecipeOutput {
      * <p><code><b>consumeIngredients(otherInventories, cache, eventTrigger.getInventory(), map, times);</b></code></p>
      *
      * @param originalInventories The inventories as they were before the operation
-     * @param cache The cached result information
+     * @param cache The cached result information.
+     *              <br><br>
+     *              The expectation is that ingredients have only been consumed, and
+     *              any other output (like empty buckets when crafting a cake) that
+     *              is given to the player in the ingredient section will be accounted
+     *              for elsewhere.
+     *              <br><br>
+     *              This method CONSUMES INGREDIENTS
      * @param inven The actual inventory of the station that will reflect the changes
      * @param map The Vanilla Mapping to use
      * @param times The amount of times the player is crafting this recipe.

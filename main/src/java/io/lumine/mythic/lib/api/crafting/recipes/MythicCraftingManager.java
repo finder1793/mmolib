@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.api.crafting.recipes;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.crafting.ingredients.MythicBlueprintInventory;
 import io.lumine.mythic.lib.api.crafting.ingredients.MythicRecipeInventory;
@@ -10,7 +11,9 @@ import io.lumine.mythic.lib.api.crafting.uifilters.IngredientUIFilter;
 import io.lumine.mythic.lib.api.crafting.uifilters.RecipeUIFilter;
 import io.lumine.mythic.lib.api.crafting.uifilters.VanillaUIFilter;
 import io.lumine.mythic.lib.api.util.Ref;
+import org.bukkit.GameRule;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -382,8 +385,12 @@ public class MythicCraftingManager implements Listener {
      */
     public static boolean isCraftToCompletion(@NotNull InventoryClickEvent event) {
 
-        // Shift + click yes
-        return event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY;
+        /*
+         * Shift + click yes.
+         *
+         * There
+         */
+        return event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY || (event.getAction() == InventoryAction.NOTHING && event.isShiftClick());
     }
 
     /**
@@ -409,6 +416,42 @@ public class MythicCraftingManager implements Listener {
         // All right we're good to go, lets see every recipe
         for (MythicRecipeBlueprint blueprint : liveRecipes) {
             //CRAFT//log("\u00a78Display \u00a76B\u00a77 Looking at Recipe \u00a7e" + ((io.lumine.mythic.lib.api.crafting.outputs.MRORecipe) blueprint.getResult()).getOutput().getName());
+
+            /*
+             * todo respect doLimitedCrafting Game Rule
+            // The players has it unlocked right
+            boolean limitedCrafted = false;
+            for (Player viewer : viewers) { if (viewer != null) {
+
+                World world = viewer.getLocation().getWorld();
+                if (world == null) { continue; }
+
+                // Prevent
+                if (world.isGameRule("doLimitedCrafting")) {
+
+                    // Counter limit
+                    Boolean limit = world.getGameRuleValue(GameRule.DO_LIMITED_CRAFTING);
+
+                    // No limit no service
+                    if (limit == null || !limit) { continue; }
+
+                    // Ok its limited, do the player have the recipe unlocked
+                    boolean disc = viewer.undiscoverRecipe(blueprint.getNk());
+
+                    // Newly discovered?
+                    if (disc) {
+
+                        // Cancel lmao
+                        viewer.undiscoverRecipe(blueprint.getNk());
+
+                        // Skip lma0
+                        limitedCrafted = true;
+                        break;
+                    }
+                }
+            } }
+            if (limitedCrafted) { continue; }
+            */
 
             // Well, whats the modified version?
             Ref<Integer> timesCrafted = new Ref<>();

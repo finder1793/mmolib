@@ -93,8 +93,7 @@ public class MythicBlueprintInventory {
      *
      * @return A new list, with a copy of every name of the side check inventories.
      */
-    @NotNull
-    public ArrayList<String> getSideInventoryNames() { return new ArrayList<>(sideInventories.keySet()); }
+    @NotNull public ArrayList<String> getSideInventoryNames() { return new ArrayList<>(sideInventories.keySet()); }
 
     /**
      * Include an inventory in the side-inventory-list.
