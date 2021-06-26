@@ -1,8 +1,6 @@
 package io.lumine.mythic.lib.api.player;
 
 import io.lumine.mythic.lib.api.stat.StatMap;
-import lombok.Getter;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -17,12 +15,13 @@ public class MMOPlayerData {
     private Player player;
     private long lastLogin;
 
-    /*
-     * stat data saved till next server startup
-     */
     private final UUID uuid;
-    private final StatMap stats = new StatMap(this);
     private final Map<MitigationType, Long> cooldowns = new HashMap<>();
+
+    /**
+     * Stat data saved till server next restart.
+     */
+    private final StatMap stats = new StatMap(this);
 
     private static final Map<UUID, MMOPlayerData> data = new HashMap<>();
 
@@ -74,14 +73,10 @@ public class MMOPlayerData {
      */
     @Nullable
     public Player getPlayer() {
-        if (player == null) {
-            player = Bukkit.getPlayer(uuid);
-        }
-
-        return player;
+        return player == null ? player = Bukkit.getPlayer(uuid) : player;
     }
 
-    /***
+    /**
      * Caches a new Player instance and refreshes the lastLogin value
      *
      * @param player Player instance to cache
@@ -91,7 +86,7 @@ public class MMOPlayerData {
         this.lastLogin = System.currentTimeMillis();
     }
 
-    /***
+    /**
      * Used when mitigation occurs to apply cooldown.
      *
      * @param cd    The type of mitigation
@@ -101,7 +96,7 @@ public class MMOPlayerData {
         cooldowns.put(cd, (long) (System.currentTimeMillis() + value * 1000));
     }
 
-    /***
+    /**
      * @param  cd The type of mitigation involved
      * @return    If the mecanic is currently on cooldown for the player
      */
@@ -109,7 +104,7 @@ public class MMOPlayerData {
         return !cooldowns.containsKey(cd) || cooldowns.get(cd) <= System.currentTimeMillis();
     }
 
-    /***
+    /**
      * Called everytime a player enters the server. Either initializes the
      * MMOPlayerData instance, or caches the Player instance + refreshes the
      * lastLogin value
@@ -121,16 +116,15 @@ public class MMOPlayerData {
             MMOPlayerData playerData = data.get(uniqueId);
             playerData.updatePlayer();
             playerData.updateLoginTime();
-        } else {
+        } else
             data.put(uniqueId, new MMOPlayerData(uniqueId));
-        }
     }
 
     private void updatePlayer() {
         player = Bukkit.getServer().getPlayer(uuid);
     }
 
-    /***
+    /**
      * This essentially checks if a player logged in since the last time the
      * server started/was reloaded.
      *
@@ -150,7 +144,7 @@ public class MMOPlayerData {
         return data.get(uuid);
     }
 
-    /***
+    /**
      * @return Currently loaded MMOPlayerData instances. This can be used to
      *         apply things like resource regeneration or other runnable based
      *         tasks instead of looping through online players and having to
@@ -166,7 +160,6 @@ public class MMOPlayerData {
         if (!(o instanceof MMOPlayerData)) return false;
 
         MMOPlayerData that = (MMOPlayerData) o;
-
         return uuid.equals(that.uuid);
     }
 

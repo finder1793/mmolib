@@ -11,17 +11,25 @@ import org.bukkit.attribute.AttributeModifier;
 public class AttributeStatHandler implements StatHandler {
     private final Attribute attribute;
     private final String stat;
+    private final boolean meleeWeaponStat;
+
+    public AttributeStatHandler(Attribute attribute, String stat) {
+        this(attribute, stat, false);
+    }
 
     /**
-     * Stats like Attack Damage and Attack Speed from off hand
-     * item which must not stack with main hand item stats
+     * Statistics like Atk Damage, Atk Speed, Max Health...
+     * which are based on vanilla player attributes.
+     *
+     * @param attribute       The corresponding vanilla player attribute
+     * @param stat            The stat identifier
+     * @param meleeWeaponStat When set to true, stat modifiers from ranged weapons won't
+     *                        be taken into account. This is only the case for Attack Damage
      */
-    private final boolean weaponStat;
-
-    public AttributeStatHandler(Attribute attribute, String stat, boolean weaponStat) {
+    public AttributeStatHandler(Attribute attribute, String stat, boolean meleeWeaponStat) {
         this.attribute = attribute;
         this.stat = stat;
-        this.weaponStat = weaponStat;
+        this.meleeWeaponStat = meleeWeaponStat;
     }
 
     @Override
@@ -30,17 +38,29 @@ public class AttributeStatHandler implements StatHandler {
             return;
 
         AttributeInstance ins = stats.getPlayerData().getPlayer().getAttribute(attribute);
+        StatInstance statIns = stats.getInstance(stat);
         removeModifiers(ins);
 
         /**
-         * If the attribute is a default attribute, substract default value from
-         * it so that it compensates it
+         * The first two boolean checks make sure that ranged
+         * weapons do not register their attack damage.
+         *
+         * The last two checks guarantee that melee weapons
+         * held in off hand don't register any of their stats.
          */
-        StatInstance statIns = stats.getInstance(stat);
-        double d = statIns.getFilteredTotal(mod -> mod.getSource() != ModifierSource.RANGED_WEAPON &&
+        double d = statIns.getFilteredTotal(mod -> (!meleeWeaponStat || mod.getSource() != ModifierSource.RANGED_WEAPON) &&
                 (mod.getSource() != ModifierSource.MELEE_WEAPON || mod.getSlot() != EquipmentSlot.OFF_HAND));
+
+        /**
+         * Calculate the stat base value. Since it can be changed by
+         * external plugins, it's better to calculate it once and cache the result.
+         */
         double base = statIns.getBase();
 
+        /**
+         * Only add an attribute modifier if the very final stat
+         * value is different from the main one to save calculations.
+         */
         if (d != base)
             ins.addModifier(new AttributeModifier("mmolib.main", d - base, AttributeModifier.Operation.ADD_NUMBER));
     }

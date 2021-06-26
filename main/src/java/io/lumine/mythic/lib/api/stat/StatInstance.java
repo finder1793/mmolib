@@ -68,7 +68,7 @@ public class StatInstance {
                 d += attr.getValue();
 
         for (StatModifier attr : modifiers.values())
-            if (attr.getType() == ModifierType.RELATIVE&& filter.test(attr))
+            if (attr.getType() == ModifierType.RELATIVE && filter.test(attr))
                 d *= 1 + attr.getValue() / 100;
 
         return d;
