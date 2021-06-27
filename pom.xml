@@ -144,8 +144,9 @@
 		</repository>
 
 		<repository>
+			<!-- it's just jitpack, no need for other crap. -->
 			<id>shopkeepers</id>
-			<url>https://jitpack.io/#Shopkeepers/Shopkeepers/</url>
+			<url>https://jitpack.io</url>
 			<!-- <url>https://nexus.lichtspiele.org/repository/releases/</url> -->
 		</repository>
 
