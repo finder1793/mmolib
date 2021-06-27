@@ -45,10 +45,10 @@ public class PlayerAttackEvent extends MMOPlayerDataEvent implements Cancellable
         return attack;
     }
 
-    /***
+    /**
      * @return If the event is called because of a melee player attack
-     * @deprecated Old method, use getAttack().getTypes().contains(DamageType)
-     *             which works with other damage types.
+     * @deprecated Old method, use getAttack().getTypes().contains(DamageType.WEAPON)
+     * which supports other damage types instead.
      */
     @Deprecated
     public boolean isWeapon() {

@@ -6,7 +6,6 @@ import io.lumine.mythic.lib.api.DamageType;
 import io.lumine.mythic.lib.api.RegisteredAttack;
 import io.lumine.mythic.lib.api.math.EvaluatedFormula;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.api.stat.StatMap;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -18,8 +17,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.function.BiFunction;
+import java.util.logging.Level;
 
 public class DamageReduction implements Listener {
+
     // Since mythic mobs is a soft depend, this event triggers
     // correctly, fixing a bug with mm skill mechanics.
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -31,91 +32,61 @@ public class DamageReduction implements Listener {
         RegisteredAttack attack = MythicLib.plugin.getDamage().findInfo(event.getEntity());
         AttackResult result = attack == null ? new AttackResult(true, DamageType.WEAPON, DamageType.PHYSICAL) : attack.getResult();
 
-        /*
-         * Applies defense based damage reduction
+        double damage = event.getDamage();
+
+        /**
+         * Applies damage reduction due to the DEFENSE stat
          */
         double defense = data.getStatMap().getStat("DEFENSE");
-        double damage = defense > 0 ? new DefenseCalculator(defense).getAppliedDamage(event.getDamage()) : event.getDamage();
+        damage = defense > 0 ? new DefenseFormula(defense).getAppliedDamage(event.getDamage()) : event.getDamage();
 
-        /*
-         * Applies other damage reduction sources
+        /**
+         * Applies damage reduction due to damage reduction stats, like
+         * MAGIC_DAMAGE_REDUCTION or simply DAMAGE_REDUCTION
          */
-        DamageReductionCalculator reductionCalculator = new DamageReductionCalculator(data);
+        double afterMitigation = 1;
         for (DamageReductionType type : DamageReductionType.values())
             if (type.isApplicable(result, event))
-                reductionCalculator.applyReduction(type);
+                afterMitigation *= 1 - Math.min(1, data.getStatMap().getStat(type.getStat()) / 100);
 
-        /*
-         * Finally applies damage
+        /**
+         * Finally update the event damage output.
          */
-        event.setDamage(damage * reductionCalculator.getCoefficient());
+        event.setDamage(damage * afterMitigation);
     }
 
     /**
-     * Used for calculating defense stats. Double outputs are given with up to 2
-     * decimal places
+     * Used for calculating damage mitigation due to the defense stat.
      */
-    public static class DefenseCalculator {
+    public class DefenseFormula {
         private final double defense;
 
-        public DefenseCalculator(double defense) {
+        public DefenseFormula(double defense) {
             this.defense = defense;
-        }
-
-        /**
-         * @return Percentage of damage reduced. Basically calculates the damage
-         *         reduction for a 100 damage attack and makes it a %
-         */
-        @Deprecated
-        public double getReductionPercent() {
-            return truncation(100 - getAppliedDamage(100), 2);
         }
 
         public double getAppliedDamage(double damage) {
             String formula = MythicLib.plugin.getConfig().getString("defense-application", "#damage# * (1 - (#defense# / (#defense# + 100)))");
             formula = formula.replace("#defense#", String.valueOf(defense));
             formula = formula.replace("#damage#", String.valueOf(damage));
-            // Doesn't run the formula if there are hanging #'s
-            // or unparsed placeholders.
+
             try {
                 return Math.max(0, new EvaluatedFormula(formula).evaluate());
-            } catch (RuntimeException e) {
+            } catch (RuntimeException exception) {
+
+                /**
+                 * Formula won't evaluate if hanging #'s or unparsed placeholders. Send a
+                 * friendly warning to console and just return the default damage.
+                 */
+                MythicLib.inst().getLogger()
+                        .log(Level.WARNING, "Could not evaluate defense formula, please check config.");
                 return damage;
             }
-
-        }
-
-        private double truncation(double d, int places) {
-            double p = Math.pow(10, places);
-            return Math.floor(d * p) / p;
         }
     }
 
     /**
-     * Util class to help and easily manage damage reduction formulas. currently
-     * %'s do not add up which means 30% + 30% is not 60% but 51% to prevent OP
-     * damage reduction stats.
-     */
-    public static class DamageReductionCalculator {
-        private final StatMap stats;
-
-        private double c = 1;
-
-        public DamageReductionCalculator(MMOPlayerData data) {
-            this.stats = data.getStatMap();
-        }
-
-        public void applyReduction(DamageReductionType type) {
-            c *= 1 - Math.min(1, stats.getStat(type.getStat()) / 100);
-        }
-
-        double getCoefficient() {
-            return c;
-        }
-    }
-
-    /**
-     * All different types of damage reduction are listed here
+     * All different types of damage reduction.
      */
     public enum DamageReductionType {
 
@@ -147,15 +118,25 @@ public class DamageReduction implements Listener {
                     event) -> (event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) event).getDamager() instanceof Projectile)
                 || (result != null && result.hasType(DamageType.PROJECTILE)));
 
+        /**
+         * The corresponding item stat that will be used to
+         * apply damage reduction. For instance, ENVIRONMENTAL calls
+         * the DAMAGE_REDUCTION_STAT and MAGIC calls MAGIC_DAMAGE_REDUCTION
+         */
         private final String stat;
+
+        /**
+         * Whether or not the corresponding stat {@link DamageReductionType#stat}
+         * should apply in a given attack, ie AttackResult and EntityDamageEvent
+         */
         private final BiFunction<AttackResult, EntityDamageEvent, Boolean> apply;
 
-        DamageReductionType(String stat, BiFunction<AttackResult, EntityDamageEvent, Boolean> apply) {
+        private DamageReductionType(String stat, BiFunction<AttackResult, EntityDamageEvent, Boolean> apply) {
             this.stat = stat;
             this.apply = apply;
         }
 
-        DamageReductionType(BiFunction<AttackResult, EntityDamageEvent, Boolean> apply) {
+        private DamageReductionType(BiFunction<AttackResult, EntityDamageEvent, Boolean> apply) {
             this.stat = name() + "_DAMAGE_REDUCTION";
             this.apply = apply;
         }
@@ -169,6 +150,10 @@ public class DamageReduction implements Listener {
         }
     }
 
+    /**
+     * Tries to find the entity who dealt the damage in some attack event. Main issue is that
+     * if it is a ranged attack like a trident or an arrow, we have to find back the shooter.
+     */
     private static LivingEntity getDamager(EntityDamageByEntityEvent event) {
 
         /*
