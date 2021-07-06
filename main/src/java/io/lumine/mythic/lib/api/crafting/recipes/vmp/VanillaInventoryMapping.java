@@ -385,13 +385,13 @@ public abstract class VanillaInventoryMapping {
      *
      * @throws IllegalArgumentException Always
      */
-    void throwSideInventoryException(@NotNull String name) throws IllegalArgumentException { throw new IllegalArgumentException("No such side inventory of name '" + name + "' for mapping " + getClass().getSimpleName()); }
+    public void throwSideInventoryException(@NotNull String name) throws IllegalArgumentException { throw new IllegalArgumentException("No such side inventory of name '" + name + "' for mapping " + getClass().getSimpleName()); }
     /**
      * Throws the 'Side Inventory not Found' Exception if the side inventory is, well if its not found.
      *
      * @param side The side inventory being requested.
      */
-    void considerThrowingSideException(@NotNull String side) { if (!getSideInventoryNames().contains(side)) { throwSideInventoryException(side); } }
+    public void considerThrowingSideException(@NotNull String side) { if (!getSideInventoryNames().contains(side)) { throwSideInventoryException(side); } }
     //endregion
 
     //region Apply to inventory

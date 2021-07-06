@@ -4,6 +4,8 @@ import io.lumine.mythic.lib.api.stat.StatMap;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -136,7 +138,9 @@ public class MMOPlayerData {
         return data.containsKey(uuid);
     }
 
-    public static MMOPlayerData get(OfflinePlayer player) {
+    @Contract("null -> null")
+    @Nullable public static MMOPlayerData get(@Nullable OfflinePlayer player) {
+        if (player == null) { return null; }
         return data.get(player.getUniqueId());
     }
 

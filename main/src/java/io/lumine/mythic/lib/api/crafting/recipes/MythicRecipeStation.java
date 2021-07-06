@@ -29,5 +29,10 @@ public enum MythicRecipeStation {
     /**
      * With data for brewing in a brewing stand
      */
-    BREWING
+    BREWING,
+
+    /**
+     * Some edited chest inventory for external plugins
+     */
+    CUSTOM
 }
