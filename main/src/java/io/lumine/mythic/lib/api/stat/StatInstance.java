@@ -101,21 +101,28 @@ public class StatInstance {
     }
 
     /**
-     * @param key
-     *            The string key of the external modifier source or plugin
+     * @param key The string key of the external modifier source or plugin
+     * @return Attribute with the given key, or throws a NPE if not found
+     * @deprecated use {@link StatInstance#getModifier(String)} instead
+     */
+    @Deprecated
+    public StatModifier getAttribute(String key) {
+        return modifiers.get(key);
+    }
+
+    /**
+     * @param key The string key of the external modifier source or plugin
      * @return Attribute with the given key, or throws a NPE if not found
      */
-    public StatModifier getAttribute(String key) {
+    public StatModifier getModifier(String key) {
         return modifiers.get(key);
     }
 
     /**
      * Registers a stat modifier and run the required player stat updates
      *
-     * @param key
-     *            The string key of the stat
-     * @param modifier
-     *            The stat modifier being registered
+     * @param key      The string key of the stat
+     * @param modifier The stat modifier being registered
      */
     public void addModifier(String key, StatModifier modifier) {
         modifiers.put(key, modifier);

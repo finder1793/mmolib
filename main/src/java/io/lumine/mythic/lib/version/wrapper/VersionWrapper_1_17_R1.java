@@ -32,12 +32,7 @@ import net.minecraft.world.inventory.ContainerAccess;
 import net.minecraft.world.inventory.ContainerAnvil;
 import net.minecraft.world.level.block.SoundEffectType;
 import net.minecraft.world.level.block.entity.TileEntitySkull;
-import org.bukkit.Bukkit;
-import org.bukkit.FluidCollisionMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.boss.BarColor;
@@ -77,7 +72,7 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 
 	@Override
 	public void sendActionBar(Player player, String message) {
-		((CraftPlayer) player).getHandle().b.sendPacket(new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + message + "\"}"), ChatMessageType.b, UUID.randomUUID()));
+		((CraftPlayer) player).getHandle().b.sendPacket(new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + message + "\"}"), ChatMessageType.c, UUID.randomUUID()));
 	}
 
 	@Override
