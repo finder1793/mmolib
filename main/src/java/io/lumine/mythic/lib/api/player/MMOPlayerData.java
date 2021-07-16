@@ -52,8 +52,16 @@ public class MMOPlayerData {
 
     /**
      * @return The last time, in millis, the player logged in or out
+     * @deprecated Use {@link #getLastLogActivity()} instead
      */
-    @SuppressWarnings("unused")
+    @Deprecated
+    public long getLastLogin() {
+        return getLastLogActivity();
+    }
+
+    /**
+     * @return The last time, in millis, the player logged in or out
+     */
     public long getLastLogActivity() {
         return lastLogActivity;
     }
