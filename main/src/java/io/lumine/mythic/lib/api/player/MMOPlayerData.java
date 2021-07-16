@@ -1,11 +1,13 @@
 package io.lumine.mythic.lib.api.player;
 
 import io.lumine.mythic.lib.api.stat.StatMap;
-import org.bukkit.Bukkit;
+import io.lumine.mythic.lib.listener.PlayerListener;
+import org.apache.commons.lang.Validate;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -15,7 +17,11 @@ import java.util.UUID;
 
 public class MMOPlayerData {
     private Player player;
-    private long lastLogin;
+
+    /**
+     * Last time the player either logged in or logged out.
+     */
+    private long lastLogActivity;
 
     private final UUID uuid;
     private final Map<MitigationType, Long> cooldowns = new HashMap<>();
@@ -27,65 +33,63 @@ public class MMOPlayerData {
 
     private static final Map<UUID, MMOPlayerData> data = new HashMap<>();
 
-    public MMOPlayerData(UUID uniqueId) {
-        this.uuid = uniqueId;
-        updateLoginTime();
-    }
-
-    public void updateLoginTime() {
-        this.lastLogin = System.currentTimeMillis();
+    private MMOPlayerData(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public UUID getUniqueId() {
         return uuid;
     }
 
-    /***
+    /**
      * @return The player's StatMap which can be used by any other plugins to
-     *         apply stat modifiers to ANY MMOItems/MMOCore/external stats,
-     *         calculate stat values, etc.
+     * apply stat modifiers to ANY MMOItems/MMOCore/external stats,
+     * calculate stat values, etc.
      */
     public StatMap getStatMap() {
         return stats;
     }
 
-    /***
-     * @return The last time the player logged in, timestamp in milliseconds.
+    /**
+     * @return The last time, in millis, the player logged in or out
      */
     @SuppressWarnings("unused")
-    public long getLastLogin() {
-        return lastLogin;
+    public long getLastLogActivity() {
+        return lastLogActivity;
     }
 
-    /***
-     * @return If the player is currently online. This method simply checks if
-     *         the cached Player instance is null because MMOLib uncaches it
-     *         when the player leaves for memory purposes.
+    /**
+     * This method simply checks if the cached Player instance is null
+     * because MMOLib uncaches it when the player leaves for memory purposes.
+     *
+     * @return If the player is currently online.
      */
     public boolean isOnline() {
         return player != null;
     }
 
-    /***
-     * @return Returns the corresponding Player instance, or throws an IAE if
-     *         the player is currently not online. Make sure he is online before
-     *         calling this method
-     *         <br>
-     *         Note: Can return null if player is not online or if the player is not loaded completely.
+    /**
+     * Throws an IAE if the player is currently not online
+     * OR if the Player instance was not cached in yet.
+     * <p>
+     * MythicLib updates the Player instance on event priority LOW
+     * using {@link PlayerJoinEvent} here: {@link PlayerListener}
+     *
+     * @return Returns the corresponding Player instance.
      */
-    @Nullable
     public Player getPlayer() {
-        return player == null ? player = Bukkit.getPlayer(uuid) : player;
+        Validate.notNull(player, "Player is offline");
+        return player;
     }
 
     /**
-     * Caches a new Player instance and refreshes the lastLogin value
+     * Caches a new Player instance and refreshes the last log activity
      *
      * @param player Player instance to cache
      */
-    public void setPlayer(Player player) {
+    public void updatePlayer(Player player) {
         this.player = player;
-        this.lastLogin = System.currentTimeMillis();
+        this.lastLogActivity = System.currentTimeMillis();
     }
 
     /**
@@ -107,41 +111,36 @@ public class MMOPlayerData {
     }
 
     /**
-     * Called everytime a player enters the server. Either initializes the
-     * MMOPlayerData instance, or caches the Player instance + refreshes the
-     * lastLogin value
+     * Called everytime a player enters the server. If the
+     * resource data is not initialized yet, initializes it.
+     * <p>
+     * This is called async using {@link AsyncPlayerPreLoginEvent} which does
+     * not provide a Player instance, meaning the cached Player instance is NOT
+     * loaded yet. It is only loaded when the player logs in using {@link PlayerJoinEvent}
      *
-     * @param uniqueId Player id to be loaded.
+     * @param uuid Player id to be loaded
      */
-    public static void setup(UUID uniqueId) {
-        if (data.containsKey(uniqueId)) {
-            MMOPlayerData playerData = data.get(uniqueId);
-            playerData.updatePlayer();
-            playerData.updateLoginTime();
-        } else
-            data.put(uniqueId, new MMOPlayerData(uniqueId));
-    }
-
-    private void updatePlayer() {
-        player = Bukkit.getServer().getPlayer(uuid);
+    public static void setup(UUID uuid) {
+        if (!data.containsKey(uuid))
+            data.put(uuid, new MMOPlayerData(uuid));
     }
 
     /**
      * This essentially checks if a player logged in since the last time the
      * server started/was reloaded.
      *
-     * @param  uuid The player UUID to check
-     * @return      If the MMOPlayerData instance is loaded for a specific
-     *              player
+     * @param uuid The player UUID to check
+     * @return If the MMOPlayerData instance is loaded for a specific
+     * player
      */
     public static boolean isLoaded(UUID uuid) {
         return data.containsKey(uuid);
     }
 
     @Contract("null -> null")
-    @Nullable public static MMOPlayerData get(@Nullable OfflinePlayer player) {
-        if (player == null) { return null; }
-        return data.get(player.getUniqueId());
+    @Nullable
+    public static MMOPlayerData get(@Nullable OfflinePlayer player) {
+        return player == null ? null : data.get(player.getUniqueId());
     }
 
     public static MMOPlayerData get(UUID uuid) {

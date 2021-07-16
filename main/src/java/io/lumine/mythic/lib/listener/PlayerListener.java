@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.listener;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.gui.PluginInventory;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -11,21 +12,23 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.UUID;
-
 public class PlayerListener implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void loadPlayerData(AsyncPlayerPreLoginEvent e) {
-        MMOPlayerData.setup(e.getUniqueId());
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void loadPlayerData(AsyncPlayerPreLoginEvent event) {
+        MMOPlayerData.setup(event.getUniqueId());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void runStatUpdatesOnJoin(PlayerJoinEvent e) {
-        UUID uuid = e.getPlayer().getUniqueId();
+    @EventHandler(priority = EventPriority.LOW)
+    public void runStatUpdatesOnJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        MMOPlayerData data = MMOPlayerData.get(player);
 
-        if (MMOPlayerData.isLoaded(uuid))
-            MythicLib.plugin.getStats().runUpdates(MMOPlayerData.get(uuid).getStatMap());
+        // Update cached player instance
+        data.updatePlayer(player);
+
+        // Run stat updates on login
+        MythicLib.plugin.getStats().runUpdates(data.getStatMap());
     }
 
     @EventHandler
@@ -34,7 +37,7 @@ public class PlayerListener implements Listener {
         /**
          * See {@link MMOPlayerData#isOnline()}
          */
-        MMOPlayerData.get(event.getPlayer()).setPlayer(null);
+        MMOPlayerData.get(event.getPlayer()).updatePlayer(null);
     }
 
     @EventHandler
