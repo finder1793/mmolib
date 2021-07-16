@@ -134,7 +134,8 @@ public class MythicLib extends LuminePlugin {
 		getCommand("mmodebug").setExecutor(new MMODebugCommand());
 		getCommand("mmotempstat").setExecutor(new MMOTempStatCommand());
 
-		Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.setup(player.getUniqueId()));
+		// Load player data of online players
+		Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.setup(player.getUniqueId()).updatePlayer(player));
 
 		configManager.reload();
 

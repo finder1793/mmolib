@@ -128,9 +128,14 @@ public class MMOPlayerData {
      *
      * @param uuid Player id to be loaded
      */
-    public static void setup(UUID uuid) {
-        if (!data.containsKey(uuid))
-            data.put(uuid, new MMOPlayerData(uuid));
+    public static MMOPlayerData setup(UUID uuid) {
+        if (!data.containsKey(uuid)) {
+            MMOPlayerData playerData = new MMOPlayerData(uuid);
+            data.put(uuid, playerData);
+            return playerData;
+        }
+
+        return data.get(uuid);
     }
 
     /**
