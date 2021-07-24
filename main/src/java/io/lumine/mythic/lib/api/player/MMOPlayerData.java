@@ -24,11 +24,9 @@ public class MMOPlayerData {
     private long lastLogActivity;
 
     private final UUID uuid;
-    private final Map<MitigationType, Long> cooldowns = new HashMap<>();
 
-    /**
-     * Stat data saved till server next restart.
-     */
+    // Data saved till next server restart
+    private final Map<CooldownType, Long> nextUse = new HashMap<>();
     private final StatMap stats = new StatMap(this);
 
     private static final Map<UUID, MMOPlayerData> data = new HashMap<>();
@@ -101,21 +99,21 @@ public class MMOPlayerData {
     }
 
     /**
-     * Used when mitigation occurs to apply cooldown.
+     * Used when damage mitigation or a crit occurs to apply cooldown
      *
      * @param cd    The type of mitigation
      * @param value Mitigation cooldown in seconds
      */
-    public void applyCooldown(MitigationType cd, double value) {
-        cooldowns.put(cd, (long) (System.currentTimeMillis() + value * 1000));
+    public void applyCooldown(CooldownType cd, double value) {
+        nextUse.put(cd, (long) (System.currentTimeMillis() + value * 1000));
     }
 
     /**
-     * @param  cd The type of mitigation involved
-     * @return    If the mecanic is currently on cooldown for the player
+     * @param cd Cooldown type
+     * @return If the mecanic is currently on cooldown for the player
      */
-    public boolean isMitigationReady(MitigationType cd) {
-        return !cooldowns.containsKey(cd) || cooldowns.get(cd) <= System.currentTimeMillis();
+    public boolean isOnCooldown(CooldownType cd) {
+        return nextUse.containsKey(cd) && nextUse.get(cd) > System.currentTimeMillis();
     }
 
     /**
@@ -162,9 +160,9 @@ public class MMOPlayerData {
 
     /**
      * @return Currently loaded MMOPlayerData instances. This can be used to
-     *         apply things like resource regeneration or other runnable based
-     *         tasks instead of looping through online players and having to
-     *         resort to a map-lookup-based get(Player) call
+     * apply things like resource regeneration or other runnable based
+     * tasks instead of looping through online players and having to
+     * resort to a map-lookup-based get(Player) call
      */
     public static Collection<MMOPlayerData> getLoaded() {
         return data.values();

@@ -4,8 +4,8 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.mitigation.PlayerBlockEvent;
 import io.lumine.mythic.lib.api.event.mitigation.PlayerDodgeEvent;
 import io.lumine.mythic.lib.api.event.mitigation.PlayerParryEvent;
+import io.lumine.mythic.lib.api.player.CooldownType;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.api.player.MitigationType;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.version.VersionSound;
 import org.bukkit.*;
@@ -29,9 +29,12 @@ public class MitigationMechanics implements Listener {
     private static final List<EntityDamageEvent.DamageCause> mitigationCauses = Arrays.asList(EntityDamageEvent.DamageCause.PROJECTILE, EntityDamageEvent.DamageCause.ENTITY_ATTACK, EntityDamageEvent.DamageCause.ENTITY_EXPLOSION, EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK);
     private static final DecimalFormat digit = new DecimalFormat("0.#");
 
+    // Mitigation configs
     private boolean dodgeKnockbackEnabled, parryKnockbackEnabled, actionBarMessage;
     private double dodgeKnockbackForce, maxDodgeRating, maxParryRating, maxBlockRating, maxBlockPower, defaultBlockPower, parryKnockbackForce;
     private double parryDefaultCooldown, blockDefaultCooldown, dodgeDefaultCooldown, parryMinCooldown, blockMinCooldown, dodgeMinCooldown;
+
+    // Mitigation chat messages
     private String parryMessage, blockMessage, dodgeMessage;
 
     public MitigationMechanics() {
@@ -73,11 +76,9 @@ public class MitigationMechanics implements Listener {
         MMOPlayerData playerData = MMOPlayerData.get(player);
         StatMap stats = playerData.getStatMap();
 
-        /*
-         * Dodging
-         */
+        // Dodging
         double dodgeRating = Math.min(stats.getStat("DODGE_RATING"), maxDodgeRating) / 100;
-        if (random.nextDouble() < dodgeRating && playerData.isMitigationReady(MitigationType.DODGE)) {
+        if (random.nextDouble() < dodgeRating && !playerData.isOnCooldown(CooldownType.DODGE)) {
 
             PlayerDodgeEvent mitigationEvent = new PlayerDodgeEvent(playerData, event);
             Bukkit.getPluginManager().callEvent(mitigationEvent);
@@ -85,7 +86,7 @@ public class MitigationMechanics implements Listener {
                 return;
 
             sendMessage(player, dodgeMessage, "damage", digit.format(event.getFinalDamage()));
-            playerData.applyCooldown(MitigationType.DODGE, calculateCooldown(dodgeDefaultCooldown, stats.getStat("DODGE_COOLDOWN_REDUCTION") / 100, dodgeMinCooldown));
+            playerData.applyCooldown(CooldownType.DODGE, calculateCooldown(dodgeDefaultCooldown, stats.getStat("DODGE_COOLDOWN_REDUCTION") / 100, dodgeMinCooldown));
             event.setCancelled(true);
             player.getWorld().playSound(player.getLocation(), VersionSound.ENTITY_ENDER_DRAGON_FLAP.toSound(), 2, 1);
             player.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, player.getLocation(), 16, 0, 0, 0, .06);
@@ -94,18 +95,16 @@ public class MitigationMechanics implements Listener {
             return;
         }
 
-        /*
-         * Parrying
-         */
+        // Parrying
         double parryRating = Math.min(stats.getStat("PARRY_RATING"), maxParryRating) / 100;
-        if (random.nextDouble() < parryRating && playerData.isMitigationReady(MitigationType.PARRY)) {
+        if (random.nextDouble() < parryRating && !playerData.isOnCooldown(CooldownType.PARRY)) {
 
             PlayerParryEvent mitigationEvent = new PlayerParryEvent(playerData, event);
             Bukkit.getPluginManager().callEvent(mitigationEvent);
             if (mitigationEvent.isCancelled())
                 return;
 
-            playerData.applyCooldown(MitigationType.PARRY, calculateCooldown(parryDefaultCooldown, stats.getStat("PARRY_COOLDOWN_REDUCTION") / 100, parryMinCooldown));
+            playerData.applyCooldown(CooldownType.PARRY, calculateCooldown(parryDefaultCooldown, stats.getStat("PARRY_COOLDOWN_REDUCTION") / 100, parryMinCooldown));
             event.setCancelled(true);
             sendMessage(player, parryMessage, "damage", digit.format(event.getFinalDamage()));
             player.getWorld().playSound(player.getLocation(), VersionSound.ENTITY_ENDER_DRAGON_FLAP.toSound(), 2, 1);
@@ -117,11 +116,9 @@ public class MitigationMechanics implements Listener {
             return;
         }
 
-        /*
-         * Blocking
-         */
+        // Blocking
         double blockRating = Math.min(stats.getStat("BLOCK_RATING"), maxBlockRating) / 100;
-        if (random.nextDouble() < blockRating && playerData.isMitigationReady(MitigationType.BLOCK)) {
+        if (random.nextDouble() < blockRating && !playerData.isOnCooldown(CooldownType.BLOCK)) {
 
             double blockPower = Math.min(defaultBlockPower + stats.getStat("BLOCK_POWER"), maxBlockPower) / 100;
             PlayerBlockEvent mitigationEvent = new PlayerBlockEvent(playerData, event, blockPower);
@@ -129,7 +126,7 @@ public class MitigationMechanics implements Listener {
             if (mitigationEvent.isCancelled())
                 return;
 
-            playerData.applyCooldown(MitigationType.BLOCK, calculateCooldown(blockDefaultCooldown, stats.getStat("BLOCK_COOLDOWN_REDUCTION") / 100, blockMinCooldown));
+            playerData.applyCooldown(CooldownType.BLOCK, calculateCooldown(blockDefaultCooldown, stats.getStat("BLOCK_COOLDOWN_REDUCTION") / 100, blockMinCooldown));
             sendMessage(player, blockMessage, "damage", digit.format(mitigationEvent.getDamageBlocked()), "power", digit.format(mitigationEvent.getPower() * 100.));
             event.setDamage(event.getDamage() * (1 - mitigationEvent.getPower()));
             player.getWorld().playSound(player.getLocation(), VersionSound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR.toSound(), 2, 1);
@@ -157,6 +154,12 @@ public class MitigationMechanics implements Listener {
             player.sendMessage(format);
     }
 
+    /**
+     * @param cooldown  Cooldown by defaut
+     * @param reduction Mitigation cooldown reduction
+     * @param min       Minimum cooldown
+     * @return The actual player cooldown
+     */
     private double calculateCooldown(double cooldown, double reduction, double min) {
         return Math.max(min, cooldown * (1 - reduction));
     }
