@@ -12,21 +12,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StatManager {
-
     private final Map<String, StatHandler> handlers = new HashMap<>();
 
     public StatManager() {
 
-        /*
-         * default stat updates
-         */
+        // Default stat handlers
         handlers.put(SharedStat.ARMOR, new AttributeStatHandler(Attribute.GENERIC_ARMOR, SharedStat.ARMOR));
         handlers.put(SharedStat.ARMOR_TOUGHNESS, new AttributeStatHandler(Attribute.GENERIC_ARMOR_TOUGHNESS, SharedStat.ARMOR_TOUGHNESS));
 
-        handlers.put(SharedStat.ATTACK_DAMAGE, new AttributeStatHandler(Attribute.GENERIC_ATTACK_DAMAGE, SharedStat.ATTACK_DAMAGE));
-        handlers.put(SharedStat.ATTACK_SPEED, new AttributeStatHandler(Attribute.GENERIC_ATTACK_SPEED, SharedStat.ATTACK_SPEED));
-        handlers.put(SharedStat.KNOCKBACK_RESISTANCE,
-                new AttributeStatHandler(Attribute.GENERIC_KNOCKBACK_RESISTANCE, SharedStat.KNOCKBACK_RESISTANCE));
+        handlers.put(SharedStat.ATTACK_DAMAGE, new AttributeStatHandler(Attribute.GENERIC_ATTACK_DAMAGE, SharedStat.ATTACK_DAMAGE, true));
+        handlers.put(SharedStat.ATTACK_SPEED, new AttributeStatHandler(Attribute.GENERIC_ATTACK_SPEED, SharedStat.ATTACK_SPEED, true));
+        handlers.put(SharedStat.KNOCKBACK_RESISTANCE, new AttributeStatHandler(Attribute.GENERIC_KNOCKBACK_RESISTANCE, SharedStat.KNOCKBACK_RESISTANCE));
         handlers.put(SharedStat.MAX_HEALTH, new AttributeStatHandler(Attribute.GENERIC_MAX_HEALTH, SharedStat.MAX_HEALTH));
 
         StatHandler moveSpeed = new MovementSpeedStatHandler();
@@ -41,8 +37,7 @@ public class StatManager {
      * This method runs all the updates for the vanilla-attribute-based MMOLib
      * stats.
      *
-     * @param map
-     *            The StatMap of the player who needs update
+     * @param map The StatMap of the player who needs update
      */
     public void runUpdates(StatMap map) {
         handlers.values().forEach(update -> update.runUpdate(map));
@@ -51,10 +46,8 @@ public class StatManager {
     /**
      * Runs a specific stat update for a specific StatMap
      *
-     * @param map
-     *            The StatMap of the player who needs update
-     * @param stat
-     *            The string key of the stat which needs update
+     * @param map  The StatMap of the player who needs update
+     * @param stat The string key of the stat which needs update
      */
     public void runUpdate(StatMap map, String stat) {
         if (handlers.containsKey(stat))

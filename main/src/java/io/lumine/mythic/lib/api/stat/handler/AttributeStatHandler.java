@@ -25,6 +25,7 @@ public class AttributeStatHandler implements StatHandler {
      * @param stat            The stat identifier
      * @param meleeWeaponStat When set to true, stat modifiers from ranged weapons won't
      *                        be taken into account. This is only the case for Attack Damage
+     *                        and Attack Speed
      */
     public AttributeStatHandler(Attribute attribute, String stat, boolean meleeWeaponStat) {
         this.attribute = attribute;
@@ -41,7 +42,7 @@ public class AttributeStatHandler implements StatHandler {
         StatInstance statIns = stats.getInstance(stat);
         removeModifiers(ins);
 
-        /**
+        /*
          * The first two boolean checks make sure that ranged
          * weapons do not register their attack damage.
          *
@@ -51,13 +52,13 @@ public class AttributeStatHandler implements StatHandler {
         double d = statIns.getFilteredTotal(mod -> (!meleeWeaponStat || mod.getSource() != ModifierSource.RANGED_WEAPON) &&
                 (mod.getSource() != ModifierSource.MELEE_WEAPON || mod.getSlot() != EquipmentSlot.OFF_HAND));
 
-        /**
+        /*
          * Calculate the stat base value. Since it can be changed by
          * external plugins, it's better to calculate it once and cache the result.
          */
         double base = statIns.getBase();
 
-        /**
+        /*
          * Only add an attribute modifier if the very final stat
          * value is different from the main one to save calculations.
          */
