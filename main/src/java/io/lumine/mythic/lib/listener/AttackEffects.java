@@ -5,7 +5,6 @@ import io.lumine.mythic.lib.api.DamageType;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.player.CooldownType;
 import io.lumine.mythic.lib.api.stat.StatMap;
-import io.lumine.mythic.lib.comp.MythicMobsHook;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -59,13 +58,6 @@ public class AttackEffects implements Listener {
         // Apply undead damage
         if (MythicLib.plugin.getVersion().getWrapper().isUndead(event.getEntity()))
             d += stats.getStat("UNDEAD_DAMAGE") / 100;
-
-        // Apply MythicMobs faction damage
-        if (MythicLib.plugin.hasMythicMobs()) {
-            String faction = MythicMobsHook.getFaction(event.getEntity());
-            if (faction != null)
-                d += stats.getStat("FACTION_DAMAGE_" + faction.toUpperCase()) / 100;
-        }
 
         // Apply PvP or PvE damage, one of the two anyways.
         d += stats.getStat(event.getEntity() instanceof Player ? "PVP_DAMAGE" : "PVE_DAMAGE") / 100;

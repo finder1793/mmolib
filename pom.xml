@@ -1,64 +1,65 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  	<modelVersion>4.0.0</modelVersion>
-  	<groupId>io.lumine</groupId>
-  	<artifactId>MythicLib</artifactId>
-  	<version>1.1.2</version>
-  	<name>MythicLib</name>
-  	
-  	<distributionManagement> 
-		<repository>
-	    	<id>nexus</id>
-	    	<name>Lumine Releases</name>
-	        <url>http://mvn.lumine.io/repository/maven-releases/</url>
-	  	</repository>
-	  	<snapshotRepository>
-	    	<id>nexus</id>
-	    	<name>Lumine Snapshots</name>
-	        <url>http://mvn.lumine.io/repository/maven-snapshots/</url>
-	  	</snapshotRepository>
-	</distributionManagement>
-  	 
-	<build>
-		<finalName>${project.name}-${project.version}</finalName>
-	    <sourceDirectory>main/src/java</sourceDirectory>
-	    <resources>
-	    	<resource>
-				<targetPath>.</targetPath>
-				<filtering>true</filtering>
-				<directory>${basedir}/main/src/resources</directory>
-				<includes>
-					<include>plugin.yml</include>
-					<include>config.yml</include>
-					<include>readme.txt</include>
-				</includes>
-			</resource>
-		</resources>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
-				<configuration>
-					<source>8</source>
-					<target>8</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.3.0-SNAPSHOT</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.lumine</groupId>
+    <artifactId>MythicLib</artifactId>
+    <version>1.1.2</version>
+    <name>MythicLib</name>
+
+    <distributionManagement>
+        <repository>
+            <id>nexus</id>
+            <name>Lumine Releases</name>
+            <url>http://mvn.lumine.io/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus</id>
+            <name>Lumine Snapshots</name>
+            <url>http://mvn.lumine.io/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <build>
+        <finalName>${project.name}-${project.version}</finalName>
+        <sourceDirectory>main/src/java</sourceDirectory>
+        <resources>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>${basedir}/main/src/resources</directory>
+                <includes>
+                    <include>plugin.yml</include>
+                    <include>config.yml</include>
+                    <include>readme.txt</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.3.0-SNAPSHOT</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
                         <configuration>
-                        	<relocations>
-					          	<relocation>
-					            	<pattern>org.bstats</pattern>
-					            	<shadedPattern>io.lumine.mythic.metrics</shadedPattern>
-					          	</relocation>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>io.lumine.mythic.metrics</shadedPattern>
+                                </relocation>
                                 <relocation>
                                     <pattern>io.lumine.utils</pattern>
                                     <shadedPattern>io.lumine.mythic.utils</shadedPattern>
@@ -69,187 +70,192 @@
                     </execution>
                 </executions>
             </plugin>
-			<!--
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>s
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			-->
-		</plugins>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.2.0</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+            <!--
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>s
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            -->
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
-	<repositories>
+    <repositories>
 
-		<repository>
+        <repository>
             <id>lumine</id>
             <url>https://mvn.lumine.io/repository/maven/</url>
         </repository>
 
-		<repository>
-			<id>everything</id>
-			<url>https://repo.citizensnpcs.co/</url>
-		</repository>
+        <repository>
+            <id>everything</id>
+            <url>https://repo.citizensnpcs.co/</url>
+        </repository>
 
-		<repository> 
+        <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
 
-		<repository>
-			<id>aikar</id>
-			<url>https://repo.aikar.co/nexus/content/groups/aikar/</url>
-		</repository>
+        <repository>
+            <id>aikar</id>
+            <url>https://repo.aikar.co/nexus/content/groups/aikar/</url>
+        </repository>
 
-		<repository>
-			<id>citizens-repo</id>
-			<url>https://repo.citizensnpcs.co</url>
-		</repository>
+        <repository>
+            <id>citizens-repo</id>
+            <url>https://repo.citizensnpcs.co</url>
+        </repository>
 
-	  	<repository>
-		    <id>papermc</id>
-		    <url>https://papermc.io/repo/repository/maven-public/</url>
-		</repository>
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.io/repository/maven-public/</url>
+        </repository>
 
-		<repository>
-			<id>sk89q-repo</id>
-			<url>https://maven.enginehub.org/repo/</url>
-		</repository>
+        <repository>
+            <id>papermc</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
+        </repository>
 
-		<repository>
-			<id>hikari-cp</id>
-			<url>https://clojars.org/repo/</url>
-		</repository>
+        <repository>
+            <id>sk89q-repo</id>
+            <url>https://maven.enginehub.org/repo/</url>
+        </repository>
+
+        <repository>
+            <id>hikari-cp</id>
+            <url>https://clojars.org/repo/</url>
+        </repository>
 
 
-		<repository>
-			<id>mojang</id>
-			<url>https://libraries.minecraft.net/</url>
-		</repository>
+        <repository>
+            <id>mojang</id>
+            <url>https://libraries.minecraft.net/</url>
+        </repository>
 
-		<repository>
-			<!-- it's just jitpack, no need for other crap. -->
-			<id>shopkeepers</id>
-			<url>https://jitpack.io</url>
-			<!-- <url>https://nexus.lichtspiele.org/repository/releases/</url> -->
-		</repository>
+        <repository>
+            <!-- it's just jitpack, no need for other crap. -->
+            <id>shopkeepers</id>
+            <url>https://jitpack.io</url>
+            <!-- <url>https://nexus.lichtspiele.org/repository/releases/</url> -->
+        </repository>
 
-		<repository>
-			<id>placeholderapi</id>
-			<url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
-		</repository>
+        <repository>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
 
-	</repositories>
+    </repositories>
 
-	<pluginRepositories> 
-	    <pluginRepository>
-	        <id>apache.snapshots</id>
-	        <url>https://repository.apache.org/snapshots/</url>
-	    </pluginRepository>
-	</pluginRepositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>apache.snapshots</id>
+            <url>https://repository.apache.org/snapshots/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
-	<dependencies>
+    <dependencies>
 
-    	<!-- Main dependencies -->
-    	<dependency>
+        <!-- Main dependencies -->
+        <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>LumineUtils</artifactId>
-			<version>1.16.1-SNAPSHOT</version>
-            <scope>compile</scope> 
+            <version>1.16.1-SNAPSHOT</version>
+            <scope>compile</scope>
             <exclusions>
-		        <exclusion>
-		            <artifactId>*</artifactId>
-		            <groupId>*</groupId>
-		        </exclusion>
-		    </exclusions>
+                <exclusion>
+                    <artifactId>*</artifactId>
+                    <groupId>*</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
-		<dependency>
-			<groupId>net.citizensnpcs</groupId>
-			<artifactId>citizensapi</artifactId>
-			<version>2.0.27-SNAPSHOT</version>
+        <dependency>
+            <groupId>net.citizensnpcs</groupId>
+            <artifactId>citizensapi</artifactId>
+            <version>2.0.27-SNAPSHOT</version>
             <scope>provided</scope>
             <optional>true</optional>
-		</dependency>
+        </dependency>
 
-		<dependency>
-			<groupId>com.sk89q.worldguard</groupId>
-			<artifactId>worldguard-bukkit</artifactId>
-			<version>7.0.2-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>io.lumine.xikage</groupId>
-			<artifactId>MythicMobs</artifactId>
-			<version>4.11.0-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mcmonkey</groupId>
-			<artifactId>sentinel</artifactId>
-			<version>2.2.0-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.18.20</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.6</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<!-- Metrics -->
         <dependency>
-		    <groupId>org.bstats</groupId>
-		    <artifactId>bstats-bukkit</artifactId> 
-		    <version>1.5</version>
-		    <scope>compile</scope>
-		</dependency>
- 
-		<!-- Spigot API -->
-		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>1.16.5-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
+            <groupId>com.sk89q.worldguard</groupId>
+            <artifactId>worldguard-bukkit</artifactId>
+            <version>7.0.2-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<!-- Spigot NMS versions -->
-		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-1.17</artifactId>
-			<version>dev</version>
-			<scope>provided</scope>
-			<optional>true</optional>
-		</dependency>
+        <dependency>
+            <groupId>io.lumine.xikage</groupId>
+            <artifactId>MythicMobs</artifactId>
+            <version>4.11.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
 
-        <dependency> 
+        <dependency>
+            <groupId>org.mcmonkey</groupId>
+            <artifactId>sentinel</artifactId>
+            <version>2.2.0-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.20</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.6</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Metrics -->
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>1.5</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- Spigot API -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.16.5-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Spigot NMS versions -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-1.17</artifactId>
+            <version>dev</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-1.16.4</artifactId>
             <version>dev</version>
@@ -257,7 +263,7 @@
             <optional>true</optional>
         </dependency>
 
-        <dependency> 
+        <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-1.16.2</artifactId>
             <version>dev</version>
@@ -297,13 +303,44 @@
             <optional>true</optional>
         </dependency>
 
-		<dependency>
-			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-1.12.2</artifactId>
-			<version>dev</version>
-			<scope>provided</scope>
-			<optional>true</optional>
-		</dependency>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-1.12.2</artifactId>
+            <version>dev</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
 
-	</dependencies>
+        <dependency>
+            <groupId>com.gmail.filoghost.holographicdisplays</groupId>
+            <artifactId>holographicdisplays-api</artifactId>
+            <version>2.4.9-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>unknown</groupId>
+            <artifactId>holograms</artifactId>
+            <version>unknown</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/Holograms-2.13.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>unknown</groupId>
+            <artifactId>trhologram</artifactId>
+            <version>unknown</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/TrHologram-2.2-all.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>unknown</groupId>
+            <artifactId>cmi</artifactId>
+            <version>unknown</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/CMI9.0.2.0.jar</systemPath>
+        </dependency>
+
+    </dependencies>
 </project>

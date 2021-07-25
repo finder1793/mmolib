@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.comp;
+package io.lumine.mythic.lib.comp.mythicmobs;
 
 import io.lumine.mythic.lib.api.AttackResult;
 import io.lumine.mythic.lib.api.DamageHandler;

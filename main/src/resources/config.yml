@@ -74,3 +74,20 @@ mitigation:
     cooldown:
       base: 8.0
       min: 2.0
+
+# Displays in-game damage or heal indicators.
+# Requires /reload when changed.
+# Supported Plugins:
+# - CMI
+# - HolographicDisplays
+# - Holograms
+# - TrHologram
+game-indicators:
+  damage:
+    enabled: false
+    decimal-format: '0.#'
+    format: '&c-#'
+  heal:
+    enabled: false
+    decimal-format: '0.#'
+    format: '&a+#'
