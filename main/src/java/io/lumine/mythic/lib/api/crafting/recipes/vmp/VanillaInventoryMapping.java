@@ -7,6 +7,7 @@ import io.lumine.mythic.lib.api.crafting.recipes.MythicRecipeStation;
 import io.lumine.utils.version.ServerVersion;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,6 +29,9 @@ public abstract class VanillaInventoryMapping {
 
     //region Main Inventory
     /**
+     * Interestingly, custom inventories might have gaps between chest pieces.
+     * In that case, please return a negative number and the count will ignore it.
+     *
      * @param slot What slot you trying to read.
      *
      * @return For the Main inventory, this slot number,
@@ -39,6 +43,9 @@ public abstract class VanillaInventoryMapping {
      */
     public abstract int getMainWidth(int slot) throws IllegalArgumentException;
     /**
+     * Interestingly, custom inventories might have gaps between chest pieces.
+     * In that case, please return a positive number and the count will ignore it.
+     *
      * @param slot What slot you trying to read.
      *
      * @return For the Main inventory, this slot number,
@@ -410,8 +417,21 @@ public abstract class VanillaInventoryMapping {
      */
     public void applyToMainInventory(@NotNull Inventory inventory, @NotNull MythicRecipeInventory finalMain, boolean amountOnly) {
 
+        // Skips
+        int z = 0;
+
         // For every main slot
-        for (int s = getMainInventoryStart(); s < (getMainInventorySize() + getMainInventoryStart()); s++) { setInventoryItem(inventory, s, finalMain.getItemAt(getMainWidth(s), getMainHeight(s)), amountOnly); }
+        for (int s = getMainInventoryStart(); s < (getMainInventorySize() + getMainInventoryStart() + z); s++) {
+
+            // Read
+            int w = getMainWidth(s);
+            int h = getMainHeight(s);
+
+            // Any of them extraneous?
+            if (w < 0 || h > 0) { z++; continue; }
+
+            setInventoryItem(inventory, s, finalMain.getItemAt(w, h), amountOnly);
+        }
 
         //APY//MythicCraftingManager.log("\u00a78Apply \u00a76M\u00a77 Applying to main inventory");
         //APY//for (int i = 1; i <= 9; i++) { MythicCraftingManager.log("\u00a78Apply \u00a76M\u00a77 Result: \u00a7b@" + i + " \u00a7f" + SilentNumbers.getItemName(inventory.getItem(i))); }
@@ -641,6 +661,7 @@ public abstract class VanillaInventoryMapping {
 
     //region Managing Section
     @NotNull static HashMap<InventoryType, VanillaInventoryMapping> vanillaMappings = new HashMap<>();
+    @NotNull static ArrayList<VanillaInventoryMapping> customInventoryMappings = new ArrayList<>();
     /**
      * Registers all vanilla mappings so that they can be found anywhere.
      */
@@ -653,7 +674,25 @@ public abstract class VanillaInventoryMapping {
         vanillaMappings.put(InventoryType.WORKBENCH, new WorkbenchMapping());
         vanillaMappings.put(InventoryType.CRAFTING, new CraftingMapping());
         vanillaMappings.put(InventoryType.FURNACE, new FurnaceMapping());
+        registerCustomMapping(SuperWorkbenchMapping.SWB);
         if (ServerVersion.get().getMinor() >= 16) { vanillaMappings.put(InventoryType.valueOf("SMITHING"), new SmithingStationMapping()); }
+    }
+
+    /**
+     * Registers a custom crafting station, hooked to a custom inventory yes.
+     *
+     * @param vmp Vanilla inventory mapping intended for {@link InventoryType#CHEST}
+     *            and for {@link MythicRecipeStation#CUSTOM} that you wish to load
+     *            and be detected. It must implement {@link CustomInventoryCheck}
+     */
+    public static void registerCustomMapping(@NotNull VanillaInventoryMapping vmp) {
+
+        // Cancel that shit
+        if (!(vmp instanceof CustomInventoryCheck)) { return; }
+        if (vmp.getIntendedInventory() != InventoryType.CHEST) { return; }
+
+        // Add it I guess
+        customInventoryMappings.add(vmp);
     }
     /**
      * Get the mapping pertaining to this crafting station.
@@ -662,7 +701,31 @@ public abstract class VanillaInventoryMapping {
      *
      * @return The correct mapping, if found.
      */
-    @Nullable public static VanillaInventoryMapping getMappingFor(@NotNull InventoryType inven) { return vanillaMappings.get(inven); }
+    @Nullable public static VanillaInventoryMapping getMappingFor(@NotNull InventoryView inven) {
+
+        // Is it a chest?
+        if (inven.getType() == InventoryType.CHEST && customInventoryMappings.size() > 0) {
+
+            // Might be custom, check through all mappings for the inventory view
+            for (VanillaInventoryMapping vmp : customInventoryMappings) {
+
+                // Good Inventory View?
+                if (((CustomInventoryCheck) vmp).IsTargetInventory(inven)) {
+
+                    // Success this is it boys
+                    return vmp;
+                }
+            }
+
+            // :gruno:
+            return null;
+
+        // Not a chest, treat normally
+        } else {
+
+            return vanillaMappings.get(inven.getType());
+        }
+    }
     /**
      * @return Which live recipe type will this mapping be used with?
      *         <p></p>

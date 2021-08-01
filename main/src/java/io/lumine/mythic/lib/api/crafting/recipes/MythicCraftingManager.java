@@ -1,19 +1,18 @@
 package io.lumine.mythic.lib.api.crafting.recipes;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.crafting.ingredients.MythicBlueprintInventory;
 import io.lumine.mythic.lib.api.crafting.ingredients.MythicRecipeInventory;
 import io.lumine.mythic.lib.api.crafting.outputs.MythicRecipeOutput;
+import io.lumine.mythic.lib.api.crafting.recipes.vmp.CustomInventoryCheck;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.VanillaInventoryMapping;
 import io.lumine.mythic.lib.api.crafting.uifilters.EnchantmentUIFilter;
 import io.lumine.mythic.lib.api.crafting.uifilters.IngredientUIFilter;
 import io.lumine.mythic.lib.api.crafting.uifilters.RecipeUIFilter;
 import io.lumine.mythic.lib.api.crafting.uifilters.VanillaUIFilter;
 import io.lumine.mythic.lib.api.util.Ref;
-import org.bukkit.GameRule;
+import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -115,39 +114,83 @@ public class MythicCraftingManager implements Listener {
     public static void deployBlueprint(@NotNull MythicRecipeBlueprint blueprint, @NotNull MythicRecipeStation forStation) {
 
         // Get array
-        ArrayList<MythicRecipeBlueprint> found = getStationRecipes(forStation);
+        deployBlueprint(blueprint, forStation, null);
+    }
+    public static void deployBlueprint(@NotNull MythicRecipeBlueprint blueprint, @NotNull MythicRecipeStation forStation, @Nullable String custom) {
+
+        // Get array
+        ArrayList<MythicRecipeBlueprint> found = getStationRecipes(forStation, custom);
 
         // Add
         found.add(blueprint);
         blueprint.registerAsDeployed(forStation);
 
-        // Put ig
-        perStationRecipes.put(forStation, found);
+        // Custom?
+        if (forStation == MythicRecipeStation.CUSTOM && custom != null) {
+
+            // Yes
+            perCustomRecipes.put(custom, found);
+
+        // Vanilla
+        } else {
+
+            // Put ig
+            perStationRecipes.put(forStation, found);
+        }
+
     }
     protected static void disableBlueprint(@NotNull MythicRecipeBlueprint blueprint, @NotNull MythicRecipeStation forStation) {
 
         // Get array
-        ArrayList<MythicRecipeBlueprint> found = getStationRecipes(forStation);
+        disableBlueprint(blueprint, forStation, null);
+    }
+    protected static void disableBlueprint(@NotNull MythicRecipeBlueprint blueprint, @NotNull MythicRecipeStation forStation, @Nullable String custom) {
+
+        // Get array
+        ArrayList<MythicRecipeBlueprint> found = getStationRecipes(forStation, custom);
 
         // Add
         found.remove(blueprint);
 
-        // Put ig
-        perStationRecipes.put(forStation, found);
+        // Custom?
+        if (forStation == MythicRecipeStation.CUSTOM && custom != null) {
+
+            // Yes
+            perCustomRecipes.put(custom, found);
+
+        // Vanilla
+        } else {
+
+            // Put ig
+            perStationRecipes.put(forStation, found);
+        }
     }
     /**
      * The list of recipes checked by each station (they must be live)
      */
     @NotNull private static final HashMap<MythicRecipeStation, ArrayList<MythicRecipeBlueprint>> perStationRecipes = new HashMap<>();
     /**
+     * The list of custom stations out there yeah
+     */
+    @NotNull private static final HashMap<String, ArrayList<MythicRecipeBlueprint>> perCustomRecipes = new HashMap<>();
+    /**
      * Get the stations registered to this station.
      * @param station The station kind to check
      * @return an empty array at worst.
      */
-    @NotNull public static ArrayList<MythicRecipeBlueprint> getStationRecipes(@NotNull MythicRecipeStation station) {
+    @NotNull public static ArrayList<MythicRecipeBlueprint> getStationRecipes(@NotNull MythicRecipeStation station, @Nullable String custom) {
 
-        // Well do that
-        return perStationRecipes.computeIfAbsent(station, k -> new ArrayList<>());
+        // If custom and specified
+        if (station == MythicRecipeStation.CUSTOM && custom != null) {
+
+            // Well do the normal finding
+            return perCustomRecipes.computeIfAbsent(custom, k -> new ArrayList<>());
+
+        } else {
+
+            // Well do the normal finding
+            return perStationRecipes.computeIfAbsent(station, k -> new ArrayList<>());
+        }
     }
     //endregion
 
@@ -156,10 +199,8 @@ public class MythicCraftingManager implements Listener {
     public void onCraftingStationUse(InventoryClickEvent event) {
         //RDR//log("\u00a78RDR \u00a741\u00a77 Event Fired - Click");
 
-        // Quickly Identify the variables
-        Inventory inven = event.getClickedInventory();
-        if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) { inven = event.getView().getTopInventory(); } if (inven == null) { return; }
-        final InventoryType station = inven.getType();
+        // Find the correct inventory
+        Inventory inven = event.getView().getTopInventory();
 
         //EVENT//log("\u00a78>\u00a7a>\u00a77 Inventory Click Event");
         //EVENT//log("  \u00a78|\u00a7a|\u00a77 Event Name \u00a7f" + event.getEventName());
@@ -174,7 +215,7 @@ public class MythicCraftingManager implements Listener {
         //EVENT//for (int s = 0; s < event.getInventory().getSize(); s++) { log("     \u00a78:\u00a7a:\u00a77 #" + s + " \u00a7f" + SilentNumbers.getItemName(event.getInventory().getItem(s))); }
 
         // Find the mapping, and surely it must be intended for a vanilla station for this to work.
-        final VanillaInventoryMapping mapping = VanillaInventoryMapping.getMappingFor(station);
+        final VanillaInventoryMapping mapping = VanillaInventoryMapping.getMappingFor(event.getView());
         if ((mapping == null) || (mapping.getIntendedStation() == null)) { return; }
         //CRAFT//log("\u00a78Click \u00a76M\u00a77 Found Mapping \u00a7f" + mapping.getClass().getSimpleName());
 
@@ -183,7 +224,7 @@ public class MythicCraftingManager implements Listener {
         //MPP//try { log("\u00a78Mapping Test Yes \u00a7bResult\u00a77 Is slot? \u00a7e" + mapping.getResultWidth(event.getSlot()) + ":" + (-mapping.getResultHeight(event.getSlot()))); } catch (IllegalArgumentException ignored) {}
 
         // Crafting is disabled (no custom recipes), just nvm
-        final ArrayList<MythicRecipeBlueprint> liveRecipes = getStationRecipes(mapping.getIntendedStation());
+        final ArrayList<MythicRecipeBlueprint> liveRecipes = getStationRecipes(mapping.getIntendedStation(), (mapping instanceof CustomInventoryCheck ? ((CustomInventoryCheck) mapping).getCustomStationKey() : null));
         if (liveRecipes.size() == 0) {
             //CRAFT//log("\u00a78Click \u00a76A\u00a7c No \u00a7e" + mapping.getIntendedStation().toString() + "\u00a7c Recipes Registered");
             return; }
@@ -210,17 +251,16 @@ public class MythicCraftingManager implements Listener {
         //EVENT//for (int s = 0; s < event.getInventory().getSize(); s++) { log("     \u00a78:\u00a7a:\u00a77 #" + s + " \u00a7f" + SilentNumbers.getItemName(event.getInventory().getItem(s))); }
 
         final Inventory inven = event.getView().getTopInventory();
-        final InventoryType station = inven.getType();
 
         // Find the mapping, and surely it must be intended for a vanilla station for this to work.
-        final VanillaInventoryMapping mapping = VanillaInventoryMapping.getMappingFor(station);
+        final VanillaInventoryMapping mapping = VanillaInventoryMapping.getMappingFor(event.getView());
         if ((mapping == null) || (mapping.getIntendedStation() == null)) { return; }
         //CRAFT//log("\u00a78Drag \u00a76M\u00a77 Found Mapping \u00a7f" + mapping.getClass().getSimpleName());
 
         //RDR//log("\u00a78RDR \u00a742\u00a77 Inventory Identified, supported.");
 
         // Crafting is disabled (no custom recipes), just nvm
-        final ArrayList<MythicRecipeBlueprint> liveRecipes = getStationRecipes(mapping.getIntendedStation());
+        final ArrayList<MythicRecipeBlueprint> liveRecipes = getStationRecipes(mapping.getIntendedStation(), (mapping instanceof CustomInventoryCheck ? ((CustomInventoryCheck) mapping).getCustomStationKey() : null));
         if (liveRecipes.size() == 0) {
             //CRAFT//log("\u00a78Drag \u00a76A\u00a7c No \u00a7e" + mapping.getIntendedStation().toString() + "\u00a7c Recipes Registered");
             return; }
@@ -337,37 +377,40 @@ public class MythicCraftingManager implements Listener {
 
         // The player is clicking the ingredients area of the station.
         }
-            //RDR//log("\u00a78RDR \u00a745\u00a77 Crafting Action: RECIPE CHECK");
 
-            /*
-             * The ingredient quantities and positions have been moved as a result of
-             * this click, we must check if the recipe is still matched.
-             *
-             * We do this of course, by making the mapper read this inventory, and
-             * build a MythicRecipeInventory with this inventory translated into
-             * the MythicCrafting format.
-             *
-             * However, we must wait 1 tick to correctly perform these operations,
-             * since the current items are not the correct.
-             *
-             * As this operation is intended to read changes made by the player,
-             * it is cancelled early if the action is doing nothing, which triggers
-             * when the player clicks air, and has air in their cursor, effectively
-             * leaving the ingredient layout unchanged.
-             */
-            if (event.getAction() == InventoryAction.NOTHING && !cResultSlot) { return; }
+        //RDR//log("\u00a78RDR \u00a745\u00a77 Crafting Action: RECIPE CHECK");
 
-            (new BukkitRunnable() {
-                public void run() {
-                    //RDR//log("\u00a78RDR \u00a746\u00a77 Tick waited, checking...");
-                    //ISPM//for (int i = 0; i < inven.getSize(); i++) { MythicCraftingManager.log("\u00a78After Tick \u00a7d@" + i + " \u00a7f" + SilentNumbers.getItemName(inven.getItem(i))); }
+        /*
+         * The ingredient quantities and positions have been moved as a result of
+         * this click, we must check if the recipe is still matched.
+         *
+         * We do this of course, by making the mapper read this inventory, and
+         * build a MythicRecipeInventory with this inventory translated into
+         * the MythicCrafting format.
+         *
+         * However, we must wait 1 tick to correctly perform these operations,
+         * since the current items are not the correct.
+         *
+         * As this operation is intended to read changes made by the player,
+         * it is cancelled early if the action is doing nothing, which triggers
+         * when the player clicks air, and has air in their cursor, effectively
+         * leaving the ingredient layout unchanged.
+         */
+        if (event.getAction() == InventoryAction.NOTHING && !cResultSlot) { return; }
 
-                    ArrayList<Player> p = new ArrayList<>(); for (HumanEntity e : viewers) {if (e instanceof Player) { p.add((Player) e);}}
-                    displayResult(mapping, inven, liveRecipes, p, event.getWhoClicked().getUniqueId(), event);
+        (new BukkitRunnable() {
+            public void run() {
+                //RDR//log("\u00a78RDR \u00a746\u00a77 Tick waited, checking...");
+                //ISPM//for (int i = 0; i < inven.getSize(); i++) { MythicCraftingManager.log("\u00a78After Tick \u00a7d@" + i + " \u00a7f" + SilentNumbers.getItemName(inven.getItem(i))); }
 
-                    //ISPM//for (int i = 0; i < inven.getSize(); i++) { MythicCraftingManager.log("\u00a78Post Display \u00a7c@" + i + " \u00a7f" + SilentNumbers.getItemName(inven.getItem(i))); }
-                }
-            }).runTaskLater(MythicLib.plugin, 1L);
+                ArrayList<Player> p = new ArrayList<>(); for (HumanEntity e : viewers) {if (e instanceof Player) { p.add((Player) e);}}
+                boolean res = displayResult(mapping, inven, liveRecipes, p, event.getWhoClicked().getUniqueId(), event);
+
+                //RDR//log("\u00a78RDR \u00a746.5\u00a77 Tick finished, result:\u00a7c " + res);
+
+                //ISPM//for (int i = 0; i < inven.getSize(); i++) { MythicCraftingManager.log("\u00a78Post Display \u00a7c@" + i + " \u00a7f" + SilentNumbers.getItemName(inven.getItem(i))); }
+            }
+        }).runTaskLater(MythicLib.plugin, 1L);
 
 
         //ISPM//for (int i = 0; i < inven.getSize(); i++) { MythicCraftingManager.log("\u00a78Pre Tick \u00a73@" + i + " \u00a7f" + SilentNumbers.getItemName(inven.getItem(i))); }

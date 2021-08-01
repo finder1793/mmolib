@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib;
 
 import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
+import io.lumine.mythic.lib.api.crafting.recipes.vmp.SuperWorkbenchMapping;
 import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.commands.BaseCommand;
@@ -162,6 +163,10 @@ public class MythicLib extends LuminePlugin {
         getCommand("mythiclib").setExecutor(new MMOLibCommand());
         getCommand("mmodebug").setExecutor(new MMODebugCommand());
         getCommand("mmotempstat").setExecutor(new MMOTempStatCommand());
+
+        // Super workbench
+        getCommand("superworkbench").setExecutor(SuperWorkbenchMapping.SWB);
+        Bukkit.getPluginManager().registerEvents(SuperWorkbenchMapping.SWB, this);
 
         // Load player data of online players
         Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.setup(player.getUniqueId()).updatePlayer(player));

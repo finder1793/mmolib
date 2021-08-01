@@ -20,6 +20,10 @@ commands:
   mmotempstat:
     description: Add temporary stat modifier to player
     permission: mythiclib.tempstat
+  superworkbench:
+    aliases: [ swb ]
+    description: Open the super workbench
+    permission: mythiclib.superworkbench
 permissions:
   mythiclib.reload:
     default: op
@@ -28,4 +32,6 @@ permissions:
   mythiclib.debug:
     default: op
   mythiclib.tempstat:
+    default: op
+  mythiclib.superworkbench:
     default: op

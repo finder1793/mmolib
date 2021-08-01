@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.api.util.ui;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.utils.version.ServerVersion;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -210,23 +211,39 @@ public class FriendlyFeedbackProvider {
      */
     public void sendAllTo(@NotNull ConsoleCommandSender console) {
 
-        // For each category
-        for (FriendlyFeedbackCategory cat : feedback.keySet()) {
-
-            // Log all
-            sendTo(cat, console);
-        }
+        // Delegate
+        sendAllTo((CommandSender) console);
     }
     /**
      * Sends all stored messages of this category to the console.
      */
     public void sendTo(@NotNull FriendlyFeedbackCategory category, @NotNull ConsoleCommandSender console) {
 
+        // Delegate
+        sendTo(category, (CommandSender) console);
+    }
+    /**
+     * Sends all stored messages to the console.
+     */
+    public void sendAllTo(@NotNull CommandSender sender) {
+
+        // For each category
+        for (FriendlyFeedbackCategory cat : feedback.keySet()) {
+
+            // Log all
+            sendTo(cat, sender);
+        }
+    }
+    /**
+     * Sends all stored messages of this category to the console.
+     */
+    public void sendTo(@NotNull FriendlyFeedbackCategory category, @NotNull CommandSender sender) {
+
         // Get List and foreach
         for (FriendlyFeedbackMessage msg : getFeedbackOf(category)) {
 
             // Send to console
-            console.sendMessage(MythicLib.plugin.parseColors(msg.forConsole(getPalette())));
+            sender.sendMessage(MythicLib.plugin.parseColors(msg.forConsole(getPalette())));
         }
     }
     //endregion

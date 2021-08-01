@@ -171,10 +171,17 @@ public class ProvidedUIFilter implements Comparable<ProvidedUIFilter>, Cloneable
         // Set correct amount
         gen.setAmount(getAmount(1));
 
-        // Gen
-        if (gen.getAmount() > 1) {
-            ItemMeta itemMeta = gen.getItemMeta();
-            if (itemMeta != null) { itemMeta.setDisplayName(SilentNumbers.getItemName(gen)); gen.setItemMeta(itemMeta); } }
+        ItemMeta itemMeta = gen.getItemMeta();
+        if (itemMeta != null) {
+
+            // Gen
+            if (gen.getAmount() > 1) {
+                itemMeta.setDisplayName(SilentNumbers.getItemName(gen));
+            } else {
+                itemMeta.setDisplayName(SilentNumbers.getItemName(gen, false) + "\u00a7\u02ab");
+            }
+            gen.setItemMeta(itemMeta);
+        }
 
         return gen;
     }

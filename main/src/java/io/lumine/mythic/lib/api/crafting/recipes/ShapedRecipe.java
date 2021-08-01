@@ -449,6 +449,8 @@ public class ShapedRecipe extends MythicRecipe implements VanillaBookableRecipe 
          */
         ArrayList<CheckedSlot> slots = new ArrayList<>();
 
+        // Too big? I sleep
+        if (inventory.getWidth() < getWidth() || inventory.getHeight() < getHeight()) { return null; }
 
         //CRAFT//int i = 0;
         // All right lets do this
@@ -464,7 +466,7 @@ public class ShapedRecipe extends MythicRecipe implements VanillaBookableRecipe 
 
                 // What item stack is at these offsets
                 ItemStack found = inventory.getItemAt(ingredient.getHorizontalOffset(), ingredient.getVerticalOffset());
-                //CRAFT//MythicCraftingManager.log("\u00a78Matches \u00a76C\u00a77 Ingredient \u00a7e#" + c + "\u00a77 '" + ingredient.getIngredient().getName() + "\u00a77', Comparing to '" + SilentNumbers.getItemName(found) + "\u00a77'");
+                //CRAFT//MythicCraftingManager.log("\u00a78Matches \u00a76C\u00a78{\u00a7e" + ingredient.getHorizontalOffset() + "\u00a78,\u00a7e" + ingredient.getVerticalOffset() + "\u00a78}\u00a77 Ingredient \u00a7e#" + c + "\u00a77 '" + ingredient.getIngredient().getName() + "\u00a77', Comparing to '" + SilentNumbers.getItemName(found) + "\u00a77'");
 
                 /*
                  * As there is a Ingredient being expected at this co-ordinates,
@@ -734,7 +736,7 @@ public class ShapedRecipe extends MythicRecipe implements VanillaBookableRecipe 
         ret.shape(rowsBaked);
 
         // Same thing yeet
-        for (int h = 0; h < getHeight(); h++) {
+        for (int h = 0; h < getHeight() && h < 3; h++) {
 
             char[] chars;
             switch (h) {
@@ -745,7 +747,11 @@ public class ShapedRecipe extends MythicRecipe implements VanillaBookableRecipe 
             // Get row
             HashMap<Integer, ShapedIngredient> rowContent = recipeContents.get(h);
 
-            for (int w = 0; w < getWidth(); w++) {
+            // Bruh
+            if (rowContent == null) { continue; }
+
+            // Continue
+            for (int w = 0; w < getWidth() && w < 3; w++) {
 
                 // Get ingredient
                 ShapedIngredient ingredient = rowContent.get(w);

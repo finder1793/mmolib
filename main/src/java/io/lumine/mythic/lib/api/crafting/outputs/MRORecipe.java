@@ -542,7 +542,7 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
     @Override
     public MythicRecipeInventory applyDisplay(@NotNull MythicBlueprintInventory inventory, @NotNull InventoryClickEvent eventTrigger, @NotNull VanillaInventoryMapping mapping) {
         //BBB//io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log("\u00a78MROResult \u00a7aB\u00a77 Building Display: ");
-        //BBB//for (String str : inventory.toStrings("\u00a78MROResult \u00a7aC-")) { io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log(str); }
+        //BBB//for (String str : inventory.getMainInventory().toStrings("\u00a78MROResult \u00a7aC-")) { io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager.log(str); }
 
         // Attempt to get generated
         MythicRecipeInventory result = getDeterminateDisplay();
