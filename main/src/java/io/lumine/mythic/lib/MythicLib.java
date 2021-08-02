@@ -135,19 +135,22 @@ public class MythicLib extends LuminePlugin {
         }
 
         // Hologram plugins
-        if (Bukkit.getPluginManager().getPlugin("HolographicDisplays") != null) {
-            hologramSupport = new HolographicDisplaysPlugin();
-            getLogger().log(Level.INFO, "Hooked onto HolographicDisplays");
-        } else if (Bukkit.getPluginManager().getPlugin("CMI") != null) {
-            hologramSupport = new CMIPlugin();
-            getLogger().log(Level.INFO, "Hooked onto CMI Holograms");
-        } else if (Bukkit.getPluginManager().getPlugin("Holograms") != null) {
-            hologramSupport = new HologramsPlugin();
-            getLogger().log(Level.INFO, "Hooked onto Holograms");
-        } else if (Bukkit.getPluginManager().getPlugin("TrHologram") != null) {
-            hologramSupport = new TrHologramPlugin();
-            getLogger().log(Level.INFO, "Hooked onto TrHologram");
-        }
+
+        hologramSupport = new MythicLibHologramSupport();
+
+//        if (Bukkit.getPluginManager().getPlugin("HolographicDisplays") != null) {
+//            hologramSupport = new HolographicDisplaysPlugin();
+//            getLogger().log(Level.INFO, "Hooked onto HolographicDisplays");
+//        } else if (Bukkit.getPluginManager().getPlugin("CMI") != null) {
+//            hologramSupport = new CMIPlugin();
+//            getLogger().log(Level.INFO, "Hooked onto CMI Holograms");
+//        } else if (Bukkit.getPluginManager().getPlugin("Holograms") != null) {
+//            hologramSupport = new HologramsPlugin();
+//            getLogger().log(Level.INFO, "Hooked onto Holograms");
+//        } else if (Bukkit.getPluginManager().getPlugin("TrHologram") != null) {
+//            hologramSupport = new TrHologramPlugin();
+//            getLogger().log(Level.INFO, "Hooked onto TrHologram");
+//        }
 
         // Regen and damage indicators
         if (getConfig().getBoolean("game-indicators.damage.enabled"))
