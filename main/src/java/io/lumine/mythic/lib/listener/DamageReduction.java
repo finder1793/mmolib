@@ -41,7 +41,7 @@ public class DamageReduction implements Listener {
         damage = defense > 0 ? new DefenseFormula(defense).getAppliedDamage(event.getDamage()) : event.getDamage();
 
         /**
-         * Applies damage reduction due to damage reduction stats, like
+         * Applies damage reduction due to damage reductison stats, like
          * MAGIC_DAMAGE_REDUCTION or simply DAMAGE_REDUCTION
          */
         double afterMitigation = 1;
