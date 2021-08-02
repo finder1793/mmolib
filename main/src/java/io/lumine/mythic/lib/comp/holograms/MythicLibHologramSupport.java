@@ -12,6 +12,7 @@ public class MythicLibHologramSupport extends HologramSupport {
     @Override
     public void displayIndicator(Location loc, String message, Player player) {
         Hologram h = Hologram.create(Position.of(loc), Collections.singletonList(message));
+        h.spawn();
 
         Schedulers.sync().runLater(() -> {
             h.despawn();
