@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 /**
- * The 5x5 grid of a super crafting table, and its result slot.
+ * The 6x6 grid of a mega crafting table, and its result slot.
  * <p></p>
  * Slot definitions:
  * <p></p>
@@ -38,32 +38,42 @@ import java.util.UUID;
  * <p> #3  TOP CENTER
  * </p>#4  TOP MID-RIGHT
  * <p> #5  TOP RIGHT
+ * </p>#6  EXTRA RIGHT
  *
- * </p>#6  TMD LEFT
- * <p> #7  TMD MID-LEFT
- * </p>#8  TMD CENTER
- * <p> #9  TMD MID-RIGHT
- * </p>#10 TMD RIGHT
+ * <p> #7  TMD LEFT
+ * </p>#8  TMD MID-LEFT
+ * <p> #9  TMD CENTER
+ * </p>#10 TMD MID-RIGHT
+ * <p> #11 TMD RIGHT
+ * </p>#12 TMD EXTRA RIGHT
  *
- * <p> #11  MID LEFT
- * </p>#12  MID MID-LEFT
- * <p> #13  MID CENTER
- * </p>#14  MID MID-RIGHT
- * <p> #15  MID RIGHT
+ * <p> #13 MID LEFT
+ * </p>#14 MID MID-LEFT
+ * <p> #15 MID CENTER
+ * </p>#16 MID MID-RIGHT
+ * <p> #17 MID RIGHT
+ * </p>#18 MID EXTRA RIGHT
  *
- * </p>#16  BMD LEFT
- * <p> #17  BMD MID-LEFT
- * </p>#18  BMD CENTER
- * <p> #19  BMD MID-RIGHT
- * </p>#20 BMD RIGHT
+ * <p> #19 BID LEFT
+ * </p>#20 BID MID-LEFT
+ * <p> #21 BID CENTER
+ * </p>#22 BID MID-RIGHT
+ * <p> #23 BID RIGHT
+ * </p>#24 BID EXTRA RIGHT
  *
- * <p> #21 BOT LEFT
- * </p>#22 BOT MID-LEFT
- * <p> #23 BOT CENTER
- * </p>#24 BOT MID-RIGHT
- * <p> #25 BOT RIGHT
+ * <p> #25 BOT LEFT
+ * </p>#26 BOT MID-LEFT
+ * <p> #27 BOT CENTER
+ * </p>#28 BOT MID-RIGHT
+ * <p> #29 BOT RIGHT
+ * </p>#30 BOT EXTRA RIGHT
  *
- *
+ * <p> #31 BEX LEFT
+ * </p>#32 BEX MID-LEFT
+ * <p> #33 BEX CENTER
+ * </p>#34 BEX MID-RIGHT
+ * <p> #35 BEX RIGHT
+ * </p>#36 BEX EXTRA RIGHT
  *
  * </p>
  * <p></p>
@@ -72,85 +82,109 @@ import java.util.UUID;
  *
  * @author Gunging
  */
-public class SuperWorkbenchMapping extends VanillaInventoryMapping implements CustomInventoryCheck, CommandExecutor, Listener {
+public class MegaWorkbenchMapping  extends VanillaInventoryMapping implements CustomInventoryCheck, CommandExecutor, Listener {
 
     @Override
     public int getMainWidth(int slot) throws IllegalArgumentException {
         switch (slot) {
+            case 0:
+            case 9:
+            case 18:
+            case 27:
+            case 36:
+            case 45:
+                return 0;
             case 1:
             case 10:
             case 19:
             case 28:
             case 37:
-                return 0;
+            case 46:
+                return 1;
             case 2:
             case 11:
             case 20:
             case 29:
             case 38:
-                return 1;
+            case 47:
+                return 2;
             case 3:
             case 12:
             case 21:
             case 30:
             case 39:
-                return 2;
+            case 48:
+                return 3;
             case 4:
             case 13:
             case 22:
             case 31:
             case 40:
-                return 3;
+            case 49:
+                return 4;
             case 5:
             case 14:
             case 23:
             case 32:
             case 41:
-                return 4;
+            case 50:
+                return 5;
             default: break; }
 
         // Skip trash
-        if (slot < 45) { return -1; }
+        if (slot < 50) { return -1; }
 
         throwOutOfBounds(slot); return 0;
     }
     @Override
     public int getMainHeight(int slot) throws IllegalArgumentException {
         switch (slot) {
+            case 0:
             case 1:
             case 2:
             case 3:
             case 4:
             case 5:
                 return 0;
+            case 9:
             case 10:
             case 11:
             case 12:
             case 13:
             case 14:
                 return -1;
+            case 18:
             case 19:
             case 20:
             case 21:
             case 22:
             case 23:
                 return -2;
+            case 27:
             case 28:
             case 29:
             case 30:
             case 31:
             case 32:
                 return -3;
+            case 36:
             case 37:
             case 38:
             case 39:
             case 40:
             case 41:
                 return -4;
+            case 45:
+            case 46:
+            case 47:
+            case 48:
+            case 49:
+            case 50:
+                return -5;
             default: break; }
 
         // Skip trash
-        if (slot < 45) { return 1; }
+        if (slot < 50) { return 1; }
 
         throwOutOfBounds(slot); return 0;
     }
@@ -176,56 +210,70 @@ public class SuperWorkbenchMapping extends VanillaInventoryMapping implements Cu
         switch (height) {
             case 0:
                 switch (width) {
-                    case 0: return 1;
-                    case 1: return 2;
-                    case 2: return 3;
-                    case 3: return 4;
-                    case 4: return 5;
+                    case 0: return 0;
+                    case 1: return 1;
+                    case 2: return 2;
+                    case 3: return 3;
+                    case 4: return 4;
+                    case 5: return 5;
                     default: break; }
             case -1:
                 switch (width) {
-                    case 0: return 10;
-                    case 1: return 11;
-                    case 2: return 12;
-                    case 3: return 13;
-                    case 4: return 14;
+                    case 0: return 9;
+                    case 1: return 10;
+                    case 2: return 11;
+                    case 3: return 12;
+                    case 4: return 13;
+                    case 5: return 14;
                     default: break; }
             case -2:
                 switch (width) {
-                    case 0: return 19;
-                    case 1: return 20;
-                    case 2: return 21;
-                    case 3: return 22;
-                    case 4: return 23;
+                    case 0: return 18;
+                    case 1: return 19;
+                    case 2: return 20;
+                    case 3: return 21;
+                    case 4: return 22;
+                    case 5: return 23;
                     default: break; }
             case -3:
                 switch (width) {
-                    case 0: return 28;
-                    case 1: return 29;
-                    case 2: return 30;
-                    case 3: return 31;
-                    case 4: return 32;
+                    case 0: return 27;
+                    case 1: return 28;
+                    case 2: return 29;
+                    case 3: return 30;
+                    case 4: return 31;
+                    case 5: return 32;
                     default: break; }
             case -4:
                 switch (width) {
-                    case 0: return 37;
-                    case 1: return 38;
-                    case 2: return 39;
-                    case 3: return 40;
-                    case 4: return 41;
+                    case 0: return 36;
+                    case 1: return 37;
+                    case 2: return 38;
+                    case 3: return 39;
+                    case 4: return 40;
+                    case 5: return 41;
+                    default: break; }
+            case -5:
+                switch (width) {
+                    case 0: return 45;
+                    case 1: return 46;
+                    case 2: return 47;
+                    case 3: return 48;
+                    case 4: return 49;
+                    case 5: return 50;
                     default: break; }
             default: break; }
 
         throwOutOfBounds(width, height); return 0;
     }
     @Override
-    public int getMainInventoryStart() { return 1; }
+    public int getMainInventoryStart() { return 0; }
     @Override
-    public int getMainInventorySize() { return 25; }
+    public int getMainInventorySize() { return 36; }
     @Override
-    public int getMainInventoryWidth() { return 5; }
+    public int getMainInventoryWidth() { return 6; }
     @Override
-    public int getMainInventoryHeight() { return 5; }
+    public int getMainInventoryHeight() { return 6; }
 
     @Override
     public int getResultWidth(int slot) throws IllegalArgumentException {
@@ -284,22 +332,22 @@ public class SuperWorkbenchMapping extends VanillaInventoryMapping implements Cu
      * The mythical identifier that is appended at the beginning of
      * the name of the inventory view to identify it as the SWorkbench!
      */
-    public static final String SUPER_WORKBENCH = "\u00a7s\u00a7w\u00a7°\u00a7¡\u00a7v";
+    public static final String MEGA_WORKBENCH = "\u00a7g\u00a7w\u00a7°\u00a7¡\u00a7v";
 
     @Override
     public boolean IsTargetInventory(@NotNull InventoryView view) {
 
         // Check size alv
-        if (view.getTopInventory().getSize() != 45) { return false; }
+        if (view.getTopInventory().getSize() != 54) { return false; }
 
-        return view.getTitle().startsWith(SUPER_WORKBENCH);
+        return view.getTitle().startsWith(MEGA_WORKBENCH);
     }
 
     @NotNull
     @Override
-    public String getCustomStationKey() { return "swb"; }
+    public String getCustomStationKey() { return "mwb"; }
 
-    public static SuperWorkbenchMapping SWB = new SuperWorkbenchMapping();
+    public static MegaWorkbenchMapping MWB = new MegaWorkbenchMapping();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
@@ -308,7 +356,7 @@ public class SuperWorkbenchMapping extends VanillaInventoryMapping implements Cu
         Player target = null;
         boolean failure = false;
         FriendlyFeedbackProvider ffp = new FriendlyFeedbackProvider(FFPMythicLib.get());
-        ffp.activatePrefix(true, "Super Workbench");
+        ffp.activatePrefix(true, "Mega Workbench");
 
         // No args specified, well oops
         if (args.length == 0) {
@@ -319,7 +367,7 @@ public class SuperWorkbenchMapping extends VanillaInventoryMapping implements Cu
                 // That shall be the target
                 target = (Player) sender;
 
-            // Failure
+                // Failure
             } else {
 
                 // RIP
@@ -329,7 +377,7 @@ public class SuperWorkbenchMapping extends VanillaInventoryMapping implements Cu
                 ffp.log(FriendlyFeedbackCategory.ERROR, "$fYou must specify a player when calling from the console. $bBy the way, you can download the free texture pack assets to make the glass borders look smooth at https://sites.google.com/view/gootilities/core-plugin-goop/containers/container-templates/edge-formations?authuser=0");
             }
 
-        // Find that player
+            // Find that player
         } else {
 
             // Identify name
@@ -366,7 +414,7 @@ public class SuperWorkbenchMapping extends VanillaInventoryMapping implements Cu
             // Open it
             target.openInventory(swb);
 
-        // Log errors
+            // Log errors
         } else {
 
             // Log messages
@@ -380,7 +428,7 @@ public class SuperWorkbenchMapping extends VanillaInventoryMapping implements Cu
     /**
      * The edge item used to limit the Super Workbench Area
      */
-    public static final ItemStack SWB_EDGE = ItemFactory.of(Material.GRAY_STAINED_GLASS_PANE).name("\u00a7\u02a4").flag(ItemFlag.HIDE_POTION_EFFECTS).model(3000).build();
+    public static final ItemStack MWB_EDGE = ItemFactory.of(Material.GRAY_STAINED_GLASS_PANE).name("\u00a7\u02a4").flag(ItemFlag.HIDE_POTION_EFFECTS).model(3000).build();
 
     /**
      * Creates a new instance of the super workbench, ready
@@ -393,10 +441,10 @@ public class SuperWorkbenchMapping extends VanillaInventoryMapping implements Cu
     public static Inventory getSuperWorkbench(@NotNull Player player) {
 
         // Create fresh
-        Inventory swb = Bukkit.createInventory(player, 45, SUPER_WORKBENCH + InventoryType.WORKBENCH.getDefaultTitle());
+        Inventory swb = Bukkit.createInventory(player, 54, MEGA_WORKBENCH + InventoryType.WORKBENCH.getDefaultTitle());
 
         // Use chad glass panes
-        for (Integer i : getEdgeSlots()) { swb.setItem(i, SWB_EDGE);}
+        for (Integer i : getEdgeSlots()) { swb.setItem(i, MWB_EDGE);}
 
         // That's it, yeah
         return swb;
@@ -413,29 +461,26 @@ public class SuperWorkbenchMapping extends VanillaInventoryMapping implements Cu
         ArrayList<Integer> ret = new ArrayList<>();
 
         // Use chad glass panes
-        ret.add(0);
-        ret.add(9);
-        ret.add(18);
-        ret.add(27);
-        ret.add(36);
-        //
         ret.add(6);
         ret.add(15);
         ret.add(24);
         ret.add(33);
         ret.add(42);
+        ret.add(51);
         //
         ret.add(7);
         ret.add(16);
 
         ret.add(34);
         ret.add(43);
+        ret.add(52);
         //
         ret.add(8);
         ret.add(17);
         ret.add(26);
         ret.add(35);
         ret.add(44);
+        ret.add(53);
 
         // Yes
         return ret;
@@ -450,7 +495,7 @@ public class SuperWorkbenchMapping extends VanillaInventoryMapping implements Cu
 
         // Easiest way to quit this method - is the size 5x9 = 45 slots?
         int size = event.getView().getTopInventory().getSize();
-        if (size != 45) { return; }
+        if (size != 54) { return; }
 
         // Bruh what
         if (!(event.getView().getPlayer() instanceof Player)) { return; }
@@ -536,7 +581,7 @@ public class SuperWorkbenchMapping extends VanillaInventoryMapping implements Cu
                             completion = true;
                             break;
 
-                        // Can fit part
+                            // Can fit part
                         } else {
 
                             // Transfer amounts yoi
@@ -576,7 +621,7 @@ public class SuperWorkbenchMapping extends VanillaInventoryMapping implements Cu
 
         // Easiest way to quit this method - is the size 5x9 = 45 slots?
         int size = event.getView().getTopInventory().getSize();
-        if (size != 45) { return; }
+        if (size != 54) { return; }
 
         // Bruh what
         if (!(event.getView().getPlayer() instanceof Player)) { return; }
@@ -593,7 +638,7 @@ public class SuperWorkbenchMapping extends VanillaInventoryMapping implements Cu
 
         // Easiest way to quit this method - is the size 5x9 = 45 slots?
         int size = event.getView().getTopInventory().getSize();
-        if (size != 45) { return; }
+        if (size != 54) { return; }
 
         // Bruh what
         if (!(event.getView().getPlayer() instanceof Player)) { return; }

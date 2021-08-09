@@ -29,7 +29,7 @@ public class FFPMythicLib extends FriendlyFeedbackPalette {
     @NotNull @Override public String getFailureFormat() { return "§x§f§f§4§7§4§7"; }
     @NotNull @Override public String consoleFailureFormat() { return ChatColor.RED.toString(); }
 
-    @NotNull @Override public String getRawPrefix() { return "§x§5§7§3§9§2§5[§f§f§a§e§0§0MythicLib#s§x§5§7§3§9§2§5] "; }
+    @NotNull @Override public String getRawPrefix() { return "§x§5§7§3§9§2§5[§x§f§f§a§e§0§0MythicLib#s§x§5§7§3§9§2§5] "; }
     @NotNull @Override public String getRawPrefixConsole() { return "§8[§6MythicLib#s§8] "; }
 
     @NotNull @Override public String getSubdivisionFormat() { return "§x§e§b§8§2§3§1§o"; }

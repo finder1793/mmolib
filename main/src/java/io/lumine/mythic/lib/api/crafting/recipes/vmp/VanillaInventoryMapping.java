@@ -675,6 +675,7 @@ public abstract class VanillaInventoryMapping {
         vanillaMappings.put(InventoryType.CRAFTING, new CraftingMapping());
         vanillaMappings.put(InventoryType.FURNACE, new FurnaceMapping());
         registerCustomMapping(SuperWorkbenchMapping.SWB);
+        registerCustomMapping(MegaWorkbenchMapping.MWB);
         if (ServerVersion.get().getMinor() >= 16) { vanillaMappings.put(InventoryType.valueOf("SMITHING"), new SmithingStationMapping()); }
     }
 

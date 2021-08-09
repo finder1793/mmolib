@@ -22,8 +22,12 @@ commands:
     permission: mythiclib.tempstat
   superworkbench:
     aliases: [ swb ]
-    description: Open the super workbench
+    description: Open the super 5x5 workbench
     permission: mythiclib.superworkbench
+  megaworkbench:
+    aliases: [ mwb ]
+    description: Open the mega 6x6 workbench
+    permission: mythiclib.megaworkbench
 permissions:
   mythiclib.reload:
     default: op
@@ -34,4 +38,6 @@ permissions:
   mythiclib.tempstat:
     default: op
   mythiclib.superworkbench:
+    default: op
+  mythiclib.megaworkbench:
     default: op
