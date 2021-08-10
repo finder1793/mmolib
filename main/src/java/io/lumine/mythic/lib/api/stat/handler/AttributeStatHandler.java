@@ -46,11 +46,11 @@ public class AttributeStatHandler implements StatHandler {
          * The first two boolean checks make sure that ranged
          * weapons do not register their attack damage.
          *
-         * The last two checks guarantee that melee weapons
+         * The last two checks guarantee that weapons
          * held in off hand don't register any of their stats.
          */
         double d = statIns.getFilteredTotal(mod -> (!meleeWeaponStat || mod.getSource() != ModifierSource.RANGED_WEAPON) &&
-                (mod.getSource() != ModifierSource.MELEE_WEAPON || mod.getSlot() != EquipmentSlot.OFF_HAND));
+                (!mod.getSource().isWeapon() || mod.getSlot() != EquipmentSlot.OFF_HAND));
 
         /*
          * Calculate the stat base value. Since it can be changed by

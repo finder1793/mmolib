@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.api.stat;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.stat.modifier.Closable;
 import io.lumine.mythic.lib.api.stat.modifier.ModifierType;
 import io.lumine.mythic.lib.api.stat.modifier.StatModifier;
@@ -13,6 +14,8 @@ public class StatInstance {
     private final StatMap map;
     private final String stat;
     private final Map<String, StatModifier> modifiers = new HashMap<>();
+
+    private static final Predicate<StatModifier> DEFAULT_MODIFIER_FILTER = mod -> !mod.getSource().isWeapon() || mod.getSlot() != EquipmentSlot.OFF_HAND;
 
     public StatInstance(StatMap map, String stat) {
         this.map = map;
@@ -38,17 +41,7 @@ public class StatInstance {
      *         modifiers.
      */
     public double getTotal() {
-        double d = getBase();
-
-        for (StatModifier attr : modifiers.values())
-            if (attr.getType() == ModifierType.FLAT)
-                d += attr.getValue();
-
-        for (StatModifier attr : modifiers.values())
-            if (attr.getType() == ModifierType.RELATIVE)
-                d *= 1 + attr.getValue() / 100;
-
-        return d;
+        return getFilteredTotal(DEFAULT_MODIFIER_FILTER);
     }
 
     /**
@@ -61,17 +54,7 @@ public class StatInstance {
      *         modifiers.
      */
     public double getFilteredTotal(Predicate<StatModifier> filter) {
-        double d = getBase();
-
-        for (StatModifier attr : modifiers.values())
-            if (attr.getType() == ModifierType.FLAT && filter.test(attr))
-                d += attr.getValue();
-
-        for (StatModifier attr : modifiers.values())
-            if (attr.getType() == ModifierType.RELATIVE && filter.test(attr))
-                d *= 1 + attr.getValue() / 100;
-
-        return d;
+        return getFilteredTotal(filter, mod -> mod);
     }
 
     /**
@@ -87,14 +70,29 @@ public class StatInstance {
      *         modifiers.
      */
     public double getTotal(Function<StatModifier, StatModifier> modification) {
+        return getFilteredTotal(DEFAULT_MODIFIER_FILTER, modification);
+    }
+
+    /**
+     * @param filter       Filters stat modifications taken into account for the calculation
+     * @param modification A modification to any stat modifier before taking it into
+     *                     account in stat calculation. This can be used for instance to
+     *                     reduce debuffs, by checking if a stat modifier has a negative
+     *                     value and returning a modifier with a reduced absolute value
+     * @return The final stat value taking into account the default stat value
+     *         as well as the stat modifiers. The relative stat modifiers are
+     *         applied afterwards, onto the sum of the base value + flat
+     *         modifiers.
+     */
+    public double getFilteredTotal(Predicate<StatModifier> filter, Function<StatModifier, StatModifier> modification) {
         double d = getBase();
 
         for (StatModifier attr : modifiers.values())
-            if (attr.getType() == ModifierType.FLAT)
+            if (attr.getType() == ModifierType.FLAT && filter.test(attr))
                 d += modification.apply(attr).getValue();
 
         for (StatModifier attr : modifiers.values())
-            if (attr.getType() == ModifierType.RELATIVE)
+            if (attr.getType() == ModifierType.RELATIVE && filter.test(attr))
                 d *= 1 + modification.apply(attr).getValue() / 100;
 
         return d;

@@ -26,4 +26,8 @@ public enum ModifierSource {
      * Modifier given by anything else
      */
     OTHER;
+
+    public boolean isWeapon() {
+        return this == MELEE_WEAPON || this == RANGED_WEAPON;
+    }
 }
