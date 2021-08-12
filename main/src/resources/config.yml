@@ -87,7 +87,7 @@ game-indicators:
     enabled: false
     decimal-format: '0.#'
     format: '&c-#'
-  heal:
+  regen:
     enabled: false
     decimal-format: '0.#'
     format: '&a+#'

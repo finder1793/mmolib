@@ -11,7 +11,7 @@ import io.lumine.mythic.lib.comp.PlaceholderAPIHook;
 import io.lumine.mythic.lib.comp.hexcolor.ColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.HexColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.SimpleColorParser;
-import io.lumine.mythic.lib.comp.holograms.*;
+import io.lumine.mythic.lib.comp.hologram.CustomHologramFactoryList;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsDamageHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
 import io.lumine.mythic.lib.gui.PluginInventory;
@@ -36,6 +36,7 @@ import io.lumine.utils.scoreboard.ScoreboardProvider;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.ServicePriority;
 
 import java.util.logging.Level;
 
@@ -55,13 +56,8 @@ public class MythicLib extends LuminePlugin {
     private MitigationMechanics mitigationMechanics;
     private ColorParser colorParser;
 
-    // TODO merge with hologramProvider
-    private HologramSupport hologramSupport;
-
     @Getter
     private ScoreboardProvider scoreboardProvider;
-    @Getter
-    private HologramFactory hologramProvider;
 
     @Override
     public void load() {
@@ -81,11 +77,6 @@ public class MythicLib extends LuminePlugin {
 
     @Override
     public void enable() {
-
-        //this.bind(this.configuration = new Configuration(this));
-        //this.profileManager = new ProfileManager(this);
-        //this.bind(this.profileManager);
-
         registerCommand("mythiclib", new BaseCommand(this));
 
         new bStats(this);
@@ -103,11 +94,11 @@ public class MythicLib extends LuminePlugin {
         this.scoreboardProvider = new PacketScoreboardProvider(this);
         this.provideService(ScoreboardProvider.class, this.scoreboardProvider);
 
-        this.hologramProvider = new BukkitHologramFactory();
-        this.provideService(HologramFactory.class, this.hologramProvider);
+        // Hologram provider
+        this.provideService(HologramFactory.class, new BukkitHologramFactory(), ServicePriority.Low);
 
+        // Register listeners
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
-
         Bukkit.getPluginManager().registerEvents(damageManager, this);
         Bukkit.getPluginManager().registerEvents(new DamageReduction(), this);
         Bukkit.getPluginManager().registerEvents(attackEffects = new AttackEffects(), this);
@@ -118,6 +109,16 @@ public class MythicLib extends LuminePlugin {
 
         if (getConfig().getBoolean("health-scale.enabled"))
             Bukkit.getPluginManager().registerEvents(new HealthScale(getConfig().getDouble("health-scale.scale"), getConfig().getInt("health-scale.delay", 0)), this);
+
+        // Custom hologram providers
+        for (CustomHologramFactoryList custom : CustomHologramFactoryList.values())
+            if (custom.isInstalled(getServer().getPluginManager()))
+                try {
+                    provideService(HologramFactory.class, custom.generateFactory(), custom.getServicePriority());
+                    getLogger().log(Level.INFO, "Hooked onto " + custom.getPluginName());
+                } catch (Exception exception) {
+                    getLogger().log(Level.WARNING, "Could not hook onto " + custom.getPluginName() + ": " + exception.getMessage());
+                }
 
         if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null) {
             damageManager.registerHandler(new MythicMobsDamageHandler());
@@ -135,28 +136,10 @@ public class MythicLib extends LuminePlugin {
             getLogger().log(Level.INFO, "Hooked onto PlaceholderAPI");
         }
 
-        // Hologram plugins
-
-        hologramSupport = new MythicLibHologramSupport();
-
-//        if (Bukkit.getPluginManager().getPlugin("HolographicDisplays") != null) {
-//            hologramSupport = new HolographicDisplaysPlugin();
-//            getLogger().log(Level.INFO, "Hooked onto HolographicDisplays");
-//        } else if (Bukkit.getPluginManager().getPlugin("CMI") != null) {
-//            hologramSupport = new CMIPlugin();
-//            getLogger().log(Level.INFO, "Hooked onto CMI Holograms");
-//        } else if (Bukkit.getPluginManager().getPlugin("Holograms") != null) {
-//            hologramSupport = new HologramsPlugin();
-//            getLogger().log(Level.INFO, "Hooked onto Holograms");
-//        } else if (Bukkit.getPluginManager().getPlugin("TrHologram") != null) {
-//            hologramSupport = new TrHologramPlugin();
-//            getLogger().log(Level.INFO, "Hooked onto TrHologram");
-//        }
-
         // Regen and damage indicators
         if (getConfig().getBoolean("game-indicators.damage.enabled"))
             Bukkit.getPluginManager().registerEvents(new DamageIndicators(getConfig().getConfigurationSection("game-indicators.damage")), this);
-        if (getConfig().getBoolean("game-indicators.heal.enabled"))
+        if (getConfig().getBoolean("game-indicators.regen.enabled"))
             Bukkit.getPluginManager().registerEvents(new RegenIndicators(getConfig().getConfigurationSection("game-indicators.regen")), this);
 
 //		if (Bukkit.getPluginManager().getPlugin("ShopKeepers") != null)
@@ -221,10 +204,6 @@ public class MythicLib extends LuminePlugin {
 
     public ConfigManager getMMOConfig() {
         return configManager;
-    }
-
-    public HologramSupport getHologramSupport() {
-        return hologramSupport;
     }
 
     /**

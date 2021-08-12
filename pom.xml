@@ -318,5 +318,40 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
+
+        <!-- Local dependencies -->
+
+        <dependency>
+            <groupId>com.Zrips</groupId>
+            <artifactId>CMI</artifactId>
+            <version>9.0.2.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/CMI9.0.2.0.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.Zrips</groupId>
+            <artifactId>MCILib</artifactId>
+            <version>1.0.3.4</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/CMILib1.0.3.4.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sainttx</groupId>
+            <artifactId>Holograms</artifactId>
+            <version>2.13</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/Holograms-2.13.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>me.arasple.mc</groupId>
+            <artifactId>trhologram</artifactId>
+            <version>2.2-all</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/TrHologram-2.2-all.jar</systemPath>
+        </dependency>
+
     </dependencies>
 </project>

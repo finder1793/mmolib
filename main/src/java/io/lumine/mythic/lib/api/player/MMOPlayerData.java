@@ -16,14 +16,14 @@ import java.util.Map;
 import java.util.UUID;
 
 public class MMOPlayerData {
+    private final UUID uuid;
+
     private Player player;
 
     /**
      * Last time the player either logged in or logged out.
      */
     private long lastLogActivity;
-
-    private final UUID uuid;
 
     // Data saved till next server restart
     private final Map<CooldownType, Long> nextUse = new HashMap<>();
