@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.api.stat;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.AttackResult;
 import io.lumine.mythic.lib.api.DamageType;
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -89,6 +90,9 @@ public class StatMap {
     }
 
     /**
+     * @param castHand The casting hand matters a lot! Should MythicLib take into account
+     *                 the 'Skill Damage' due to the offhand weapon, when casting a
+     *                 skill with mainhand?
      * @return Some actions require the player stats to be temporarily saved.
      *         When a player casts a projectile skill, there's a brief delay
      *         before it hits the target: the stat values taken into account
@@ -96,18 +100,33 @@ public class StatMap {
      *         when it finally hits the target). This cache technique fixes a
      *         huge game breaking glitch
      */
-    public CachedStatMap cache() {
-        return new CachedStatMap();
+    public CachedStatMap cache(EquipmentSlot castHand) {
+        return new CachedStatMap(castHand);
     }
 
     public class CachedStatMap {
         private final Player player;
         private final Map<String, Double> cached = new HashMap<>();
 
-        private CachedStatMap() {
+        private CachedStatMap(EquipmentSlot castSlot) {
             this.player = data.getPlayer();
-            for (String key : stats.keySet())
-                cached.put(key, getStat(key));
+
+            /*
+             * When casting a skill or an attack with a certain hand, stats
+             * from the other hand shouldn't be taken into account
+             */
+            if (castSlot.isHand()) {
+                EquipmentSlot ignored = castSlot.getOppositeHand();
+                for (StatInstance ins : getInstances())
+                    this.cached.put(ins.getStat(), ins.getFilteredTotal(mod -> mod.getSlot() != ignored));
+
+                /*
+                 * Not casting the attack with a specific
+                 * hand so take everything into account
+                 */
+            } else
+                for (StatInstance ins : getInstances())
+                    this.cached.put(ins.getStat(), ins.getTotal());
         }
 
         /**
