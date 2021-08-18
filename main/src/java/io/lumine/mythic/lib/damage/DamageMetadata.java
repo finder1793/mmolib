@@ -1,9 +1,5 @@
 package io.lumine.mythic.lib.damage;
 
-import io.lumine.mythic.lib.MythicLib;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -85,19 +81,6 @@ public class DamageMetadata implements Cloneable {
             if (packet.hasType(concerned))
                 packet.multiplyValue(coef);
         return this;
-    }
-
-    /**
-     * Deals custom damage to an entity while registering it as player damage
-     *
-     * @param player
-     *            The player damaging the entity
-     * @param target
-     *            The entity being damaged
-     */
-    @Deprecated
-    public void damage(Player player, LivingEntity target) {
-        MythicLib.plugin.getDamage().damage(player, target, this);
     }
 
     @Override
