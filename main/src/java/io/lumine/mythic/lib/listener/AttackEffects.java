@@ -1,10 +1,10 @@
 package io.lumine.mythic.lib.listener;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.DamageType;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.player.CooldownType;
 import io.lumine.mythic.lib.api.stat.StatMap;
+import io.lumine.mythic.lib.damage.DamageType;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -44,41 +44,36 @@ public class AttackEffects implements Listener {
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onHitAttackEffects(PlayerAttackEvent event) {
-
-        /*
-         * Damage modifiers. They do not stack geometrically (not 1.1 x 1.2 ...
-         * but rather * (1 + ( 0.1 + 0.2 ... )). Damage is multiplied after
-         * adding up all the percent based damage stats
-         */
-        double d = 0;
         StatMap stats = event.getData().getStatMap();
-        for (DamageType type : event.getAttack().getTypes())
-            d += stats.getStat(type.getStat()) / 100;
+
+        // Apply specific damage increase
+        for (DamageType type : DamageType.values())
+            event.getDamage().multiply(Math.max(0, 1 + stats.getStat(type.getOffenseStat()) / 100), type);
 
         // Apply undead damage
         if (MythicLib.plugin.getVersion().getWrapper().isUndead(event.getEntity()))
-            d += stats.getStat("UNDEAD_DAMAGE") / 100;
+            event.getDamage().multiply(Math.max(0, 1 + stats.getStat("UNDEAD_DAMAGE") / 100));
 
         // Apply PvP or PvE damage, one of the two anyways.
-        d += stats.getStat(event.getEntity() instanceof Player ? "PVP_DAMAGE" : "PVE_DAMAGE") / 100;
-        event.getAttack().multiplyDamage(1 + d);
+        double versusDamageCoef = 1 + stats.getStat(event.getEntity() instanceof Player ? "PVP_DAMAGE" : "PVE_DAMAGE") / 100;
+        event.getDamage().multiply(versusDamageCoef);
 
         // Weapon critical strikes
-        if (event.getAttack().hasType(DamageType.WEAPON)
+        if (event.getDamage().hasType(DamageType.WEAPON)
                 && random.nextDouble() <= Math.min(stats.getStat("CRITICAL_STRIKE_CHANCE"), maxWeaponCritChance) / 100
                 && !event.getData().isOnCooldown(CooldownType.WEAPON_CRIT)) {
             event.getData().applyCooldown(CooldownType.WEAPON_CRIT, weaponCritCooldown);
-            event.getAttack().multiplyDamage(weaponCritCoef + stats.getStat("CRITICAL_STRIKE_POWER") / 100);
+            event.getDamage().multiply(Math.max(0, weaponCritCoef + stats.getStat("CRITICAL_STRIKE_POWER") / 100), DamageType.WEAPON);
             event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 1);
             event.getEntity().getWorld().spawnParticle(Particle.FIREWORKS_SPARK, event.getEntity().getLocation().add(0, 1, 0), 16, 0, 0, 0, .1);
         }
 
         // Skill critical strikes
-        if (event.getAttack().hasType(DamageType.SKILL)
+        if (event.getDamage().hasType(DamageType.SKILL)
                 && random.nextDouble() <= Math.min(stats.getStat("SPELL_CRITICAL_STRIKE_CHANCE"), maxSkillCritChance) / 100
                 && !event.getData().isOnCooldown(CooldownType.SKILL_CRIT)) {
             event.getData().applyCooldown(CooldownType.SKILL_CRIT, skillCritCooldown);
-            event.getAttack().multiplyDamage(skillCritCoef + stats.getStat("SPELL_CRITICAL_STRIKE_POWER") / 100);
+            event.getDamage().multiply(skillCritCoef + stats.getStat("SPELL_CRITICAL_STRIKE_POWER") / 100, DamageType.SKILL);
             event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 2);
             event.getEntity().getWorld().spawnParticle(Particle.TOTEM, event.getEntity().getLocation().add(0, 1, 0), 32, 0, 0, 0, .4);
         }

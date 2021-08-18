@@ -1,8 +1,8 @@
 package io.lumine.mythic.lib.api.stat;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.AttackResult;
-import io.lumine.mythic.lib.api.DamageType;
+import io.lumine.mythic.lib.damage.DamageMetadata;
+import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import org.bukkit.entity.LivingEntity;
@@ -164,7 +164,7 @@ public class StatMap {
         }
 
         public void damage(LivingEntity target, double value, DamageType... types) {
-            MythicLib.plugin.getDamage().damage(player, target, new AttackResult(value, types));
+            MythicLib.plugin.getDamage().damage(player, target, new DamageMetadata(value, types));
         }
     }
 }

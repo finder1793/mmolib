@@ -12,7 +12,7 @@ import io.lumine.mythic.lib.comp.hexcolor.ColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.HexColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.SimpleColorParser;
 import io.lumine.mythic.lib.comp.hologram.CustomHologramFactoryList;
-import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsDamageHandler;
+import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
 import io.lumine.mythic.lib.gui.PluginInventory;
 import io.lumine.mythic.lib.listener.*;
@@ -121,7 +121,7 @@ public class MythicLib extends LuminePlugin {
                 }
 
         if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null) {
-            damageManager.registerHandler(new MythicMobsDamageHandler());
+            damageManager.registerHandler(new MythicMobsAttackHandler());
             Bukkit.getPluginManager().registerEvents(new MythicMobsHook(), this);
             getLogger().log(Level.INFO, "Hooked onto MythicMobs");
         }

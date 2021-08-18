@@ -1,8 +1,8 @@
 package io.lumine.mythic.lib.api.event;
 
-import io.lumine.mythic.lib.api.AttackResult;
-import io.lumine.mythic.lib.api.DamageType;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.damage.AttackMetadata;
+import io.lumine.mythic.lib.damage.DamageMetadata;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
@@ -12,19 +12,16 @@ public class PlayerAttackEvent extends MMOPlayerDataEvent implements Cancellable
     private static final HandlerList handlers = new HandlerList();
 
     private final EntityDamageByEntityEvent event;
-    private final AttackResult attack;
+    private final AttackMetadata attack;
 
     /**
      * Called whenever a player deals damage to another entity.
      *
-     * @param data
-     *            the MMOPlayerData of the player damager
-     * @param event
-     *            The corresponding damage event
-     * @param attack
-     *            The generated attack result which can be edited
+     * @param data   the MMOPlayerData of the player damager
+     * @param event  The corresponding damage event
+     * @param attack The generated attack result which can be edited
      */
-    public PlayerAttackEvent(MMOPlayerData data, EntityDamageByEntityEvent event, AttackResult attack) {
+    public PlayerAttackEvent(MMOPlayerData data, EntityDamageByEntityEvent event, AttackMetadata attack) {
         super(data);
 
         this.event = event;
@@ -41,18 +38,12 @@ public class PlayerAttackEvent extends MMOPlayerDataEvent implements Cancellable
         event.setCancelled(value);
     }
 
-    public AttackResult getAttack() {
+    public AttackMetadata getAttack() {
         return attack;
     }
 
-    /**
-     * @return If the event is called because of a melee player attack
-     * @deprecated Old method, use getAttack().getTypes().contains(DamageType.WEAPON)
-     * which supports other damage types instead.
-     */
-    @Deprecated
-    public boolean isWeapon() {
-        return attack.getTypes().contains(DamageType.WEAPON);
+    public DamageMetadata getDamage() {
+        return attack.getDamage();
     }
 
     public LivingEntity getEntity() {

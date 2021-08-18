@@ -1,9 +1,11 @@
 package io.lumine.mythic.lib.manager;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.AttackResult;
-import io.lumine.mythic.lib.api.DamageHandler;
-import io.lumine.mythic.lib.api.RegisteredAttack;
+import io.lumine.mythic.lib.damage.AttackMetadata;
+import io.lumine.mythic.lib.damage.DamageMetadata;
+import io.lumine.mythic.lib.damage.AttackHandler;
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import org.apache.commons.lang.Validate;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -18,9 +20,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import java.util.*;
 import java.util.logging.Level;
 
-public class DamageManager implements Listener, DamageHandler {
-    private final Map<Integer, RegisteredAttack> customDamage = new HashMap<>();
-    private final List<DamageHandler> handlers = new ArrayList<>();
+public class DamageManager implements Listener, AttackHandler {
+    private final Map<Integer, AttackMetadata> customDamage = new HashMap<>();
+    private final Set<AttackHandler> handlers = new HashSet<>();
 
     private static final AttributeModifier noKnockback = new AttributeModifier(UUID.randomUUID(), "noKnockback", 100, AttributeModifier.Operation.ADD_NUMBER);
 
@@ -35,18 +37,18 @@ public class DamageManager implements Listener, DamageHandler {
      *
      * @param handler Damage handler being registered
      */
-    public void registerHandler(DamageHandler handler) {
+    public void registerHandler(AttackHandler handler) {
         Validate.notNull(handler, "Damage handler cannot be null");
         handlers.add(handler);
     }
 
     @Override
-    public boolean hasDamage(Entity entity) {
+    public boolean isAttacked(Entity entity) {
         return customDamage.containsKey(entity.getEntityId());
     }
 
     @Override
-    public RegisteredAttack getDamage(Entity entity) {
+    public AttackMetadata getAttack(Entity entity) {
         return customDamage.get(entity.getEntityId());
     }
 
@@ -59,30 +61,59 @@ public class DamageManager implements Listener, DamageHandler {
      *               MMOLib damage, we need more than just a double for the atk
      *               damage
      */
-    public void damage(Player player, LivingEntity target, AttackResult result) {
+    @Deprecated
+    public void damage(Player player, LivingEntity target, DamageMetadata result) {
         damage(player, target, result, true);
+    }
+
+    /**
+     * Forces a player to damage an entity with or without knockback
+     *
+     * @param player    The player damaging the entity
+     * @param target    The entity being damaged
+     * @param result    Info about the attack. Since this attack is registered as
+     *                  MMOLib damage, we need more than just a double for the atk
+     *                  damage
+     * @param knockback If the attack should inflict knockback
+     */
+    @Deprecated
+    public void damage(Player player, LivingEntity target, DamageMetadata result, boolean knockback) {
+        AttackMetadata metadata = new AttackMetadata(result, MMOPlayerData.get(player).getStatMap().cache(EquipmentSlot.MAIN_HAND));
+        damage(metadata, target, true);
+    }
+
+    /**
+     * Forces a player to damage an entity with knockback
+     *
+     * @param metadata The class containing all info about the current attack
+     * @param target   The entity being damaged
+     */
+    public void damage(AttackMetadata metadata, LivingEntity target) {
+        damage(metadata, target, true);
     }
 
     /**
      * Forces a player to damage an entity with (no) knockback
      *
-     * @param player    The player damaging the entity
+     * @param metadata  The class containing all info about the current attack
      * @param target    The entity being damaged
-     * @param result    Info about the attack. Since this attack is registered
-     *                  as MMOLib damage, we need more than just a double for
-     *                  the atk damage
      * @param knockback If the attack should deal knockback
      */
-    public void damage(Player player, LivingEntity target, AttackResult result, boolean knockback) {
-        if (target.hasMetadata("NPC") || player.hasMetadata("NPC"))
+    public void damage(AttackMetadata metadata, LivingEntity target, boolean knockback) {
+        if (target.hasMetadata("NPC") || metadata.getDamager().hasMetadata("NPC"))
             return;
 
-        customDamage.put(target.getEntityId(), new RegisteredAttack(result, player));
+        // Register custom damage
+        customDamage.put(target.getEntityId(), metadata);
 
+        /*
+         * No knockback: temporarily apply a 100% knockback resistance
+         * to the target before applying regular damage
+         */
         if (!knockback)
             try {
                 target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).addModifier(noKnockback);
-                target.damage(result.getDamage(), player);
+                target.damage(metadata.getDamage().getDamage(), metadata.getDamager());
             } catch (Exception anyError) {
                 MythicLib.plugin.getLogger().log(Level.WARNING, "An error occured while registering player damage");
                 anyError.printStackTrace();
@@ -90,20 +121,21 @@ public class DamageManager implements Listener, DamageHandler {
                 target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).removeModifier(noKnockback);
             }
 
+            // Apply default knockback
         else
-            target.damage(result.getDamage(), player);
+            target.damage(metadata.getDamage().getDamage(), metadata.getDamager());
     }
 
     /**
-     * @param  entity The entity to check
-     * @return        Null if the entity is being damaged through vanilla
-     *                actions, or the corresponding RegisteredAttack if MMOLib
-     *                found a plugin responsible for that damage
+     * @param entity The entity to check
+     * @return Null if the entity is being damaged through vanilla
+     *         actions, or the corresponding RegisteredAttack if MMOLib
+     *         found a plugin responsible for that damage
      */
-    public RegisteredAttack findInfo(Entity entity) {
-        for (DamageHandler handler : handlers)
-            if (handler.hasDamage(entity))
-                return handler.getDamage(entity);
+    public AttackMetadata findInfo(Entity entity) {
+        for (AttackHandler handler : handlers)
+            if (handler.isAttacked(entity))
+                return handler.getAttack(entity);
         return null;
     }
 

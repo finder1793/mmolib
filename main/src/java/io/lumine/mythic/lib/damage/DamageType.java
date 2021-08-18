@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.api;
+package io.lumine.mythic.lib.damage;
 
 public enum DamageType {
 
@@ -31,7 +31,7 @@ public enum DamageType {
         return name().toLowerCase();
     }
 
-    public String getStat() {
+    public String getOffenseStat() {
         return name() + "_DAMAGE";
     }
 }

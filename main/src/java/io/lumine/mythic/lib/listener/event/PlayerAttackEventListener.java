@@ -1,12 +1,13 @@
 package io.lumine.mythic.lib.listener.event;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.AttackResult;
-import io.lumine.mythic.lib.api.DamageType;
-import io.lumine.mythic.lib.api.RegisteredAttack;
 import io.lumine.mythic.lib.api.event.EntityKillEntityEvent;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.damage.AttackMetadata;
+import io.lumine.mythic.lib.damage.DamageMetadata;
+import io.lumine.mythic.lib.damage.DamageType;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Damageable;
@@ -51,31 +52,29 @@ public class PlayerAttackEventListener implements Listener {
         if (!(event.getEntity() instanceof Damageable))
             return;
 
-        /**
+        /*
          * Looks for a RegisteredAttack. If it 1) can't find one registered in the {@link DamageManager}
          * and if MythicLib 2) cannot generate one specifically for this damage event, the
          * MythicLib will NOT monitor this attack i.e NEITHER apply damage stats NOR call PlayerAttackEvent.
-         *
-         * At the moment, MythicLib does not monitor attacks with no damager either.
          */
-        RegisteredAttack attack = findAttack(event);
-        if (attack == null || attack.getDamager() == null)
+        AttackMetadata attack = findAttack(event);
+        if (attack == null)
             return;
 
-        /**
+        /*
          * If the damager is a player, call {@link PlayerAttackEvent}
          */
         if (attack.getDamager() instanceof Player && !attack.getDamager().hasMetadata("NPC")) {
 
-            PlayerAttackEvent attackEvent = new PlayerAttackEvent(MMOPlayerData.get((Player) attack.getDamager()), event, attack.getResult());
+            PlayerAttackEvent attackEvent = new PlayerAttackEvent(MMOPlayerData.get((Player) attack.getDamager()), event, attack);
             Bukkit.getPluginManager().callEvent(attackEvent);
             if (attackEvent.isCancelled())
                 return;
 
-            event.setDamage(attack.getResult().getDamage());
+            event.setDamage(attack.getDamage().getDamage());
         }
 
-        /**
+        /*
          * If the entity is killed, call {@link EntityKillEntityEvent}
          */
         if (event.getFinalDamage() >= ((Damageable) event.getEntity()).getHealth())
@@ -89,29 +88,27 @@ public class PlayerAttackEventListener implements Listener {
      * If it can't find any plugin that has registered an attack, it checks if it is simply
      * not just a melee attack (then a
      */
-    private RegisteredAttack findAttack(EntityDamageByEntityEvent event) {
+    private AttackMetadata findAttack(EntityDamageByEntityEvent event) {
 
-        /**
+        /*
          * Checks in the MythicLib registered attack. This is used by MMOItems skills,
          * MMOCore skills, or any other plugin that implement MythicLib compatibility.
          */
-        RegisteredAttack custom = MythicLib.plugin.getDamage().findInfo(event.getEntity());
-        if (custom != null) {
-            custom.getResult().setDamage(event.getDamage());
+        AttackMetadata custom = MythicLib.plugin.getDamage().findInfo(event.getEntity());
+        if (custom != null)
             return custom;
-        }
 
-        /**
+        /*
          * Handles melee attacks. This is used everytime a player left clicks an entity.
          *
          * The attack damage type can vary depending on the context: if it is a bare-firsts
          * attack, final attack has no WEAPON damage type. If the player is holding any
          * other item, it is considered a WEAPON attack.
          */
-        if (event.getDamager() instanceof LivingEntity)
-            return new RegisteredAttack(new AttackResult(event.getDamage(), getDamageTypes(event)), (LivingEntity) event.getDamager());
+        if (event.getDamager() instanceof Player)
+            return new AttackMetadata(new DamageMetadata(event.getDamage(), getDamageTypes(event)), MMOPlayerData.get((Player) event.getDamager()).getStatMap().cache(EquipmentSlot.MAIN_HAND));
 
-        /**
+        /*
          * Handles projectile attacks; used everytime when a player shoots a trident,
          * a bow, a crossbow or even eggs and snowballs.
          *
@@ -122,9 +119,9 @@ public class PlayerAttackEventListener implements Listener {
          */
         if (event.getDamager() instanceof Projectile) {
             Projectile proj = (Projectile) event.getDamager();
-            if (proj.getShooter() instanceof LivingEntity)
-                return new RegisteredAttack(new AttackResult(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
-                        (LivingEntity) proj.getShooter());
+            if (proj.getShooter() instanceof Player)
+                return new AttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
+                        MMOPlayerData.get((Player) proj.getShooter()).getStatMap().cache(EquipmentSlot.MAIN_HAND));
         }
 
         return null;
@@ -136,7 +133,7 @@ public class PlayerAttackEventListener implements Listener {
      */
     private DamageType[] getDamageTypes(EntityDamageByEntityEvent event) {
 
-        /**
+        /*
          * If the attacker has no item in his hand when attacking, attack is
          * only physical
          */
@@ -146,7 +143,7 @@ public class PlayerAttackEventListener implements Listener {
                 return new DamageType[] { DamageType.PHYSICAL };
         }
 
-        /**
+        /*
          * By default a physical attack is a weapon-physical attack
          */
         return new DamageType[] { DamageType.WEAPON, DamageType.PHYSICAL };

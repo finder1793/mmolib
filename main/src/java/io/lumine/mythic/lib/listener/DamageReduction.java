@@ -1,11 +1,11 @@
 package io.lumine.mythic.lib.listener;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.AttackResult;
-import io.lumine.mythic.lib.api.DamageType;
-import io.lumine.mythic.lib.api.RegisteredAttack;
 import io.lumine.mythic.lib.api.math.EvaluatedFormula;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.damage.AttackMetadata;
+import io.lumine.mythic.lib.damage.DamageMetadata;
+import io.lumine.mythic.lib.damage.DamageType;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -15,44 +15,39 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.function.BiFunction;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 
 public class DamageReduction implements Listener {
 
-    // Since mythic mobs is a soft depend, this event triggers
-    // correctly, fixing a bug with mm skill mechanics.
+    /**
+     * Since MythicMobs is a soft depend, this event triggers
+     * correctly, fixing a bug with MythicMobs skill mechanics.
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void a(EntityDamageEvent event) {
+    public void damageMitigation(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player) || event.getEntity().hasMetadata("NPC"))
             return;
 
+        // Get sweet data
         MMOPlayerData data = MMOPlayerData.get((OfflinePlayer) event.getEntity());
-        RegisteredAttack attack = MythicLib.plugin.getDamage().findInfo(event.getEntity());
-        AttackResult result = attack == null ? new AttackResult(true, DamageType.WEAPON, DamageType.PHYSICAL) : attack.getResult();
+        AttackMetadata attackMeta = MythicLib.plugin.getDamage().findInfo(event.getEntity());
+        DamageMetadata damageMeta = attackMeta == null ? new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL) : attackMeta.getDamage();
 
-        double damage = event.getDamage();
-
-        /**
-         * Applies damage reduction due to the DEFENSE stat
-         */
-        double defense = data.getStatMap().getStat("DEFENSE");
-        damage = defense > 0 ? new DefenseFormula(defense).getAppliedDamage(event.getDamage()) : event.getDamage();
-
-        /**
-         * Applies damage reduction due to damage reductison stats, like
-         * MAGIC_DAMAGE_REDUCTION or simply DAMAGE_REDUCTION
-         */
-        double afterMitigation = 1;
+        // Applies specific damage reduction
         for (DamageReductionType type : DamageReductionType.values())
-            if (type.isApplicable(result, event))
-                afterMitigation *= 1 - Math.min(1, data.getStatMap().getStat(type.getStat()) / 100);
+            type.applyReduction(attackMeta, damageMeta, event);
 
-        /**
-         * Finally update the event damage output.
-         */
-        event.setDamage(damage * afterMitigation);
+        // Applies the Defense stat
+        double defense = data.getStatMap().getStat("DEFENSE");
+        double damage = damageMeta.getDamage();
+        if (defense > 0)
+            damage = new DefenseFormula(defense).getAppliedDamage(damage);
+
+        // Finally apply damage
+        event.setDamage(damage);
     }
 
     /**
@@ -90,63 +85,78 @@ public class DamageReduction implements Listener {
      */
     public enum DamageReductionType {
 
-        /*
-         * Damage reduction, always applies
-         */
-        ENVIRONMENTAL("DAMAGE_REDUCTION", (result, event) -> true),
+        // Damage reduction, always applies
+        ENVIRONMENTAL("DAMAGE_REDUCTION", null, event -> true),
 
-        /*
-         * Fight based damage reduction types
-         */
-        PVP((result, event) -> event instanceof EntityDamageByEntityEvent && getDamager((EntityDamageByEntityEvent) event) instanceof Player),
-        PVE((result, event) -> event instanceof EntityDamageByEntityEvent && !(getDamager((EntityDamageByEntityEvent) event) instanceof Player)),
+        // Vanilla damage types
+        PVP(event -> event instanceof EntityDamageByEntityEvent && getDamager((EntityDamageByEntityEvent) event) instanceof Player),
+        PVE(event -> event instanceof EntityDamageByEntityEvent && !(getDamager((EntityDamageByEntityEvent) event) instanceof Player)),
+        FIRE(event -> event.getCause() == EntityDamageEvent.DamageCause.FIRE || event.getCause() == EntityDamageEvent.DamageCause.FIRE_TICK),
+        FALL(event -> event.getCause() == EntityDamageEvent.DamageCause.FALL),
 
-        /*
-         * Simple damage reduction types
-         */
-        FIRE((result, event) -> event.getCause() == EntityDamageEvent.DamageCause.FIRE || event.getCause() == EntityDamageEvent.DamageCause.FIRE_TICK),
-        FALL((result, event) -> event.getCause() == EntityDamageEvent.DamageCause.FALL),
-
-        /*
-         * Damage type based damage reduction types
-         */
-        MAGIC((result, event) -> event.getCause() == EntityDamageEvent.DamageCause.MAGIC || (result != null && result.hasType(DamageType.MAGIC))),
-        PHYSICAL((result, event) -> event instanceof EntityDamageByEntityEvent || (result != null && result.hasType(DamageType.PHYSICAL))),
-        WEAPON((result, event) -> result != null && result.hasType(DamageType.WEAPON)),
-        SKILL((result, event) -> result != null && result.hasType(DamageType.SKILL)),
-        PROJECTILE((result,
-                    event) -> (event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) event).getDamager() instanceof Projectile)
-                || (result != null && result.hasType(DamageType.PROJECTILE)));
+        // Custom damage types
+        MAGIC(DamageType.MAGIC, event -> event.getCause() == EntityDamageEvent.DamageCause.MAGIC),
+        PHYSICAL(DamageType.PHYSICAL, event -> event instanceof EntityDamageByEntityEvent),
+        WEAPON(DamageType.WEAPON),
+        SKILL(DamageType.SKILL),
+        PROJECTILE(DamageType.PROJECTILE, event -> event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) event).getDamager() instanceof Projectile);
 
         /**
          * The corresponding item stat that will be used to
          * apply damage reduction. For instance, ENVIRONMENTAL calls
-         * the DAMAGE_REDUCTION_STAT and MAGIC calls MAGIC_DAMAGE_REDUCTION
+         * DAMAGE_REDUCTION and MAGIC calls MAGIC_DAMAGE_REDUCTION
          */
         private final String stat;
 
         /**
-         * Whether or not the corresponding stat {@link DamageReductionType#stat}
-         * should apply in a given attack, ie AttackResult and EntityDamageEvent
+         * When this field is not null, that means this damage reduction is linked
+         * to a specific damage type. For instance, {@link #MAGIC} should reduce
+         * magic damage, etc.
          */
-        private final BiFunction<AttackResult, EntityDamageEvent, Boolean> apply;
+        @Nullable
+        private final DamageType damageType;
 
-        private DamageReductionType(String stat, BiFunction<AttackResult, EntityDamageEvent, Boolean> apply) {
-            this.stat = stat;
-            this.apply = apply;
+        /**
+         * When this field is not null, if it does return true, it will reduce
+         * all the damage from every damage packet. This is used for vanilla
+         * damage types, like {@link #FALL} or {@link #FIRE} or even {@link #ENVIRONMENTAL}
+         */
+        @Nullable
+        private final Predicate<EntityDamageEvent> apply;
+
+        private DamageReductionType(DamageType damageType) {
+            this(damageType, null);
         }
 
-        private DamageReductionType(BiFunction<AttackResult, EntityDamageEvent, Boolean> apply) {
+        private DamageReductionType(Predicate<EntityDamageEvent> apply) {
+            this(null, apply);
+        }
+
+        private DamageReductionType(DamageType damageType, Predicate<EntityDamageEvent> apply) {
             this.stat = name() + "_DAMAGE_REDUCTION";
+            this.damageType = damageType;
             this.apply = apply;
         }
 
-        public boolean isApplicable(AttackResult result, EntityDamageEvent event) {
-            return apply.apply(result, event);
+        private DamageReductionType(String stat, DamageType damageType, Predicate<EntityDamageEvent> apply) {
+            this.stat = stat;
+            this.damageType = damageType;
+            this.apply = apply;
         }
 
-        public String getStat() {
-            return stat;
+        public void applyReduction(AttackMetadata attackMeta, DamageMetadata damageMeta, EntityDamageEvent event) {
+
+            // Environmental damage reduction
+            if (apply != null && apply.test(event))
+                damageMeta.multiply(getCoefficient(attackMeta));
+
+                // Specific damage type reduction
+            else if (damageType != null)
+                damageMeta.multiply(getCoefficient(attackMeta), damageType);
+        }
+
+        private double getCoefficient(AttackMetadata meta) {
+            return 1 - Math.max(0, Math.min(1, meta.getStats().getStat(stat) / 100));
         }
     }
 
