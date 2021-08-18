@@ -143,7 +143,6 @@
             <url>https://clojars.org/repo/</url>
         </repository>
 
-
         <repository>
             <id>mojang</id>
             <url>https://libraries.minecraft.net/</url>
@@ -210,9 +209,9 @@
         </dependency>
 
         <dependency>
-            <groupId>io.lumine.xikage</groupId>
+            <groupId>io.lumine</groupId>
             <artifactId>MythicMobs</artifactId>
-            <version>4.11.0-SNAPSHOT</version>
+            <version>5.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
