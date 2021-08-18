@@ -1,7 +1,9 @@
 package io.lumine.mythic.lib.damage;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import org.apache.commons.lang.Validate;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 /**
@@ -11,7 +13,7 @@ import org.bukkit.entity.Player;
  */
 public class AttackMetadata {
     private final Player player;
-    private final StatMap.CachedStatMap stats;
+    private final StatMap.CachedStatMap statMap;
     private final DamageMetadata damage;
 
     private boolean successful = true;
@@ -24,15 +26,15 @@ public class AttackMetadata {
      * application.
      *
      * @param damage  The attack result
-     * @param damager The entity who dealt the damage
+     * @param statMap The entity who dealt the damage
      */
-    public AttackMetadata(DamageMetadata damage, StatMap.CachedStatMap damager) {
-        Validate.notNull(damager, "Damager cannot be null");
+    public AttackMetadata(DamageMetadata damage, StatMap.CachedStatMap statMap) {
+        Validate.notNull(statMap, "StatMap cannot be null");
         Validate.notNull(damage, "Attack cannot be null");
 
         this.damage = damage;
-        this.stats = damager;
-        this.player = stats.getPlayer();
+        this.statMap = statMap;
+        this.player = statMap.getPlayer();
     }
 
     /**
@@ -55,10 +57,18 @@ public class AttackMetadata {
     }
 
     public StatMap.CachedStatMap getStats() {
-        return stats;
+        return statMap;
     }
 
     public Player getDamager() {
-        return stats.getPlayer();
+        return player;
+    }
+
+    public void damage(LivingEntity target) {
+        damage(target, true);
+    }
+
+    public void damage(LivingEntity target, boolean knockback) {
+        MythicLib.plugin.getDamage().damage(this, target, knockback);
     }
 }
