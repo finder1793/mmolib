@@ -17,7 +17,7 @@ import java.util.Set;
  *
  * @author mmolover
  */
-public class DamagePacket {
+public class DamagePacket implements Cloneable {
     private final DamageType[] types;
 
     private double value;
@@ -55,5 +55,10 @@ public class DamagePacket {
 
     public void multiplyValue(double coef) {
         this.value *= coef;
+    }
+
+    @Override
+    public DamagePacket clone() {
+        return new DamagePacket(value, types);
     }
 }

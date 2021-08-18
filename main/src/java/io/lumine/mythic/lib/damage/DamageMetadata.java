@@ -99,4 +99,13 @@ public class DamageMetadata implements Cloneable {
     public void damage(Player player, LivingEntity target) {
         MythicLib.plugin.getDamage().damage(player, target, this);
     }
+
+    @Override
+    public DamageMetadata clone() {
+        DamageMetadata clone = new DamageMetadata();
+        for (DamagePacket packet : packets)
+            clone.packets.add(packet.clone());
+
+        return clone;
+    }
 }
