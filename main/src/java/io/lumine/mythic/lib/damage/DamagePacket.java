@@ -35,6 +35,10 @@ public class DamagePacket implements Cloneable {
         return value;
     }
 
+    public DamageType[] getTypes() {
+        return types;
+    }
+
     /**
      * @return Checks if the current packet has that damage type
      */

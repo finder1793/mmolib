@@ -34,6 +34,20 @@ public class DamageMetadata implements Cloneable {
     }
 
     /**
+     * @return Set containing all damage types found
+     *         in all the different damage packets.
+     */
+    public Set<DamageType> collectTypes() {
+        Set<DamageType> collected = new HashSet<>();
+
+        for (DamagePacket packet : packets)
+            for (DamageType type : packet.getTypes())
+                collected.add(type);
+
+        return collected;
+    }
+
+    /**
      * @return Iterates through all registered damage packets and
      *         see if any has this damage type.
      */
