@@ -116,10 +116,13 @@ public class PlayerAttackEventListener implements Listener {
          * which means that if MMOCore has a skill which makes players shoot multiple
          * arrows, MythicLib will use the following lines to monitor the attacks
          * and the skill will apply WEAPON damage.
+         *
+         * Make sure to check the shooter is not the damaged entity. We don't want
+         * players to backstab themselves using projectiles.
          */
         if (event.getDamager() instanceof Projectile) {
             Projectile proj = (Projectile) event.getDamager();
-            if (proj.getShooter() instanceof Player)
+            if (proj.getShooter() instanceof Player && !proj.getShooter().equals(event.getEntity()))
                 return new AttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
                         MMOPlayerData.get((Player) proj.getShooter()).getStatMap().cache(EquipmentSlot.MAIN_HAND));
         }
@@ -128,8 +131,8 @@ public class PlayerAttackEventListener implements Listener {
     }
 
     /**
-     * @param  event The attack event
-     * @return       The damage types of a vanilla melee entity attack
+     * @param event The attack event
+     * @return The damage types of a vanilla melee entity attack
      */
     private DamageType[] getDamageTypes(EntityDamageByEntityEvent event) {
 
@@ -140,13 +143,13 @@ public class PlayerAttackEventListener implements Listener {
         if (event.getDamager() instanceof LivingEntity) {
             LivingEntity damager = (LivingEntity) event.getDamager();
             if (isAir(damager.getEquipment().getItemInMainHand()))
-                return new DamageType[] { DamageType.PHYSICAL };
+                return new DamageType[]{DamageType.PHYSICAL};
         }
 
         /*
          * By default a physical attack is a weapon-physical attack
          */
-        return new DamageType[] { DamageType.WEAPON, DamageType.PHYSICAL };
+        return new DamageType[]{DamageType.WEAPON, DamageType.PHYSICAL};
     }
 
     private boolean isAir(ItemStack item) {
