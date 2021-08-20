@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.api.player;
 
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.listener.PlayerListener;
+import io.lumine.mythic.lib.player.CooldownMap;
 import org.apache.commons.lang.Validate;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -26,7 +27,7 @@ public class MMOPlayerData {
     private long lastLogActivity;
 
     // Data saved till next server restart
-    private final Map<CooldownType, Long> nextUse = new HashMap<>();
+    private final CooldownMap basicCooldowns = new CooldownMap();
     private final StatMap stats = new StatMap(this);
 
     private static final Map<UUID, MMOPlayerData> data = new HashMap<>();
@@ -41,8 +42,8 @@ public class MMOPlayerData {
 
     /**
      * @return The player's StatMap which can be used by any other plugins to
-     * apply stat modifiers to ANY MMOItems/MMOCore/external stats,
-     * calculate stat values, etc.
+     *         apply stat modifiers to ANY MMOItems/MMOCore/external stats,
+     *         calculate stat values, etc.
      */
     public StatMap getStatMap() {
         return stats;
@@ -105,7 +106,7 @@ public class MMOPlayerData {
      * @param value Mitigation cooldown in seconds
      */
     public void applyCooldown(CooldownType cd, double value) {
-        nextUse.put(cd, (long) (System.currentTimeMillis() + value * 1000));
+        basicCooldowns.applyCooldown(cd.name(), value);
     }
 
     /**
@@ -113,7 +114,7 @@ public class MMOPlayerData {
      * @return If the mecanic is currently on cooldown for the player
      */
     public boolean isOnCooldown(CooldownType cd) {
-        return nextUse.containsKey(cd) && nextUse.get(cd) > System.currentTimeMillis();
+        return basicCooldowns.isOnCooldown(cd.name());
     }
 
     /**
@@ -142,7 +143,7 @@ public class MMOPlayerData {
      *
      * @param uuid The player UUID to check
      * @return If the MMOPlayerData instance is loaded for a specific
-     * player
+     *         player
      */
     public static boolean isLoaded(UUID uuid) {
         return data.containsKey(uuid);
@@ -160,9 +161,9 @@ public class MMOPlayerData {
 
     /**
      * @return Currently loaded MMOPlayerData instances. This can be used to
-     * apply things like resource regeneration or other runnable based
-     * tasks instead of looping through online players and having to
-     * resort to a map-lookup-based get(Player) call
+     *         apply things like resource regeneration or other runnable based
+     *         tasks instead of looping through online players and having to
+     *         resort to a map-lookup-based get(Player) call
      */
     public static Collection<MMOPlayerData> getLoaded() {
         return data.values();
