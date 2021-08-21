@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.comp.mythicmobs;
 
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.xikage.mythicmobs.MythicMobs;
+import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMechanicLoadEvent;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
@@ -17,6 +18,12 @@ public class MythicMobsHook implements Listener {
         String faction = getFaction(event.getEntity());
         if (faction != null)
             event.getDamage().multiply(1 + event.getData().getStatMap().getStat("FACTION_DAMAGE_" + faction.toUpperCase()) / 100);
+    }
+
+    @EventHandler
+    public void b(MythicMechanicLoadEvent event) {
+        if (event.getMechanicName().equalsIgnoreCase("mmodamage") || event.getMechanicName().equalsIgnoreCase("mmod"))
+            event.register(new MMODamageMechanic(event.getMechanicName(), event.getConfig()));
     }
 
     private String getFaction(Entity entity) {
