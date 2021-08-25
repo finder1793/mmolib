@@ -210,7 +210,7 @@
 
         <dependency>
             <groupId>io.lumine</groupId>
-            <artifactId>MythicMobs</artifactId>
+            <artifactId>MythicMobs-Dist</artifactId>
             <version>5.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
