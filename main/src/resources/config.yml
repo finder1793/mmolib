@@ -1,5 +1,5 @@
 # DO NOT TOUCH
-config-version: 3
+config-version: 4
 
 # Edit general plugin number formatting here.
 number-format:
@@ -20,6 +20,10 @@ health-scale:
   enabled: true
   scale: 20
   delay: 0
+
+# Set to false to prevent players from dealing damage to other
+# players using abilities. This is an useful option for PvE servers.
+player-ability-damage: true
 
 critical-strikes:
   weapon:

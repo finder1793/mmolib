@@ -8,8 +8,10 @@ import java.text.DecimalFormatSymbols;
 public class ConfigManager {
     public final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
     public final DecimalFormat decimal = new DecimalFormat("0.#", formatSymbols), decimals = new DecimalFormat("0.##", formatSymbols);
+    public boolean playerAbilityDamage;
 
     public void reload() {
+        playerAbilityDamage = MythicLib.plugin.getConfig().getBoolean("player-ability-damage");
         formatSymbols.setDecimalSeparator(getFirstChar(MythicLib.plugin.getConfig().getString("number-format.decimal-separator")));
     }
 

@@ -6,14 +6,18 @@ import io.lumine.mythic.lib.api.crafting.recipes.vmp.SuperWorkbenchMapping;
 import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.commands.BaseCommand;
-import io.lumine.mythic.lib.comp.CitizensEntityHandler;
 import io.lumine.mythic.lib.comp.PlaceholderAPIHook;
+import io.lumine.mythic.lib.comp.flags.DefaultFlagHandler;
+import io.lumine.mythic.lib.comp.flags.FlagPlugin;
+import io.lumine.mythic.lib.comp.flags.ResidenceFlags;
+import io.lumine.mythic.lib.comp.flags.WorldGuardFlags;
 import io.lumine.mythic.lib.comp.hexcolor.ColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.HexColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.SimpleColorParser;
 import io.lumine.mythic.lib.comp.hologram.CustomHologramFactoryList;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
+import io.lumine.mythic.lib.comp.target.CitizensTargetRestriction;
 import io.lumine.mythic.lib.gui.PluginInventory;
 import io.lumine.mythic.lib.listener.*;
 import io.lumine.mythic.lib.listener.event.PlayerAttackEventListener;
@@ -55,7 +59,7 @@ public class MythicLib extends LuminePlugin {
     private AttackEffects attackEffects;
     private MitigationMechanics mitigationMechanics;
     private ColorParser colorParser;
-
+    private FlagPlugin flagPlugin = new DefaultFlagHandler();
     @Getter
     private ScoreboardProvider scoreboardProvider;
 
@@ -70,6 +74,11 @@ public class MythicLib extends LuminePlugin {
             getLogger().log(Level.INFO, net.md_5.bungee.api.ChatColor.RED + "Your server version is not compatible.");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("WorldGuard") != null) {
+            flagPlugin = new WorldGuardFlags();
+            getLogger().log(Level.INFO, "Hooked onto WorldGuard");
         }
 
         colorParser = version.isBelowOrEqual(1, 15) ? new SimpleColorParser() : new HexColorParser();
@@ -126,8 +135,13 @@ public class MythicLib extends LuminePlugin {
             getLogger().log(Level.INFO, "Hooked onto MythicMobs");
         }
 
+        if (Bukkit.getPluginManager().getPlugin("Residence") != null) {
+            flagPlugin = new ResidenceFlags();
+            getLogger().log(Level.INFO, "Hooked onto Residence");
+        }
+
         if (Bukkit.getPluginManager().getPlugin("Citizens") != null) {
-            entityManager.registerHandler(new CitizensEntityHandler());
+            entityManager.registerRestriction(new CitizensTargetRestriction());
             getLogger().log(Level.INFO, "Hooked onto Citizens");
         }
 
@@ -204,6 +218,14 @@ public class MythicLib extends LuminePlugin {
 
     public ConfigManager getMMOConfig() {
         return configManager;
+    }
+
+    public FlagPlugin getFlags() {
+        return flagPlugin;
+    }
+
+    public void handleFlags(FlagPlugin flagPlugin) {
+        this.flagPlugin = flagPlugin;
     }
 
     /**
