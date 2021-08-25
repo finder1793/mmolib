@@ -401,8 +401,8 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 	@Override
 	public String getSkullValue(Block block) {
 		TileEntitySkull skullTile = (TileEntitySkull) ((CraftWorld) block.getWorld()).getHandle().getTileEntity(new BlockPosition(block.getX(), block.getY(), block.getZ()));
-		if (skullTile.d == null) return "";
-		return skullTile.d.getProperties().get("textures").iterator().next().getValue();
+		if (skullTile.e == null) return "";
+		return skullTile.e.getProperties().get("textures").iterator().next().getValue();
 	}
 
 	@Override
