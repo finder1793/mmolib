@@ -3,9 +3,8 @@ author: Lumine Studios
 main: io.lumine.mythic.lib.MythicLib
 api-version: 1.13
 version: ${project.version}
-depend: []
-loadbefore: [MMOCore,MMOItems]
-softdepend: [MythicMobs,WorldGuard,Residence]
+loadbefore: [ MMOCore,MMOItems ]
+softdepend: [ MythicMobs,WorldGuard,Residence,Factions ]
 description: Kind of like mythiclib, but without the generic disorders
 commands:
   mythiclib:

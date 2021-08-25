@@ -18,6 +18,7 @@ import io.lumine.mythic.lib.comp.hologram.CustomHologramFactoryList;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
 import io.lumine.mythic.lib.comp.target.CitizensTargetRestriction;
+import io.lumine.mythic.lib.comp.target.FactionsRestriction;
 import io.lumine.mythic.lib.gui.PluginInventory;
 import io.lumine.mythic.lib.listener.*;
 import io.lumine.mythic.lib.listener.event.PlayerAttackEventListener;
@@ -138,6 +139,11 @@ public class MythicLib extends LuminePlugin {
         if (Bukkit.getPluginManager().getPlugin("Residence") != null) {
             flagPlugin = new ResidenceFlags();
             getLogger().log(Level.INFO, "Hooked onto Residence");
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("Factions") != null) {
+            entityManager.registerRestriction(new FactionsRestriction());
+            getLogger().log(Level.INFO, "Hooked onto Factions");
         }
 
         if (Bukkit.getPluginManager().getPlugin("Citizens") != null) {
