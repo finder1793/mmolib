@@ -1,10 +1,10 @@
 package io.lumine.mythic.lib.api.stat;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.damage.DamageMetadata;
-import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.damage.DamageMetadata;
+import io.lumine.mythic.lib.damage.DamageType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -13,6 +13,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * TODO create an abstract type of 'StatMap' or 'StatProvider'
+ * which the default player stat map and the cached statMap
+ * both extend
+ *
+ * @author indyuce
+ */
 public class StatMap {
 
     private final MMOPlayerData data;
@@ -30,8 +37,7 @@ public class StatMap {
     }
 
     /**
-     * @param id
-     *            The string key of the stat
+     * @param id The string key of the stat
      * @return The value of the stat after applying stat modifiers
      */
     public double getStat(String id) {
@@ -39,8 +45,7 @@ public class StatMap {
     }
 
     /**
-     * @param id
-     *            The string key of the stat
+     * @param id The string key of the stat
      * @return The corresponding StatInstance, which can be manipulated to add
      *         (temporary?) stat modifiers to a player, remove modifiers or
      *         calculate stat values in various ways. StatInstances are
@@ -70,7 +75,7 @@ public class StatMap {
      * in MMOLib, MMOLib needs to perform a further attribute modifier update.
      * This method runs all the updates for the vanilla-attribute-based MMOLib
      * stats.
-     *
+     * <p>
      * Performance heavy method
      */
     @Deprecated
@@ -143,8 +148,7 @@ public class StatMap {
         }
 
         /**
-         * @param stat
-         *            The string key of the stat
+         * @param stat The string key of the stat
          * @return The cached stat value, or the vanilla
          */
         public double getStat(String stat) {
@@ -154,10 +158,8 @@ public class StatMap {
         /**
          * Edits the current cached stat value
          *
-         * @param stat
-         *            The string key of the stat
-         * @param value
-         *            The value you want to cache
+         * @param stat  The string key of the stat
+         * @param value The value you want to cache
          */
         public void setStat(String stat, double value) {
             cached.put(stat, value);

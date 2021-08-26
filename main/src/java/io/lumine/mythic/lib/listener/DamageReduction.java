@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.listener;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.math.EvaluatedFormula;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
@@ -38,7 +39,7 @@ public class DamageReduction implements Listener {
 
         // Applies specific damage reduction
         for (DamageReductionType type : DamageReductionType.values())
-            type.applyReduction(attackMeta, damageMeta, event);
+            type.applyReduction(data.getStatMap(), damageMeta, event);
 
         // Applies the Defense stat
         double defense = data.getStatMap().getStat("DEFENSE");
@@ -144,19 +145,19 @@ public class DamageReduction implements Listener {
             this.apply = apply;
         }
 
-        public void applyReduction(AttackMetadata attackMeta, DamageMetadata damageMeta, EntityDamageEvent event) {
+        public void applyReduction(StatMap statMap, DamageMetadata damageMeta, EntityDamageEvent event) {
 
             // Environmental damage reduction
             if (apply != null && apply.test(event))
-                damageMeta.multiply(getCoefficient(attackMeta));
+                damageMeta.multiply(getCoefficient(statMap));
 
                 // Specific damage type reduction
             else if (damageType != null)
-                damageMeta.multiply(getCoefficient(attackMeta), damageType);
+                damageMeta.multiply(getCoefficient(statMap), damageType);
         }
 
-        private double getCoefficient(AttackMetadata meta) {
-            return 1 - Math.max(0, Math.min(1, meta.getStats().getStat(stat) / 100));
+        private double getCoefficient(StatMap statMap) {
+            return 1 - Math.max(0, Math.min(1, statMap.getStat(stat) / 100));
         }
     }
 
