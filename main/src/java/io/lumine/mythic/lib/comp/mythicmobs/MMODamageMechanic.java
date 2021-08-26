@@ -34,7 +34,7 @@ public class MMODamageMechanic extends SkillMechanic implements ITargetedEntityS
         super(line, config);
 
         this.amount = PlaceholderDouble.of(config.getString(new String[]{"amount", "a"}, "1", new String[0]));
-        String[] typesFormat = config.getString(new String[]{"amount", "a"}, "SKILL,MAGIC", new String[0]).split("\\,");
+        String[] typesFormat = config.getString(new String[]{"type", "t"}, "SKILL,MAGIC", new String[0]).split("\\,");
         this.types = Arrays.asList(typesFormat).stream().map(str -> DamageType.valueOf(str.toUpperCase())).collect(Collectors.toList()).toArray(new DamageType[0]);
     }
 
