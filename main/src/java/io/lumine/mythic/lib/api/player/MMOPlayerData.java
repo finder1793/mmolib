@@ -118,6 +118,17 @@ public class MMOPlayerData {
     }
 
     /**
+     * Cooldown maps centralize cooldowns in MythicLib for easier use.
+     * Can be used for item cooldows, item abilities, MMOCore player
+     * skills or any other external plugin
+     *
+     * @return The main player's cooldown map
+     */
+    public CooldownMap getCooldownMap() {
+        return basicCooldowns;
+    }
+
+    /**
      * Called everytime a player enters the server. If the
      * resource data is not initialized yet, initializes it.
      * <p>

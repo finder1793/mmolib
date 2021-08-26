@@ -13,8 +13,8 @@ public class CooldownInfo {
      * to manipulate the cooldowns of the thrown items. An ongoing
      * cooldown can be reduced with three possible ways:
      * - a FLAT amount of seconds is taken away, see {@link #reduceFlat(double)}
-     * - a percentage of the INITIAL cooldown is taken away, see {@link #reduceInitialCooldown(float)}
-     * - a percentage of the REMAINING cooldown is taken away, see {@link #reduceRemainingCooldown(float)}
+     * - a percentage of the INITIAL cooldown is taken away, see {@link #reduceInitialCooldown(double)}
+     * - a percentage of the REMAINING cooldown is taken away, see {@link #reduceRemainingCooldown(double)}
      *
      * @param initialCooldown Initial cooldown, in seconds
      */
@@ -63,7 +63,7 @@ public class CooldownInfo {
      *
      * @param p Percentage of the remaining cooldown, from 0 and 1
      */
-    public void reduceRemainingCooldown(float p) {
+    public void reduceRemainingCooldown(double p) {
         Validate.isTrue(p >= 0 && p <= 1, "p must be between 0 and 1");
 
         double left = getRemaining();
@@ -75,7 +75,7 @@ public class CooldownInfo {
      *
      * @param p Percentage of the initial cooldown, from 0 and 1
      */
-    public void reduceInitialCooldown(float p) {
+    public void reduceInitialCooldown(double p) {
         Validate.isTrue(p >= 0 && p <= 1, "p must be between 0 and 1");
 
         nextUse -= initialCooldown * p;
