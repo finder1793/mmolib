@@ -221,7 +221,7 @@
             <optional>true</optional>
         </dependency>
 
-
+<!-- 
         <dependency>
             <groupId>org.mcmonkey</groupId>
             <artifactId>sentinel</artifactId>
@@ -229,7 +229,7 @@
             <type>jar</type>
             <scope>provided</scope>
             <optional>true</optional>
-        </dependency> 
+        </dependency>  -->
 
         <dependency>
             <groupId>org.projectlombok</groupId>
