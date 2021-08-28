@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 public class CitizensTargetRestriction implements TargetRestriction {
     //public static final boolean sentinels = Bukkit.getPluginManager().getPlugin("Sentinel") != null;
 
-    @Override
+    @Override 
     public boolean canTarget(Player source, LivingEntity entity, InteractionType interaction) {
         NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
 
