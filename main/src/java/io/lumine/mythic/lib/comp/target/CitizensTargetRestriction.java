@@ -14,6 +14,6 @@ public class CitizensTargetRestriction implements TargetRestriction {
         NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
 
         // Just fucking cancel everything or it will sent crap ass packet errors
-        return npc == null; // || (sentinels && npc.hasTrait(org.mcmonkey.sentinel.SentinelTrait.class));
+        return npc == null || !npc.data().get(NPC.DEFAULT_PROTECTED_METADATA, true);
     }
 }
