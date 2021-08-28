@@ -99,8 +99,13 @@
     <repositories>
 
         <repository>
-            <id>lumine</id>
+            <id>lumine-public</id>
             <url>https://mvn.lumine.io/repository/maven/</url>
+        </repository>
+        
+        <repository>
+            <id>lumine</id>
+            <url>https://mvn.lumine.io/repository/maven-private/</url>
         </repository>
 
         <repository>
