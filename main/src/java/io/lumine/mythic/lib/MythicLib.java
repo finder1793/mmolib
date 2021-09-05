@@ -6,6 +6,7 @@ import io.lumine.mythic.lib.api.crafting.recipes.vmp.SuperWorkbenchMapping;
 import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.commands.BaseCommand;
+import io.lumine.mythic.lib.commands.HealthScaleCommand;
 import io.lumine.mythic.lib.comp.PlaceholderAPIHook;
 import io.lumine.mythic.lib.comp.flags.DefaultFlagHandler;
 import io.lumine.mythic.lib.comp.flags.FlagPlugin;
@@ -170,6 +171,7 @@ public class MythicLib extends LuminePlugin {
         getCommand("mythiclib").setExecutor(new MMOLibCommand());
         getCommand("mmodebug").setExecutor(new MMODebugCommand());
         getCommand("mmotempstat").setExecutor(new MMOTempStatCommand());
+        getCommand("healthscale").setExecutor(new HealthScaleCommand());
 
         // Super workbench
         getCommand("superworkbench").setExecutor(SuperWorkbenchMapping.SWB);

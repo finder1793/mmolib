@@ -10,6 +10,9 @@ commands:
   mythiclib:
     description: Reload mythiclib
     permission: mythiclib.reload
+  healthscale:
+    description: Scales Player's health
+    permission: mythiclib.command.healthscale
   exploreattributes:
     description: Explore player attributes.
     permission: mythiclib.explore-attributes
