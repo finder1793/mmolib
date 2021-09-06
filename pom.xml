@@ -12,7 +12,7 @@
             <name>Lumine Releases</name>
             <url>http://mvn.lumine.io/repository/maven-releases/</url>
         </repository>
-        <snapshotRepository>
+        <snapshotRepository> 
             <id>nexus</id>
             <name>Lumine Snapshots</name>
             <url>http://mvn.lumine.io/repository/maven-snapshots/</url>
