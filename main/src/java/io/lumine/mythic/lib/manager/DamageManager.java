@@ -16,6 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -77,7 +78,7 @@ public class DamageManager implements Listener, AttackHandler {
      * @param knockback If the attack should inflict knockback
      */
     @Deprecated
-    public void damage(Player player, LivingEntity target, DamageMetadata result, boolean knockback) {
+    public void damage(@NotNull Player player, @NotNull LivingEntity target, @NotNull DamageMetadata result, boolean knockback) {
         AttackMetadata metadata = new AttackMetadata(result, MMOPlayerData.get(player).getStatMap().cache(EquipmentSlot.MAIN_HAND));
         damage(metadata, target, true);
     }
@@ -88,7 +89,7 @@ public class DamageManager implements Listener, AttackHandler {
      * @param metadata The class containing all info about the current attack
      * @param target   The entity being damaged
      */
-    public void damage(AttackMetadata metadata, LivingEntity target) {
+    public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target) {
         damage(metadata, target, true);
     }
 
@@ -99,7 +100,19 @@ public class DamageManager implements Listener, AttackHandler {
      * @param target    The entity being damaged
      * @param knockback If the attack should deal knockback
      */
-    public void damage(AttackMetadata metadata, LivingEntity target, boolean knockback) {
+    public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target, boolean knockback) {
+        damage(metadata, target, knockback, false);
+    }
+
+    /**
+     * Forces a player to damage an entity.
+     *
+     * @param metadata  The class containing all info about the current attack
+     * @param target    The entity being damaged
+     * @param knockback If the attack should deal knockback
+     * @param ignoreImmunity The attack will not produce immunity frames.
+     */
+    public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target, boolean knockback, boolean ignoreImmunity) {
         if (target.hasMetadata("NPC") || metadata.getDamager().hasMetadata("NPC"))
             return;
 
@@ -124,6 +137,11 @@ public class DamageManager implements Listener, AttackHandler {
             // Apply default knockback
         else
             target.damage(metadata.getDamage().getDamage(), metadata.getDamager());
+
+        /*
+         * No damage immunity
+         */
+        if (ignoreImmunity) { target.setNoDamageTicks(0); }
     }
 
     /**
