@@ -313,6 +313,7 @@ public class MythicCraftingManager implements Listener {
         //RDR//log("\u00a78RDR \u00a744\u00a77 Computing Crafting Action...");
         //ISPM//for (int i = 0; i < inven.getSize(); i++) { MythicCraftingManager.log("\u00a78Pre Computation \u00a7f@" + i + " \u00a7f" + SilentNumbers.getItemName(inven.getItem(i))); }
 
+
         boolean cResultSlot = mapping.isResultSlot(event.getSlot());
         /*
          * Now that we know there is a reason for MythicLib's crafting system
@@ -397,6 +398,19 @@ public class MythicCraftingManager implements Listener {
          * leaving the ingredient layout unchanged.
          */
         if (event.getAction() == InventoryAction.NOTHING && !cResultSlot) { return; }
+
+        /*
+         * If custom inventory, might want to clear the result first rq
+         */
+        if (mapping.getIntendedInventory() == InventoryType.CHEST) {
+
+            // Yeah, otherwise it may not be removed and the item may be DUPED
+            for (int s = mapping.getResultInventoryStart(); s < (mapping.getResultInventorySize() + mapping.getResultInventoryStart()); s++) {
+
+                // Introduce clear
+                VanillaInventoryMapping.setInventoryItem(inven, s, AIR, false);
+            }
+        }
 
         (new BukkitRunnable() {
             public void run() {
