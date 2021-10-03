@@ -11,8 +11,7 @@ import io.lumine.utils.adventure.text.format.NamedTextColor;
 import io.lumine.utils.adventure.text.format.Style;
 import io.lumine.utils.adventure.text.format.TextColor;
 import io.lumine.utils.adventure.text.format.TextDecoration;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import lombok.NonNull;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -70,7 +69,7 @@ public class NestedSerializer {
         return list;
     }
 
-    private static String serializeNode(@NonNull ComponentNode node, @Nullable Style previous, @Nullable Style next) {
+    private static String serializeNode(@NonNull ComponentNode node, Style previous, Style next) {
         final StringBuilder sb = new StringBuilder();
         final Style style = node.getStyle();
 
