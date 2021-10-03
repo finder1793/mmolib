@@ -105,7 +105,9 @@ public class PlayerAttackEventListener implements Listener {
          * attack, final attack has no WEAPON damage type. If the player is holding any
          * other item, it is considered a WEAPON attack.
          */
-        if (event.getDamager() instanceof Player)
+        boolean isCitizensNPC = event.getDamager().hasMetadata("NPC");
+        boolean isCitizensNPCVictim = event.getEntity().hasMetadata("NPC");
+        if (event.getDamager() instanceof Player && !isCitizensNPC && !isCitizensNPCVictim)
             return new AttackMetadata(new DamageMetadata(event.getDamage(), getDamageTypes(event)), MMOPlayerData.get((Player) event.getDamager()).getStatMap().cache(EquipmentSlot.MAIN_HAND));
 
         /*
@@ -120,7 +122,7 @@ public class PlayerAttackEventListener implements Listener {
          * Make sure to check the shooter is not the damaged entity. We don't want
          * players to backstab themselves using projectiles.
          */
-        if (event.getDamager() instanceof Projectile) {
+        if (event.getDamager() instanceof Projectile && !(isCitizensNPC)) {
             Projectile proj = (Projectile) event.getDamager();
             if (proj.getShooter() instanceof Player && !proj.getShooter().equals(event.getEntity()))
                 return new AttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
