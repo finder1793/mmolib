@@ -11,8 +11,7 @@ import io.lumine.utils.adventure.text.format.NamedTextColor;
 import io.lumine.utils.adventure.text.format.Style;
 import io.lumine.utils.adventure.text.format.TextColor;
 import io.lumine.utils.adventure.text.format.TextDecoration;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import lombok.NonNull;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -70,7 +69,7 @@ public class NestedSerializer {
         return list;
     }
 
-    private static String serializeNode(@NonNull ComponentNode node, @Nullable Style previous, @Nullable Style next) {
+    private static String serializeNode(@NonNull ComponentNode node, Style previous, Style next) {
         final StringBuilder sb = new StringBuilder();
         final Style style = node.getStyle();
 
@@ -198,12 +197,12 @@ public class NestedSerializer {
         return sb.toString();
     }
 
-    private static boolean areDifferent(final @NonNull ClickEvent c1, final @Nullable ClickEvent c2) {
+    private static boolean areDifferent(final @NonNull ClickEvent c1, final ClickEvent c2) {
         if(c2 == null) return true;
         return !c1.equals(c2) && (!c1.action().equals(c2.action()) || !c1.value().equals(c2.value()));
     }
 
-    private static boolean areDifferent(final @NonNull HoverEvent<?> h1, final @Nullable HoverEvent<?> h2) {
+    private static boolean areDifferent(final @NonNull HoverEvent<?> h1, final HoverEvent<?> h2) {
         if(h2 == null) return true;
         return !h1.equals(h2) && (!h1.action().equals(h2.action())); // TODO also compare value
     }
@@ -248,7 +247,7 @@ public class NestedSerializer {
             this(component, null);
         }
 
-        public ComponentNode(@NonNull Component component, @Nullable Style parent) {
+        public ComponentNode(@NonNull Component component, Style parent) {
             this.component = component;
             this.style = (parent == null) ? component.style() : component.style().merge(parent, Style.Merge.Strategy.IF_ABSENT_ON_TARGET);
         }
