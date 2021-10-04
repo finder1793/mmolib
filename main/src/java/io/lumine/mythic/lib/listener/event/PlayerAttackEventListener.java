@@ -19,6 +19,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.projectiles.ProjectileSource;
 
 /**
  * First problem: you want to create a skill which does something whenever
@@ -123,6 +124,10 @@ public class PlayerAttackEventListener implements Listener {
          * players to backstab themselves using projectiles.
          */
         if (event.getDamager() instanceof Projectile && !(isCitizensNPC)) {
+            ProjectileSource ps = ((Projectile) event.getDamager()).getShooter();
+            if(ps instanceof Player && ((Player) ps).hasMetadata("NPC")){
+                return null;
+            }
             Projectile proj = (Projectile) event.getDamager();
             if (proj.getShooter() instanceof Player && !proj.getShooter().equals(event.getEntity()))
                 return new AttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
