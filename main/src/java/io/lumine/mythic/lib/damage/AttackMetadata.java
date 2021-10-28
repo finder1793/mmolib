@@ -16,8 +16,6 @@ public class AttackMetadata {
     private final StatMap.CachedStatMap statMap;
     private final DamageMetadata damage;
 
-    private boolean successful = true;
-
     /**
      * Used by DamageHandler instances to register attacks. AttackResult only
      * gives information about the attack damage and types while this class also
@@ -35,18 +33,6 @@ public class AttackMetadata {
         this.damage = damage;
         this.statMap = statMap;
         this.player = statMap.getPlayer();
-    }
-
-    /**
-     * @return Is the attack successful, was it cancelled for a reason or another?
-     */
-    public boolean isSuccessful() {
-        return successful;
-    }
-
-    public AttackMetadata setSuccessful(boolean successful) {
-        this.successful = successful;
-        return this;
     }
 
     /**
