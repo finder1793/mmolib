@@ -50,7 +50,7 @@ public class MythicLib extends LuminePlugin {
     public static MythicLib plugin;
 
     //@Getter private ProfileManager profileManager;
- 
+
     private final DamageManager damageManager = new DamageManager();
     private final EntityManager entityManager = new EntityManager();
     private final StatManager statManager = new StatManager();
@@ -180,7 +180,7 @@ public class MythicLib extends LuminePlugin {
         Bukkit.getPluginManager().registerEvents(MegaWorkbenchMapping.MWB, this);
 
         // Load player data of online players
-        Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.setup(player.getUniqueId()).updatePlayer(player));
+        Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.setup(player));
 
         configManager.reload();
     }

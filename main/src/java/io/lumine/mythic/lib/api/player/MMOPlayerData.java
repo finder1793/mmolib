@@ -8,13 +8,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class MMOPlayerData {
     private final UUID uuid;
@@ -32,8 +28,10 @@ public class MMOPlayerData {
 
     private static final Map<UUID, MMOPlayerData> data = new HashMap<>();
 
-    private MMOPlayerData(UUID uuid) {
-        this.uuid = uuid;
+    private MMOPlayerData(Player player) {
+        this.uuid = player.getUniqueId();
+
+        this.player = player;
     }
 
     public UUID getUniqueId() {
@@ -136,16 +134,19 @@ public class MMOPlayerData {
      * not provide a Player instance, meaning the cached Player instance is NOT
      * loaded yet. It is only loaded when the player logs in using {@link PlayerJoinEvent}
      *
-     * @param uuid Player id to be loaded
+     * @param player Player whose data should be initialized
      */
-    public static MMOPlayerData setup(UUID uuid) {
-        if (!data.containsKey(uuid)) {
-            MMOPlayerData playerData = new MMOPlayerData(uuid);
-            data.put(uuid, playerData);
+    public static MMOPlayerData setup(Player player) {
+        MMOPlayerData found = data.get(player.getUniqueId());
+
+        // Not loaded yet
+        if (found == null) {
+            MMOPlayerData playerData = new MMOPlayerData(player);
+            data.put(player.getUniqueId(), playerData);
             return playerData;
         }
 
-        return data.get(uuid);
+        return found;
     }
 
     /**
@@ -160,14 +161,12 @@ public class MMOPlayerData {
         return data.containsKey(uuid);
     }
 
-    @Contract("null -> null")
-    @Nullable
-    public static MMOPlayerData get(@Nullable OfflinePlayer player) {
-        return player == null ? null : data.get(player.getUniqueId());
+    public static MMOPlayerData get(@NotNull OfflinePlayer player) {
+        return data.get(player.getUniqueId());
     }
 
     public static MMOPlayerData get(UUID uuid) {
-        return data.get(uuid);
+        return Objects.requireNonNull(data.get(uuid), "Player data not loaded");
     }
 
     /**

@@ -8,24 +8,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener {
 
+    /**
+     * Async pre join events are unreliable for some reason so
+     * it seems to be better to initialize player data on the
+     * lowest priority possible on sync when the player joins.
+     */
     @EventHandler(priority = EventPriority.LOWEST)
-    public void loadPlayerData(AsyncPlayerPreLoginEvent event) {
-        MMOPlayerData.setup(event.getUniqueId());
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
-    public void runStatUpdatesOnJoin(PlayerJoinEvent event) {
+    public void loadData(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        MMOPlayerData data = MMOPlayerData.get(player);
-
-        // Update cached player instance
-        data.updatePlayer(player);
+        MMOPlayerData data = MMOPlayerData.setup(player);
 
         // Run stat updates on login
         MythicLib.plugin.getStats().runUpdates(data.getStatMap());
