@@ -7,6 +7,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 public class PlayerAttackEvent extends MMOPlayerDataEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
@@ -44,6 +45,10 @@ public class PlayerAttackEvent extends MMOPlayerDataEvent implements Cancellable
 
     public DamageMetadata getDamage() {
         return attack.getDamage();
+    }
+
+    public EntityDamageEvent.DamageCause getBukkitCause() {
+        return event.getCause();
     }
 
     public LivingEntity getEntity() {

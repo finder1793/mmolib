@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.listener.event;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.EntityKillEntityEvent;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
+import io.lumine.mythic.lib.api.event.PlayerKillEntityEvent;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.damage.AttackMetadata;
@@ -50,7 +51,7 @@ public class PlayerAttackEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void registerEvents(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Damageable))
+        if (!(event.getEntity() instanceof Damageable) || event.getDamage() == 0)
             return;
 
         /*
@@ -63,23 +64,23 @@ public class PlayerAttackEventListener implements Listener {
             return;
 
         /*
-         * If the damager is a player, call {@link PlayerAttackEvent}
+         * Call the Bukkit event with the attack meta found
          */
-        if (attack.getDamager() instanceof Player && !attack.getDamager().hasMetadata("NPC")) {
+        MMOPlayerData playerData = MMOPlayerData.get(attack.getDamager());
+        PlayerAttackEvent attackEvent = new PlayerAttackEvent(playerData, event, attack);
+        Bukkit.getPluginManager().callEvent(attackEvent);
+        if (attackEvent.isCancelled())
+            return;
 
-            PlayerAttackEvent attackEvent = new PlayerAttackEvent(MMOPlayerData.get((Player) attack.getDamager()), event, attack);
-            Bukkit.getPluginManager().callEvent(attackEvent);
-            if (attackEvent.isCancelled())
-                return;
-
-            event.setDamage(attack.getDamage().getDamage());
-        }
+        event.setDamage(attack.getDamage().getDamage());
 
         /*
-         * If the entity is killed, call {@link EntityKillEntityEvent}
+         * Call the death event if the entity is being killed
          */
-        if (event.getFinalDamage() >= ((Damageable) event.getEntity()).getHealth())
+        if (event.getFinalDamage() >= ((Damageable) event.getEntity()).getHealth()) {
             Bukkit.getPluginManager().callEvent(new EntityKillEntityEvent(attack.getDamager(), event.getEntity()));
+            Bukkit.getPluginManager().callEvent(new PlayerKillEntityEvent(playerData, attack, (LivingEntity) event.getEntity()));
+        }
     }
 
     /**
@@ -99,6 +100,10 @@ public class PlayerAttackEventListener implements Listener {
         if (custom != null)
             return custom;
 
+        // Players damaging Citizens NPCs are not registered
+        if (event.getEntity().hasMetadata("NPC"))
+            return null;
+
         /*
          * Handles melee attacks. This is used everytime a player left clicks an entity.
          *
@@ -106,9 +111,7 @@ public class PlayerAttackEventListener implements Listener {
          * attack, final attack has no WEAPON damage type. If the player is holding any
          * other item, it is considered a WEAPON attack.
          */
-        boolean isCitizensNPC = event.getDamager().hasMetadata("NPC");
-        boolean isCitizensNPCVictim = event.getEntity().hasMetadata("NPC");
-        if (event.getDamager() instanceof Player && !isCitizensNPC && !isCitizensNPCVictim)
+        if (isValidPlayer(event.getDamager()))
             return new AttackMetadata(new DamageMetadata(event.getDamage(), getDamageTypes(event)), MMOPlayerData.get((Player) event.getDamager()).getStatMap().cache(EquipmentSlot.MAIN_HAND));
 
         /*
@@ -123,18 +126,21 @@ public class PlayerAttackEventListener implements Listener {
          * Make sure to check the shooter is not the damaged entity. We don't want
          * players to backstab themselves using projectiles.
          */
-        if (event.getDamager() instanceof Projectile && !(isCitizensNPC)) {
-            ProjectileSource ps = ((Projectile) event.getDamager()).getShooter();
-            if(ps instanceof Player && ((Player) ps).hasMetadata("NPC")){
-                return null;
-            }
-            Projectile proj = (Projectile) event.getDamager();
-            if (proj.getShooter() instanceof Player && !proj.getShooter().equals(event.getEntity()))
+        if (event.getDamager() instanceof Projectile) {
+            ProjectileSource source = ((Projectile) event.getDamager()).getShooter();
+            if (!source.equals(event.getEntity()) && isValidPlayer(source))
                 return new AttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
-                        MMOPlayerData.get((Player) proj.getShooter()).getStatMap().cache(EquipmentSlot.MAIN_HAND));
+                        MMOPlayerData.get((Player) source).getStatMap().cache(EquipmentSlot.MAIN_HAND));
         }
 
         return null;
+    }
+
+    /**
+     * @return If the entity is a player and NOT a Citizens or Sentinels NPC
+     */
+    private boolean isValidPlayer(Object entity) {
+        return entity instanceof Player && !((Player) entity).hasMetadata("NPC");
     }
 
     /**
