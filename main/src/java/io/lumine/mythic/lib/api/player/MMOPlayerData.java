@@ -146,6 +146,7 @@ public class MMOPlayerData {
             return playerData;
         }
 
+        found.updatePlayer(player);
         return found;
     }
 
