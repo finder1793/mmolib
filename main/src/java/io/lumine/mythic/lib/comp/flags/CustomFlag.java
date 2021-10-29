@@ -2,7 +2,7 @@ package io.lumine.mythic.lib.comp.flags;
 
 public enum CustomFlag {
 
-    // MMOItems flags
+    // MMOItems flags -
     MI_WEAPONS,
     MI_COMMANDS,
     MI_CONSUMABLES,
