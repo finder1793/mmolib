@@ -9,6 +9,7 @@ import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
+import io.lumine.mythic.lib.damage.MeleeAttackMetadata;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Damageable;
@@ -112,7 +113,7 @@ public class PlayerAttackEventListener implements Listener {
          * other item, it is considered a WEAPON attack.
          */
         if (isValidPlayer(event.getDamager()))
-            return new AttackMetadata(new DamageMetadata(event.getDamage(), getDamageTypes(event)), MMOPlayerData.get((Player) event.getDamager()).getStatMap().cache(EquipmentSlot.MAIN_HAND));
+            return new MeleeAttackMetadata(new DamageMetadata(event.getDamage(), getDamageTypes(event)), MMOPlayerData.get((Player) event.getDamager()).getStatMap().cache(EquipmentSlot.MAIN_HAND));
 
         /*
          * Handles projectile attacks; used everytime when a player shoots a trident,
