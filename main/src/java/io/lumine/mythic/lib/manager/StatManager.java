@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.manager;
 import io.lumine.mythic.lib.api.stat.SharedStat;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.api.stat.handler.AttributeStatHandler;
+import io.lumine.mythic.lib.api.stat.handler.MaxHealthStatHandler;
 import io.lumine.mythic.lib.api.stat.handler.MovementSpeedStatHandler;
 import io.lumine.mythic.lib.api.stat.handler.StatHandler;
 import org.apache.commons.lang.Validate;
@@ -23,7 +24,7 @@ public class StatManager {
         handlers.put(SharedStat.ATTACK_DAMAGE, new AttributeStatHandler(Attribute.GENERIC_ATTACK_DAMAGE, SharedStat.ATTACK_DAMAGE, true));
         handlers.put(SharedStat.ATTACK_SPEED, new AttributeStatHandler(Attribute.GENERIC_ATTACK_SPEED, SharedStat.ATTACK_SPEED, true));
         handlers.put(SharedStat.KNOCKBACK_RESISTANCE, new AttributeStatHandler(Attribute.GENERIC_KNOCKBACK_RESISTANCE, SharedStat.KNOCKBACK_RESISTANCE));
-        handlers.put(SharedStat.MAX_HEALTH, new AttributeStatHandler(Attribute.GENERIC_MAX_HEALTH, SharedStat.MAX_HEALTH));
+        handlers.put(SharedStat.MAX_HEALTH, new MaxHealthStatHandler());
 
         StatHandler moveSpeed = new MovementSpeedStatHandler();
         handlers.put(SharedStat.MOVEMENT_SPEED, moveSpeed);
