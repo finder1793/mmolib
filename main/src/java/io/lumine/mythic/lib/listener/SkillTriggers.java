@@ -3,11 +3,11 @@ package io.lumine.mythic.lib.listener;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.event.PlayerKillEntityEvent;
-import io.lumine.mythic.lib.player.EquipmentSlot;
-import io.lumine.mythic.lib.player.MMOPlayerData;
 import io.lumine.mythic.lib.comp.target.InteractionType;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
+import io.lumine.mythic.lib.player.EquipmentSlot;
+import io.lumine.mythic.lib.player.MMOPlayerData;
 import io.lumine.mythic.lib.skill.metadata.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.PassiveSkill;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
@@ -21,7 +21,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 public class SkillTriggers implements Listener {
@@ -63,7 +63,7 @@ public class SkillTriggers implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void login(PlayerLoginEvent event) {
+    public void login(PlayerJoinEvent event) {
         MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
         triggerSkills(TriggerType.LOGIN, caster, null);
     }
