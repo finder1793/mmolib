@@ -2,10 +2,20 @@ package io.lumine.mythic.lib.comp.target;
 
 import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.FPlayers;
-import com.massivecraft.factions.perms.Relation;
+import com.massivecraft.factions.struct.Relation;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+/**
+ * This class was updated to support SaberFactions. The only
+ * change was the Relation import:
+ * <p>
+ * Old:
+ * import com.massivecraft.factions.perms.Relation;
+ * <p>
+ * New:
+ * import com.massivecraft.factions.struct.Relation;
+ */
 public class FactionsRestriction implements TargetRestriction {
 
     @Override
