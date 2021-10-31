@@ -57,8 +57,16 @@ public abstract class TemporaryListener implements Listener {
             return false;
 
         closed = true;
+        whenClosed();
         for (HandlerList list : lists)
             list.unregister(this);
         return true;
     }
+
+    /**
+     * Called when the listener is closed for the first time.
+     * If {@link #close()} is called a second time after the listener
+     * was already closed, this method will NOT get called a second time
+     */
+    public abstract void whenClosed();
 }

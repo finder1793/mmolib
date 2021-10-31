@@ -1,12 +1,19 @@
 package io.lumine.mythic.lib.player;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.stat.StatMap;
+import io.lumine.mythic.lib.comp.flags.CustomFlag;
+import io.lumine.mythic.lib.damage.AttackMetadata;
+import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.listener.PlayerListener;
 import io.lumine.mythic.lib.player.cooldown.CooldownMap;
 import io.lumine.mythic.lib.player.cooldown.CooldownType;
+import io.lumine.mythic.lib.skill.metadata.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.PassiveSkill;
+import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.apache.commons.lang.Validate;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -81,6 +88,21 @@ public class MMOPlayerData {
      */
     public void registerSkillTrigger(PassiveSkill trigger) {
         passiveSkills.add(trigger);
+    }
+
+    public void triggerSkills(TriggerType triggerType, Entity target) {
+        triggerSkills(triggerType, new AttackMetadata(new DamageMetadata(), stats.cache(EquipmentSlot.MAIN_HAND)), target);
+    }
+
+    public void triggerSkills(TriggerType triggerType, AttackMetadata attackMetadata, Entity target) {
+        if (!MythicLib.plugin.getFlags().isFlagAllowed(attackMetadata.getPlayer(), CustomFlag.MMO_ABILITIES))
+            return;
+
+        TriggerMetadata triggerMeta = new TriggerMetadata(attackMetadata, target);
+
+        for (PassiveSkill trigger : attackMetadata.getStats().getData().getPassiveSkills())
+            if (trigger.getType() == triggerType)
+                trigger.getTriggeredSkill().execute(triggerMeta);
     }
 
     /**
