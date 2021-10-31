@@ -86,7 +86,7 @@ public class ItemTag {
     }
 
     /**
-     * If the NBT item has such tag, it returns it as a workable MMOLib Item Tag.
+     * If the NBT item has such tag, it returns it as a workable MythicLib Item Tag.
      * @param expect It is ambiguous between BOOLEAN and INTEGER, so cant just make it smart.
      *               Please indicate what you expect this path to provide.
      */

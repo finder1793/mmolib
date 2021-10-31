@@ -1,8 +1,8 @@
 package io.lumine.mythic.lib.api.stat;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.player.EquipmentSlot;
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.player.EquipmentSlot;
+import io.lumine.mythic.lib.player.MMOPlayerData;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import org.bukkit.entity.LivingEntity;
@@ -72,8 +72,8 @@ public class StatMap {
     /**
      * Some stats like movement speed, attack damage.. are based on vanilla
      * player attributes. Every time a stat modifier is added to a StatInstance
-     * in MMOLib, MMOLib needs to perform a further attribute modifier update.
-     * This method runs all the updates for the vanilla-attribute-based MMOLib
+     * in MythicLib, MythicLib needs to perform a further attribute modifier update.
+     * This method runs all the updates for the vanilla-attribute-based MythicLib
      * stats.
      * <p>
      * Performance heavy method

@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.api.stat.modifier;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.player.EquipmentSlot;
+import io.lumine.mythic.lib.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.stat.StatInstance;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -10,7 +10,7 @@ public class TemporaryStatModifier extends StatModifier implements Closable {
 
     /**
      * Used to register a stat modifier which will be unregistered from the stat
-     * instance after a set period of time. As of MMOLib 1.2.8 it is not used
+     * instance after a set period of time. As of MythicLib 1.2.8 it is not used
      * anywhere in MMOCore or MMOItems and is only there as extra public API
      * stuff
      *

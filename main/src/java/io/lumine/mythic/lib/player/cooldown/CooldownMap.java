@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.player;
+package io.lumine.mythic.lib.player.cooldown;
 
 import org.jetbrains.annotations.Nullable;
 

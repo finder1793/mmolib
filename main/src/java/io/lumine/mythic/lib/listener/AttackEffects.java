@@ -2,7 +2,7 @@ package io.lumine.mythic.lib.listener;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
-import io.lumine.mythic.lib.api.player.CooldownType;
+import io.lumine.mythic.lib.player.cooldown.CooldownType;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.damage.DamageType;
 import org.bukkit.Particle;

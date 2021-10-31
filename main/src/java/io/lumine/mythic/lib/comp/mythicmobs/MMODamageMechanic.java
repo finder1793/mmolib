@@ -1,8 +1,8 @@
 package io.lumine.mythic.lib.comp.mythicmobs;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.player.EquipmentSlot;
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.player.EquipmentSlot;
+import io.lumine.mythic.lib.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
@@ -11,7 +11,6 @@ import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
 import io.lumine.xikage.mythicmobs.io.MythicLineConfig;
 import io.lumine.xikage.mythicmobs.logging.MythicLogger;
 import io.lumine.xikage.mythicmobs.skills.ITargetedEntitySkill;
-import io.lumine.xikage.mythicmobs.skills.SkillMechanic;
 import io.lumine.xikage.mythicmobs.skills.SkillMetadata;
 import io.lumine.xikage.mythicmobs.skills.damage.DamagingMechanic;
 import io.lumine.xikage.mythicmobs.skills.placeholders.parsers.PlaceholderDouble;

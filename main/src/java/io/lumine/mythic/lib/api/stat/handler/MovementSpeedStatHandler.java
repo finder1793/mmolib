@@ -19,7 +19,7 @@ public class MovementSpeedStatHandler implements StatHandler {
         double coef = 1 - Math.min(.8, Math.max(0, stats.getInstance("SPEED_MALUS_REDUCTION").getTotal() / 100));
 
         /**
-         * Unlike other attributes, MMOLib directly applies movement speed as
+         * Unlike other attributes, MythicLib directly applies movement speed as
          * base value which is an important compatibility issue, can't see
          * anything better as of right now
          */

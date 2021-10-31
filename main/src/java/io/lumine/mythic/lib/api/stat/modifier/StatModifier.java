@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.api.stat.modifier;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.player.EquipmentSlot;
+import io.lumine.mythic.lib.player.EquipmentSlot;
 import org.apache.commons.lang.Validate;
 
 public class StatModifier {

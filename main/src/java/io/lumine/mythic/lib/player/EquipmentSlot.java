@@ -1,10 +1,10 @@
-package io.lumine.mythic.lib.api.player;
+package io.lumine.mythic.lib.player;
 
 import org.apache.commons.lang.Validate;
 
 /**
- * Used by MythicLib to make a difference between stat modifiers granted by
- * off hand and main hand items.
+ * Used by MythicLib to make a difference between stat
+ * modifiers granted by off hand and main hand items.
  * <p>
  * Used by MMOItems player inventory updates to differentiate where
  * items were placed in the player inventory.

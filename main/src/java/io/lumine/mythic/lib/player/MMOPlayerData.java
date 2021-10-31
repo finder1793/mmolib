@@ -1,8 +1,10 @@
-package io.lumine.mythic.lib.api.player;
+package io.lumine.mythic.lib.player;
 
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.listener.PlayerListener;
-import io.lumine.mythic.lib.player.CooldownMap;
+import io.lumine.mythic.lib.player.cooldown.CooldownMap;
+import io.lumine.mythic.lib.player.cooldown.CooldownType;
+import io.lumine.mythic.lib.skill.trigger.PassiveSkill;
 import org.apache.commons.lang.Validate;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -25,6 +27,7 @@ public class MMOPlayerData {
     // Data saved till next server restart
     private final CooldownMap basicCooldowns = new CooldownMap();
     private final StatMap stats = new StatMap(this);
+    private final Set<PassiveSkill> passiveSkills = new HashSet<>();
 
     private static final Map<UUID, MMOPlayerData> data = new HashMap<>();
 
@@ -48,6 +51,39 @@ public class MMOPlayerData {
     }
 
     /**
+     * @return All active skill triggers
+     */
+    public Set<PassiveSkill> getPassiveSkills() {
+        return passiveSkills;
+    }
+
+    /**
+     * Unregisters active skill triggers with a specific key
+     *
+     * @param key
+     */
+    public void unregisterSkillTriggers(String key) {
+        Iterator<PassiveSkill> iter = passiveSkills.iterator();
+        while (iter.hasNext()) {
+            PassiveSkill trigger = iter.next();
+            if (trigger.getKey().equals(key))
+                iter.remove();
+        }
+    }
+
+    /**
+     * Registers as active a skill trigger. It can be unregistered
+     * later if necessary using {@link #unregisterSkillTriggers(String)}.
+     * From the time where that method is called, performing an action will
+     * cause the saved TriggeredSkill to be executed.
+     *
+     * @param trigger Trigger to register
+     */
+    public void registerSkillTrigger(PassiveSkill trigger) {
+        passiveSkills.add(trigger);
+    }
+
+    /**
      * @return The last time, in millis, the player logged in or out
      * @deprecated Use {@link #getLastLogActivity()} instead
      */
@@ -65,7 +101,7 @@ public class MMOPlayerData {
 
     /**
      * This method simply checks if the cached Player instance is null
-     * because MMOLib uncaches it when the player leaves for memory purposes.
+     * because MythicLib uncaches it when the player leaves for memory purposes.
      *
      * @return If the player is currently online.
      */
@@ -168,6 +204,28 @@ public class MMOPlayerData {
 
     public static MMOPlayerData get(UUID uuid) {
         return Objects.requireNonNull(data.get(uuid), "Player data not loaded");
+    }
+
+    /**
+     * This is being used to easily check if an online player corresponds to
+     * a real player or a Citizens NPC. Citizens NPCs do not have any player
+     * data associated to them
+     *
+     * @return Checks if plater data is loaded for a specific player UID
+     */
+    public static boolean has(Player player) {
+        return has(player.getUniqueId());
+    }
+
+    /**
+     * This is being used to easily check if an online player corresponds to
+     * a real player or a Citizens NPC. Citizens NPCs do not have any player
+     * data associated to them
+     *
+     * @return Checks if plater data is loaded for a specific player UID
+     */
+    public static boolean has(UUID uuid) {
+        return data.containsKey(uuid);
     }
 
     /**

@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.api.player;
+package io.lumine.mythic.lib.player.cooldown;
 
 public enum CooldownType {
 

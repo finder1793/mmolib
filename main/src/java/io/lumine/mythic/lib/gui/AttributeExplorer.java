@@ -4,7 +4,7 @@ import io.lumine.mythic.lib.api.explorer.AttributeData;
 import io.lumine.mythic.lib.api.explorer.ChatInput;
 import io.lumine.mythic.lib.api.explorer.ItemBuilder;
 import io.lumine.mythic.lib.api.util.AltChar;
-import io.lumine.mythic.lib.mmolibcommands.ExploreAttributesCommand;
+import io.lumine.mythic.lib.commands.mmolib.ExploreAttributesCommand;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

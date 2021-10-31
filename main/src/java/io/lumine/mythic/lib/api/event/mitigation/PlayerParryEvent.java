@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.api.event.mitigation;
 
 import io.lumine.mythic.lib.api.event.MMOPlayerDataEvent;
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.player.MMOPlayerData;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityDamageEvent;

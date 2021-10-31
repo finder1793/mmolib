@@ -4,8 +4,8 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.EntityKillEntityEvent;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.event.PlayerKillEntityEvent;
-import io.lumine.mythic.lib.api.player.EquipmentSlot;
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.player.EquipmentSlot;
+import io.lumine.mythic.lib.player.MMOPlayerData;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
@@ -67,7 +67,7 @@ public class PlayerAttackEventListener implements Listener {
         /*
          * Call the Bukkit event with the attack meta found
          */
-        MMOPlayerData playerData = MMOPlayerData.get(attack.getDamager());
+        MMOPlayerData playerData = MMOPlayerData.get(attack.getPlayer());
         PlayerAttackEvent attackEvent = new PlayerAttackEvent(playerData, event, attack);
         Bukkit.getPluginManager().callEvent(attackEvent);
         if (attackEvent.isCancelled())
@@ -79,7 +79,7 @@ public class PlayerAttackEventListener implements Listener {
          * Call the death event if the entity is being killed
          */
         if (event.getFinalDamage() >= ((Damageable) event.getEntity()).getHealth()) {
-            Bukkit.getPluginManager().callEvent(new EntityKillEntityEvent(attack.getDamager(), event.getEntity()));
+            Bukkit.getPluginManager().callEvent(new EntityKillEntityEvent(attack.getPlayer(), event.getEntity()));
             Bukkit.getPluginManager().callEvent(new PlayerKillEntityEvent(playerData, attack, (LivingEntity) event.getEntity()));
         }
     }

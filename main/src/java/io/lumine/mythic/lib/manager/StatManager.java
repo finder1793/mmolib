@@ -34,8 +34,8 @@ public class StatManager {
     /**
      * Some stats like movement speed, attack damage.. are based on vanilla
      * player attributes. Every time a stat modifier is added to a StatInstance
-     * in MMOLib, MMOLib needs to perform a further attribute modifier update.
-     * This method runs all the updates for the vanilla-attribute-based MMOLib
+     * in MythicLib, MythicLib needs to perform a further attribute modifier update.
+     * This method runs all the updates for the vanilla-attribute-based MythicLib
      * stats.
      *
      * @param map The StatMap of the player who needs update
@@ -65,7 +65,7 @@ public class StatManager {
 
     /**
      * Lets MMOCore knows that a specific stat needs an update whenever the
-     * value of the player stat changes (due to a MMOLib stat modifier being
+     * value of the player stat changes (due to a MythicLib stat modifier being
      * added/being removed/expiring).
      *
      * @param stat    The string key of the stat

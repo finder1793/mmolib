@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.player;
+package io.lumine.mythic.lib.player.cooldown;
 
 
 import org.apache.commons.lang.Validate;

@@ -4,7 +4,7 @@ import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.MegaWorkbenchMapping;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.SuperWorkbenchMapping;
 import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.player.MMOPlayerData;
 import io.lumine.mythic.lib.commands.BaseCommand;
 import io.lumine.mythic.lib.commands.HealthScaleCommand;
 import io.lumine.mythic.lib.comp.PlaceholderAPIHook;
@@ -27,10 +27,10 @@ import io.lumine.mythic.lib.listener.option.DamageIndicators;
 import io.lumine.mythic.lib.listener.option.RegenIndicators;
 import io.lumine.mythic.lib.manager.*;
 import io.lumine.mythic.lib.metrics.bStats;
-import io.lumine.mythic.lib.mmolibcommands.ExploreAttributesCommand;
-import io.lumine.mythic.lib.mmolibcommands.MMODebugCommand;
-import io.lumine.mythic.lib.mmolibcommands.MMOLibCommand;
-import io.lumine.mythic.lib.mmolibcommands.MMOTempStatCommand;
+import io.lumine.mythic.lib.commands.mmolib.ExploreAttributesCommand;
+import io.lumine.mythic.lib.commands.mmolib.MMODebugCommand;
+import io.lumine.mythic.lib.commands.mmolib.MMOLibCommand;
+import io.lumine.mythic.lib.commands.mmolib.MMOTempStatCommand;
 import io.lumine.mythic.lib.version.ServerVersion;
 import io.lumine.mythic.lib.version.SpigotPlugin;
 import io.lumine.utils.events.extra.ArmorEquipEventListener;
@@ -117,6 +117,7 @@ public class MythicLib extends LuminePlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerAttackEventListener(), this);
         Bukkit.getPluginManager().registerEvents(new ArmorEquipEventListener(), this);
         Bukkit.getPluginManager().registerEvents(new MythicCraftingManager(), this);
+        Bukkit.getPluginManager().registerEvents(new SkillTriggers(), this);
 
         if (getConfig().getBoolean("health-scale.enabled"))
             Bukkit.getPluginManager().registerEvents(new HealthScale(getConfig().getDouble("health-scale.scale"), getConfig().getInt("health-scale.delay", 0)), this);

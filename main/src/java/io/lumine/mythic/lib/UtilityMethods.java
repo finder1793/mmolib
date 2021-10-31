@@ -34,6 +34,25 @@ public class UtilityMethods {
 
     private static final Random RANDOM = new Random();
 
+    /**
+     * Super useful to display enum names like DIAMOND_SWORD in chat
+     *
+     * @param input String with lower cases and spaces only
+     * @return Same string with capital letters at the beginning of each word.
+     */
+    public static String caseOnWords(String input) {
+        StringBuilder builder = new StringBuilder(input);
+        boolean isLastSpace = true;
+        for (int i = 0; i < builder.length(); i++) {
+            char ch = builder.charAt(i);
+            if (isLastSpace && ch >= 'a' && ch <= 'z') {
+                builder.setCharAt(i, (char) (ch + ('A' - 'a')));
+                isLastSpace = false;
+            } else isLastSpace = ch == ' ';
+        }
+        return builder.toString();
+    }
+
     public static void dropItemNaturally(Location loc, ItemStack stack) {
         double dx = ((RANDOM.nextFloat() * 0.5F) + 0.25D) / 10;
         double dy = ((RANDOM.nextFloat() * 0.5F) + 0.25D) / 10;

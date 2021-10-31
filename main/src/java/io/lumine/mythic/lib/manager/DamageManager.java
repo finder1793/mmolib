@@ -4,8 +4,8 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.AttackHandler;
-import io.lumine.mythic.lib.api.player.EquipmentSlot;
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.player.EquipmentSlot;
+import io.lumine.mythic.lib.player.MMOPlayerData;
 import org.apache.commons.lang.Validate;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
@@ -32,7 +32,7 @@ public class DamageManager implements Listener, AttackHandler {
     }
 
     /**
-     * Damage handlers are used by MMOLib to keep track of details of every
+     * Damage handlers are used by MythicLib to keep track of details of every
      * attack so that it can apply damage based stats like PvE damage, Magic
      * Damage...
      *
@@ -59,7 +59,7 @@ public class DamageManager implements Listener, AttackHandler {
      * @param player The player damaging the entity
      * @param target The entity being damaged
      * @param result Info about the attack. Since this attack is registered as
-     *               MMOLib damage, we need more than just a double for the atk
+     *               MythicLib damage, we need more than just a double for the atk
      *               damage
      */
     @Deprecated
@@ -73,7 +73,7 @@ public class DamageManager implements Listener, AttackHandler {
      * @param player    The player damaging the entity
      * @param target    The entity being damaged
      * @param result    Info about the attack. Since this attack is registered as
-     *                  MMOLib damage, we need more than just a double for the atk
+     *                  MythicLib damage, we need more than just a double for the atk
      *                  damage
      * @param knockback If the attack should inflict knockback
      */
@@ -113,7 +113,7 @@ public class DamageManager implements Listener, AttackHandler {
      * @param ignoreImmunity The attack will not produce immunity frames.
      */
     public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target, boolean knockback, boolean ignoreImmunity) {
-        if (target.hasMetadata("NPC") || metadata.getDamager().hasMetadata("NPC"))
+        if (target.hasMetadata("NPC") || metadata.getPlayer().hasMetadata("NPC"))
             return;
 
         // Register custom damage
@@ -126,7 +126,7 @@ public class DamageManager implements Listener, AttackHandler {
         if (!knockback)
             try {
                 target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).addModifier(noKnockback);
-                target.damage(metadata.getDamage().getDamage(), metadata.getDamager());
+                target.damage(metadata.getDamage().getDamage(), metadata.getPlayer());
             } catch (Exception anyError) {
                 MythicLib.plugin.getLogger().log(Level.WARNING, "An error occured while registering player damage");
                 anyError.printStackTrace();
@@ -136,18 +136,17 @@ public class DamageManager implements Listener, AttackHandler {
 
             // Apply default knockback
         else
-            target.damage(metadata.getDamage().getDamage(), metadata.getDamager());
+            target.damage(metadata.getDamage().getDamage(), metadata.getPlayer());
 
-        /*
-         * No damage immunity
-         */
-        if (ignoreImmunity) { target.setNoDamageTicks(0); }
+        // No damage immunity
+        if (ignoreImmunity)
+            target.setNoDamageTicks(0);
     }
 
     /**
      * @param entity The entity to check
      * @return Null if the entity is being damaged through vanilla
-     *         actions, or the corresponding RegisteredAttack if MMOLib
+     *         actions, or the corresponding RegisteredAttack if MythicLib
      *         found a plugin responsible for that damage
      */
     public AttackMetadata findInfo(Entity entity) {
@@ -158,7 +157,7 @@ public class DamageManager implements Listener, AttackHandler {
     }
 
     /**
-     * This method is used to unregister MMOLib custom damage after everything
+     * This method is used to unregister MythicLib custom damage after everything
      * was calculated, hence MONITOR priority
      */
     @EventHandler(priority = EventPriority.MONITOR)
