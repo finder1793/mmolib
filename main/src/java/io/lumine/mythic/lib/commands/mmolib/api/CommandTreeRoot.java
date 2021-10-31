@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.mmolibcommands.api;
+package io.lumine.mythic.lib.commands.mmolib.api;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

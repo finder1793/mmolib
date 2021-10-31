@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.mmolibcommands;
+package io.lumine.mythic.lib.commands.mmolib;
 
 import io.lumine.mythic.lib.api.explorer.AttributeData;
 import io.lumine.mythic.lib.gui.AttributeExplorer;
