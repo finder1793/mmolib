@@ -39,6 +39,10 @@ public class AttackMetadata extends PlayerMetadata {
         return damage;
     }
 
+    public AttackMetadata clone() {
+        return new AttackMetadata(damage.clone(), getStats());
+    }
+
     public void damage(LivingEntity target) {
         damage(target, true);
     }
