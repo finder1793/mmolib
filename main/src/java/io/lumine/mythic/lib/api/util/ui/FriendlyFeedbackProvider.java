@@ -59,6 +59,7 @@ public class FriendlyFeedbackProvider {
         // Make sure it is registered
         return feedback.computeIfAbsent(category, k -> new ArrayList<>());
     }
+
     /**
      * Clears the feedback of this category that has been registered.
      * <p></p>

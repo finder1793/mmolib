@@ -1,6 +1,6 @@
 package io.lumine.mythic.lib.commands.mmolib;
 
-import io.lumine.mythic.lib.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatInstance;
 import io.lumine.mythic.lib.api.stat.modifier.ModifierType;
 import io.lumine.mythic.lib.api.stat.modifier.TemporaryStatModifier;

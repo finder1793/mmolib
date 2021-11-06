@@ -2,7 +2,7 @@ package io.lumine.mythic.lib.listener;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.gui.PluginInventory;
-import io.lumine.mythic.lib.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

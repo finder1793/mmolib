@@ -1,8 +1,8 @@
 package io.lumine.mythic.lib.api.stat;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.player.EquipmentSlot;
-import io.lumine.mythic.lib.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import org.bukkit.entity.LivingEntity;

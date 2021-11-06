@@ -1,8 +1,10 @@
 package io.lumine.mythic.lib.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -30,9 +32,7 @@ public class BaseCommand extends Command<MythicLib> {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, String[] args) {
-        return Collections.emptyList();
-    }
+    public List<String> onTabComplete(CommandSender sender, String[] args) { return SilentNumbers.toArrayList("reload"); }
 
     @Override
     public String getPermissionNode() {
