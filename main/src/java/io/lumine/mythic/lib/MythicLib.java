@@ -56,6 +56,7 @@ public class MythicLib extends LuminePlugin {
     private final StatManager statManager = new StatManager();
     private final JsonManager jsonManager = new JsonManager();
     private final ConfigManager configManager = new ConfigManager();
+    private final ElementManager elementManager = new ElementManager();
 
     private ServerVersion version;
     private AttackEffects attackEffects;
@@ -219,6 +220,14 @@ public class MythicLib extends LuminePlugin {
 
     public EntityManager getEntities() {
         return entityManager;
+    }
+
+    /**
+     * @deprecated Not implemented yet
+     */
+    @Deprecated
+    public ElementManager getElements() {
+        return elementManager;
     }
 
     public StatManager getStats() {

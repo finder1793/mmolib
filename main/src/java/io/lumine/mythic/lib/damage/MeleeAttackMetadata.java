@@ -4,7 +4,7 @@ import io.lumine.mythic.lib.api.stat.StatMap;
 
 /**
  * Used to make a difference between melee attacks, which are
- * handled by MMOItems and
+ * handled differently by MMOItems and other attacks like skills
  */
 public class MeleeAttackMetadata extends AttackMetadata {
 

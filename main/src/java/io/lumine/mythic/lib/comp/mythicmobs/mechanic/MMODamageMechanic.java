@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.comp.mythicmobs;
+package io.lumine.mythic.lib.comp.mythicmobs.mechanic;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
         aliases = {"mmod"},
         description = "Deals damage to the target (compatible with MMO)"
 )
-@Deprecated
 public class MMODamageMechanic extends DamagingMechanic implements ITargetedEntitySkill {
     protected final PlaceholderDouble amount;
     protected final DamageType[] types;

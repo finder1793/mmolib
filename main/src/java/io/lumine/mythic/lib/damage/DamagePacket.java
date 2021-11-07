@@ -22,6 +22,7 @@ public class DamagePacket implements Cloneable {
 
     private double value;
 
+    @Deprecated
     public DamagePacket(double value, Set<DamageType> types) {
         this(value, types.toArray(new DamageType[0]));
     }

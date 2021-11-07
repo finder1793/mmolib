@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.api.stat;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import org.bukkit.entity.LivingEntity;
@@ -20,8 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author indyuce
  */
-public class StatMap {
-
+public class StatMap implements StatProvider {
     private final MMOPlayerData data;
     private final Map<String, StatInstance> stats = new ConcurrentHashMap<>();
 
@@ -37,11 +37,12 @@ public class StatMap {
     }
 
     /**
-     * @param id The string key of the stat
+     * @param stat The string key of the stat
      * @return The value of the stat after applying stat modifiers
      */
-    public double getStat(String id) {
-        return getInstance(id).getTotal();
+    @Override
+    public double getStat(String stat) {
+        return getInstance(stat).getTotal();
     }
 
     /**
@@ -109,7 +110,7 @@ public class StatMap {
         return new CachedStatMap(castHand);
     }
 
-    public class CachedStatMap {
+    public class CachedStatMap implements StatProvider {
         private final Player player;
         private final Map<String, Double> cached = new HashMap<>();
 
@@ -151,6 +152,7 @@ public class StatMap {
          * @param stat The string key of the stat
          * @return The cached stat value, or the vanilla
          */
+        @Override
         public double getStat(String stat) {
             return cached.getOrDefault(stat, getInstance(stat).getBase());
         }

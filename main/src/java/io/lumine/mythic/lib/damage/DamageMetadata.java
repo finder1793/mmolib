@@ -1,5 +1,8 @@
 package io.lumine.mythic.lib.damage;
 
+import io.lumine.mythic.lib.element.Element;
+import io.lumine.mythic.lib.element.ElementalDamagePacket;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -68,6 +71,20 @@ public class DamageMetadata implements Cloneable {
      */
     public DamageMetadata add(double value, DamageType... types) {
         packets.add(new DamagePacket(value, types));
+        return this;
+    }
+
+    /**
+     * Registers a new elemental damage packet.
+     *
+     * @param value   Damage dealt by another source, this could be an on-hit
+     *                skill increasing the damage of the current attack.
+     * @param element The element
+     * @param types   The damage types of the packet being registered
+     * @return The same modified damage metadata
+     */
+    public DamageMetadata add(double value, Element element, DamageType... types) {
+        packets.add(new ElementalDamagePacket(value, element, types));
         return this;
     }
 
