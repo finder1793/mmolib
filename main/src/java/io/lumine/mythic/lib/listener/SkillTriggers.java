@@ -92,7 +92,7 @@ public class SkillTriggers implements Listener {
         caster.triggerSkills(TriggerType.SNEAK, null);
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void click(PlayerInteractEvent event) {
         if (event.getAction() == Action.PHYSICAL)
             return;
