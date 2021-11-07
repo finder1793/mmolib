@@ -7,7 +7,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.UUID;
 
 /**
  * This class is used to trigger the right _TICK
@@ -20,11 +23,13 @@ import org.bukkit.scheduler.BukkitRunnable;
  */
 public class ProjectileTicker extends TemporaryListener {
     private final int entityId;
+    private final UUID casterUid;
     private final BukkitRunnable runnable;
 
     public ProjectileTicker(MMOPlayerData caster, TriggerType triggerType, Entity proj) {
-        super(ProjectileHitEvent.getHandlerList(), EntityDeathEvent.getHandlerList());
+        super(ProjectileHitEvent.getHandlerList(), EntityDeathEvent.getHandlerList(), PlayerQuitEvent.getHandlerList());
 
+        this.casterUid = caster.getUniqueId();
         this.entityId = proj.getEntityId();
         runnable = new BukkitRunnable() {
             @Override
@@ -44,6 +49,12 @@ public class ProjectileTicker extends TemporaryListener {
     @EventHandler
     public void unregisterOnDeath(EntityDeathEvent event) {
         if (event.getEntity().getEntityId() == entityId)
+            close();
+    }
+
+    @EventHandler
+    public void unregisterOnLogout(PlayerQuitEvent event) {
+        if (event.getPlayer().getUniqueId().equals(casterUid))
             close();
     }
 
