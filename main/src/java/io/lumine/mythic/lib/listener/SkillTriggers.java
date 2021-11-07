@@ -5,7 +5,7 @@ import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.event.PlayerKillEntityEvent;
 import io.lumine.mythic.lib.api.util.ProjectileTicker;
 import io.lumine.mythic.lib.comp.target.InteractionType;
-import io.lumine.mythic.lib.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;

@@ -1,8 +1,8 @@
 package io.lumine.mythic.lib.comp.mythicmobs;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.player.EquipmentSlot;
-import io.lumine.mythic.lib.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;

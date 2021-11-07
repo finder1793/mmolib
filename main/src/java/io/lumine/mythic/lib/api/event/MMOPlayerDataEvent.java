@@ -1,6 +1,6 @@
 package io.lumine.mythic.lib.api.event;
 
-import io.lumine.mythic.lib.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import org.bukkit.event.player.PlayerEvent;
 
 public abstract class MMOPlayerDataEvent extends PlayerEvent {

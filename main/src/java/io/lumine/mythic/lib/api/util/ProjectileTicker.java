@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.api.util;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;

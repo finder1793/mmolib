@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.player;
+package io.lumine.mythic.lib.api.player;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.stat.StatMap;

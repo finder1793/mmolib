@@ -5,7 +5,7 @@ import io.lumine.mythic.lib.api.event.mitigation.PlayerBlockEvent;
 import io.lumine.mythic.lib.api.event.mitigation.PlayerDodgeEvent;
 import io.lumine.mythic.lib.api.event.mitigation.PlayerParryEvent;
 import io.lumine.mythic.lib.player.cooldown.CooldownType;
-import io.lumine.mythic.lib.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.version.VersionSound;
 import org.bukkit.*;

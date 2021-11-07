@@ -4,7 +4,7 @@ import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.MegaWorkbenchMapping;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.SuperWorkbenchMapping;
 import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
-import io.lumine.mythic.lib.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.commands.BaseCommand;
 import io.lumine.mythic.lib.commands.HealthScaleCommand;
 import io.lumine.mythic.lib.comp.PlaceholderAPIHook;
