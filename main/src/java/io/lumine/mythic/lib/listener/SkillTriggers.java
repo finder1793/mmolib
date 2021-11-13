@@ -3,17 +3,15 @@ package io.lumine.mythic.lib.listener;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.event.PlayerKillEntityEvent;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.util.ProjectileTicker;
 import io.lumine.mythic.lib.comp.target.InteractionType;
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
+import org.bukkit.event.*;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -92,9 +90,17 @@ public class SkillTriggers implements Listener {
         caster.triggerSkills(TriggerType.SNEAK, null);
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    /**
+     * {@link Cancellable#isCancelled()} does not work with PlayerInteractEvent
+     * because there are now two possible ways to cancel the event, either
+     * by canceling the item interaction, either by canceling the block interaction.
+     * <p>
+     * Checking if the event is cancelled points towards the block interaction
+     * and not the item interaction which  is NOT what MythicLibis interested in
+     */
+    @EventHandler(priority = EventPriority.HIGH)
     public void click(PlayerInteractEvent event) {
-        if (event.getAction() == Action.PHYSICAL)
+        if (event.getAction() == Action.PHYSICAL || event.useItemInHand() == Event.Result.DENY)
             return;
 
         MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
