@@ -1,12 +1,14 @@
 package io.lumine.mythic.lib.damage;
 
 import io.lumine.mythic.lib.api.stat.StatMap;
+import org.bukkit.entity.Projectile;
 
 /**
- * Used by melee attacks with melee weapons like custom
- * or vanilla swords, axes...
+ * Used by attacks caused by projectiles like ranged skills or
+ * weapon attacks with bows, crossbows or tridents.
  */
-public class MeleeAttackMetadata extends AttackMetadata {
+public class ProjectileAttackMetadata extends AttackMetadata {
+    private final Projectile projectile;
 
     /**
      * Used by DamageHandler instances to register attacks. AttackResult only
@@ -18,7 +20,16 @@ public class MeleeAttackMetadata extends AttackMetadata {
      * @param damage  The attack result
      * @param statMap The entity who dealt the damage
      */
-    public MeleeAttackMetadata(DamageMetadata damage, StatMap.CachedStatMap statMap) {
+    public ProjectileAttackMetadata(DamageMetadata damage, StatMap.CachedStatMap statMap, Projectile projectile) {
         super(damage, statMap);
+
+        this.projectile = projectile;
+    }
+
+    /**
+     * @return Projectile which hit the entity
+     */
+    public Projectile getProjectile() {
+        return projectile;
     }
 }

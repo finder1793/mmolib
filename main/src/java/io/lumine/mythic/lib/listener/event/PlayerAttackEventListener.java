@@ -6,10 +6,7 @@ import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.event.PlayerKillEntityEvent;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.damage.AttackMetadata;
-import io.lumine.mythic.lib.damage.DamageMetadata;
-import io.lumine.mythic.lib.damage.DamageType;
-import io.lumine.mythic.lib.damage.MeleeAttackMetadata;
+import io.lumine.mythic.lib.damage.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Damageable;
@@ -128,13 +125,14 @@ public class PlayerAttackEventListener implements Listener {
          * players to backstab themselves using projectiles.
          */
         if (event.getDamager() instanceof Projectile) {
-            ProjectileSource source = ((Projectile) event.getDamager()).getShooter();
+            Projectile projectile = (Projectile) event.getDamager();
+            ProjectileSource source = projectile.getShooter();
             if (source == null)
                 return null;
 
             if (!source.equals(event.getEntity()) && isValidPlayer(source))
-                return new AttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
-                        MMOPlayerData.get((Player) source).getStatMap().cache(EquipmentSlot.MAIN_HAND));
+                return new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
+                        MMOPlayerData.get((Player) source).getStatMap().cache(EquipmentSlot.MAIN_HAND), projectile);
         }
 
         return null;

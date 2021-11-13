@@ -90,17 +90,43 @@ public class MMOPlayerData {
         passiveSkills.add(trigger);
     }
 
+    /**
+     * Used to trigger skills with no attack metadata. This caches the player
+     * statistics and create an attack metadata.
+     *
+     * @param triggerType Action performed to trigger the skills
+     * @param target      The potential target to cast the skill onto
+     */
     public void triggerSkills(TriggerType triggerType, Entity target) {
         triggerSkills(triggerType, new AttackMetadata(new DamageMetadata(), stats.cache(EquipmentSlot.MAIN_HAND)), target);
     }
 
+    /**
+     * Trigger skills with an attack metadata.
+     *
+     * @param triggerType    Action performed to trigger the skills
+     * @param target         The potential target to cast the skill onto
+     * @param attackMetadata The attack being performed
+     */
     public void triggerSkills(TriggerType triggerType, AttackMetadata attackMetadata, Entity target) {
+        triggerSkills(triggerType, attackMetadata, target, attackMetadata.getStats().getData().getPassiveSkills());
+    }
+
+    /**
+     * Trigger a specific set of skills, with an attack metadata.
+     *
+     * @param triggerType    Action performed to trigger the skills
+     * @param target         The potential target to cast the skill onto
+     * @param attackMetadata The attack being performed
+     * @param skills         The list of skills currently active for the player
+     */
+    public void triggerSkills(TriggerType triggerType, AttackMetadata attackMetadata, Entity target, Collection<PassiveSkill> skills) {
         if (!MythicLib.plugin.getFlags().isFlagAllowed(attackMetadata.getPlayer(), CustomFlag.MMO_ABILITIES))
             return;
 
         TriggerMetadata triggerMeta = new TriggerMetadata(attackMetadata, target);
 
-        for (PassiveSkill trigger : attackMetadata.getStats().getData().getPassiveSkills())
+        for (PassiveSkill trigger : skills)
             if (trigger.getType() == triggerType)
                 trigger.getTriggeredSkill().execute(triggerMeta);
     }

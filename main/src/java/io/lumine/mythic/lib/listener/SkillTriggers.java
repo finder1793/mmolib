@@ -3,10 +3,13 @@ package io.lumine.mythic.lib.listener;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.event.PlayerKillEntityEvent;
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.api.util.ProjectileTicker;
+import io.lumine.mythic.lib.api.util.ProjectileTrigger;
 import io.lumine.mythic.lib.comp.target.InteractionType;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -17,6 +20,8 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 public class SkillTriggers implements Listener {
 
@@ -68,19 +73,22 @@ public class SkillTriggers implements Listener {
             MMOPlayerData caster = MMOPlayerData.get(event.getEntity().getUniqueId());
             caster.triggerSkills(TriggerType.SHOOT_BOW, event.getProjectile());
 
-            // Register a runnable to trigger ARROW_TICK
-            new ProjectileTicker(caster, TriggerType.ARROW_TICK, event.getProjectile());
+            // Register a runnable to trigger projectile skills
+            EquipmentSlot hand = getShootHand(((Player) event.getEntity()).getInventory());
+            new ProjectileTrigger(caster, ProjectileTrigger.ProjectileType.ARROW, event.getProjectile(), hand);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void shootTrident(ProjectileLaunchEvent event) {
-        if (event.getEntity() instanceof Trident && event.getEntity() instanceof Player && MMOPlayerData.has(event.getEntity().getUniqueId())) {
-            MMOPlayerData caster = MMOPlayerData.get(event.getEntity().getUniqueId());
+        if (event.getEntity() instanceof Trident && event.getEntity().getShooter() instanceof Player && MMOPlayerData.has((Player) event.getEntity().getShooter())) {
+            Player shooter = (Player) event.getEntity().getShooter();
+            MMOPlayerData caster = MMOPlayerData.get(shooter);
             caster.triggerSkills(TriggerType.SHOOT_TRIDENT, event.getEntity());
 
-            // Register a runnable to trigger TRIDENT_TICK
-            new ProjectileTicker(caster, TriggerType.TRIDENT_TICK, event.getEntity());
+            // Register a runnable to trigger projectile skills
+            EquipmentSlot hand = getShootHand(shooter.getInventory());
+            new ProjectileTrigger(caster, ProjectileTrigger.ProjectileType.TRIDENT, event.getEntity(), hand);
         }
     }
 
@@ -109,25 +117,16 @@ public class SkillTriggers implements Listener {
         caster.triggerSkills(type, null);
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void projectileHits(ProjectileHitEvent event) {
+    /**
+     * @return Hand used to shoot a projectile (arrow/trident) based on
+     *         what items the player is holding in his two hands
+     */
+    private EquipmentSlot getShootHand(PlayerInventory inv) {
+        ItemStack main = inv.getItemInMainHand();
+        return main != null && isShootable(main.getType()) ? EquipmentSlot.MAIN_HAND : EquipmentSlot.OFF_HAND;
+    }
 
-        // Make sure it's an arrow or a trident
-        if (event.getEntityType() != EntityType.ARROW && event.getEntityType() != EntityType.TRIDENT)
-            return;
-
-        // Make sure the shooter is a valid player
-        if (!(event.getEntity().getShooter() instanceof Player) || !MMOPlayerData.has(((Player) event.getEntity().getShooter()).getUniqueId()))
-            return;
-
-        // Find the right target, either the target if it hit an entity, or the arrow if it landed on a block
-        boolean hit = event.getHitEntity() != null;
-        Entity target = hit ? event.getHitEntity() : event.getEntity();
-
-        // Find the trigger type
-        TriggerType triggerType = event.getEntityType() == EntityType.ARROW ? (hit ? TriggerType.ARROW_HIT : TriggerType.ARROW_LAND) : (hit ? TriggerType.TRIDENT_HIT : TriggerType.TRIDENT_LAND);
-
-        MMOPlayerData caster = MMOPlayerData.get(((Player) event.getEntity().getShooter()).getUniqueId());
-        caster.triggerSkills(triggerType, target);
+    private boolean isShootable(Material mat) {
+        return mat == Material.BOW || mat == Material.CROSSBOW || mat == Material.TRIDENT;
     }
 }
