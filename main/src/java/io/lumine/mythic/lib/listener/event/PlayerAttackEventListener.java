@@ -129,6 +129,9 @@ public class PlayerAttackEventListener implements Listener {
          */
         if (event.getDamager() instanceof Projectile) {
             ProjectileSource source = ((Projectile) event.getDamager()).getShooter();
+            if (source == null)
+                return null;
+
             if (!source.equals(event.getEntity()) && isValidPlayer(source))
                 return new AttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
                         MMOPlayerData.get((Player) source).getStatMap().cache(EquipmentSlot.MAIN_HAND));
