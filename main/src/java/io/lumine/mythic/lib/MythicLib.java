@@ -24,6 +24,7 @@ import io.lumine.mythic.lib.gui.PluginInventory;
 import io.lumine.mythic.lib.listener.*;
 import io.lumine.mythic.lib.listener.event.PlayerAttackEventListener;
 import io.lumine.mythic.lib.listener.option.DamageIndicators;
+import io.lumine.mythic.lib.listener.option.FixMovementSpeed;
 import io.lumine.mythic.lib.listener.option.RegenIndicators;
 import io.lumine.mythic.lib.manager.*;
 import io.lumine.mythic.lib.metrics.bStats;
@@ -122,6 +123,9 @@ public class MythicLib extends LuminePlugin {
 
         if (getConfig().getBoolean("health-scale.enabled"))
             Bukkit.getPluginManager().registerEvents(new HealthScale(getConfig().getDouble("health-scale.scale"), getConfig().getInt("health-scale.delay", 0)), this);
+
+        if (getConfig().getBoolean("fix-movement-speed"))
+            Bukkit.getPluginManager().registerEvents(new FixMovementSpeed(), this);
 
         // Custom hologram providers
         for (CustomHologramFactoryList custom : CustomHologramFactoryList.values())

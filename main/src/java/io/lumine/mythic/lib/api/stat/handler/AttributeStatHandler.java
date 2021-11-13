@@ -35,9 +35,6 @@ public class AttributeStatHandler implements StatHandler {
 
     @Override
     public void runUpdate(StatMap stats) {
-        if (!stats.getPlayerData().isOnline())
-            return;
-
         AttributeInstance ins = stats.getPlayerData().getPlayer().getAttribute(attribute);
         StatInstance statIns = stats.getInstance(stat);
         removeModifiers(ins);
@@ -63,11 +60,11 @@ public class AttributeStatHandler implements StatHandler {
          * value is different from the main one to save calculations.
          */
         if (d != base)
-            ins.addModifier(new AttributeModifier("mmolib.main", d - base, AttributeModifier.Operation.ADD_NUMBER));
+            ins.addModifier(new AttributeModifier("mythiclib.main", d - base, AttributeModifier.Operation.ADD_NUMBER));
     }
 
     @Override
     public double getBaseValue(StatMap map) {
-        return map.getPlayerData().isOnline() ? map.getPlayerData().getPlayer().getAttribute(attribute).getBaseValue() : 0;
+        return map.getPlayerData().getPlayer().getAttribute(attribute).getBaseValue();
     }
 }

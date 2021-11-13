@@ -95,3 +95,10 @@ game-indicators:
     enabled: false
     decimal-format: '0.#'
     format: '&a+#'
+
+# Due to a change made in 1.1.6 related to the movement speed
+# attribute, players see their movement speed reset to .1 when logging in
+#
+# Set to false when having issues with another plugin interfering
+# with the player's movement speed
+fix-movement-speed: true
