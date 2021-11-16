@@ -11,6 +11,7 @@ import org.bukkit.attribute.Attribute;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class StatManager {
     private final Map<String, StatHandler> handlers = new HashMap<>();
@@ -76,5 +77,13 @@ public class StatManager {
         Validate.notNull(handler, "StatHandler cannot be null");
 
         handlers.put(stat, handler);
+    }
+
+    public boolean isRegistered(String stat) {
+        return handlers.containsKey(stat);
+    }
+
+    public Set<String> getRegisteredStats() {
+        return handlers.keySet();
     }
 }
