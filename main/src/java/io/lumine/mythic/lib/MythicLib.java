@@ -94,7 +94,7 @@ public class MythicLib extends LuminePlugin {
 
         new bStats(this);
 
-        new SpigotPlugin(73855, this).checkForUpdate();
+        new SpigotPlugin(90306, this).checkForUpdate();
         saveDefaultConfig();
 
         final int configVersion = getConfig().contains("config-version", true) ? getConfig().getInt("config-version") : -1;
