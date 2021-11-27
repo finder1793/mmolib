@@ -25,7 +25,7 @@ public class StatManager {
         handlers.put(SharedStat.ATTACK_DAMAGE, new AttributeStatHandler(Attribute.GENERIC_ATTACK_DAMAGE, SharedStat.ATTACK_DAMAGE, true));
         handlers.put(SharedStat.ATTACK_SPEED, new AttributeStatHandler(Attribute.GENERIC_ATTACK_SPEED, SharedStat.ATTACK_SPEED, true));
         handlers.put(SharedStat.KNOCKBACK_RESISTANCE, new AttributeStatHandler(Attribute.GENERIC_KNOCKBACK_RESISTANCE, SharedStat.KNOCKBACK_RESISTANCE));
-        handlers.put(SharedStat.MAX_HEALTH, new MaxHealthStatHandler());
+        handlers.put(SharedStat.MAX_HEALTH,  new AttributeStatHandler(Attribute.GENERIC_MAX_HEALTH, SharedStat.MAX_HEALTH));
 
         StatHandler moveSpeed = new MovementSpeedStatHandler();
         handlers.put(SharedStat.MOVEMENT_SPEED, moveSpeed);
