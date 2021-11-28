@@ -59,7 +59,7 @@ mitigation:
     rating-max: 80.0
     cooldown:
       base: 5.0
-      min: 10.0
+      min: 1.0
 
   dodge:
     knockback:

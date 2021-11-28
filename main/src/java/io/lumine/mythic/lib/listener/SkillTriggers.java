@@ -104,7 +104,7 @@ public class SkillTriggers implements Listener {
      * by canceling the item interaction, either by canceling the block interaction.
      * <p>
      * Checking if the event is cancelled points towards the block interaction
-     * and not the item interaction which  is NOT what MythicLibis interested in
+     * and not the item interaction which is NOT what MythicLib is interested in
      */
     @EventHandler(priority = EventPriority.HIGH)
     public void click(PlayerInteractEvent event) {
