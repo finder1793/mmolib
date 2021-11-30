@@ -45,6 +45,7 @@ public class StatManager {
         handlers.values().forEach(update -> update.runUpdate(map));
     }
 
+
     /**
      * Runs a specific stat update for a specific StatMap
      *
