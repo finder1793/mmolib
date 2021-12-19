@@ -21,6 +21,7 @@ import io.lumine.mythic.lib.skill.mechanic.misc.SkillMechanic;
 import io.lumine.mythic.lib.skill.mechanic.movement.TeleportMechanic;
 import io.lumine.mythic.lib.skill.mechanic.movement.VelocityMechanic;
 import io.lumine.mythic.lib.skill.mechanic.offense.DamageMechanic;
+import io.lumine.mythic.lib.skill.mechanic.offense.MultiplyDamageMechanic;
 import io.lumine.mythic.lib.skill.mechanic.offense.PotionMechanic;
 import io.lumine.mythic.lib.skill.mechanic.raytrace.RayTraceAnyMechanic;
 import io.lumine.mythic.lib.skill.mechanic.raytrace.RayTraceBlocksMechanic;
@@ -42,6 +43,7 @@ import io.lumine.mythic.lib.skill.targeter.entity.*;
 import io.lumine.mythic.lib.skill.targeter.location.*;
 import io.lumine.mythic.lib.util.ConfigObject;
 import org.apache.commons.lang.Validate;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -59,7 +61,6 @@ import java.util.logging.Level;
  *
  * @author jules
  */
-@Deprecated
 public class SkillManager {
     private final Map<String, Function<ConfigObject, Mechanic>> mechanics = new HashMap<>();
     private final Map<String, Function<ConfigObject, Condition>> conditions = new HashMap<>();
@@ -94,7 +95,9 @@ public class SkillManager {
         registerMechanic("helix", config -> new HelixMechanic(config));
 
         registerMechanic("damage", config -> new DamageMechanic(config));
+        registerMechanic("multiply_damage", config -> new MultiplyDamageMechanic(config));
         registerMechanic("potion", config -> new PotionMechanic(config));
+
         registerMechanic("heal", config -> new HealMechanic(config));
         registerMechanic("feed", config -> new FeedMechanic(config));
         registerMechanic("saturate", config -> new SaturateMechanic(config));
@@ -143,6 +146,7 @@ public class SkillManager {
         registerCondition("on_fire", config -> new OnFireCondition(config));
         registerCondition("is_living", config -> new IsLivingCondition(config));
         registerCondition("can_target", config -> new CanTargetCondition(config));
+        registerCondition("has_damage_type", config -> new HasDamageTypeCondition(config));
     }
 
     public void registerSkill(Skill skill) {
@@ -154,6 +158,20 @@ public class SkillManager {
     @NotNull
     public Skill getSkillOrThrow(String name) {
         return Objects.requireNonNull(skills.get(name), "Could not find skill with name '" + name + "'");
+    }
+
+    public Skill loadSkill(Object obj) {
+
+        if (obj instanceof String)
+            return getSkillOrThrow(obj.toString());
+
+        if (obj instanceof ConfigurationSection) {
+            Skill skill = new Skill((ConfigurationSection) obj);
+            skill.postLoad();
+            return skill;
+        }
+
+        throw new IllegalArgumentException("Please provide a string or configuration section");
     }
 
     public Collection<Skill> getSkills() {

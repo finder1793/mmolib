@@ -5,24 +5,26 @@ import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.element.Element;
+import io.lumine.mythic.lib.skill.SkillMetadata;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+
+import java.util.Random;
 
 /**
  * Class which implements the elemental damage calculation
  * AND application. This also applies elemental critical
  * strikes.
  * <p>
+ * TODO
  * Extra stats which could be implemented in the future
  * - Flat Elemental Damage Reduction
  * - % Elemental Damage Reduction
- * <p>
- * TODO
- * Elemental critical strikes which work with the MM skill system
  *
  * @author indyuce
  */
 public class ElementalDamage implements Listener {
+    private static final Random random = new Random();
 
     @EventHandler
     public void applyElementalDamage(PlayerAttackEvent event) {
@@ -31,6 +33,8 @@ public class ElementalDamage implements Listener {
         if (!event.getDamage().hasType(DamageType.WEAPON))
             return;
 
+        double critChance = Math.min(event.getAttack().getStats().getStat("CRITICAL_STRIKE_CHANCE"), MythicLib.plugin.getAttackEffects().getMaxWeaponCritChance());
+        SkillMetadata skillMeta = new SkillMetadata(null, event.getAttack(), event.getPlayer().getLocation(), null, null);
         for (Element el : MythicLib.plugin.getElements().getAll()) {
 
             // If the flat damage is 0; cancel everything asap
@@ -57,6 +61,9 @@ public class ElementalDamage implements Listener {
 
             // Register the damage packet
             event.getDamage().add(damage, el, DamageType.WEAPON);
+
+            // Apply critical strikes
+            el.getSkill(random.nextDouble() < critChance / 100).cast(skillMeta);
         }
     }
 }

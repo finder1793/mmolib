@@ -267,6 +267,10 @@ public class MythicLib extends LuminePlugin {
         return placeholderParser;
     }
 
+    public AttackEffects getAttackEffects() {
+        return attackEffects;
+    }
+
     public void handleFlags(FlagPlugin flagPlugin) {
         this.flagPlugin = flagPlugin;
     }

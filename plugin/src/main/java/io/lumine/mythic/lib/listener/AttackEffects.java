@@ -36,6 +36,10 @@ public class AttackEffects implements Listener {
         skillCritCooldown = MythicLib.plugin.getConfig().getDouble("critical-strikes.skill.cooldown", 3);
     }
 
+    public double getMaxWeaponCritChance() {
+        return maxWeaponCritChance;
+    }
+
     /**
      * Read {@link io.lumine.mythic.lib.listener.event.PlayerAttackEventListener}
      * <p>

@@ -67,20 +67,19 @@ public class SkillMetadata {
     @Nullable
     private final Entity targetEntity;
 
-    public SkillMetadata(Skill cast, MMOPlayerData caster) {
+    public SkillMetadata(Skill cast, @NotNull MMOPlayerData caster) {
         this(cast, caster.getStatMap().cache(EquipmentSlot.MAIN_HAND), new VariableList(VariableScope.SKILL), null, caster.getPlayer().getLocation(), null, null);
     }
 
     /**
      * @param cast           Skill being cast
-     * @param caster         Player casting the skill
      * @param attackMeta     Some triggers pass an attackMeta as argument, like DAMAGED or DAMAGE.
      * @param source         The location at which the skill/mechanic was cast
      * @param targetLocation The skill/mechanic target location
      * @param targetEntity   The skill/mechanic target entity
      */
-    public SkillMetadata(Skill cast, MMOPlayerData caster, AttackMetadata attackMeta, Location source, Location targetLocation, Entity targetEntity) {
-        this(cast, caster.getStatMap().cache(EquipmentSlot.MAIN_HAND), new VariableList(VariableScope.SKILL), attackMeta, source, targetLocation, targetEntity);
+    public SkillMetadata(Skill cast, @NotNull AttackMetadata attackMeta, @Nullable Location source, @Nullable Location targetLocation, @Nullable Entity targetEntity) {
+        this(cast, attackMeta.getStats(), new VariableList(VariableScope.SKILL), attackMeta, source, targetLocation, targetEntity);
     }
 
     /**
@@ -92,7 +91,7 @@ public class SkillMetadata {
      * @param targetLocation The skill/mechanic target location
      * @param targetEntity   The skill/mechanic target entity
      */
-    public SkillMetadata(Skill cast, StatMap.CachedStatMap stats, VariableList vars, AttackMetadata attackMeta, Location source, Location targetLocation, Entity targetEntity) {
+    public SkillMetadata(Skill cast, @NotNull StatMap.CachedStatMap stats, @NotNull VariableList vars, @Nullable AttackMetadata attackMeta, @NotNull Location source, @Nullable Location targetLocation, @Nullable Entity targetEntity) {
         this.cast = cast;
         this.stats = stats;
         this.vars = vars;

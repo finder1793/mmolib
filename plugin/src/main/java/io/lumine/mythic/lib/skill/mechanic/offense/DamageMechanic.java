@@ -20,7 +20,7 @@ import java.util.Set;
 public class DamageMechanic extends TargetMechanic {
     private final DoubleFormula amount;
     private final boolean knockback, ignoreImmunity;
-    private final Set<DamageType> types = new HashSet<>();
+    private final DamageType[] types;
 
     public DamageMechanic(ConfigObject config) {
         super(config);
@@ -32,15 +32,18 @@ public class DamageMechanic extends TargetMechanic {
         ignoreImmunity = config.getBoolean("ignore_immunity", false);
 
         // Look for damage type
+        Set<DamageType> damageTypes = new HashSet<>();
         if (config.contains("damage_type"))
             for (String typeFormat : config.getString("damage_type").split("\\,"))
-                types.add(DamageType.valueOf(typeFormat.toUpperCase()));
+                damageTypes.add(DamageType.valueOf(typeFormat.toUpperCase()));
 
             // By default, magical-skill damage
         else {
-            types.add(DamageType.MAGIC);
-            types.add(DamageType.SKILL);
+            damageTypes.add(DamageType.MAGIC);
+            damageTypes.add(DamageType.SKILL);
         }
+
+        types = damageTypes.toArray(new DamageType[0]);
     }
 
     @Override
@@ -49,11 +52,11 @@ public class DamageMechanic extends TargetMechanic {
 
         // This ignores the 'knockback' and 'ignore-immunity' options
         if (meta.hasAttackBound()) {
-            meta.getAttack().getDamage().add(amount.evaluate(meta), types.toArray(new DamageType[0]));
+            meta.getAttack().getDamage().add(amount.evaluate(meta), types);
             return;
         }
 
-        AttackMetadata result = new AttackMetadata(new DamageMetadata(amount.evaluate(meta), types.toArray(new DamageType[0])), meta.getStats());
+        AttackMetadata result = new AttackMetadata(new DamageMetadata(amount.evaluate(meta), types), meta.getStats());
         MythicLib.plugin.getDamage().damage(result, (LivingEntity) target, knockback, ignoreImmunity);
     }
 }
