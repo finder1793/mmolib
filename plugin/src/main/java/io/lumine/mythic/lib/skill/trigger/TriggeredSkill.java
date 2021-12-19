@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.skill.trigger;
 
+import io.lumine.mythic.lib.skill.metadata.TriggerMetadata;
 import org.jetbrains.annotations.Nullable;
 
 /**
