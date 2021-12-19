@@ -7,7 +7,8 @@ import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.commands.BaseCommand;
 import io.lumine.mythic.lib.commands.HealthScaleCommand;
-import io.lumine.mythic.lib.comp.PlaceholderAPIHook;
+import io.lumine.mythic.lib.comp.placeholder.DefaultPlaceholderParser;
+import io.lumine.mythic.lib.comp.placeholder.PlaceholderAPIHook;
 import io.lumine.mythic.lib.comp.flags.DefaultFlagHandler;
 import io.lumine.mythic.lib.comp.flags.FlagPlugin;
 import io.lumine.mythic.lib.comp.flags.ResidenceFlags;
@@ -18,6 +19,8 @@ import io.lumine.mythic.lib.comp.hexcolor.SimpleColorParser;
 import io.lumine.mythic.lib.comp.hologram.CustomHologramFactoryList;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
+import io.lumine.mythic.lib.comp.placeholder.PlaceholderAPIParser;
+import io.lumine.mythic.lib.comp.placeholder.PlaceholderParser;
 import io.lumine.mythic.lib.comp.target.CitizensTargetRestriction;
 import io.lumine.mythic.lib.comp.target.FactionsRestriction;
 import io.lumine.mythic.lib.gui.PluginInventory;
@@ -58,6 +61,7 @@ public class MythicLib extends LuminePlugin {
     private final JsonManager jsonManager = new JsonManager();
     private final ConfigManager configManager = new ConfigManager();
     private final ElementManager elementManager = new ElementManager();
+    private final SkillManager skillManager = new SkillManager();
 
     private ServerVersion version;
     private AttackEffects attackEffects;
@@ -66,6 +70,7 @@ public class MythicLib extends LuminePlugin {
     private FlagPlugin flagPlugin = new DefaultFlagHandler();
     @Getter
     private ScoreboardProvider scoreboardProvider;
+    private PlaceholderParser placeholderParser;
 
     @Override
     public void load() {
@@ -160,8 +165,10 @@ public class MythicLib extends LuminePlugin {
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             MythicPlaceholders.registerPlaceholder(new PlaceholderAPIHook());
+            placeholderParser = new PlaceholderAPIParser();
             getLogger().log(Level.INFO, "Hooked onto PlaceholderAPI");
-        }
+        } else
+            placeholderParser = new DefaultPlaceholderParser();
 
         // Regen and damage indicators
         if (getConfig().getBoolean("game-indicators.damage.enabled"))
@@ -185,6 +192,9 @@ public class MythicLib extends LuminePlugin {
         getCommand("megaworkbench").setExecutor(MegaWorkbenchMapping.MWB);
         Bukkit.getPluginManager().registerEvents(MegaWorkbenchMapping.MWB, this);
 
+        // Load local skills
+        skillManager.loadLocalSkills();
+
         // Load player data of online players
         Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.setup(player));
 
@@ -196,6 +206,7 @@ public class MythicLib extends LuminePlugin {
         configManager.reload();
         attackEffects.reload();
         mitigationMechanics.reload();
+        skillManager.loadLocalSkills();
     }
 
     @Override
@@ -230,6 +241,12 @@ public class MythicLib extends LuminePlugin {
      * @deprecated Not implemented yet
      */
     @Deprecated
+    public SkillManager getSkills() { return skillManager; }
+
+    /**
+     * @deprecated Not implemented yet
+     */
+    @Deprecated
     public ElementManager getElements() {
         return elementManager;
     }
@@ -244,6 +261,10 @@ public class MythicLib extends LuminePlugin {
 
     public FlagPlugin getFlags() {
         return flagPlugin;
+    }
+
+    public PlaceholderParser getPlaceholderParser() {
+        return placeholderParser;
     }
 
     public void handleFlags(FlagPlugin flagPlugin) {

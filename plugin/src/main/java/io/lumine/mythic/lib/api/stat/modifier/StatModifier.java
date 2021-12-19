@@ -2,13 +2,12 @@ package io.lumine.mythic.lib.api.stat.modifier;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
+import io.lumine.mythic.lib.player.PlayerModifier;
 import org.apache.commons.lang.Validate;
 
-public class StatModifier {
+public class StatModifier extends PlayerModifier {
     private final double d;
     private final ModifierType type;
-    private final ModifierSource source;
-    private final EquipmentSlot slot;
 
     /**
      * Flat stat modifier (simplest modifier you can think about)
@@ -32,17 +31,17 @@ public class StatModifier {
      * @param source Type of the item granting the stat modifier
      */
     public StatModifier(double d, ModifierType type, EquipmentSlot slot, ModifierSource source) {
+        super(slot, source);
+
         this.d = d;
         this.type = type;
-        this.source = source;
-        this.slot = slot;
     }
 
     /**
      * Clones a stat modifier
      */
     public StatModifier(StatModifier mod) {
-        this(mod.d, mod.type, mod.slot, mod.source);
+        this(mod.d, mod.type, mod.getSlot(), mod.getSource());
     }
 
     /**
@@ -53,13 +52,13 @@ public class StatModifier {
      * @param str The string to be parsed
      */
     public StatModifier(String str) {
+        super(EquipmentSlot.OTHER, ModifierSource.OTHER);
+
         Validate.notNull(str, "String cannot be null");
         Validate.notEmpty(str, "String cannot be empty");
 
         type = str.toCharArray()[str.length() - 1] == '%' ? ModifierType.RELATIVE : ModifierType.FLAT;
         d = Double.parseDouble(type == ModifierType.RELATIVE ? str.substring(0, str.length() - 1) : str);
-        source = ModifierSource.OTHER;
-        slot = EquipmentSlot.OTHER;
     }
 
     /**
@@ -71,19 +70,11 @@ public class StatModifier {
      * @return A new instance of StatModifier with modified value
      */
     public StatModifier multiply(double coef) {
-        return new StatModifier(d * coef, type, slot, source);
+        return new StatModifier(d * coef, type, getSlot(), getSource());
     }
 
     public ModifierType getType() {
         return type;
-    }
-
-    public ModifierSource getSource() {
-        return source;
-    }
-
-    public EquipmentSlot getSlot() {
-        return slot;
     }
 
     public double getValue() {

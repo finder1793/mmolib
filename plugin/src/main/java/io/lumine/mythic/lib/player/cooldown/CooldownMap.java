@@ -50,6 +50,23 @@ public class CooldownMap {
 
     /**
      * @param obj The skill or action
+     * @return Retrieves the remaining cooldown in seconds
+     */
+    public double getCooldown(CooldownObject obj) {
+        return getCooldown(obj.getCooldownPath());
+    }
+
+    /**
+     * @param path The skill or action path, must be completely unique
+     * @return Retrieves the remaining cooldown in seconds
+     */
+    public double getCooldown(String path) {
+        CooldownInfo info = map.get(path);
+        return info == null ? 0 : (double) info.getRemaining() / 1000;
+    }
+
+    /**
+     * @param obj The skill or action
      * @return If the mechanic can be used by the player
      */
     public boolean isOnCooldown(CooldownObject obj) {

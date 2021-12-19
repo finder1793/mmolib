@@ -1,7 +1,6 @@
 package io.lumine.mythic.lib.skill.mechanic.offense;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
@@ -47,6 +46,12 @@ public class DamageMechanic extends TargetMechanic {
     @Override
     public void cast(SkillMetadata meta, Entity target) {
         Validate.isTrue(target instanceof LivingEntity, "Cannot damage a non living entity");
+
+        // This ignores the 'knockback' and 'ignore-immunity' options
+        if (meta.hasAttackBound()) {
+            meta.getAttack().getDamage().add(amount.evaluate(meta), types.toArray(new DamageType[0]));
+            return;
+        }
 
         AttackMetadata result = new AttackMetadata(new DamageMetadata(amount.evaluate(meta), types.toArray(new DamageType[0])), meta.getStats());
         MythicLib.plugin.getDamage().damage(result, (LivingEntity) target, knockback, ignoreImmunity);

@@ -3,11 +3,14 @@ package io.lumine.mythic.lib.listener;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.gui.PluginInventory;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -40,5 +43,11 @@ public class PlayerListener implements Listener {
     public void handleCustomInventoryClicks(InventoryClickEvent event) {
         if (event.getInventory().getHolder() != null && event.getInventory().getHolder() instanceof PluginInventory)
             ((PluginInventory) event.getInventory().getHolder()).whenClicked(event);
+    }
+
+    @EventHandler
+    public void test(PlayerInteractEvent event) {
+        if (event.hasItem() && event.getAction() == Action.LEFT_CLICK_AIR && event.getItem().getType() == Material.BLAZE_ROD)
+            MythicLib.plugin.getSkills().getSkillOrThrow("test").cast(MMOPlayerData.get(event.getPlayer()));
     }
 }

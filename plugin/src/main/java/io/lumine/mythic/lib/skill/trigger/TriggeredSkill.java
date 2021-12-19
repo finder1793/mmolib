@@ -1,11 +1,11 @@
 package io.lumine.mythic.lib.skill.trigger;
 
-import io.lumine.mythic.lib.skill.metadata.TriggerMetadata;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * This is purely an interface between MythicLib triggers
- * and MMOCore skills/MMOItems abilities.
+ * This acts as an interface between MMOItems item abilities,
+ * MythicLib custom skills, MMOCore player skills as well as
+ * MythicMobs custom abilities.
  *
  * @author indyuce
  */
@@ -15,7 +15,7 @@ public interface TriggeredSkill {
     /**
      * Called when the skill is triggered.
      *
-     * @param casterMeta Information about the player casting the skill
+     * @param triggerMeta All the info required to cast a skill
      */
-    void execute(@Nullable TriggerMetadata casterMeta);
+    void execute(@Nullable TriggerMetadata triggerMeta);
 }

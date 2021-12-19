@@ -11,7 +11,7 @@ public enum TriggerType {
     DAMAGED_BY_ENTITY,
     DEATH,
 
-    // Bow
+    // Bow or crossbows
     SHOOT_BOW,
     ARROW_TICK,
     ARROW_HIT,
@@ -31,7 +31,11 @@ public enum TriggerType {
 
     // Misc
     LOGIN,
-    SNEAK(false);
+    SNEAK(false),
+
+    // Only used by plugins
+    CAST,
+    API;
 
     /**
      * When set to false, any skill with this trigger type should

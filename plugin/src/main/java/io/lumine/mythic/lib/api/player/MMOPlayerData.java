@@ -8,9 +8,11 @@ import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.listener.PlayerListener;
 import io.lumine.mythic.lib.player.cooldown.CooldownMap;
 import io.lumine.mythic.lib.player.cooldown.CooldownType;
-import io.lumine.mythic.lib.skill.metadata.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.PassiveSkill;
+import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
+import io.lumine.mythic.lib.skill.variable.VariableList;
+import io.lumine.mythic.lib.skill.variable.VariableScope;
 import org.apache.commons.lang.Validate;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
@@ -35,6 +37,7 @@ public class MMOPlayerData {
     private final CooldownMap basicCooldowns = new CooldownMap();
     private final StatMap stats = new StatMap(this);
     private final Set<PassiveSkill> passiveSkills = new HashSet<>();
+    private final VariableList skillVariableList = new VariableList(VariableScope.PLAYER);
 
     private static final Map<UUID, MMOPlayerData> data = new HashMap<>();
 
@@ -129,6 +132,10 @@ public class MMOPlayerData {
         for (PassiveSkill trigger : skills)
             if (trigger.getType() == triggerType)
                 trigger.getTriggeredSkill().execute(triggerMeta);
+    }
+
+    public VariableList getSkillVariableList() {
+        return skillVariableList;
     }
 
     /**

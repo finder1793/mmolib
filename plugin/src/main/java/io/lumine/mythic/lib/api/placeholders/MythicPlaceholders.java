@@ -1,14 +1,11 @@
 package io.lumine.mythic.lib.api.placeholders;
 
-import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
-import io.lumine.mythic.lib.comp.PlaceholderAPIHook;
+import io.lumine.mythic.lib.comp.placeholder.PlaceholderAPIHook;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import scala.Int;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * PlaceholderAPI is cool, but have you heard of ItemStacks,

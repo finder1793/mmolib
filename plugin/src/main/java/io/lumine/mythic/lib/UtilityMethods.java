@@ -22,9 +22,9 @@ public class UtilityMethods {
     public static MMOCondition getCondition(String input) {
         MMOLineConfig config = new MMOLineConfig(input);
         String key = config.getKey().toLowerCase();
-        switch(key) {
+        switch (key) {
             case "region":
-                if(!Bukkit.getPluginManager().isPluginEnabled("WorldGuard"))
+                if (!Bukkit.getPluginManager().isPluginEnabled("WorldGuard"))
                     return null;
                 return new RegionCondition(config);
         }
@@ -80,5 +80,61 @@ public class UtilityMethods {
                         players.add((Player) target);
 
         return players;
+    }
+
+    /**
+     * @return Upper case string, with spaces and - replaced by _
+     */
+    public static String enumName(String str) {
+        return str.toUpperCase().replace("-", "_").replace(" ", "_");
+    }
+
+    public static double[] getYawPitch(Vector axis) {
+        double _2PI = 6.283185307179586D;
+        double x = axis.getX();
+        double z = axis.getZ();
+
+        if (x == 0 && z == 0)
+            return new double[]{0, axis.getY() > 0 ? -90 : 90};
+        else {
+            double theta = Math.atan2(-x, z);
+            double yaw = (float) Math.toDegrees((theta + _2PI) % _2PI);
+            double xz = Math.sqrt(x * x + z * z);
+            double pitch = (float) Math.toDegrees(Math.atan(-axis.getY() / xz));
+            return new double[]{yaw, pitch};
+        }
+    }
+
+    public static Vector rotate(Vector rotated, Vector axis) {
+        double[] pitchYaw = getYawPitch(axis);
+        return rotate(rotated, pitchYaw[0], pitchYaw[1]);
+    }
+
+    public static Vector rotate(Vector rotated, double yaw, double pitch) {
+        return rotAxisY(rotAxisX(rotated, pitch), -yaw);
+    }
+
+    private static Vector rotAxisX(Vector rotated, double angle) {
+        double y = rotated.getY() * Math.cos(angle) - rotated.getZ() * Math.sin(angle);
+        double z = rotated.getY() * Math.sin(angle) + rotated.getZ() * Math.cos(angle);
+        return rotated.setY(y).setZ(z);
+    }
+
+    private static Vector rotAxisY(Vector rotated, double angle) {
+        double x = rotated.getX() * Math.cos(angle) + rotated.getZ() * Math.sin(angle);
+        double z = rotated.getX() * -Math.sin(angle) + rotated.getZ() * Math.cos(angle);
+        return rotated.setX(x).setZ(z);
+    }
+
+    public static double getAltitude(Entity entity) {
+        return getAltitude(entity.getLocation());
+    }
+
+    public static double getAltitude(Location loc) {
+        Location moving = loc.clone();
+        while (!moving.getBlock().getType().isSolid())
+            moving.add(0, -1, 0);
+
+        return loc.getY() - moving.getBlockY() - 1;
     }
 }

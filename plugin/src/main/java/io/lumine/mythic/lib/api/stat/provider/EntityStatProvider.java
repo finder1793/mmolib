@@ -8,17 +8,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * This class can be used to cache the equipment from
- * a mob and read its statistics like Defense, Elemental
- * defense or mitigation stats.
+ * This class can be used to cache the equipment from a mob and read its
+ * statistics like Defense, Elemental defense or mitigation stats.
  * <p>
- * This way, mechanics which were initially limited to
- * players can now be generalized to any monster
+ * This way, mechanics which were initially limited to players can now be
+ * generalized to any monster
  * <p>
- * TODO
- * Implement the following mecanics so that they also
- * work on monsters
+ * TODO Implement the following mecanics so that they also work on monsters
  * - Damage mitigation
+ * - Elemental mechanics
  * - Critical strikes
  *
  * @author indyuce

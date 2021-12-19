@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.comp;
+package io.lumine.mythic.lib.comp.placeholder;
 
 import io.lumine.mythic.lib.api.placeholders.MythicPlaceholder;
 //todo import me.clip.placeholderapi.PlaceholderAPI;

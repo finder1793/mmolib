@@ -4,6 +4,9 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatMap;
+import io.lumine.mythic.lib.damage.AttackMetadata;
+import io.lumine.mythic.lib.damage.DamageMetadata;
+import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.variable.Variable;
 import io.lumine.mythic.lib.skill.variable.VariableList;
 import io.lumine.mythic.lib.skill.variable.VariableScope;
@@ -15,6 +18,7 @@ import io.lumine.mythic.lib.util.EntityLocationType;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,10 +35,17 @@ import java.util.regex.Pattern;
  * This also stores variables which can be edited and manipulated by the user.
  */
 public class SkillMetadata {
+
+    @Deprecated
     private final Skill cast;
-    private final MMOPlayerData caster;
     private final StatMap.CachedStatMap stats;
     private final VariableList vars;
+
+    /**
+     * Some mechanics
+     */
+    @Nullable
+    private final AttackMetadata attackMeta;
 
     /**
      * Location at which the skill was cast
@@ -57,15 +68,35 @@ public class SkillMetadata {
     private final Entity targetEntity;
 
     public SkillMetadata(Skill cast, MMOPlayerData caster) {
-        this(cast, caster, caster.getStatMap().cache(EquipmentSlot.MAIN_HAND), new VariableList(VariableScope.SKILL), caster.getPlayer().getLocation(), null, null);
+        this(cast, caster.getStatMap().cache(EquipmentSlot.MAIN_HAND), new VariableList(VariableScope.SKILL), null, caster.getPlayer().getLocation(), null, null);
     }
 
-    private SkillMetadata(Skill cast, MMOPlayerData caster, StatMap.CachedStatMap stats, VariableList vars, Location source, Location targetLocation, Entity targetEntity) {
+    /**
+     * @param cast           Skill being cast
+     * @param caster         Player casting the skill
+     * @param attackMeta     Some triggers pass an attackMeta as argument, like DAMAGED or DAMAGE.
+     * @param source         The location at which the skill/mechanic was cast
+     * @param targetLocation The skill/mechanic target location
+     * @param targetEntity   The skill/mechanic target entity
+     */
+    public SkillMetadata(Skill cast, MMOPlayerData caster, AttackMetadata attackMeta, Location source, Location targetLocation, Entity targetEntity) {
+        this(cast, caster.getStatMap().cache(EquipmentSlot.MAIN_HAND), new VariableList(VariableScope.SKILL), attackMeta, source, targetLocation, targetEntity);
+    }
+
+    /**
+     * @param cast           Skill being cast
+     * @param stats          Cached statistics of the skill caster
+     * @param vars           Skill variable list if it already exists
+     * @param attackMeta     Some triggers pass an attackMeta as argument, like DAMAGED or DAMAGE.
+     * @param source         The location at which the skill/mechanic was cast
+     * @param targetLocation The skill/mechanic target location
+     * @param targetEntity   The skill/mechanic target entity
+     */
+    public SkillMetadata(Skill cast, StatMap.CachedStatMap stats, VariableList vars, AttackMetadata attackMeta, Location source, Location targetLocation, Entity targetEntity) {
         this.cast = cast;
-        this.caster = caster;
         this.stats = stats;
         this.vars = vars;
-
+        this.attackMeta = attackMeta;
         this.source = source;
         this.targetLocation = targetLocation;
         this.targetEntity = targetEntity;
@@ -76,7 +107,7 @@ public class SkillMetadata {
     }
 
     public MMOPlayerData getCaster() {
-        return caster;
+        return stats.getData();
     }
 
     public VariableList getVariableList() {
@@ -89,6 +120,15 @@ public class SkillMetadata {
 
     public Location getSourceLocation() {
         return source;
+    }
+
+    public boolean hasAttackBound() {
+        return attackMeta != null;
+    }
+
+    @NotNull
+    public AttackMetadata getAttack() {
+        return Objects.requireNonNull(attackMeta, "Skill has no attack metadata bound");
     }
 
     @NotNull
@@ -130,7 +170,7 @@ public class SkillMetadata {
      * @return Target entity if prioritized (and if it exists), skill caster otherwise
      */
     public Entity getSkillEntity(boolean caster) {
-        return caster || targetEntity == null ? this.caster.getPlayer() : targetEntity;
+        return caster || targetEntity == null ? getCaster().getPlayer() : targetEntity;
     }
 
     /**
@@ -141,7 +181,7 @@ public class SkillMetadata {
      * @return New skill metadata for other subskills
      */
     public SkillMetadata clone(Location source, Location targetLocation, Entity targetEntity) {
-        return new SkillMetadata(cast, caster, stats, vars, source, targetLocation, targetEntity);
+        return new SkillMetadata(cast, stats, vars, attackMeta, source, targetLocation, targetEntity);
     }
 
     /**
@@ -177,7 +217,7 @@ public class SkillMetadata {
 
             // Skill caster
             case "caster":
-                var = new PlayerVariable("temp", caster.getPlayer());
+                var = new PlayerVariable("temp", getCaster().getPlayer());
                 break;
 
             // Cached stat map
@@ -228,7 +268,7 @@ public class SkillMetadata {
             return var;
 
         // Check for PLAYER scope
-        var = caster.getSkillVariableList().getVariable(name);
+        var = getCaster().getSkillVariableList().getVariable(name);
         return Objects.requireNonNull(var, "Could not find custom variable with name '" + name + "'");
     }
 
@@ -237,7 +277,7 @@ public class SkillMetadata {
     public String parseString(String str) {
 
         // Parse any placeholders and apply color codes
-        String format = MythicLib.plugin.getPlaceholderParser().parse(caster.getPlayer(), str);
+        String format = MythicLib.plugin.getPlaceholderParser().parse(getCaster().getPlayer(), str);
 
         // Internal placeholders
         Matcher match = INTERNAL_PLACEHOLDER_PATTERN.matcher(format);
@@ -248,5 +288,28 @@ public class SkillMetadata {
         }
 
         return format;
+    }
+
+    /**
+     * Utility method that makes a player deal damage to a specific
+     * entity.
+     * <p>
+     * This method either creates a new attackMetadata based on this
+     * metadata, or uses the existing one if any is bound.
+     *
+     * @param target Target entity
+     * @param damage Damage dealt
+     * @param types  Type of target
+     * @return The (modified) attack metadata
+     */
+    public AttackMetadata attack(LivingEntity target, double damage, DamageType... types) {
+        if (attackMeta != null) {
+            attackMeta.getDamage().add(damage, types);
+            return attackMeta;
+        }
+
+        AttackMetadata attackMeta = new AttackMetadata(new DamageMetadata(damage, types), getStats());
+        MythicLib.plugin.getDamage().damage(attackMeta, target);
+        return attackMeta;
     }
 }

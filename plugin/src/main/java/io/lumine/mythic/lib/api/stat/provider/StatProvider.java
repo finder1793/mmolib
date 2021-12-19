@@ -5,10 +5,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 /**
- * This class is used to generalize stat maps to both
- * players and non-player entities. Some statistics should
- * apply even if the target entity is NOT a player (in that
- * case, you can't just get the MMOPlayerData and then
+ * This class is used to generalize stat maps to both players and non-player
+ * entities. Some statistics should apply even if the target entity is NOT
+ * a player (in that case, you can't just get the MMOPlayerData and then
  * the stat map).
  * <p>
  * See {@link EntityStatProvider} for more info

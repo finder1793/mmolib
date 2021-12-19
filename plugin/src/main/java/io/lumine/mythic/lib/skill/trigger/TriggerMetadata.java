@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.skill.metadata;
+package io.lumine.mythic.lib.skill.trigger;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.damage.AttackMetadata;
@@ -7,6 +7,7 @@ import io.lumine.mythic.lib.damage.DamageType;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
+@Deprecated
 public class TriggerMetadata {
     private final AttackMetadata attack;
     private final Entity target;
