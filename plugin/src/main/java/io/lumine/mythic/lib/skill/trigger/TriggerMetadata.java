@@ -1,11 +1,7 @@
 package io.lumine.mythic.lib.skill.trigger;
 
-import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.damage.AttackMetadata;
-import io.lumine.mythic.lib.damage.DamageMetadata;
-import io.lumine.mythic.lib.damage.DamageType;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 
 @Deprecated
 public class TriggerMetadata {
@@ -32,22 +28,5 @@ public class TriggerMetadata {
 
     public Entity getTarget() {
         return target;
-    }
-
-    /**
-     * Utility method that makes a player deal damage to a specific
-     * entity. This creates the attackMetadata based on the data
-     * stored by the CasterMetadata, and calls it using MythicLib
-     * damage manager
-     *
-     * @param target Target entity
-     * @param damage Damage dealt
-     * @param types  Type of target
-     * @return The (modified) attack metadata
-     */
-    public AttackMetadata attack(LivingEntity target, double damage, DamageType... types) {
-        AttackMetadata attackMeta = new AttackMetadata(new DamageMetadata(damage, types), attack.getStats());
-        MythicLib.plugin.getDamage().damage(attackMeta, target);
-        return attackMeta;
     }
 }
