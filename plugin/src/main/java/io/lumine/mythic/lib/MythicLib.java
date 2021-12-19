@@ -70,7 +70,7 @@ public class MythicLib extends LuminePlugin {
     private FlagPlugin flagPlugin = new DefaultFlagHandler();
     @Getter
     private ScoreboardProvider scoreboardProvider;
-    private PlaceholderParser placeholderParser;
+    private PlaceholderParser placeholderParser; //
 
     @Override
     public void load() {
