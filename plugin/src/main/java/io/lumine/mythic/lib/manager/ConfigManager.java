@@ -7,13 +7,27 @@ import java.text.DecimalFormatSymbols;
 
 public class ConfigManager {
     public final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
+    public final DecimalFormat decimal = new DecimalFormat("0.#"), decimals = new DecimalFormat("0.#");
     public boolean playerAbilityDamage;
 
     public void reload() {
         playerAbilityDamage = MythicLib.plugin.getConfig().getBoolean("player-ability-damage");
+
+        // Decimal separator
         formatSymbols.setDecimalSeparator(getFirstChar(MythicLib.plugin.getConfig().getString("number-format.decimal-separator")));
+        decimal.setDecimalFormatSymbols(formatSymbols);
+        decimals.setDecimalFormatSymbols(formatSymbols);
     }
 
+    /**
+     * MMOCore and MMOItems mostly cache the return value of that method
+     * in static fields for easy access, therefore a server restart is
+     * required when editing the decimal-separator option in the ML config
+     *
+     * @param pattern Something like "0.#"
+     * @return New decimal format with the decimal separator given in the MythicLib
+     *         main plugin config.
+     */
     public DecimalFormat newDecimalFormat(String pattern) {
         return new DecimalFormat(pattern, formatSymbols);
     }
