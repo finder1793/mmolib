@@ -4,7 +4,7 @@
     <groupId>io.lumine</groupId>
     <artifactId>MythicLib</artifactId>
     <packaging>pom</packaging>
-    <version>1.2</version>
+    <version>${revision}</version>
     <modules>
         <module>plugin</module>
         <module>v1_17</module>
@@ -16,6 +16,7 @@
     <properties>
         <downloadSources>false</downloadSources>
         <downloadJavadocs>false</downloadJavadocs>
+        <revision>1.2</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>

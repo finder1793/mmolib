@@ -5,9 +5,13 @@ import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.player.PlayerModifier;
 import org.apache.commons.lang.Validate;
 
+import java.text.DecimalFormat;
+
 public class StatModifier extends PlayerModifier {
     private final double d;
     private final ModifierType type;
+
+    private static final DecimalFormat oneDigit = MythicLib.plugin.getMMOConfig().newDecimalFormat("0.#");
 
     /**
      * Flat stat modifier (simplest modifier you can think about)
@@ -83,7 +87,7 @@ public class StatModifier extends PlayerModifier {
 
     @Override
     public String toString() {
-        return MythicLib.plugin.getMMOConfig().decimal.format(d) + (type == ModifierType.RELATIVE ? "%" : "");
+        return oneDigit.format(d) + (type == ModifierType.RELATIVE ? "%" : "");
     }
 }
 

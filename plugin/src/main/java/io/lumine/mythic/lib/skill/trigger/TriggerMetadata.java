@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.skill.metadata;
+package io.lumine.mythic.lib.skill.trigger;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.damage.AttackMetadata;

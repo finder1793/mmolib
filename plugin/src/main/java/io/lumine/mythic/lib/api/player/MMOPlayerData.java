@@ -8,7 +8,7 @@ import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.listener.PlayerListener;
 import io.lumine.mythic.lib.player.cooldown.CooldownMap;
 import io.lumine.mythic.lib.player.cooldown.CooldownType;
-import io.lumine.mythic.lib.skill.metadata.TriggerMetadata;
+import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.PassiveSkill;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import io.lumine.mythic.lib.skill.variable.VariableList;
@@ -20,12 +20,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public class MMOPlayerData {
     private final UUID uuid;
 
+    @Nullable
     private Player player;
 
     /**
@@ -173,6 +175,7 @@ public class MMOPlayerData {
      *
      * @return Returns the corresponding Player instance.
      */
+    @NotNull
     public Player getPlayer() {
         Validate.notNull(player, "Player is offline");
         return player;
@@ -183,7 +186,7 @@ public class MMOPlayerData {
      *
      * @param player Player instance to cache
      */
-    public void updatePlayer(Player player) {
+    public void updatePlayer(@Nullable Player player) {
         this.player = player;
         this.lastLogActivity = System.currentTimeMillis();
     }
