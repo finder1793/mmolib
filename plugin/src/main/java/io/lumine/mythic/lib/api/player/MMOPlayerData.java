@@ -1,15 +1,17 @@
 package io.lumine.mythic.lib.api.player;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.api.event.TemporaryDataSavedEvent;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.comp.flags.CustomFlag;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.listener.PlayerListener;
+import io.lumine.mythic.lib.player.TemporaryPlayerData;
 import io.lumine.mythic.lib.player.cooldown.CooldownMap;
 import io.lumine.mythic.lib.player.cooldown.CooldownType;
-import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.PassiveSkill;
+import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import io.lumine.mythic.lib.skill.variable.VariableList;
 import io.lumine.mythic.lib.skill.variable.VariableScope;
@@ -35,18 +37,32 @@ public class MMOPlayerData {
      */
     private long lastLogActivity;
 
-    // Data saved till next server restart
-    private final CooldownMap basicCooldowns = new CooldownMap();
-    private final StatMap stats = new StatMap(this);
-    private final Set<PassiveSkill> passiveSkills = new HashSet<>();
-    private final VariableList skillVariableList = new VariableList(VariableScope.PLAYER);
+    // Temporary player data
+    private final CooldownMap cooldownMap;
+    private final StatMap statMap;
+    private final VariableList skillVariableList;
+    private final Set<PassiveSkill> passiveSkills;
 
     private static final Map<UUID, MMOPlayerData> data = new HashMap<>();
 
     private MMOPlayerData(Player player) {
         this.uuid = player.getUniqueId();
-
         this.player = player;
+
+        this.cooldownMap = new CooldownMap();
+        this.statMap = new StatMap(this);
+        this.skillVariableList = new VariableList(VariableScope.PLAYER);
+        this.passiveSkills = new HashSet<>();
+    }
+
+    private MMOPlayerData(Player player, TemporaryPlayerData tempData) {
+        this.uuid = player.getUniqueId();
+        this.player = player;
+
+        this.cooldownMap = tempData.getCooldownMap();
+        this.statMap = tempData.getStatMap();
+        this.skillVariableList = tempData.getSkillVariableList();
+        this.passiveSkills = tempData.getPassiveSkills();
     }
 
     public UUID getUniqueId() {
@@ -59,7 +75,7 @@ public class MMOPlayerData {
      *         calculate stat values, etc.
      */
     public StatMap getStatMap() {
-        return stats;
+        return statMap;
     }
 
     /**
@@ -103,7 +119,7 @@ public class MMOPlayerData {
      * @param target      The potential target to cast the skill onto
      */
     public void triggerSkills(TriggerType triggerType, Entity target) {
-        triggerSkills(triggerType, new AttackMetadata(new DamageMetadata(), stats.cache(EquipmentSlot.MAIN_HAND)), target);
+        triggerSkills(triggerType, new AttackMetadata(new DamageMetadata(), statMap.cache(EquipmentSlot.MAIN_HAND)), target);
     }
 
     /**
@@ -198,7 +214,7 @@ public class MMOPlayerData {
      * @param value Mitigation cooldown in seconds
      */
     public void applyCooldown(CooldownType cd, double value) {
-        basicCooldowns.applyCooldown(cd.name(), value);
+        cooldownMap.applyCooldown(cd.name(), value);
     }
 
     /**
@@ -206,7 +222,7 @@ public class MMOPlayerData {
      * @return If the mecanic is currently on cooldown for the player
      */
     public boolean isOnCooldown(CooldownType cd) {
-        return basicCooldowns.isOnCooldown(cd.name());
+        return cooldownMap.isOnCooldown(cd.name());
     }
 
     /**
@@ -217,7 +233,7 @@ public class MMOPlayerData {
      * @return The main player's cooldown map
      */
     public CooldownMap getCooldownMap() {
-        return basicCooldowns;
+        return cooldownMap;
     }
 
     /**
@@ -233,9 +249,9 @@ public class MMOPlayerData {
     public static MMOPlayerData setup(Player player) {
         MMOPlayerData found = data.get(player.getUniqueId());
 
-        // Not loaded yet
+        // Not loaded yet, checks for temporary data
         if (found == null) {
-            MMOPlayerData playerData = new MMOPlayerData(player);
+            MMOPlayerData playerData = TemporaryPlayerData.has(player) ? new MMOPlayerData(player, TemporaryPlayerData.get(player)) : new MMOPlayerData(player);
             data.put(player.getUniqueId(), playerData);
             return playerData;
         }
@@ -251,7 +267,9 @@ public class MMOPlayerData {
      * @param uuid The player UUID to check
      * @return If the MMOPlayerData instance is loaded for a specific
      *         player
+     * @deprecated Use {@link #has(UUID)} instead
      */
+    @Deprecated
     public static boolean isLoaded(UUID uuid) {
         return data.containsKey(uuid);
     }

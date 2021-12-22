@@ -4,6 +4,7 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.TemporaryDataSavedEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.gui.PluginInventory;
+import io.lumine.mythic.lib.player.TemporaryPlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,9 +33,15 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void loggingOff(PlayerQuitEvent event) {
         TemporaryDataSavedEvent called = new TemporaryDataSavedEvent(MMOPlayerData.get(event.getPlayer()));
+        TemporaryPlayerData.load(event.getPlayer(), called.getTemporaryData());
         Bukkit.getPluginManager().callEvent(called);
 
         // TODO unload MMOPlayerData bc of memory leaks. May require a lot of tests & small changes tho
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void loggingOn(PlayerJoinEvent event) {
+        TemporaryPlayerData.unload(event.getPlayer());
     }
 
     @EventHandler

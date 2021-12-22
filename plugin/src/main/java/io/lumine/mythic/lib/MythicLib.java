@@ -7,8 +7,10 @@ import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.commands.BaseCommand;
 import io.lumine.mythic.lib.commands.HealthScaleCommand;
-import io.lumine.mythic.lib.comp.placeholder.DefaultPlaceholderParser;
-import io.lumine.mythic.lib.comp.placeholder.PlaceholderAPIHook;
+import io.lumine.mythic.lib.commands.mmolib.ExploreAttributesCommand;
+import io.lumine.mythic.lib.commands.mmolib.MMODebugCommand;
+import io.lumine.mythic.lib.commands.mmolib.MMOLibCommand;
+import io.lumine.mythic.lib.commands.mmolib.MMOTempStatCommand;
 import io.lumine.mythic.lib.comp.flags.DefaultFlagHandler;
 import io.lumine.mythic.lib.comp.flags.FlagPlugin;
 import io.lumine.mythic.lib.comp.flags.ResidenceFlags;
@@ -19,6 +21,8 @@ import io.lumine.mythic.lib.comp.hexcolor.SimpleColorParser;
 import io.lumine.mythic.lib.comp.hologram.CustomHologramFactoryList;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
+import io.lumine.mythic.lib.comp.placeholder.DefaultPlaceholderParser;
+import io.lumine.mythic.lib.comp.placeholder.PlaceholderAPIHook;
 import io.lumine.mythic.lib.comp.placeholder.PlaceholderAPIParser;
 import io.lumine.mythic.lib.comp.placeholder.PlaceholderParser;
 import io.lumine.mythic.lib.comp.target.CitizensTargetRestriction;
@@ -31,10 +35,7 @@ import io.lumine.mythic.lib.listener.option.FixMovementSpeed;
 import io.lumine.mythic.lib.listener.option.RegenIndicators;
 import io.lumine.mythic.lib.manager.*;
 import io.lumine.mythic.lib.metrics.bStats;
-import io.lumine.mythic.lib.commands.mmolib.ExploreAttributesCommand;
-import io.lumine.mythic.lib.commands.mmolib.MMODebugCommand;
-import io.lumine.mythic.lib.commands.mmolib.MMOLibCommand;
-import io.lumine.mythic.lib.commands.mmolib.MMOTempStatCommand;
+import io.lumine.mythic.lib.player.TemporaryPlayerData;
 import io.lumine.mythic.lib.version.ServerVersion;
 import io.lumine.mythic.lib.version.SpigotPlugin;
 import io.lumine.utils.events.extra.ArmorEquipEventListener;
@@ -70,7 +71,7 @@ public class MythicLib extends LuminePlugin {
     private FlagPlugin flagPlugin = new DefaultFlagHandler();
     @Getter
     private ScoreboardProvider scoreboardProvider;
-    private PlaceholderParser placeholderParser; //
+    private PlaceholderParser placeholderParser;
 
     @Override
     public void load() {
@@ -198,6 +199,9 @@ public class MythicLib extends LuminePlugin {
         // Load player data of online players
         Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.setup(player));
 
+        // Loop for temporary player data
+        Bukkit.getScheduler().runTaskTimer(this, TemporaryPlayerData::flush, 20 * 60 * 60, 20 * 60 * 60);
+
         configManager.reload();
     }
 
@@ -241,7 +245,9 @@ public class MythicLib extends LuminePlugin {
      * @deprecated Not implemented yet
      */
     @Deprecated
-    public SkillManager getSkills() { return skillManager; }
+    public SkillManager getSkills() {
+        return skillManager;
+    }
 
     /**
      * @deprecated Not implemented yet
