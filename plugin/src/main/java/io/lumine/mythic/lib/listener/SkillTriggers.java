@@ -9,8 +9,6 @@ import io.lumine.mythic.lib.api.util.ProjectileTrigger;
 import io.lumine.mythic.lib.comp.target.InteractionType;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
@@ -99,16 +97,19 @@ public class SkillTriggers implements Listener {
     }
 
     /**
-     * {@link Cancellable#isCancelled()} does not work with PlayerInteractEvent
-     * because there are now two possible ways to cancel the event, either
-     * by canceling the item interaction, either by canceling the block interaction.
-     * <p>
-     * Checking if the event is cancelled points towards the block interaction
-     * and not the item interaction which is NOT what MythicLib is interested in
+     * @implNote {@link Cancellable#isCancelled()} does not work with PlayerInteractEvent
+     *         because there are now two possible ways to cancel the event, either
+     *         by canceling the item interaction, either by canceling the block interaction.
+     *         <p>
+     *         Checking if the event is cancelled points towards the block interaction
+     *         and not the item interaction which is NOT what MythicLib is interested in
+     * @implNote Scrap this, it's 100% useless to check if the event is cancelled.
+     *         It makes sense to trigger skills even if the item or block interactions are canceled
      */
     @EventHandler(priority = EventPriority.HIGH)
     public void click(PlayerInteractEvent event) {
-        if (event.getAction() == Action.PHYSICAL || event.useItemInHand() == Event.Result.DENY)
+        // || event.useItemInHand() == Event.Result.DENY
+        if (event.getAction() == Action.PHYSICAL)
             return;
 
         MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
