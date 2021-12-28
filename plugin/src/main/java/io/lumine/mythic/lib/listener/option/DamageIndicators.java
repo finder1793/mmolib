@@ -18,7 +18,7 @@ public class DamageIndicators extends GameIndicators {
         super(config);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void a(EntityDamageEvent event) {
 
         Entity entity = event.getEntity();
