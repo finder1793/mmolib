@@ -41,7 +41,7 @@ import io.lumine.mythic.lib.skill.targeter.EntityTargeter;
 import io.lumine.mythic.lib.skill.targeter.LocationTargeter;
 import io.lumine.mythic.lib.skill.targeter.entity.*;
 import io.lumine.mythic.lib.skill.targeter.location.*;
-import io.lumine.mythic.lib.util.ConfigObject;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -57,7 +57,19 @@ import java.util.function.Function;
 import java.util.logging.Level;
 
 /**
- * Still under development
+ * The next step for MMO/Mythic abilities is to merge all the
+ * different abilities of MMOItems and MMOCore. This will allow
+ * us not to implement twice the same skill in the two plugins
+ * which will be a gain of time.
+ * <p>
+ * The second thing is to make MythicLib a database combining:
+ * - default MMOItems/MMOCore skills
+ * - custom skills made using MythicMobs
+ * - custom skills made using SkillAPI
+ * - custom skills made using MythicLib (still under development)
+ * <p>
+ * Then users can "register" any of these base skills inside MMOItems
+ * or MMOCore by adding one specific YAML to the "/skill" folder.
  *
  * @author jules
  */
@@ -133,6 +145,7 @@ public class SkillManager {
         registerLocationTargeter("looking_at", config -> new LookingAtTargeter(config));
         registerLocationTargeter("circle", config -> new CircleLocationTargeter(config));
         registerLocationTargeter("variable", config -> new VariableLocationTargeter(config));
+        registerLocationTargeter("custom", config -> new CustomLocationTargeter(config));
 
         // Default conditions
         registerCondition("boolean", config -> new BooleanCondition(config));

@@ -5,7 +5,7 @@ import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.util.PostLoadObject;
 import io.lumine.mythic.lib.skill.condition.Condition;
 import io.lumine.mythic.lib.skill.mechanic.Mechanic;
-import io.lumine.mythic.lib.util.ConfigObject;
+import io.lumine.mythic.lib.util.configobject.ConfigSectionObject;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class Skill extends PostLoadObject {
         if (config.isConfigurationSection("conditions"))
             for (String str : config.getConfigurationSection("conditions").getKeys(false))
                 try {
-                    conditions.add(MythicLib.plugin.getSkills().loadCondition(new ConfigObject(config.getConfigurationSection("conditions." + str))));
+                    conditions.add(MythicLib.plugin.getSkills().loadCondition(new ConfigSectionObject(config.getConfigurationSection("conditions." + str))));
                 } catch (RuntimeException exception) {
                     MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load condition '" + str + "' from skill '" + name + "': " + exception.getMessage());
                 }
@@ -40,7 +40,7 @@ public class Skill extends PostLoadObject {
         if (config.isConfigurationSection("mechanics"))
             for (String str : config.getConfigurationSection("mechanics").getKeys(false))
                 try {
-                    mechanics.add(MythicLib.plugin.getSkills().loadMechanic(new ConfigObject(config.getConfigurationSection("mechanics." + str))));
+                    mechanics.add(MythicLib.plugin.getSkills().loadMechanic(new ConfigSectionObject(config.getConfigurationSection("mechanics." + str))));
                 } catch (RuntimeException exception) {
                     MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load mechanic '" + str + "' from skill '" + name + "': " + exception.getMessage());
                 }

@@ -6,7 +6,7 @@ import io.lumine.mythic.lib.skill.mechanic.Mechanic;
 import io.lumine.mythic.lib.skill.targeter.LocationTargeter;
 import io.lumine.mythic.lib.skill.targeter.location.CasterLocationTargeter;
 import io.lumine.mythic.lib.skill.targeter.location.DefaultDirectionTargeter;
-import io.lumine.mythic.lib.util.ConfigObject;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import io.lumine.mythic.lib.util.EntityLocationType;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;

@@ -1,6 +1,6 @@
 package io.lumine.mythic.lib.skill.mechanic.variable.vector;
 
-import io.lumine.mythic.lib.util.ConfigObject;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import io.lumine.mythic.lib.util.DoubleFormula;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.mechanic.MechanicMetadata;
@@ -13,7 +13,7 @@ import org.apache.commons.lang.Validate;
 @MechanicMetadata
 public class SubtractVectorMechanic extends VariableMechanic {
     private final DoubleFormula x, y, z;
-    private final String varToAdd;
+    private final String varToSubstract;
 
     public SubtractVectorMechanic(ConfigObject config) {
         super(config);
@@ -24,7 +24,7 @@ public class SubtractVectorMechanic extends VariableMechanic {
         z = config.contains("z") ? new DoubleFormula(config.getString("z")) : DoubleFormula.ZERO;
 
         // Vector addition
-        varToAdd = config.getString("subtracted", null);
+        varToSubstract = config.getString("subtracted", null);
     }
 
     @Override
@@ -35,9 +35,9 @@ public class SubtractVectorMechanic extends VariableMechanic {
         Position target = (Position) targetVar.getStored();
 
         // Vector addition
-        if (varToAdd != null) {
-            Variable var = meta.getVariable(varToAdd);
-            Validate.isTrue(var instanceof PositionVariable, "Variable '" + varToAdd + "' is not a vector");
+        if (varToSubstract != null) {
+            Variable var = meta.getVariable(varToSubstract);
+            Validate.isTrue(var instanceof PositionVariable, "Variable '" + varToSubstract + "' is not a vector");
             target.add(((PositionVariable) var).getStored().clone().multiply(-1));
         }
 

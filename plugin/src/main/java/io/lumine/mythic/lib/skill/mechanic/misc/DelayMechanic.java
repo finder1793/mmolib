@@ -1,6 +1,6 @@
 package io.lumine.mythic.lib.skill.mechanic.misc;
 
-import io.lumine.mythic.lib.util.ConfigObject;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import io.lumine.mythic.lib.util.DoubleFormula;
 import io.lumine.mythic.lib.skill.MechanicQueue;
 import io.lumine.mythic.lib.skill.SkillMetadata;

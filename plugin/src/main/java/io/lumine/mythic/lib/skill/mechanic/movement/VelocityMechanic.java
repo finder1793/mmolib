@@ -1,6 +1,6 @@
 package io.lumine.mythic.lib.skill.mechanic.movement;
 
-import io.lumine.mythic.lib.util.ConfigObject;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.mechanic.type.TargetMechanic;
 import io.lumine.mythic.lib.skill.variable.Variable;

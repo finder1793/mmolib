@@ -8,7 +8,7 @@ import io.lumine.mythic.lib.skill.mechanic.MechanicMetadata;
 import io.lumine.mythic.lib.skill.targeter.EntityTargeter;
 import io.lumine.mythic.lib.skill.targeter.LocationTargeter;
 import io.lumine.mythic.lib.skill.variable.def.IntegerVariable;
-import io.lumine.mythic.lib.util.ConfigObject;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 

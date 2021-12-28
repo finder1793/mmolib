@@ -7,7 +7,7 @@ import io.lumine.mythic.lib.skill.mechanic.Mechanic;
 import io.lumine.mythic.lib.skill.targeter.LocationTargeter;
 import io.lumine.mythic.lib.skill.targeter.location.DefaultDirectionTargeter;
 import io.lumine.mythic.lib.skill.targeter.location.DefaultLocationTargeter;
-import io.lumine.mythic.lib.util.ConfigObject;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;

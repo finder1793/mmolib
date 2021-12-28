@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.skill.mechanic.type;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.util.ConfigObject;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.mechanic.Mechanic;
 import io.lumine.mythic.lib.skill.targeter.EntityTargeter;

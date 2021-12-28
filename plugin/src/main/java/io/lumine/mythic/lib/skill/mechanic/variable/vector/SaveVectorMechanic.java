@@ -1,16 +1,16 @@
 package io.lumine.mythic.lib.skill.mechanic.variable.vector;
 
-import io.lumine.mythic.lib.util.ConfigObject;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.mechanic.MechanicMetadata;
 import io.lumine.mythic.lib.skill.mechanic.variable.VariableMechanic;
 import io.lumine.mythic.lib.skill.variable.Variable;
 import io.lumine.mythic.lib.skill.variable.def.PositionVariable;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
 
 /**
- * Copies a given vector and saves it into a custom variable
- * which can later be modified
+ * Copies a given vector and saves it into a
+ * custom variable which can later be modified
  */
 @MechanicMetadata
 public class SaveVectorMechanic extends VariableMechanic {

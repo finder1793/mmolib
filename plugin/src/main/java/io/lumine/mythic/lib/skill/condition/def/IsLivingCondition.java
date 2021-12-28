@@ -2,7 +2,7 @@ package io.lumine.mythic.lib.skill.condition.def;
 
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.condition.Condition;
-import io.lumine.mythic.lib.util.ConfigObject;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.bukkit.entity.LivingEntity;
 
 /**

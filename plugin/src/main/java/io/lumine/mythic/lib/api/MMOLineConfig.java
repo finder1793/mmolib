@@ -5,6 +5,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import org.apache.commons.lang.Validate;
 
+import java.util.Set;
+
 public class MMOLineConfig {
     private final String key, value;
     private final String[] args;
@@ -15,8 +17,7 @@ public class MMOLineConfig {
      * MMOItems/MMOCore configs to register quest triggers, objectives, crafting
      * ingredients... Throws IAE
      *
-     * @param value
-     *            The string to parse
+     * @param value The string to parse
      */
     public MMOLineConfig(String value) {
         this.value = value;
@@ -47,6 +48,16 @@ public class MMOLineConfig {
 
         String format = value.substring(Math.min(value.length(), end + 1));
         args = format.isEmpty() ? new String[0] : format.split(" ");
+    }
+
+    /**
+     * Used when exploring the json object of the initial MMOLineConfig
+     */
+    private MMOLineConfig(JsonObject json) {
+        this.key = null;
+        this.value = null;
+        this.args = new String[0];
+        this.json = json;
     }
 
     /**
@@ -93,6 +104,10 @@ public class MMOLineConfig {
         return json.get(path).getAsLong();
     }
 
+    public MMOLineConfig getConfig(String path) {
+        return new MMOLineConfig(json.get(path).getAsJsonObject());
+    }
+
     public boolean getBoolean(String path) {
         return json.get(path).getAsBoolean();
     }
@@ -105,11 +120,14 @@ public class MMOLineConfig {
         return json.has(path);
     }
 
+    public Set<String> getKeys() {
+        return json.keySet();
+    }
+
     /**
      * Throws IAE if the config is missing any of these paths
      *
-     * @param paths
-     *            The config paths to check
+     * @param paths The config paths to check
      */
     public void validate(String... paths) {
         for (String path : paths)
@@ -119,8 +137,7 @@ public class MMOLineConfig {
     /**
      * Throws IAE if the config has less than X parameters
      *
-     * @param count
-     *            The amount of arguments
+     * @param count The amount of arguments
      */
     public void validateArgs(int count) {
         Validate.isTrue(args.length >= count, "Config must have at least " + count + " parameters");

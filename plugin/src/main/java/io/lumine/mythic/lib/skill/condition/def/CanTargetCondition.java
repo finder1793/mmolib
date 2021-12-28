@@ -5,7 +5,7 @@ import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.comp.target.InteractionType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.condition.Condition;
-import io.lumine.mythic.lib.util.ConfigObject;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 
 /**
  * Checks if the skill caster can damage the skill target

@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.skill.targeter.location;
 
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.util.ConfigObject;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import io.lumine.mythic.lib.util.DoubleFormula;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.targeter.LocationTargeter;

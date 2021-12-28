@@ -4,7 +4,7 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.targeter.EntityTargeter;
 import io.lumine.mythic.lib.skill.targeter.LocationTargeter;
-import io.lumine.mythic.lib.util.ConfigObject;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import io.lumine.mythic.lib.util.DoubleFormula;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
