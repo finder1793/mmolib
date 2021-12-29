@@ -10,7 +10,8 @@ import io.lumine.mythic.lib.api.stat.modifier.ModifierSource;
  * - potion effect
  * - any passive skill
  * <p>
- * Since MythicLib 1.2 it is a generalization of stat modifiers
+ * Since MythicLib 1.2 it is a generalization of stat modifiers.
+ * Still under development
  *
  * @author indyuce
  */

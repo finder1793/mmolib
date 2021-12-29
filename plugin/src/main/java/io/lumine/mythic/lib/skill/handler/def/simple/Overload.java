@@ -1,0 +1,54 @@
+package io.lumine.mythic.lib.skill.handler.def.simple;
+
+import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.damage.AttackMetadata;
+import io.lumine.mythic.lib.damage.DamageMetadata;
+import io.lumine.mythic.lib.damage.DamageType;
+import io.lumine.mythic.lib.skill.SkillMetadata;
+import io.lumine.mythic.lib.skill.handler.SkillHandler;
+import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
+import io.lumine.mythic.lib.version.VersionSound;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+public class Overload extends SkillHandler<SimpleSkillResult> {
+    public Overload() {
+        super();
+
+        registerModifiers("damage", "radius");
+    }
+
+    @Override
+    public SimpleSkillResult getResult(SkillMetadata meta) {
+        return new SimpleSkillResult();
+    }
+
+    @Override
+    public void cast(SimpleSkillResult result, SkillMetadata skillMeta) {
+        double damage = skillMeta.getModifier("damage");
+        double radius = skillMeta.getModifier("radius");
+
+        Player caster = skillMeta.getCaster().getPlayer();
+
+        caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 2, 0);
+        caster.getWorld().playSound(caster.getLocation(), VersionSound.ENTITY_FIREWORK_ROCKET_TWINKLE.toSound(), 2, 0);
+        caster.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 2, 254));
+
+        for (Entity entity : caster.getNearbyEntities(radius, radius, radius))
+            if (UtilityMethods.canTarget(caster, entity))
+                new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC), skillMeta.getStats()).damage((LivingEntity) entity);
+
+        double step = 12 + (radius * 2.5);
+        for (double j = 0; j < Math.PI * 2; j += Math.PI / step) {
+            Location loc = caster.getLocation().clone().add(Math.cos(j) * radius, 1, Math.sin(j) * radius);
+            caster.getWorld().spawnParticle(Particle.CLOUD, loc, 4, 0, 0, 0, .05);
+            caster.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, loc, 4, 0, 0, 0, .05);
+        }
+    }
+}

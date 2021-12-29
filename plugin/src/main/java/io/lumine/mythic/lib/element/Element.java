@@ -1,13 +1,13 @@
 package io.lumine.mythic.lib.element;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.skill.Skill;
+import io.lumine.mythic.lib.skill.custom.CustomSkill;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class Element {
     private final String id, name;
-    private final Skill criticalStrike, regularAttack;
+    private final CustomSkill criticalStrike, regularAttack;
 
     public Element(ConfigurationSection config) {
         Validate.isTrue(config.contains("name"), "Please specify an element name");
@@ -27,7 +27,7 @@ public class Element {
         return name;
     }
 
-    public Skill getSkill(boolean criticalStrike) {
+    public CustomSkill getSkill(boolean criticalStrike) {
         return criticalStrike && this.criticalStrike != null ? this.criticalStrike : regularAttack;
     }
 

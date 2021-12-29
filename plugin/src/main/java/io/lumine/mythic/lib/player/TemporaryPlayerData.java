@@ -5,7 +5,7 @@ import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.player.cooldown.CooldownMap;
 import io.lumine.mythic.lib.skill.trigger.PassiveSkill;
-import io.lumine.mythic.lib.skill.variable.VariableList;
+import io.lumine.mythic.lib.skill.custom.variable.VariableList;
 import org.bukkit.entity.Player;
 
 import java.util.*;

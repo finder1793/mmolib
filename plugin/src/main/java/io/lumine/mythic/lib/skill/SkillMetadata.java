@@ -7,13 +7,13 @@ import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
-import io.lumine.mythic.lib.skill.variable.Variable;
-import io.lumine.mythic.lib.skill.variable.VariableList;
-import io.lumine.mythic.lib.skill.variable.VariableScope;
-import io.lumine.mythic.lib.skill.variable.def.EntityVariable;
-import io.lumine.mythic.lib.skill.variable.def.PlayerVariable;
-import io.lumine.mythic.lib.skill.variable.def.PositionVariable;
-import io.lumine.mythic.lib.skill.variable.def.StatsVariable;
+import io.lumine.mythic.lib.skill.custom.variable.Variable;
+import io.lumine.mythic.lib.skill.custom.variable.VariableList;
+import io.lumine.mythic.lib.skill.custom.variable.VariableScope;
+import io.lumine.mythic.lib.skill.custom.variable.def.EntityVariable;
+import io.lumine.mythic.lib.skill.custom.variable.def.PlayerVariable;
+import io.lumine.mythic.lib.skill.custom.variable.def.PositionVariable;
+import io.lumine.mythic.lib.skill.custom.variable.def.StatsVariable;
 import io.lumine.mythic.lib.util.EntityLocationType;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
@@ -35,8 +35,6 @@ import java.util.regex.Pattern;
  * This also stores variables which can be edited and manipulated by the user.
  */
 public class SkillMetadata {
-
-    @Deprecated
     private final Skill cast;
     private final StatMap.CachedStatMap stats;
     private final VariableList vars;
@@ -72,7 +70,7 @@ public class SkillMetadata {
     }
 
     /**
-     * @param cast           Skill being cast
+     * @param cast           Initial skill being cast. It's used to retrieve skill modifiers
      * @param attackMeta     Some triggers pass an attackMeta as argument, like DAMAGED or DAMAGE.
      * @param source         The location at which the skill/mechanic was cast
      * @param targetLocation The skill/mechanic target location
@@ -83,7 +81,7 @@ public class SkillMetadata {
     }
 
     /**
-     * @param cast           Skill being cast
+     * @param cast           Initial skill being cast. It's used to retrieve skill modifiers
      * @param stats          Cached statistics of the skill caster
      * @param vars           Skill variable list if it already exists
      * @param attackMeta     Some triggers pass an attackMeta as argument, like DAMAGED or DAMAGE.
@@ -125,6 +123,17 @@ public class SkillMetadata {
         return attackMeta != null;
     }
 
+    /**
+     * Retrieves a specific skill modifier using
+     * the cached instance of {@link Skill}
+     *
+     * @param path Modifier path
+     * @return Modifier value
+     */
+    public double getModifier(String path) {
+        return cast.getModifier(path);
+    }
+
     @NotNull
     public AttackMetadata getAttack() {
         return Objects.requireNonNull(attackMeta, "Skill has no attack metadata bound");
@@ -140,6 +149,10 @@ public class SkillMetadata {
         return targetEntity;
     }
 
+    public boolean hasTargetEntity() {
+        return targetEntity != null;
+    }
+
     @NotNull
     public Location getTargetLocation() {
         return Objects.requireNonNull(targetLocation, "Skill has no target location");
@@ -148,6 +161,10 @@ public class SkillMetadata {
     @Nullable
     public Location getTargetLocationOrNull() {
         return targetLocation;
+    }
+
+    public boolean hasTargetLocation() {
+        return targetLocation != null;
     }
 
     /**

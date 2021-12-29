@@ -53,7 +53,7 @@ public class DoubleFormula {
         try {
             return trivial ? trivialValue : Double.valueOf(new FunctionX(meta.parseString(value)).getF_xo(0));
         } catch (CalculatorException exception) {
-            MythicLib.plugin.getLogger().log(Level.WARNING, "Could not evaluate '" + value + "' while casting skill '" + meta.getCast().getName() + "': " + exception.getMessage());
+            MythicLib.plugin.getLogger().log(Level.WARNING, "Could not evaluate '" + value + "' while casting skill '" + meta.getCast().getHandler().getId() + "': " + exception.getMessage());
             return 0;
         }
     }

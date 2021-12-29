@@ -1,0 +1,88 @@
+package io.lumine.mythic.lib.skill.handler.def.simple;
+
+import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.damage.AttackMetadata;
+import io.lumine.mythic.lib.damage.DamageMetadata;
+import io.lumine.mythic.lib.damage.DamageType;
+import io.lumine.mythic.lib.skill.SkillMetadata;
+import io.lumine.mythic.lib.skill.handler.SkillHandler;
+import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
+import io.lumine.mythic.lib.version.VersionSound;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
+
+public class Firefly extends SkillHandler<SimpleSkillResult> {
+    public Firefly() {
+        super();
+
+        registerModifiers("damage", "duration", "knockback");
+    }
+
+    @Override
+    public SimpleSkillResult getResult(SkillMetadata meta) {
+        return new SimpleSkillResult();
+    }
+
+    @Override
+    public void cast(SimpleSkillResult result, SkillMetadata skillMeta) {
+        double duration = skillMeta.getModifier("duration") * 20;
+
+        Player caster = skillMeta.getCaster().getPlayer();
+
+        new BukkitRunnable() {
+            int j = 0;
+
+            public void run() {
+                if (j++ > duration)
+                    cancel();
+
+                if (caster.getLocation().getBlock().getType() == Material.WATER) {
+                    caster.setVelocity(caster.getVelocity().multiply(3).setY(1.8));
+                    caster.getWorld().playSound(caster.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1, .5f);
+                    caster.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, caster.getLocation().add(0, 1, 0), 32, 0, 0, 0, .2);
+                    caster.getWorld().spawnParticle(Particle.CLOUD, caster.getLocation().add(0, 1, 0), 32, 0, 0, 0, .2);
+                    cancel();
+                    return;
+                }
+
+                for (Entity entity : caster.getNearbyEntities(1, 1, 1))
+                    if (UtilityMethods.canTarget(caster, entity)) {
+                        double damage = skillMeta.getModifier("damage");
+                        double knockback = skillMeta.getModifier("knockback");
+
+                        caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 1, .5f);
+                        caster.getWorld().spawnParticle(Particle.LAVA, caster.getLocation().add(0, 1, 0), 32);
+                        caster.getWorld().spawnParticle(Particle.SMOKE_LARGE, caster.getLocation().add(0, 1, 0), 24, 0, 0, 0, .3);
+                        caster.getWorld().spawnParticle(Particle.FLAME, caster.getLocation().add(0, 1, 0), 24, 0, 0, 0, .3);
+                        entity.setVelocity(caster.getVelocity().setY(0.3).multiply(1.7 * knockback));
+                        caster.setVelocity(caster.getEyeLocation().getDirection().multiply(-3).setY(.5));
+                        new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC), skillMeta.getStats()).damage((LivingEntity) entity);
+                        cancel();
+                        return;
+                    }
+
+                Location loc = caster.getLocation().add(0, 1, 0);
+                for (double a = 0; a < Math.PI * 2; a += Math.PI / 9) {
+                    Vector vec = new Vector(.6 * Math.cos(a), .6 * Math.sin(a), 0);
+                    vec = UtilityMethods.rotate(vec, loc.getDirection());
+                    loc.add(vec);
+                    caster.getWorld().spawnParticle(Particle.SMOKE_NORMAL, loc, 0);
+                    if (random.nextDouble() < .3)
+                        caster.getWorld().spawnParticle(Particle.FLAME, loc, 0);
+                    loc.add(vec.multiply(-1));
+                }
+
+                caster.setVelocity(caster.getEyeLocation().getDirection());
+                caster.getWorld().playSound(caster.getLocation(), VersionSound.ENTITY_FIREWORK_ROCKET_BLAST.toSound(), 1, 1);
+            }
+        }.runTaskTimer(MythicLib.plugin, 0, 1);
+    }
+}

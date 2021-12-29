@@ -1,7 +1,6 @@
 package io.lumine.mythic.lib.api.player;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.event.TemporaryDataSavedEvent;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.comp.flags.CustomFlag;
 import io.lumine.mythic.lib.damage.AttackMetadata;
@@ -13,8 +12,8 @@ import io.lumine.mythic.lib.player.cooldown.CooldownType;
 import io.lumine.mythic.lib.skill.trigger.PassiveSkill;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
-import io.lumine.mythic.lib.skill.variable.VariableList;
-import io.lumine.mythic.lib.skill.variable.VariableScope;
+import io.lumine.mythic.lib.skill.custom.variable.VariableList;
+import io.lumine.mythic.lib.skill.custom.variable.VariableScope;
 import org.apache.commons.lang.Validate;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
