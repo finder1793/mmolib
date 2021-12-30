@@ -49,6 +49,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.ServicePriority;
 
+import java.io.File;
 import java.util.logging.Level;
 
 public class MythicLib extends LuminePlugin {
@@ -210,7 +211,7 @@ public class MythicLib extends LuminePlugin {
         Bukkit.getPluginManager().registerEvents(MegaWorkbenchMapping.MWB, this);
 
         // Load local skills
-        skillManager.loadLocalSkills();
+        skillManager.initialize(false);
 
         // Load player data of online players
         Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.setup(player));
@@ -226,7 +227,7 @@ public class MythicLib extends LuminePlugin {
         configManager.reload();
         attackEffects.reload();
         mitigationMechanics.reload();
-        skillManager.loadLocalSkills();
+        skillManager.initialize(true);
     }
 
     @Override
@@ -257,10 +258,6 @@ public class MythicLib extends LuminePlugin {
         return entityManager;
     }
 
-    /**
-     * @deprecated Not implemented yet
-     */
-    @Deprecated
     public SkillManager getSkills() {
         return skillManager;
     }
@@ -303,5 +300,9 @@ public class MythicLib extends LuminePlugin {
      */
     public String parseColors(String format) {
         return colorParser.parseColorCodes(format);
+    }
+
+    public File getJarFile() {
+        return plugin.getFile();
     }
 }

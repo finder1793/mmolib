@@ -46,17 +46,22 @@ import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.util.RecursiveFolderExplorer;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 
 /**
@@ -97,6 +102,8 @@ public class SkillManager {
      * - default skill handlers from both MI and MMOCore (found in /skill/handler/def)
      */
     private final Map<String, SkillHandler> handlers = new HashMap<>();
+
+    private final Map<Predicate<ConfigurationSection>, Function<ConfigurationSection, SkillHandler>> skillHandlerTypes = new HashMap<>();
 
     private boolean registration = true;
 
@@ -177,18 +184,53 @@ public class SkillManager {
         registerCondition("is_living", config -> new IsLivingCondition(config));
         registerCondition("can_target", config -> new CanTargetCondition(config));
         registerCondition("has_damage_type", config -> new HasDamageTypeCondition(config));
+
+        // Default skill handler types
+        registerSkillHandlerType(config -> config.contains("mythiclib-skill"), config -> new CustomSkillHandler(getSkillOrThrow(config.getString("mythiclib-skill"))));
+        // TODO SkillAPI
+        // TODO MythicMobs
+    }
+
+    /**
+     * @param matcher  If a certain skill config redirects to the skill handler
+     *                 Example: a config which the following key should be handled
+     *                 by {@link io.lumine.mythic.lib.skill.handler.MythicMobsSkillHandler}
+     *                 <code>mythic-mobs-skill-id: WarriorStrike</code>
+     * @param provider Function that provides the skill handler given the previous config,
+     *                 if the config matches
+     */
+    public void registerSkillHandlerType(Predicate<ConfigurationSection> matcher, Function<ConfigurationSection, SkillHandler> provider) {
+        Validate.notNull(matcher);
+        Validate.notNull(provider);
+
+        skillHandlerTypes.put(matcher, provider);
+    }
+
+    @NotNull
+    public SkillHandler<?> loadSkillHandler(ConfigurationSection config) {
+
+        for (Map.Entry<Predicate<ConfigurationSection>, Function<ConfigurationSection, SkillHandler>> type : skillHandlerTypes.entrySet())
+            if (type.getKey().test(config))
+                return type.getValue().apply(config);
+
+        throw new IllegalArgumentException("Could not match handler type to config");
+    }
+
+    public void registerSkillHandler(SkillHandler<?> handler) {
+        Validate.isTrue(!handlers.containsKey(handler.getId()), "A skill handler with the same name already exists");
+
+        handlers.put(handler.getId(), handler);
+    }
+
+    @NotNull
+    public SkillHandler<?> getHandlerOrThrow(String id) {
+        return Objects.requireNonNull(handlers.get(id), "Could not find handler with ID '" + id + "'");
     }
 
     public void registerCustomSkill(CustomSkill skill) {
         Validate.isTrue(!customSkills.containsKey(skill.getId()), "A skill with the same name already exists");
 
         customSkills.put(skill.getId(), skill);
-    }
-
-    public void registerSkillHandler(SkillHandler handler) {
-        Validate.isTrue(!customSkills.containsKey(handler.getId()), "A skill with the same name already exists");
-
-        handlers.put(handler.getId(), handler);
     }
 
     @NotNull
@@ -212,6 +254,13 @@ public class SkillManager {
 
     public Collection<CustomSkill> getCustomSkills() {
         return customSkills.values();
+    }
+
+    /**
+     * @return Currently registered skill handlers.
+     */
+    public Collection<SkillHandler> getHandlers() {
+        return handlers.values();
     }
 
     public void registerCondition(String name, Function<ConfigObject, Condition> condition) {
@@ -290,12 +339,32 @@ public class SkillManager {
         throw new IllegalArgumentException("Could not match targeter to '" + key + "'");
     }
 
-    public void loadLocalSkills() {
-        if (registration)
-            registration = false;
-        else {
+    public void initialize(boolean clearBefore) {
+        if (clearBefore) {
+            for (SkillHandler<?> handler : handlers.values())
+                if (handler instanceof Listener)
+                    HandlerList.unregisterAll((Listener) handler);
+
             handlers.clear();
             customSkills.clear();
+        } else
+            registration = false;
+
+        // Load default skills
+        try {
+            JarFile file = new JarFile(MythicLib.plugin.getJarFile());
+            for (Enumeration<JarEntry> enu = file.entries(); enu.hasMoreElements(); ) {
+                String name = enu.nextElement().getName().replace("/", ".");
+                if (!name.contains("$") && name.endsWith(".class") && name.startsWith("io.lumine.mythic.lib.skill.handler.def.")) {
+                    SkillHandler<?> ability = (SkillHandler<?>) Class.forName(name.substring(0, name.length() - 6)).getDeclaredConstructor().newInstance();
+                    registerSkillHandler(ability);
+                    if (ability instanceof Listener)
+                        Bukkit.getPluginManager().registerEvents((Listener) ability, MythicLib.plugin);
+                }
+            }
+            file.close();
+        } catch (IOException | InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException exception) {
+            exception.printStackTrace();
         }
 
         // Initialize custom skills
@@ -310,9 +379,7 @@ public class SkillManager {
                     MythicLib.plugin.getLogger().log(Level.WARNING, "Could not initialize skill '" + key + "' from '" + file.getName() + "': " + exception.getMessage());
                 }
 
-        }, exception -> {
-            throw new RuntimeException("Not handled");
-        }).explore(new File(MythicLib.plugin.getDataFolder() + "/skill"));
+        }, MythicLib.plugin, "Could not load custom skills").explore(new File(MythicLib.plugin.getDataFolder() + "/skill"));
 
         // Post load custom skills and register a skill handler
         for (CustomSkill skill : customSkills.values())
@@ -325,5 +392,7 @@ public class SkillManager {
             }
 
         // TODO load MM skills
+
+        // TODO load SkillAPI skills
     }
 }

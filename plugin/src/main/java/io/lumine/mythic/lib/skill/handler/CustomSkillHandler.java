@@ -9,7 +9,7 @@ import io.lumine.mythic.lib.skill.result.SkillResult;
 /**
  * A skill behaviour based on a custom MythicLib skill
  */
-public class CustomSkillHandler extends SkillHandler {
+public class CustomSkillHandler extends SkillHandler<CustomSkillResult> {
     private final CustomSkill skill;
 
     public CustomSkillHandler(CustomSkill skill) {
@@ -19,12 +19,12 @@ public class CustomSkillHandler extends SkillHandler {
     }
 
     @Override
-    public SkillResult getResult(SkillMetadata meta) {
+    public CustomSkillResult getResult(SkillMetadata meta) {
         return new CustomSkillResult(skill);
     }
 
     @Override
-    public void whenCast(SkillResult result, SkillMetadata skillMeta) {
+    public void whenCast(CustomSkillResult result, SkillMetadata skillMeta) {
         new MechanicQueue(skillMeta, skill).next();
     }
 }

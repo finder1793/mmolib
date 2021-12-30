@@ -23,10 +23,12 @@ public abstract class Skill implements CooldownObject {
         return cast(triggerMeta.toSkillMetadata(this));
     }
 
-    public SkillResult cast(SkillMetadata meta) {
+    public <T extends SkillResult> SkillResult cast(SkillMetadata meta) {
+
+        SkillHandler<T> handler = (SkillHandler<T>) getHandler();
 
         // Lower level skill restrictions
-        SkillResult result = getHandler().getResult(meta);
+        T result = handler.getResult(meta);
         if (!result.isSuccessful(meta))
             return result;
 
@@ -44,7 +46,7 @@ public abstract class Skill implements CooldownObject {
         whenCast(meta);
 
         // Lower level skill effects
-        getHandler().whenCast(result, meta);
+        handler.whenCast(result, meta);
 
         // Call second Bukkit event
         Bukkit.getPluginManager().callEvent(new SkillCastEvent(meta, result));
@@ -76,7 +78,7 @@ public abstract class Skill implements CooldownObject {
      */
     public abstract void whenCast(SkillMetadata skillMeta);
 
-    public abstract SkillHandler getHandler();
+    public abstract SkillHandler<?> getHandler();
 
     public abstract double getModifier(String path);
 

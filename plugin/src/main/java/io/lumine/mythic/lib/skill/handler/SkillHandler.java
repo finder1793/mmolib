@@ -35,19 +35,27 @@ public abstract class SkillHandler<T extends SkillResult> {
     protected static final Random random = new Random();
 
     public SkillHandler() {
-        this.id = getClass().getSimpleName().toUpperCase().replace("-", "_").replaceAll("[^A-Z_]", "");
+        this.id = formatId(getClass().getSimpleName());
 
         registerModifiers("cooldown", "mana", "stamina");
     }
 
     public SkillHandler(String id) {
-        this.id = id;
+        this.id = formatId(id);
 
         registerModifiers("cooldown", "mana", "stamina");
     }
 
+    private String formatId(String str) {
+        return str.toUpperCase().replace("-", "_").replace(" ", "_").replaceAll("[^A-Z_]", "");
+    }
+
     public String getId() {
         return id;
+    }
+
+    public String getLowerCaseId() {
+        return id.toLowerCase().replace("_", "-");
     }
 
     public void registerModifiers(String... mods) {
