@@ -27,7 +27,7 @@ public class Bunny_Mode extends SkillHandler<SimpleSkillResult> {
     }
 
     @Override
-    public void cast(SimpleSkillResult result, SkillMetadata skillMeta) {
+    public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         double duration = skillMeta.getModifier("duration") * 20;
         double y = skillMeta.getModifier("jump-force");
         double xz = skillMeta.getModifier("speed");
@@ -46,8 +46,7 @@ public class Bunny_Mode extends SkillHandler<SimpleSkillResult> {
                 }
 
                 if (caster.getLocation().add(0, -.5, 0).getBlock().getType().isSolid()) {
-                    caster
-                            .setVelocity(caster.getEyeLocation().getDirection().setY(0).normalize().multiply(.8 * xz).setY(0.5 * y / xz));
+                    caster.setVelocity(caster.getEyeLocation().getDirection().setY(0).normalize().multiply(.8 * xz).setY(0.5 * y / xz));
                     caster.getWorld().playSound(caster.getLocation(), VersionSound.ENTITY_ENDER_DRAGON_FLAP.toSound(), 2, 1);
                     for (double a = 0; a < Math.PI * 2; a += Math.PI / 12)
                         caster.getWorld().spawnParticle(Particle.CLOUD, caster.getLocation(), 0, Math.cos(a), 0, Math.sin(a),

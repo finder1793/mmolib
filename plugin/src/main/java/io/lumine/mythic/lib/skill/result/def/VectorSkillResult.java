@@ -3,7 +3,6 @@ package io.lumine.mythic.lib.skill.result.def;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.result.SkillResult;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -12,6 +11,10 @@ public class VectorSkillResult implements SkillResult {
 
     public VectorSkillResult(SkillMetadata skillMeta) {
         this.target = getTargetDirection(skillMeta.getCaster().getPlayer(), skillMeta.getTargetEntityOrNull());
+    }
+
+    public VectorSkillResult(Vector vec) {
+        this.target = vec;
     }
 
     public Vector getTarget() {

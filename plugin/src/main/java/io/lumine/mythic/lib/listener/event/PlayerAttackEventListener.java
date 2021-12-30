@@ -1,7 +1,6 @@
 package io.lumine.mythic.lib.listener.event;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.event.EntityKillEntityEvent;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.event.PlayerKillEntityEvent;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
@@ -75,10 +74,8 @@ public class PlayerAttackEventListener implements Listener {
         /*
          * Call the death event if the entity is being killed
          */
-        if (event.getFinalDamage() >= ((Damageable) event.getEntity()).getHealth()) {
-            Bukkit.getPluginManager().callEvent(new EntityKillEntityEvent(attack.getPlayer(), event.getEntity()));
+        if (event.getFinalDamage() >= ((Damageable) event.getEntity()).getHealth())
             Bukkit.getPluginManager().callEvent(new PlayerKillEntityEvent(playerData, attack, (LivingEntity) event.getEntity()));
-        }
     }
 
     /**

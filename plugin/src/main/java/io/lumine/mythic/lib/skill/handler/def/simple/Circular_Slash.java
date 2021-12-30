@@ -30,7 +30,7 @@ public class Circular_Slash extends SkillHandler<SimpleSkillResult> {
     }
 
     @Override
-    public void cast(SimpleSkillResult result, SkillMetadata skillMeta) {
+    public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         double damage = skillMeta.getModifier("damage");
         double radius = skillMeta.getModifier("radius");
         double knockback = skillMeta.getModifier("knockback");

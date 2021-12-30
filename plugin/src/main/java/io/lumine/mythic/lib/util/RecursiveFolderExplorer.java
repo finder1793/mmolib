@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.api.util;
+package io.lumine.mythic.lib.util;
 
 import org.bukkit.plugin.Plugin;
 

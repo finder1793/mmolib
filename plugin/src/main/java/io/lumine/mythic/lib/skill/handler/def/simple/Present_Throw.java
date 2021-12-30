@@ -57,7 +57,7 @@ public class Present_Throw extends SkillHandler<SimpleSkillResult> {
     }
 
     @Override
-    public void cast(SimpleSkillResult result, SkillMetadata skillMeta) {
+    public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         double damage = skillMeta.getModifier("damage");
         double radiusSquared = Math.pow(skillMeta.getModifier("radius"), 2);
 

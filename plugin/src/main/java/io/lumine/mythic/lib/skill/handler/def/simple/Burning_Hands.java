@@ -31,7 +31,7 @@ public class Burning_Hands extends SkillHandler<SimpleSkillResult> {
     }
 
     @Override
-    public void cast(SimpleSkillResult result, SkillMetadata skillMeta) {
+    public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         double duration = skillMeta.getModifier("duration") * 10;
         double damage = skillMeta.getModifier("damage") / 2;
 

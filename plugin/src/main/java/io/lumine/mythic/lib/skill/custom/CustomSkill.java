@@ -1,7 +1,6 @@
 package io.lumine.mythic.lib.skill.custom;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.util.PostLoadObject;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.custom.condition.Condition;
@@ -14,11 +13,11 @@ import java.util.List;
 import java.util.logging.Level;
 
 /**
- * A custom skill made using the MythicLib skill
- * creation system
+ * Custom skill made using the ML skill creation system
  */
 public class CustomSkill extends PostLoadObject {
     private final String id;
+    private final boolean publicSkill;
 
     private final List<Condition> conditions = new ArrayList<>();
     private final List<Mechanic> mechanics = new ArrayList<>();
@@ -27,6 +26,7 @@ public class CustomSkill extends PostLoadObject {
         super(config);
 
         this.id = config.getName();
+        publicSkill = config.getBoolean("public", true);
     }
 
     @Override
@@ -56,22 +56,27 @@ public class CustomSkill extends PostLoadObject {
         return id;
     }
 
+    /**
+     * Should the skill be public i.e should a skill handler register for
+     * that custom skill. If not, server admins won't be able to access
+     * this skill once it is registered in the skill manager.
+     * <p>
+     * It's true for more convenience by default. This means that users
+     * can disable the display of some skills which they consider like
+     * 'intermediate' skills and not real skills.
+     *
+     * @return If the skill should be accessible to other plugins
+     */
+    public boolean isPublic() {
+        return publicSkill;
+    }
+
     public List<Mechanic> getMechanics() {
         return mechanics;
     }
 
     public List<Condition> getConditions() {
         return conditions;
-    }
-
-    /**
-     * Called when casting the root skill
-     *
-     * @param playerData Player data of skill caster
-     * @return If conditions are met ie if the skill was cast
-     */
-    public boolean cast(MMOPlayerData playerData) {
-        return cast(new SkillMetadata(this, playerData));
     }
 
     /**

@@ -17,7 +17,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class Shadow_Veil extends SkillHandler<SimpleSkillResult> implements Listener {
+public class Shadow_Veil extends SkillHandler<SimpleSkillResult> {
     public Shadow_Veil() {
         super();
 
@@ -30,7 +30,7 @@ public class Shadow_Veil extends SkillHandler<SimpleSkillResult> implements List
     }
 
     @Override
-    public void cast(SimpleSkillResult result, SkillMetadata skillMeta) {
+    public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         double duration = skillMeta.getModifier("duration");
 
         Player caster = skillMeta.getCaster().getPlayer();
@@ -44,11 +44,11 @@ public class Shadow_Veil extends SkillHandler<SimpleSkillResult> implements List
             if (serverEntities.getTarget() != null && serverEntities.getTarget().equals(caster))
                 serverEntities.setTarget(null);
 
-        ShadowVeilHandler svh = new ShadowVeilHandler(caster, duration);
+        ShadowVeilEffect svh = new ShadowVeilEffect(caster, duration);
         svh.setDeceptions(SilentNumbers.floor(skillMeta.getModifier("deception")));
     }
 
-    public class ShadowVeilHandler extends BukkitRunnable implements Listener {
+    public class ShadowVeilEffect extends BukkitRunnable implements Listener {
         private final Player player;
         private final double duration;
         private final Location loc;
@@ -61,9 +61,8 @@ public class Shadow_Veil extends SkillHandler<SimpleSkillResult> implements List
 
         double ti = 0;
         double y = 0;
-        boolean cancelled;
 
-        public ShadowVeilHandler(Player player, double duration) {
+        public ShadowVeilEffect(Player player, double duration) {
             this.player = player;
             this.duration = duration;
             this.loc = player.getLocation();
@@ -113,9 +112,8 @@ public class Shadow_Veil extends SkillHandler<SimpleSkillResult> implements List
         public void cancelShadowVeil(EntityDamageByEntityEvent event) {
             if (event.getDamager().equals(player)) {
                 deceptions--;
-                if (deceptions <= 0) {
+                if (deceptions <= 0)
                     close();
-                }
             }
         }
 

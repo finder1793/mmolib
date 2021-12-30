@@ -3,7 +3,6 @@ package io.lumine.mythic.lib.manager;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.skill.custom.CustomSkill;
 import io.lumine.mythic.lib.skill.custom.condition.Condition;
-import io.lumine.mythic.lib.skill.condition.def.*;
 import io.lumine.mythic.lib.skill.custom.condition.def.*;
 import io.lumine.mythic.lib.skill.custom.condition.def.generic.BooleanCondition;
 import io.lumine.mythic.lib.skill.custom.condition.def.generic.CompareCondition;
@@ -35,16 +34,16 @@ import io.lumine.mythic.lib.skill.custom.mechanic.variable.SetIntegerMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.variable.SetStringMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.variable.SetVectorMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.variable.vector.*;
-import io.lumine.mythic.lib.skill.custom.targeter.entity.*;
-import io.lumine.mythic.lib.skill.custom.targeter.location.*;
-import io.lumine.mythic.lib.skill.mechanic.variable.vector.*;
 import io.lumine.mythic.lib.skill.custom.mechanic.visual.ParticleMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.visual.SoundMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.visual.TellMechanic;
 import io.lumine.mythic.lib.skill.custom.targeter.EntityTargeter;
 import io.lumine.mythic.lib.skill.custom.targeter.LocationTargeter;
-import io.lumine.mythic.lib.skill.targeter.entity.*;
-import io.lumine.mythic.lib.skill.targeter.location.*;
+import io.lumine.mythic.lib.skill.custom.targeter.entity.*;
+import io.lumine.mythic.lib.skill.custom.targeter.location.*;
+import io.lumine.mythic.lib.skill.handler.CustomSkillHandler;
+import io.lumine.mythic.lib.skill.handler.SkillHandler;
+import io.lumine.mythic.lib.util.RecursiveFolderExplorer;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
@@ -83,7 +82,21 @@ public class SkillManager {
     private final Map<String, Function<ConfigObject, EntityTargeter>> entityTargets = new HashMap<>();
     private final Map<String, Function<ConfigObject, LocationTargeter>> locationTargets = new HashMap<>();
 
-    private final Map<String, CustomSkill> skills = new HashMap<>();
+    /**
+     * Registered custom skills. In fact they have as much
+     * information as a skill handler but it is not yet a
+     * skill handler.
+     */
+    private final Map<String, CustomSkill> customSkills = new HashMap<>();
+
+    /**
+     * All registered skill handlers accessible by any external plugins. This uncludes:
+     * - custom MM skill handlers
+     * - custom SkillAPI skill handlers
+     * - custom ML skill handlers
+     * - default skill handlers from both MI and MMOCore (found in /skill/handler/def)
+     */
+    private final Map<String, SkillHandler> handlers = new HashMap<>();
 
     private boolean registration = true;
 
@@ -166,18 +179,24 @@ public class SkillManager {
         registerCondition("has_damage_type", config -> new HasDamageTypeCondition(config));
     }
 
-    public void registerSkill(CustomSkill skill) {
-        Validate.isTrue(!skills.containsKey(skill.getId()), "A skill with the same name already exists");
+    public void registerCustomSkill(CustomSkill skill) {
+        Validate.isTrue(!customSkills.containsKey(skill.getId()), "A skill with the same name already exists");
 
-        skills.put(skill.getId(), skill);
+        customSkills.put(skill.getId(), skill);
+    }
+
+    public void registerSkillHandler(SkillHandler handler) {
+        Validate.isTrue(!customSkills.containsKey(handler.getId()), "A skill with the same name already exists");
+
+        handlers.put(handler.getId(), handler);
     }
 
     @NotNull
     public CustomSkill getSkillOrThrow(String name) {
-        return Objects.requireNonNull(skills.get(name), "Could not find skill with name '" + name + "'");
+        return Objects.requireNonNull(customSkills.get(name), "Could not find skill with name '" + name + "'");
     }
 
-    public CustomSkill loadSkill(Object obj) {
+    public CustomSkill loadCustomSkill(Object obj) {
 
         if (obj instanceof String)
             return getSkillOrThrow(obj.toString());
@@ -191,8 +210,8 @@ public class SkillManager {
         throw new IllegalArgumentException("Please provide a string or configuration section");
     }
 
-    public Collection<CustomSkill> getSkills() {
-        return skills.values();
+    public Collection<CustomSkill> getCustomSkills() {
+        return customSkills.values();
     }
 
     public void registerCondition(String name, Function<ConfigObject, Condition> condition) {
@@ -274,38 +293,37 @@ public class SkillManager {
     public void loadLocalSkills() {
         if (registration)
             registration = false;
-        else
-            skills.clear();
-
-        File rootFile = new File(MythicLib.plugin.getDataFolder() + "/skill");
-        loadSkills(rootFile);
-
-        // Post load all skills
-        for (CustomSkill skill : skills.values())
-            try {
-                skill.postLoad();
-            } catch (RuntimeException exception) {
-                MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill '" + skill.getId() + "': " + exception.getMessage());
-            }
-    }
-
-    private void loadSkills(File file) {
-
-        // Read subfiles recursively
-        if (file.isDirectory())
-            for (File subfile : file.listFiles())
-                loadSkills(subfile);
-
-            // Finally load skill when it's not a directory
         else {
+            handlers.clear();
+            customSkills.clear();
+        }
+
+        // Initialize custom skills
+        new RecursiveFolderExplorer(file -> {
+
             FileConfiguration config = YamlConfiguration.loadConfiguration(file);
             for (String key : config.getKeys(false))
                 try {
                     CustomSkill skill = new CustomSkill(config.getConfigurationSection(key));
-                    registerSkill(skill);
+                    registerCustomSkill(skill);
                 } catch (RuntimeException exception) {
                     MythicLib.plugin.getLogger().log(Level.WARNING, "Could not initialize skill '" + key + "' from '" + file.getName() + "': " + exception.getMessage());
                 }
-        }
+
+        }, exception -> {
+            throw new RuntimeException("Not handled");
+        }).explore(new File(MythicLib.plugin.getDataFolder() + "/skill"));
+
+        // Post load custom skills and register a skill handler
+        for (CustomSkill skill : customSkills.values())
+            try {
+                if (skill.isPublic())
+                    registerSkillHandler(new CustomSkillHandler(skill));
+                skill.postLoad();
+            } catch (RuntimeException exception) {
+                MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill '" + skill.getId() + "': " + exception.getMessage());
+            }
+
+        // TODO load MM skills
     }
 }

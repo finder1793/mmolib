@@ -27,6 +27,11 @@ public class SharedStat {
     public static final String STAMINA_REGENERATION = "STAMINA_REGENERATION";
     public static final String STELLIUM_REGENERATION = "STELLIUM_REGENERATION";
 
+    // Resource regeneration
+    public static final String LIFESTEAL = "LIFESTEAL";
+    public static final String SPELL_VAMPIRISM = "SPELL_VAMPIRISM";
+
+
     /*
      * critical strikes
      */

@@ -32,6 +32,14 @@ public class DamageMetadata implements Cloneable {
         return d;
     }
 
+    public double getDamage(DamageType type) {
+        double d = 0;
+        for (DamagePacket packet : packets)
+            if (packet.hasType(type))
+                d += packet.getValue();
+        return d;
+    }
+
     public Set<DamagePacket> getPackets() {
         return packets;
     }

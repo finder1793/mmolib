@@ -31,7 +31,7 @@ public class LocationSkillResult implements SkillResult {
         return target != null;
     }
 
-    public Location getTargetLocation(Player caster, @Nullable Location targetLocation, @Nullable Entity targetEntity) {
+    private Location getTargetLocation(Player caster, @Nullable Location targetLocation, @Nullable Entity targetEntity) {
         if (targetLocation != null)
             return targetLocation;
 

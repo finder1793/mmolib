@@ -1,0 +1,59 @@
+package io.lumine.mythic.lib.skill.handler.def.item;
+
+import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.damage.AttackMetadata;
+import io.lumine.mythic.lib.damage.DamageMetadata;
+import io.lumine.mythic.lib.damage.DamageType;
+import io.lumine.mythic.lib.skill.SkillMetadata;
+import io.lumine.mythic.lib.skill.handler.SkillHandler;
+import io.lumine.mythic.lib.skill.result.def.ItemSkillResult;
+import io.lumine.mythic.lib.util.NoClipItem;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+
+public class Item_Throw extends SkillHandler<ItemSkillResult> {
+    public Item_Throw() {
+        super();
+
+        registerModifiers("damage", "force");
+    }
+
+    @Override
+    public ItemSkillResult getResult(SkillMetadata meta) {
+        return new ItemSkillResult(meta);
+    }
+
+    @Override
+    public void whenCast(ItemSkillResult result, SkillMetadata skillMeta) {
+        ItemStack itemStack = result.getItem();
+        Player caster = skillMeta.getCaster().getPlayer();
+
+        final NoClipItem item = new NoClipItem(caster.getLocation().add(0, 1.2, 0), itemStack);
+        item.getEntity().setVelocity(result.getTarget().multiply(1.5 * skillMeta.getModifier("force")));
+        caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_SNOWBALL_THROW, 1, 0);
+        new BukkitRunnable() {
+            double ti = 0;
+
+            public void run() {
+                if (ti++ > 20 || item.getEntity().isDead()) {
+                    item.close();
+                    cancel();
+                }
+
+                item.getEntity().getWorld().spawnParticle(Particle.CRIT, item.getEntity().getLocation(), 0);
+                for (Entity target : item.getEntity().getNearbyEntities(1, 1, 1))
+                    if (UtilityMethods.canTarget(caster, target)) {
+                        new AttackMetadata(new DamageMetadata(skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.PHYSICAL, DamageType.PROJECTILE), skillMeta.getStats()).damage((LivingEntity) target);
+                        item.close();
+                        cancel();
+                    }
+            }
+        }.runTaskTimer(MythicLib.plugin, 0, 1);
+    }
+}

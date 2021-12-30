@@ -22,7 +22,7 @@ public class Grand_Heal extends SkillHandler<SimpleSkillResult> {
     }
 
     @Override
-    public void cast(SimpleSkillResult result, SkillMetadata skillMeta) {
+    public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         double heal = skillMeta.getModifier("heal");
         double radius = skillMeta.getModifier("radius");
 

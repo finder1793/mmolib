@@ -9,11 +9,11 @@ import io.lumine.mythic.lib.listener.PlayerListener;
 import io.lumine.mythic.lib.player.TemporaryPlayerData;
 import io.lumine.mythic.lib.player.cooldown.CooldownMap;
 import io.lumine.mythic.lib.player.cooldown.CooldownType;
+import io.lumine.mythic.lib.skill.custom.variable.VariableList;
+import io.lumine.mythic.lib.skill.custom.variable.VariableScope;
 import io.lumine.mythic.lib.skill.trigger.PassiveSkill;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
-import io.lumine.mythic.lib.skill.custom.variable.VariableList;
-import io.lumine.mythic.lib.skill.custom.variable.VariableScope;
 import org.apache.commons.lang.Validate;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
@@ -140,15 +140,16 @@ public class MMOPlayerData {
      * @param attackMetadata The attack being performed
      * @param skills         The list of skills currently active for the player
      */
-    public void triggerSkills(TriggerType triggerType, AttackMetadata attackMetadata, Entity target, Collection<PassiveSkill> skills) {
+    public void triggerSkills(TriggerType triggerType, @NotNull AttackMetadata attackMetadata, Entity target, Collection<PassiveSkill> skills) {
         if (!MythicLib.plugin.getFlags().isFlagAllowed(attackMetadata.getPlayer(), CustomFlag.MMO_ABILITIES))
             return;
 
         TriggerMetadata triggerMeta = new TriggerMetadata(attackMetadata, target);
+        StatMap.CachedStatMap stats = attackMetadata.getStats();
 
         for (PassiveSkill trigger : skills)
             if (trigger.getType() == triggerType)
-                trigger.getTriggeredSkill().execute(triggerMeta);
+                trigger.getTriggeredSkill().cast(triggerMeta);
     }
 
     public VariableList getSkillVariableList() {

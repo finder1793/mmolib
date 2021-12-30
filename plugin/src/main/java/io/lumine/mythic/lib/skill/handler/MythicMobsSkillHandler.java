@@ -44,7 +44,7 @@ public class MythicMobsSkillHandler extends SkillHandler<MythicMobsSkillResult> 
     }
 
     @Override
-    public void cast(MythicMobsSkillResult result, SkillMetadata skillMeta) {
+    public void whenCast(MythicMobsSkillResult result, SkillMetadata skillMeta) {
         result.getMythicMobskillMetadata().getVariables().putObject("MMOSkil", skillMeta.getStats());
 
         skill.execute(result.getMythicMobskillMetadata());

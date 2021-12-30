@@ -30,7 +30,7 @@ public class Overload extends SkillHandler<SimpleSkillResult> {
     }
 
     @Override
-    public void cast(SimpleSkillResult result, SkillMetadata skillMeta) {
+    public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         double damage = skillMeta.getModifier("damage");
         double radius = skillMeta.getModifier("radius");
 

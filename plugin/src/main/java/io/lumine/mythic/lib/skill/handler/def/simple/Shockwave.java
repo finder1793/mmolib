@@ -28,7 +28,7 @@ public class Shockwave extends SkillHandler<SimpleSkillResult> {
     }
 
     @Override
-    public void cast(SimpleSkillResult result, SkillMetadata skillMeta) {
+    public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         double knockUp = skillMeta.getModifier("knock-up");
         double length = skillMeta.getModifier("length");
 

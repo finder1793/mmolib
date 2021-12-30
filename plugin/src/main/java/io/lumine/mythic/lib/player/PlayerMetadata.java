@@ -3,6 +3,8 @@ package io.lumine.mythic.lib.player;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import org.bukkit.entity.Player;
 
+import java.util.Objects;
+
 /**
  * A class containing the information about a player that can
  * be used to temporarily cache its statistics for instance
@@ -10,11 +12,9 @@ import org.bukkit.entity.Player;
  */
 public abstract class PlayerMetadata {
     private final StatMap.CachedStatMap statMap;
-    private final Player player;
 
     public PlayerMetadata(StatMap.CachedStatMap statMap) {
-        this.statMap = statMap;
-        this.player = statMap.getPlayer();
+        this.statMap = Objects.requireNonNull(statMap, "Stat map cannot be null");
     }
 
     public StatMap.CachedStatMap getStats() {
@@ -22,6 +22,6 @@ public abstract class PlayerMetadata {
     }
 
     public Player getPlayer() {
-        return player;
+        return statMap.getPlayer();
     }
 }

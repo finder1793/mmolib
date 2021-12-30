@@ -29,7 +29,7 @@ public class Sky_Smash extends SkillHandler<SimpleSkillResult> {
     }
 
     @Override
-    public void cast(SimpleSkillResult result, SkillMetadata skillMeta) {
+    public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         double damage = skillMeta.getModifier("damage");
         double knockUp = skillMeta.getModifier("knock-up");
 

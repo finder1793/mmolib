@@ -31,7 +31,7 @@ public class Blizzard extends SkillHandler<SimpleSkillResult> {
     }
 
     @Override
-    public void cast(SimpleSkillResult result, SkillMetadata skillMeta) {
+    public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         double duration = skillMeta.getModifier("duration") * 10;
         double force = skillMeta.getModifier("force");
         double inaccuracy = skillMeta.getModifier("inaccuracy");

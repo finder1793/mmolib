@@ -15,8 +15,8 @@ public class Element {
 
         this.id = config.getName();
         this.name = config.getString("name");
-        this.criticalStrike = config.contains("crit-strike") ? MythicLib.plugin.getSkills().loadSkill("crit-strike") : null;
-        this.regularAttack = config.contains("crit-strike") ? MythicLib.plugin.getSkills().loadSkill("regular-attack") : null;
+        this.criticalStrike = config.contains("crit-strike") ? MythicLib.plugin.getSkills().loadCustomSkill("crit-strike") : null;
+        this.regularAttack = config.contains("crit-strike") ? MythicLib.plugin.getSkills().loadCustomSkill("regular-attack") : null;
     }
 
     public String getId() {

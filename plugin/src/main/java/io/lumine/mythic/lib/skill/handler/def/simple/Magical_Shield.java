@@ -29,7 +29,7 @@ public class Magical_Shield extends SkillHandler<SimpleSkillResult> {
     }
 
     @Override
-    public void cast(SimpleSkillResult result, SkillMetadata skillMeta) {
+    public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         double duration = skillMeta.getModifier("duration");
         double radiusSquared = Math.pow(skillMeta.getModifier("radius"), 2);
         double power = skillMeta.getModifier("power") / 100;

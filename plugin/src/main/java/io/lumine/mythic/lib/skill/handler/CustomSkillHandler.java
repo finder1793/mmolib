@@ -24,7 +24,7 @@ public class CustomSkillHandler extends SkillHandler {
     }
 
     @Override
-    public void cast(SkillResult result, SkillMetadata skillMeta) {
+    public void whenCast(SkillResult result, SkillMetadata skillMeta) {
         new MechanicQueue(skillMeta, skill).next();
     }
 }

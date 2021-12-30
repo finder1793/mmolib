@@ -32,7 +32,7 @@ public class Firefly extends SkillHandler<SimpleSkillResult> {
     }
 
     @Override
-    public void cast(SimpleSkillResult result, SkillMetadata skillMeta) {
+    public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         double duration = skillMeta.getModifier("duration") * 20;
 
         Player caster = skillMeta.getCaster().getPlayer();

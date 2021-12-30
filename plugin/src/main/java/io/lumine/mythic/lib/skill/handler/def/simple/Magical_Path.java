@@ -24,75 +24,75 @@ public class Magical_Path extends SkillHandler<SimpleSkillResult> {
         registerModifiers("duration");
     }
 
-	@Override
-	public SimpleSkillResult getResult(SkillMetadata meta) {
-		return new SimpleSkillResult();
-	}
+    @Override
+    public SimpleSkillResult getResult(SkillMetadata meta) {
+        return new SimpleSkillResult();
+    }
 
-	@Override
-	public void cast(SimpleSkillResult result, SkillMetadata skillMeta) {
+    @Override
+    public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         new MagicalPathEffect(skillMeta.getCaster().getPlayer(), skillMeta.getModifier("duration"));
     }
 
-	public class MagicalPathEffect extends BukkitRunnable implements Listener {
-		private final Player player;
-		private final long duration;
+    public class MagicalPathEffect extends BukkitRunnable implements Listener {
+        private final Player player;
+        private final long duration;
 
-		/*
-		 * when true, the next fall damage is negated
-		 */
-		private boolean safe = true;
+        /*
+         * when true, the next fall damage is negated
+         */
+        private boolean safe = true;
 
-		private int j = 0;
+        private int j = 0;
 
-		public MagicalPathEffect(Player player, double duration) {
-			this.player = player;
-			this.duration = (long) (duration * 10);
+        public MagicalPathEffect(Player player, double duration) {
+            this.player = player;
+            this.duration = (long) (duration * 10);
 
-			player.setAllowFlight(true);
-			player.setFlying(true);
-			player.setVelocity(player.getVelocity().setY(.5));
-			player.getWorld().playSound(player.getLocation(), VersionSound.ENTITY_ENDERMAN_TELEPORT.toSound(), 1, 1);
+            player.setAllowFlight(true);
+            player.setFlying(true);
+            player.setVelocity(player.getVelocity().setY(.5));
+            player.getWorld().playSound(player.getLocation(), VersionSound.ENTITY_ENDERMAN_TELEPORT.toSound(), 1, 1);
 
-			runTaskTimer(MythicLib.plugin, 0, 2);
-			Bukkit.getPluginManager().registerEvents(this, MythicLib.plugin);
-		}
+            runTaskTimer(MythicLib.plugin, 0, 2);
+            Bukkit.getPluginManager().registerEvents(this, MythicLib.plugin);
+        }
 
-		public void close() {
-			player.setAllowFlight(false);
-			HandlerList.unregisterAll(this);
-			cancel();
-		}
+        public void close() {
+            player.setAllowFlight(false);
+            HandlerList.unregisterAll(this);
+            cancel();
+        }
 
-		@EventHandler(priority = EventPriority.LOW)
-		public void a(EntityDamageEvent event) {
-			if (safe && event.getEntity().equals(player) && event.getCause() == DamageCause.FALL) {
-				event.setCancelled(true);
-				safe = false;
+        @EventHandler(priority = EventPriority.LOW)
+        public void a(EntityDamageEvent event) {
+            if (safe && event.getEntity().equals(player) && event.getCause() == DamageCause.FALL) {
+                event.setCancelled(true);
+                safe = false;
 
-				player.getWorld().spawnParticle(Particle.SPELL, player.getLocation(), 8, .35, 0, .35, .08);
-				player.getWorld().spawnParticle(Particle.SPELL_INSTANT, player.getLocation(), 16, .35, 0, .35, .08);
-				player.getWorld().playSound(player.getLocation(), VersionSound.ENTITY_ENDERMAN_HURT.toSound(), 1, 2);
-			}
-		}
+                player.getWorld().spawnParticle(Particle.SPELL, player.getLocation(), 8, .35, 0, .35, .08);
+                player.getWorld().spawnParticle(Particle.SPELL_INSTANT, player.getLocation(), 16, .35, 0, .35, .08);
+                player.getWorld().playSound(player.getLocation(), VersionSound.ENTITY_ENDERMAN_HURT.toSound(), 1, 2);
+            }
+        }
 
-		@EventHandler
-		public void b(PlayerQuitEvent event) {
-			close();
-		}
+        @EventHandler
+        public void b(PlayerQuitEvent event) {
+            close();
+        }
 
-		@Override
-		public void run() {
+        @Override
+        public void run() {
 
-			if (j++ > duration) {
-				player.getWorld().playSound(player.getLocation(), VersionSound.ENTITY_ENDERMAN_TELEPORT.toSound(), 1, 1);
-				player.setAllowFlight(false);
-				cancel();
-				return;
-			}
+            if (j++ > duration) {
+                player.getWorld().playSound(player.getLocation(), VersionSound.ENTITY_ENDERMAN_TELEPORT.toSound(), 1, 1);
+                player.setAllowFlight(false);
+                cancel();
+                return;
+            }
 
-			player.getWorld().spawnParticle(Particle.SPELL, player.getLocation(), 8, .5, 0, .5, .1);
-			player.getWorld().spawnParticle(Particle.SPELL_INSTANT, player.getLocation(), 16, .5, 0, .5, .1);
-		}
-	}
+            player.getWorld().spawnParticle(Particle.SPELL, player.getLocation(), 8, .5, 0, .5, .1);
+            player.getWorld().spawnParticle(Particle.SPELL_INSTANT, player.getLocation(), 16, .5, 0, .5, .1);
+        }
+    }
 }

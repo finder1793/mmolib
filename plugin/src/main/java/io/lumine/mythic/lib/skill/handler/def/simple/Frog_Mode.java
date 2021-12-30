@@ -23,7 +23,7 @@ public class Frog_Mode extends SkillHandler<SimpleSkillResult> {
     }
 
     @Override
-    public void cast(SimpleSkillResult result, SkillMetadata skillMeta) {
+    public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         double duration = skillMeta.getModifier("duration") * 20;
         double y = skillMeta.getModifier("jump-force");
         double xz = skillMeta.getModifier("speed");

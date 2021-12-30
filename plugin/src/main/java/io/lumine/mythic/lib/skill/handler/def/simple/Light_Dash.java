@@ -32,7 +32,7 @@ public class Light_Dash extends SkillHandler<SimpleSkillResult> {
     }
 
     @Override
-    public void cast(SimpleSkillResult result, SkillMetadata skillMeta) {
+    public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         double damage = skillMeta.getModifier("damage");
         double length = skillMeta.getModifier("length");
 

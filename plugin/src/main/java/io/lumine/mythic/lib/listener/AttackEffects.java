@@ -1,10 +1,12 @@
 package io.lumine.mythic.lib.listener;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
-import io.lumine.mythic.lib.player.cooldown.CooldownType;
+import io.lumine.mythic.lib.api.stat.SharedStat;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.damage.DamageType;
+import io.lumine.mythic.lib.player.cooldown.CooldownType;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -81,5 +83,11 @@ public class AttackEffects implements Listener {
             event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 2);
             event.getEntity().getWorld().spawnParticle(Particle.TOTEM, event.getEntity().getLocation().add(0, 1, 0), 32, 0, 0, 0, .4);
         }
+
+        // Apply spell vamp and lifesteal
+        double heal = (event.getAttack().getDamage().getDamage(DamageType.WEAPON) * event.getAttack().getStats().getStat(SharedStat.LIFESTEAL)
+                + event.getAttack().getDamage().getDamage(DamageType.SKILL) * event.getAttack().getStats().getStat(SharedStat.SPELL_VAMPIRISM)) / 100;
+        if (heal > 0)
+            UtilityMethods.heal(event.getPlayer(), heal);
     }
 }
