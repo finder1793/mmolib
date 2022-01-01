@@ -165,7 +165,7 @@ public class MMOPlayerData {
      * @param skills         The list of skills currently active for the player
      */
     public void triggerSkills(TriggerType triggerType, @Nullable AttackMetadata attackMetadata, @Nullable Entity target, @NotNull Collection<PassiveSkill> skills) {
-        if (!MythicLib.plugin.getFlags().isFlagAllowed(attackMetadata.getPlayer(), CustomFlag.MMO_ABILITIES))
+        if (!MythicLib.plugin.getFlags().isFlagAllowed(getPlayer(), CustomFlag.MMO_ABILITIES))
             return;
 
         PlayerMetadata caster = attackMetadata == null ? statMap.cache(EquipmentSlot.MAIN_HAND) : attackMetadata;
