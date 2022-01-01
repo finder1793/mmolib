@@ -93,7 +93,7 @@ public class Explosive_Turkey extends SkillHandler<VectorSkillResult> {
                     for (Entity entity : UtilityMethods.getNearbyChunkEntities(chicken.getLocation()))
                         if (!entity.isDead() && entity.getLocation().distanceSquared(chicken.getLocation()) < radiusSquared
                                 && UtilityMethods.canTarget(caster, entity)) {
-                            new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE), skillMeta.getStats()).damage((LivingEntity) entity);
+                            new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE), skillMeta.getCaster()).damage((LivingEntity) entity);
                             entity.setVelocity(entity.getLocation().toVector().subtract(chicken.getLocation().toVector()).multiply(.1 * knockback)
                                     .setY(.4 * knockback));
                         }

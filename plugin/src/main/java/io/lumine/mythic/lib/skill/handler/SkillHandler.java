@@ -1,8 +1,11 @@
 package io.lumine.mythic.lib.skill.handler;
 
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.result.SkillResult;
+import io.lumine.mythic.lib.skill.trigger.TriggerType;
+import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -31,17 +34,28 @@ import java.util.*;
 public abstract class SkillHandler<T extends SkillResult> {
     private final String id;
     private final Set<String> modifiers = new HashSet<>();
+    private final boolean triggerable;
 
     protected static final Random random = new Random();
 
     public SkillHandler() {
+        this(true);
+    }
+
+    public SkillHandler(boolean triggerable) {
         this.id = formatId(getClass().getSimpleName());
+        this.triggerable = triggerable;
 
         registerModifiers("cooldown", "mana", "stamina");
     }
 
     public SkillHandler(String id) {
+        this(id, true);
+    }
+
+    public SkillHandler(String id, boolean triggerable) {
         this.id = formatId(id);
+        this.triggerable = triggerable;
 
         registerModifiers("cooldown", "mana", "stamina");
     }
@@ -64,6 +78,17 @@ public abstract class SkillHandler<T extends SkillResult> {
 
     public void registerModifiers(Collection<String> mods) {
         modifiers.addAll(mods);
+    }
+
+    /**
+     * This field is set to true to handle passive skills
+     * which are fully handled by MythicLib without the use
+     * of {@link TriggerType}.
+     *
+     * @return If it should be triggered when calling {@link MMOPlayerData#triggerSkills(TriggerType, Entity)}
+     */
+    public boolean isTriggerable() {
+        return triggerable;
     }
 
     /**
@@ -107,4 +132,17 @@ public abstract class SkillHandler<T extends SkillResult> {
      * @param skillMeta Info of skill being cast
      */
     public abstract void whenCast(T result, SkillMetadata skillMeta);
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SkillHandler<?> that = (SkillHandler<?>) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

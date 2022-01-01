@@ -64,7 +64,7 @@ public class Firefly extends SkillHandler<SimpleSkillResult> {
                         caster.getWorld().spawnParticle(Particle.FLAME, caster.getLocation().add(0, 1, 0), 24, 0, 0, 0, .3);
                         entity.setVelocity(caster.getVelocity().setY(0.3).multiply(1.7 * knockback));
                         caster.setVelocity(caster.getEyeLocation().getDirection().multiply(-3).setY(.5));
-                        new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC), skillMeta.getStats()).damage((LivingEntity) entity);
+                        new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC), skillMeta.getCaster()).damage((LivingEntity) entity);
                         cancel();
                         return;
                     }

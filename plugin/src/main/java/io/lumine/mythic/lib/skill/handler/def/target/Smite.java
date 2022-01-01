@@ -23,7 +23,7 @@ public class Smite extends SkillHandler<TargetSkillResult> {
     @Override
     public void whenCast(TargetSkillResult result, SkillMetadata skillMeta) {
         LivingEntity target = result.getTarget();
-        new AttackMetadata(new DamageMetadata(skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.MAGIC), skillMeta.getStats()).damage(target);
+        new AttackMetadata(new DamageMetadata(skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.MAGIC), skillMeta.getCaster()).damage(target);
         target.getWorld().strikeLightningEffect(target.getLocation());
     }
 }

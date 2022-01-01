@@ -19,7 +19,11 @@ public class LocationSkillResult implements SkillResult {
     private final Location target;
 
     public LocationSkillResult(SkillMetadata skillMeta) {
-        this.target = getTargetLocation(skillMeta.getCaster().getPlayer(), skillMeta.getTargetLocationOrNull(), skillMeta.getTargetEntityOrNull());
+        this(skillMeta, 50);
+    }
+
+    public LocationSkillResult(SkillMetadata skillMeta, double range) {
+        this.target = getTargetLocation(skillMeta.getCaster().getPlayer(), skillMeta.getTargetLocationOrNull(), skillMeta.getTargetEntityOrNull(), range);
     }
 
     public Location getTarget() {
@@ -31,14 +35,14 @@ public class LocationSkillResult implements SkillResult {
         return target != null;
     }
 
-    private Location getTargetLocation(Player caster, @Nullable Location targetLocation, @Nullable Entity targetEntity) {
+    private Location getTargetLocation(Player caster, @Nullable Location targetLocation, @Nullable Entity targetEntity, double range) {
         if (targetLocation != null)
             return targetLocation;
 
         if (targetEntity != null)
             return targetEntity.getLocation();
 
-        RayTraceResult rayTrace = caster.rayTraceBlocks(50, FluidCollisionMode.NEVER);
+        RayTraceResult rayTrace = caster.rayTraceBlocks(range, FluidCollisionMode.NEVER);
         return rayTrace == null ? null : rayTrace.getHitPosition().toLocation(caster.getWorld());
     }
 }

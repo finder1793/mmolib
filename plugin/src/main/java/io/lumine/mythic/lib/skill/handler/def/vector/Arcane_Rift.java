@@ -60,7 +60,7 @@ public class Arcane_Rift extends SkillHandler<VectorSkillResult> {
                 for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
                     if (UtilityMethods.canTarget(caster, entity) && loc.distanceSquared(entity.getLocation()) < 2 && !hit.contains(entity.getEntityId())) {
                         hit.add(entity.getEntityId());
-                        new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC), skillMeta.getStats()).damage((LivingEntity) entity);
+                        new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC), skillMeta.getCaster()).damage((LivingEntity) entity);
                         ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (slowDuration * 20), (int) slowAmplifier));
                     }
             }

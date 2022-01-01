@@ -4,23 +4,12 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.provider.StatProvider;
-import io.lumine.mythic.lib.damage.DamageMetadata;
-import io.lumine.mythic.lib.damage.DamageType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import io.lumine.mythic.lib.player.PlayerMetadata;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * TODO create an abstract type of 'StatMap' or 'StatProvider'
- * which the default player stat map and the cached statMap
- * both extend
- *
- * @author indyuce
- */
 public class StatMap implements StatProvider {
     private final MMOPlayerData data;
     private final Map<String, StatInstance> stats = new ConcurrentHashMap<>();
@@ -106,69 +95,7 @@ public class StatMap implements StatProvider {
      *         when it finally hits the target). This cache technique fixes a
      *         huge game breaking glitch
      */
-    public CachedStatMap cache(EquipmentSlot castHand) {
-        return new CachedStatMap(castHand);
-    }
-
-    public class CachedStatMap implements StatProvider {
-        private final Player player;
-        private final Map<String, Double> cached = new HashMap<>();
-
-        private CachedStatMap(EquipmentSlot castSlot) {
-            this.player = data.getPlayer();
-
-            /*
-             * When casting a skill or an attack with a certain hand, stats
-             * from the other hand shouldn't be taken into account
-             */
-            if (castSlot.isHand()) {
-                EquipmentSlot ignored = castSlot.getOppositeHand();
-                for (StatInstance ins : getInstances())
-                    this.cached.put(ins.getStat(), ins.getFilteredTotal(mod -> mod.getSlot() != ignored));
-
-                /*
-                 * Not casting the attack with a specific
-                 * hand so take everything into account
-                 */
-            } else
-                for (StatInstance ins : getInstances())
-                    this.cached.put(ins.getStat(), ins.getTotal());
-        }
-
-        /**
-         * @return The cached Player instance. Player instances are cached so
-         *         that even if the player logs out, the ability can still be
-         *         cast without additional errors
-         */
-        public Player getPlayer() {
-            return player;
-        }
-
-        public MMOPlayerData getData() {
-            return data;
-        }
-
-        /**
-         * @param stat The string key of the stat
-         * @return The cached stat value, or the vanilla
-         */
-        @Override
-        public double getStat(String stat) {
-            return cached.getOrDefault(stat, getInstance(stat).getBase());
-        }
-
-        /**
-         * Edits the current cached stat value
-         *
-         * @param stat  The string key of the stat
-         * @param value The value you want to cache
-         */
-        public void setStat(String stat, double value) {
-            cached.put(stat, value);
-        }
-
-        public void damage(LivingEntity target, double value, DamageType... types) {
-            MythicLib.plugin.getDamage().damage(player, target, new DamageMetadata(value, types));
-        }
+    public PlayerMetadata cache(EquipmentSlot castHand) {
+        return new PlayerMetadata(this, castHand);
     }
 }

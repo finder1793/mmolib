@@ -44,7 +44,7 @@ public class Thrust extends SkillHandler<VectorSkillResult> {
             loc.add(vec);
             for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
                 if (UtilityMethods.canTarget(caster, loc, entity))
-                    new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.PHYSICAL), skillMeta.getStats()).damage((LivingEntity) entity);
+                    new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.PHYSICAL), skillMeta.getCaster()).damage((LivingEntity) entity);
             loc.getWorld().spawnParticle(Particle.SMOKE_LARGE, loc, 0);
         }
     }

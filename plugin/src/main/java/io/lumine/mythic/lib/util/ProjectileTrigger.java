@@ -1,13 +1,14 @@
-package io.lumine.mythic.lib.api.util;
+package io.lumine.mythic.lib.util;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.api.stat.StatMap;
+import io.lumine.mythic.lib.api.util.TemporaryListener;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.ProjectileAttackMetadata;
+import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.skill.trigger.PassiveSkill;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.bukkit.Bukkit;
@@ -42,10 +43,10 @@ public class ProjectileTrigger extends TemporaryListener {
      * Used to cache the caster skills. If the skills are not cached, the player skill
      * list can actually be edited (hand swapping or external plugins) while the projectile
      * is still in midair which will change the projectile behaviour. The very same
-     * glitch is being fixed by {@link io.lumine.mythic.lib.api.stat.StatMap.CachedStatMap}
+     * glitch is being fixed by {@link PlayerMetadata}
      */
     private final Set<PassiveSkill> cachedSkills;
-    private final StatMap.CachedStatMap cachedStats;
+    private final PlayerMetadata attacker;
 
     /**
      * Used to trigger skills related to projectiles (either arrows or tridents). This
@@ -66,7 +67,7 @@ public class ProjectileTrigger extends TemporaryListener {
 
         // Cache important stuff
         this.cachedSkills = new HashSet<>(caster.getPassiveSkills());
-        this.cachedStats = caster.getStatMap().cache(hand);
+        this.attacker = caster.getStatMap().cache(hand);
 
         runnable = new BukkitRunnable() {
             @Override
@@ -116,7 +117,7 @@ public class ProjectileTrigger extends TemporaryListener {
     }
 
     private AttackMetadata clearAttackMetadata() {
-        return new AttackMetadata(new DamageMetadata(), cachedStats);
+        return new AttackMetadata(new DamageMetadata(), attacker);
     }
 
     public enum ProjectileType {

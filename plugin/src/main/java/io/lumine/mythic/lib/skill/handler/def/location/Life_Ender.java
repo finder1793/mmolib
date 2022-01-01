@@ -67,7 +67,7 @@ public class Life_Ender extends SkillHandler<LocationSkillResult> {
 
                     for (Entity entity : UtilityMethods.getNearbyChunkEntities(source))
                         if (entity.getLocation().distanceSquared(source) < radius * radius && UtilityMethods.canTarget(caster, entity)) {
-                            new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC), skillMeta.getStats()).damage((LivingEntity) entity);
+                            new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC), skillMeta.getCaster()).damage((LivingEntity) entity);
                             entity.setVelocity(entity.getLocation().subtract(source).toVector().setY(.75).normalize().multiply(knockback));
                         }
                     cancel();

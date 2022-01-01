@@ -85,8 +85,8 @@ public class AttackEffects implements Listener {
         }
 
         // Apply spell vamp and lifesteal
-        double heal = (event.getAttack().getDamage().getDamage(DamageType.WEAPON) * event.getAttack().getStats().getStat(SharedStat.LIFESTEAL)
-                + event.getAttack().getDamage().getDamage(DamageType.SKILL) * event.getAttack().getStats().getStat(SharedStat.SPELL_VAMPIRISM)) / 100;
+        double heal = (event.getAttack().getDamage().getDamage(DamageType.WEAPON) * event.getAttack().getStat(SharedStat.LIFESTEAL)
+                + event.getAttack().getDamage().getDamage(DamageType.SKILL) * event.getAttack().getStat(SharedStat.SPELL_VAMPIRISM)) / 100;
         if (heal > 0)
             UtilityMethods.heal(event.getPlayer(), heal);
     }

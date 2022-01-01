@@ -26,6 +26,6 @@ public abstract class VariableMechanic extends Mechanic {
     }
 
     public VariableList getTargetVariableList(SkillMetadata meta) {
-        return scope == VariableScope.SKILL ? meta.getVariableList() : meta.getCaster().getSkillVariableList();
+        return scope == VariableScope.SKILL ? meta.getVariableList() : meta.getCaster().getData().getSkillVariableList();
     }
 }

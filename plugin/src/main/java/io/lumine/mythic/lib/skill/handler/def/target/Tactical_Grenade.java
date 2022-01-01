@@ -71,7 +71,7 @@ public class Tactical_Grenade extends SkillHandler<TargetSkillResult> {
                         if (entity.equals(target))
                             cancel();
 
-                        new AttackMetadata(new DamageMetadata(skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.MAGIC), skillMeta.getStats()).damage((LivingEntity) entity);
+                        new AttackMetadata(new DamageMetadata(skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.MAGIC), skillMeta.getCaster()).damage((LivingEntity) entity);
                         entity.setVelocity(entity.getVelocity().add(offsetVector(knockup)));
                     }
             }

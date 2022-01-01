@@ -28,7 +28,7 @@ public class ReduceCooldownMechanic extends TargetMechanic {
     public void cast(SkillMetadata meta, Entity target) {
 
         // Check if it's on cooldown first
-        CooldownInfo info = meta.getCaster().getCooldownMap().getInfo(cooldownPath);
+        CooldownInfo info = meta.getCaster().getData().getCooldownMap().getInfo(cooldownPath);
         if (info == null || info.hasEnded())
             return;
 

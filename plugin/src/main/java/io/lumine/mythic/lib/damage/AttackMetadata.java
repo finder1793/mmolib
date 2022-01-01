@@ -2,7 +2,6 @@ package io.lumine.mythic.lib.damage;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.player.PlayerMetadata;
-import io.lumine.mythic.lib.api.stat.StatMap;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.LivingEntity;
 
@@ -21,11 +20,11 @@ public class AttackMetadata extends PlayerMetadata {
      * what the damager is so there might be problem with damage/reduction stat
      * application.
      *
-     * @param damage  The attack result
-     * @param statMap The entity who dealt the damage
+     * @param damage   The attack result
+     * @param attacker The entity who dealt the damage
      */
-    public AttackMetadata(DamageMetadata damage, StatMap.CachedStatMap statMap) {
-        super(statMap);
+    public AttackMetadata(DamageMetadata damage, PlayerMetadata attacker) {
+        super(attacker);
 
         Validate.notNull(damage, "Attack cannot be null");
 
@@ -40,7 +39,7 @@ public class AttackMetadata extends PlayerMetadata {
     }
 
     public AttackMetadata clone() {
-        return new AttackMetadata(damage.clone(), getStats());
+        return new AttackMetadata(damage.clone(), this);
     }
 
     public void damage(LivingEntity target) {

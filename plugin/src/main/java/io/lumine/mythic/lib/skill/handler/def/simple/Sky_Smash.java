@@ -43,7 +43,7 @@ public class Sky_Smash extends SkillHandler<SimpleSkillResult> {
 
         for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
             if (UtilityMethods.canTarget(caster, entity) && entity.getLocation().distanceSquared(loc) < 10) {
-                new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.PHYSICAL), skillMeta.getStats()).damage((LivingEntity) entity);
+                new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.PHYSICAL), skillMeta.getCaster()).damage((LivingEntity) entity);
                 Location loc1 = caster.getEyeLocation().clone();
                 loc1.setPitch(-70);
                 entity.setVelocity(loc1.getDirection().multiply(1.2 * knockUp));

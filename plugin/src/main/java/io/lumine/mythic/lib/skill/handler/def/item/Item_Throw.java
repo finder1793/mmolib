@@ -49,7 +49,7 @@ public class Item_Throw extends SkillHandler<ItemSkillResult> {
                 item.getEntity().getWorld().spawnParticle(Particle.CRIT, item.getEntity().getLocation(), 0);
                 for (Entity target : item.getEntity().getNearbyEntities(1, 1, 1))
                     if (UtilityMethods.canTarget(caster, target)) {
-                        new AttackMetadata(new DamageMetadata(skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.PHYSICAL, DamageType.PROJECTILE), skillMeta.getStats()).damage((LivingEntity) target);
+                        new AttackMetadata(new DamageMetadata(skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.PHYSICAL, DamageType.PROJECTILE), skillMeta.getCaster()).damage((LivingEntity) target);
                         item.close();
                         cancel();
                     }

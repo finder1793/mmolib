@@ -75,7 +75,7 @@ public class Bouncy_Fireball extends SkillHandler<VectorSkillResult> {
                     for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
                         if (entity.getLocation().distanceSquared(loc) < radius * radius)
                             if (UtilityMethods.canTarget(caster, entity)) {
-                                new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE), skillMeta.getStats()).damage((LivingEntity) entity);
+                                new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE), skillMeta.getCaster()).damage((LivingEntity) entity);
                                 entity.setFireTicks((int) (ignite * 20));
                             }
 

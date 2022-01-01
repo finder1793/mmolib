@@ -63,7 +63,7 @@ public class Firebolt extends SkillHandler<VectorSkillResult> {
                             loc.getWorld().spawnParticle(Particle.LAVA, loc, 8, 0, 0, 0, 0);
                             loc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, loc, 0);
                             loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 3, 1);
-                            new AttackMetadata(new DamageMetadata(skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE), skillMeta.getStats()).damage((LivingEntity) target);
+                            new AttackMetadata(new DamageMetadata(skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE), skillMeta.getCaster()).damage((LivingEntity) target);
                             target.setFireTicks((int) skillMeta.getModifier("ignite") * 20);
                             cancel();
                             return;

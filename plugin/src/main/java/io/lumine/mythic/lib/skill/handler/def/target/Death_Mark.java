@@ -48,7 +48,7 @@ public class Death_Mark extends SkillHandler<TargetSkillResult> {
                 target.getWorld().spawnParticle(Particle.SPELL_MOB, target.getLocation(), 4, .2, 0, .2, 0);
 
                 if (ti % 20 == 0)
-                    new AttackMetadata(new DamageMetadata(dps, DamageType.SKILL, DamageType.MAGIC), skillMeta.getStats()).damage(target);
+                    new AttackMetadata(new DamageMetadata(dps, DamageType.SKILL, DamageType.MAGIC), skillMeta.getCaster()).damage(target);
             }
         }.runTaskTimer(MythicLib.plugin, 0, 1);
         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_BLAZE_HURT, 1, 2);

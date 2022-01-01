@@ -4,13 +4,15 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.comp.flags.CustomFlag;
 import io.lumine.mythic.lib.damage.AttackMetadata;
-import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.listener.PlayerListener;
+import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.player.TemporaryPlayerData;
 import io.lumine.mythic.lib.player.cooldown.CooldownMap;
 import io.lumine.mythic.lib.player.cooldown.CooldownType;
 import io.lumine.mythic.lib.skill.custom.variable.VariableList;
 import io.lumine.mythic.lib.skill.custom.variable.VariableScope;
+import io.lumine.mythic.lib.skill.handler.SkillHandler;
+import io.lumine.mythic.lib.skill.handler.def.passive.Backstab;
 import io.lumine.mythic.lib.skill.trigger.PassiveSkill;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
@@ -99,6 +101,28 @@ public class MMOPlayerData {
     }
 
     /**
+     * This method can be used to check if a player has a specific
+     * passive skill registered in his skill set.
+     * <p>
+     * This is the method utilized to keep MythicLib compatible
+     * with default ML passive skills like {@link Backstab}
+     * <p>
+     * A player can have multiple passive skills with the same
+     * skill handler. The output function is completely random
+     * given the use of an HashSet which does not feature order
+     *
+     * @param handler Some passive skill handler
+     * @return Any passive skill with the same handler
+     */
+    @Nullable
+    public PassiveSkill getPassiveSkill(@NotNull SkillHandler handler) {
+        for (PassiveSkill passive : passiveSkills)
+            if (passive.getTriggeredSkill().getHandler().equals(handler))
+                return passive;
+        return null;
+    }
+
+    /**
      * Registers as active a skill trigger. It can be unregistered
      * later if necessary using {@link #unregisterSkillTriggers(String)}.
      * From the time where that method is called, performing an action will
@@ -111,14 +135,14 @@ public class MMOPlayerData {
     }
 
     /**
-     * Used to trigger skills with no attack metadata. This caches the player
-     * statistics and create an attack metadata.
+     * Used to trigger skills with no attack metadata. This caches
+     * the player statistics and create an attack metadata.
      *
      * @param triggerType Action performed to trigger the skills
      * @param target      The potential target to cast the skill onto
      */
-    public void triggerSkills(TriggerType triggerType, Entity target) {
-        triggerSkills(triggerType, new AttackMetadata(new DamageMetadata(), statMap.cache(EquipmentSlot.MAIN_HAND)), target);
+    public void triggerSkills(TriggerType triggerType, @Nullable Entity target) {
+        triggerSkills(triggerType, null, target);
     }
 
     /**
@@ -128,8 +152,8 @@ public class MMOPlayerData {
      * @param target         The potential target to cast the skill onto
      * @param attackMetadata The attack being performed
      */
-    public void triggerSkills(TriggerType triggerType, AttackMetadata attackMetadata, Entity target) {
-        triggerSkills(triggerType, attackMetadata, target, attackMetadata.getStats().getData().getPassiveSkills());
+    public void triggerSkills(TriggerType triggerType, @Nullable AttackMetadata attackMetadata, @Nullable Entity target) {
+        triggerSkills(triggerType, attackMetadata, target, passiveSkills);
     }
 
     /**
@@ -140,16 +164,16 @@ public class MMOPlayerData {
      * @param attackMetadata The attack being performed
      * @param skills         The list of skills currently active for the player
      */
-    public void triggerSkills(TriggerType triggerType, @NotNull AttackMetadata attackMetadata, Entity target, Collection<PassiveSkill> skills) {
+    public void triggerSkills(TriggerType triggerType, @Nullable AttackMetadata attackMetadata, @Nullable Entity target, @NotNull Collection<PassiveSkill> skills) {
         if (!MythicLib.plugin.getFlags().isFlagAllowed(attackMetadata.getPlayer(), CustomFlag.MMO_ABILITIES))
             return;
 
-        TriggerMetadata triggerMeta = new TriggerMetadata(attackMetadata, target);
-        StatMap.CachedStatMap stats = attackMetadata.getStats();
+        PlayerMetadata caster = attackMetadata == null ? statMap.cache(EquipmentSlot.MAIN_HAND) : attackMetadata;
+        TriggerMetadata triggerMeta = new TriggerMetadata(caster, attackMetadata, target);
 
-        for (PassiveSkill trigger : skills)
-            if (trigger.getType() == triggerType)
-                trigger.getTriggeredSkill().cast(triggerMeta);
+        for (PassiveSkill skill : skills)
+            if (skill.getType() == triggerType && skill.getTriggeredSkill().getHandler().isTriggerable())
+                skill.getTriggeredSkill().cast(triggerMeta);
     }
 
     public VariableList getSkillVariableList() {

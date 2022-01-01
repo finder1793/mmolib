@@ -1,6 +1,6 @@
 package io.lumine.mythic.lib.damage;
 
-import io.lumine.mythic.lib.api.stat.StatMap;
+import io.lumine.mythic.lib.player.PlayerMetadata;
 
 /**
  * Used by melee attacks with melee weapons like custom
@@ -15,10 +15,10 @@ public class MeleeAttackMetadata extends AttackMetadata {
      * what the damager is so there might be problem with damage/reduction stat
      * application.
      *
-     * @param damage  The attack result
-     * @param statMap The entity who dealt the damage
+     * @param damage   The attack result
+     * @param attacker The entity who dealt the damage
      */
-    public MeleeAttackMetadata(DamageMetadata damage, StatMap.CachedStatMap statMap) {
-        super(damage, statMap);
+    public MeleeAttackMetadata(DamageMetadata damage, PlayerMetadata attacker) {
+        super(damage, attacker);
     }
 }

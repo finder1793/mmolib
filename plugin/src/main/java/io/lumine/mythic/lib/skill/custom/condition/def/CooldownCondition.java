@@ -20,6 +20,6 @@ public class CooldownCondition extends Condition {
 
     @Override
     public boolean isMet(SkillMetadata meta) {
-        return !meta.getCaster().getCooldownMap().isOnCooldown(cooldownPath);
+        return !meta.getCaster().getData().getCooldownMap().isOnCooldown(cooldownPath);
     }
 }

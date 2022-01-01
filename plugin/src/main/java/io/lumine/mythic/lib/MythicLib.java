@@ -11,6 +11,8 @@ import io.lumine.mythic.lib.commands.mmolib.ExploreAttributesCommand;
 import io.lumine.mythic.lib.commands.mmolib.MMODebugCommand;
 import io.lumine.mythic.lib.commands.mmolib.MMOLibCommand;
 import io.lumine.mythic.lib.commands.mmolib.MMOTempStatCommand;
+import io.lumine.mythic.lib.comp.anticheat.AntiCheatSupport;
+import io.lumine.mythic.lib.comp.anticheat.SpartanPlugin;
 import io.lumine.mythic.lib.comp.flags.DefaultFlagHandler;
 import io.lumine.mythic.lib.comp.flags.FlagPlugin;
 import io.lumine.mythic.lib.comp.flags.ResidenceFlags;
@@ -65,6 +67,7 @@ public class MythicLib extends LuminePlugin {
     private final ElementManager elementManager = new ElementManager();
     private final SkillManager skillManager = new SkillManager();
 
+    private AntiCheatSupport antiCheatSupport;
     private ServerVersion version;
     private AttackEffects attackEffects;
     private MitigationMechanics mitigationMechanics;
@@ -80,7 +83,7 @@ public class MythicLib extends LuminePlugin {
      * and should not enable on server startup. This smoothly lets the
      * user know when they have to update their plugin builds.
      */
-    public static final int MMOITEMS_COMPATIBILITY_INDEX = 1;
+    public static final int MMOITEMS_COMPATIBILITY_INDEX = 2;
 
     /**
      * MMOCore has a similar public field. If these don't match
@@ -88,7 +91,7 @@ public class MythicLib extends LuminePlugin {
      * and should not enable on server startup. This smoothly lets the
      * user know when they have to update their plugin builds.
      */
-    public static final int MMOCORE_COMPATIBILITY_INDEX = 1;
+    public static final int MMOCORE_COMPATIBILITY_INDEX = 2;
 
     @Override
     public void load() {
@@ -169,6 +172,11 @@ public class MythicLib extends LuminePlugin {
         if (Bukkit.getPluginManager().getPlugin("Residence") != null) {
             flagPlugin = new ResidenceFlags();
             getLogger().log(Level.INFO, "Hooked onto Residence");
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("Spartan") != null) {
+            antiCheatSupport = new SpartanPlugin();
+            getLogger().log(Level.INFO, "Hooked onto Spartan");
         }
 
         if (Bukkit.getPluginManager().getPlugin("Factions") != null) {
@@ -290,8 +298,16 @@ public class MythicLib extends LuminePlugin {
         return attackEffects;
     }
 
+    public AntiCheatSupport getAntiCheat() {
+        return antiCheatSupport;
+    }
+
     public void handleFlags(FlagPlugin flagPlugin) {
         this.flagPlugin = flagPlugin;
+    }
+
+    public boolean hasAntiCheat() {
+        return antiCheatSupport != null;
     }
 
     /**

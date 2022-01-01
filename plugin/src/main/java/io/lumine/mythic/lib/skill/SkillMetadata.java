@@ -3,10 +3,10 @@ package io.lumine.mythic.lib.skill;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
+import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.skill.custom.variable.Variable;
 import io.lumine.mythic.lib.skill.custom.variable.VariableList;
 import io.lumine.mythic.lib.skill.custom.variable.VariableScope;
@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  */
 public class SkillMetadata {
     private final Skill cast;
-    private final StatMap.CachedStatMap stats;
+    private final PlayerMetadata caster;
     private final VariableList vars;
 
     /**
@@ -76,22 +76,22 @@ public class SkillMetadata {
      * @param targetLocation The skill/mechanic target location
      * @param targetEntity   The skill/mechanic target entity
      */
-    public SkillMetadata(Skill cast, @NotNull AttackMetadata attackMeta, @Nullable Location source, @Nullable Location targetLocation, @Nullable Entity targetEntity) {
-        this(cast, attackMeta.getStats(), new VariableList(VariableScope.SKILL), attackMeta, source, targetLocation, targetEntity);
+    public SkillMetadata(Skill cast, @NotNull AttackMetadata attackMeta, @NotNull Location source, @Nullable Location targetLocation, @Nullable Entity targetEntity) {
+        this(cast, attackMeta, new VariableList(VariableScope.SKILL), attackMeta, source, targetLocation, targetEntity);
     }
 
     /**
      * @param cast           Initial skill being cast. It's used to retrieve skill modifiers
-     * @param stats          Cached statistics of the skill caster
+     * @param caster         Cached statistics of the skill caster
      * @param vars           Skill variable list if it already exists
      * @param attackMeta     Some triggers pass an attackMeta as argument, like DAMAGED or DAMAGE.
      * @param source         The location at which the skill/mechanic was cast
      * @param targetLocation The skill/mechanic target location
      * @param targetEntity   The skill/mechanic target entity
      */
-    public SkillMetadata(Skill cast, @NotNull StatMap.CachedStatMap stats, @NotNull VariableList vars, @Nullable AttackMetadata attackMeta, @NotNull Location source, @Nullable Location targetLocation, @Nullable Entity targetEntity) {
+    public SkillMetadata(Skill cast, @NotNull PlayerMetadata caster, @NotNull VariableList vars, @Nullable AttackMetadata attackMeta, @NotNull Location source, @Nullable Location targetLocation, @Nullable Entity targetEntity) {
         this.cast = cast;
-        this.stats = stats;
+        this.caster = caster;
         this.vars = vars;
         this.attackMeta = attackMeta;
         this.source = source;
@@ -103,16 +103,12 @@ public class SkillMetadata {
         return cast;
     }
 
-    public MMOPlayerData getCaster() {
-        return stats.getData();
-    }
-
     public VariableList getVariableList() {
         return vars;
     }
 
-    public StatMap.CachedStatMap getStats() {
-        return stats;
+    public PlayerMetadata getCaster() {
+        return caster;
     }
 
     public Location getSourceLocation() {
@@ -197,7 +193,7 @@ public class SkillMetadata {
      * @return New skill metadata for other subskills
      */
     public SkillMetadata clone(Location source, Location targetLocation, Entity targetEntity) {
-        return new SkillMetadata(cast, stats, vars, attackMeta, source, targetLocation, targetEntity);
+        return new SkillMetadata(cast, caster, vars, attackMeta, source, targetLocation, targetEntity);
     }
 
     /**
@@ -238,7 +234,7 @@ public class SkillMetadata {
 
             // Cached stat map
             case "stat":
-                var = new StatsVariable("temp", stats);
+                var = new StatsVariable("temp", caster);
                 break;
 
             // Skill target
@@ -284,7 +280,7 @@ public class SkillMetadata {
             return var;
 
         // Check for PLAYER scope
-        var = getCaster().getSkillVariableList().getVariable(name);
+        var = getCaster().getData().getSkillVariableList().getVariable(name);
         return Objects.requireNonNull(var, "Could not find custom variable with name '" + name + "'");
     }
 
@@ -324,7 +320,7 @@ public class SkillMetadata {
             return attackMeta;
         }
 
-        AttackMetadata attackMeta = new AttackMetadata(new DamageMetadata(damage, types), getStats());
+        AttackMetadata attackMeta = new AttackMetadata(new DamageMetadata(damage, types), caster);
         MythicLib.plugin.getDamage().damage(attackMeta, target);
         return attackMeta;
     }

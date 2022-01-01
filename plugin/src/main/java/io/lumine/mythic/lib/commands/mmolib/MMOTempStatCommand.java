@@ -1,7 +1,9 @@
 package io.lumine.mythic.lib.commands.mmolib;
 
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatInstance;
+import io.lumine.mythic.lib.api.stat.modifier.ModifierSource;
 import io.lumine.mythic.lib.api.stat.modifier.ModifierType;
 import io.lumine.mythic.lib.api.stat.modifier.TemporaryStatModifier;
 import net.md_5.bungee.api.ChatColor;
@@ -33,7 +35,7 @@ public class MMOTempStatCommand implements CommandExecutor {
         Long duration = Long.parseLong(args[3]);
 
         String tempStatKey = UUID.randomUUID().toString();
-        TemporaryStatModifier tempModifier = new TemporaryStatModifier(value, duration, type, tempStatKey, statInstance);
+        TemporaryStatModifier tempModifier = new TemporaryStatModifier(value, duration, type, EquipmentSlot.OTHER, ModifierSource.OTHER, tempStatKey, statInstance);
         statInstance.addModifier(tempStatKey, tempModifier);
 
         return true;

@@ -26,7 +26,7 @@ public class CustomSkill extends PostLoadObject {
         super(config);
 
         this.id = config.getName();
-        publicSkill = config.getBoolean("public", true);
+        publicSkill = config.getBoolean("public", false);
     }
 
     @Override

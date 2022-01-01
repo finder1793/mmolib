@@ -42,7 +42,7 @@ public class Overload extends SkillHandler<SimpleSkillResult> {
 
         for (Entity entity : caster.getNearbyEntities(radius, radius, radius))
             if (UtilityMethods.canTarget(caster, entity))
-                new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC), skillMeta.getStats()).damage((LivingEntity) entity);
+                new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC), skillMeta.getCaster()).damage((LivingEntity) entity);
 
         double step = 12 + (radius * 2.5);
         for (double j = 0; j < Math.PI * 2; j += Math.PI / step) {

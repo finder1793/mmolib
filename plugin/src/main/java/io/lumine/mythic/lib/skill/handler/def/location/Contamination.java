@@ -59,7 +59,7 @@ public class Contamination extends SkillHandler<LocationSkillResult> {
                     loc.getWorld().playSound(loc, VersionSound.ENTITY_ENDERMAN_HURT.toSound(), 2, 1);
                     for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
                         if (UtilityMethods.canTarget(caster, entity) && entity.getLocation().distanceSquared(loc) <= 25)
-                            new AttackMetadata(new DamageMetadata(dps, DamageType.SKILL, DamageType.MAGIC), skillMeta.getStats()).damage((LivingEntity) entity, false);
+                            new AttackMetadata(new DamageMetadata(dps, DamageType.SKILL, DamageType.MAGIC), skillMeta.getCaster()).damage((LivingEntity) entity, false);
                 }
             }
         }.runTaskTimer(MythicLib.plugin, 0, 1);

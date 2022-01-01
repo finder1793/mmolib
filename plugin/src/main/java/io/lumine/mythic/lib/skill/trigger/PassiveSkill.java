@@ -6,9 +6,21 @@ import io.lumine.mythic.lib.player.PlayerModifier;
 import io.lumine.mythic.lib.skill.Skill;
 
 /**
- * There is one skill trigger instance per passive skill the player
- * has. A passive skill can be registered by MMOItems items or MMOCore
+ * There is one TriggeredSkill instance per active/passive skill the player
+ * has. A triggered skill can be registered by MMOItems items or MMOCore
  * passive skills.
+ * <p>
+ * The distinction between active and passive skills is pretty vague.
+ * <p>
+ * In MMOItems:
+ * we consider a skill that is cast when right clicking active (for
+ * instance when holding an item) even though it's handled just like
+ * an on-hit passive skill within MythicLib. Pretty confusing
+ * <p>
+ * In MMOCore:
+ * Skills that are cast in MMOCore using the casting mode are also
+ * active and any skill that has to be triggered is passive. It's
+ * much less confusing here
  *
  * @author indyuce
  */
@@ -29,7 +41,7 @@ public class PassiveSkill extends PlayerModifier {
     private final String key;
 
     /**
-     * @param key            A key like 'item' or 'itemSet' indicating what is giving a passive skill to the player.
+     * @param key            A key like 'item' or 'itemSet' indicating what is giving a triggered skill to the player.
      *                       There can be multiple skills with the same key, it's not a unique identifier.
      *                       It can be later used to isolate and unregister skills with a certain key.
      * @param type           When that skill should trigger

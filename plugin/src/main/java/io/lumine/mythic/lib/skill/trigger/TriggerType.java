@@ -123,6 +123,7 @@ public enum TriggerType {
      * This trigger type is never called. It can be used
      * as a trigger type for passive skills
      */
+    @Deprecated
     PASSIVE,
 
     /**

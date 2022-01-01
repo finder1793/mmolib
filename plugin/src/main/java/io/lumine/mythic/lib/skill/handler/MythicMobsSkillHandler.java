@@ -1,22 +1,32 @@
 package io.lumine.mythic.lib.skill.handler;
 
+import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.comp.anticheat.CheatType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.result.MythicMobsSkillResult;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.skills.Skill;
 import org.apache.commons.lang.Validate;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 public class MythicMobsSkillHandler extends SkillHandler<MythicMobsSkillResult> {
-    private Skill skill;
+    private final Skill skill;
 
-    public MythicMobsSkillHandler(String id, FileConfiguration config) {
-        super(id);
+    /**
+     * Maps the amount of ticks during which the anticheat
+     * must stop checking for hacks; for every cheat type
+     */
+    private final Map<CheatType, Integer> antiCheat = new HashMap<>();
+
+    public MythicMobsSkillHandler(ConfigurationSection config) {
+        super(config.getString("mythicmobs-skill-id"));
 
         String skillName = config.getString("mythicmobs-skill-id");
-        Validate.notNull(skillName, "Could not find MM skill name");
 
         Optional<Skill> opt = MythicMobs.inst().getSkillManager().getSkill(skillName);
         Validate.isTrue(opt.isPresent(), "Could not find MM skill with name '" + skillName + "'");
@@ -24,18 +34,24 @@ public class MythicMobsSkillHandler extends SkillHandler<MythicMobsSkillResult> 
 
         if (config.contains("modifiers"))
             registerModifiers(config.getStringList("modifiers"));
+
+        if (config.isConfigurationSection("disable-anti-cheat"))
+            for (String key : config.getConfigurationSection("disable-anti-cheat").getKeys(false)) {
+                CheatType cheatType = CheatType.valueOf(key.toUpperCase().replace(" ", "_").replace("-", "_"));
+                this.antiCheat.put(cheatType, config.getInt("disable-anti-cheat." + key));
+            }
     }
 
     public String getInternalName() {
         return skill.getInternalName();
     }
 
-    public void setSkill(Skill skill) {
-        this.skill = skill;
-    }
-
     public Skill getSkill() {
         return skill;
+    }
+
+    public Map<CheatType, Integer> getAntiCheat() {
+        return antiCheat;
     }
 
     @Override
@@ -45,7 +61,10 @@ public class MythicMobsSkillHandler extends SkillHandler<MythicMobsSkillResult> 
 
     @Override
     public void whenCast(MythicMobsSkillResult result, SkillMetadata skillMeta) {
-        result.getMythicMobskillMetadata().getVariables().putObject("MMOSkil", skillMeta.getStats());
+
+        // Disable anticheat
+        if (MythicLib.plugin.hasAntiCheat())
+            MythicLib.plugin.getAntiCheat().disableAntiCheat(skillMeta.getCaster().getPlayer(), antiCheat);
 
         skill.execute(result.getMythicMobskillMetadata());
     }

@@ -50,7 +50,7 @@ public class Throw_Up extends SkillHandler<SimpleSkillResult> {
                 if (j % 5 == 0)
                     for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
                         if (entity.getLocation().distanceSquared(loc) < 40 && caster.getEyeLocation().getDirection().angle(entity.getLocation().toVector().subtract(caster.getLocation().toVector())) < Math.PI / 6 && UtilityMethods.canTarget(caster, entity))
-                            new AttackMetadata(new DamageMetadata(dps, DamageType.SKILL, DamageType.PHYSICAL, DamageType.PROJECTILE), skillMeta.getStats()).damage((LivingEntity) entity);
+                            new AttackMetadata(new DamageMetadata(dps, DamageType.SKILL, DamageType.PHYSICAL, DamageType.PROJECTILE), skillMeta.getCaster()).damage((LivingEntity) entity);
 
                 loc.getWorld().playSound(loc, Sound.ENTITY_ZOMBIE_HURT, 1, 1);
 

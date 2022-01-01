@@ -60,7 +60,7 @@ public class Targeted_Fireball extends SkillHandler<TargetSkillResult> {
                     loc.getWorld().spawnParticle(Particle.FLAME, loc, 32, 0, 0, 0, .1);
                     loc.getWorld().playSound(loc, Sound.ENTITY_BLAZE_HURT, 2, 1);
                     target.setFireTicks((int) (target.getFireTicks() + skillMeta.getModifier("ignite") * 20));
-                    new AttackMetadata(new DamageMetadata(skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE), skillMeta.getStats()).damage(target);
+                    new AttackMetadata(new DamageMetadata(skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE), skillMeta.getCaster()).damage(target);
                     cancel();
                 }
             }

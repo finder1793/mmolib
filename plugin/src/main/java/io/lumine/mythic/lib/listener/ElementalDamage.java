@@ -5,7 +5,9 @@ import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.element.Element;
-import io.lumine.mythic.lib.skill.SkillMetadata;
+import io.lumine.mythic.lib.skill.SimpleSkill;
+import io.lumine.mythic.lib.skill.handler.CustomSkillHandler;
+import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -16,7 +18,6 @@ import java.util.Random;
  * AND application. This also applies elemental critical
  * strikes.
  * <p>
- * TODO
  * Extra stats which could be implemented in the future
  * - Flat Elemental Damage Reduction
  * - % Elemental Damage Reduction
@@ -33,12 +34,11 @@ public class ElementalDamage implements Listener {
         if (!event.getDamage().hasType(DamageType.WEAPON))
             return;
 
-        double critChance = Math.min(event.getAttack().getStats().getStat("CRITICAL_STRIKE_CHANCE"), MythicLib.plugin.getAttackEffects().getMaxWeaponCritChance());
-        SkillMetadata skillMeta = new SkillMetadata(null, event.getAttack(), event.getPlayer().getLocation(), null, null);
+        double critChance = Math.min(event.getAttack().getStat("CRITICAL_STRIKE_CHANCE"), MythicLib.plugin.getAttackEffects().getMaxWeaponCritChance());
         for (Element el : MythicLib.plugin.getElements().getAll()) {
 
             // If the flat damage is 0; cancel everything asap
-            StatProvider attackerStats = event.getAttack().getStats();
+            StatProvider attackerStats = event.getAttack();
             double damage = attackerStats.getStat(el.getUpperCaseId() + "_DAMAGE");
             if (damage == 0)
                 continue;
@@ -63,7 +63,8 @@ public class ElementalDamage implements Listener {
             event.getDamage().add(damage, el, DamageType.WEAPON);
 
             // Apply critical strikes
-            el.getSkill(random.nextDouble() < critChance / 100).cast(skillMeta);
+            SimpleSkill skill = new SimpleSkill(new CustomSkillHandler(el.getSkill(random.nextDouble() < critChance / 100)));
+            skill.cast(new TriggerMetadata(event.getAttack(), event.getEntity()));
         }
     }
 }

@@ -4,9 +4,11 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatMap;
+import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
+import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
 import io.lumine.xikage.mythicmobs.io.MythicLineConfig;
 import io.lumine.xikage.mythicmobs.logging.MythicLogger;
@@ -45,9 +47,9 @@ public class MMODamageMechanic extends DamagingMechanic implements ITargetedEnti
 
             double damage = amount.get(data, target) * data.getPower();
 
-            StatMap.CachedStatMap statMap = data.getVariables().has("MMOStatMap") ? (StatMap.CachedStatMap) data.getVariables().get("MMOStatMap").get()
+            PlayerMetadata caster = data.getVariables().has("MMOStatMap") ? (PlayerMetadata) data.getVariables().get("MMOStatMap").get()
                     : MMOPlayerData.get(data.getCaster().getEntity().getUniqueId()).getStatMap().cache(EquipmentSlot.MAIN_HAND);
-            AttackMetadata attackMeta = new AttackMetadata(new DamageMetadata(damage, types), statMap);
+            AttackMetadata attackMeta = new AttackMetadata(new DamageMetadata(damage, types), caster);
 
             // Cooler damage types yeah
             MythicLib.plugin.getDamage().damage(attackMeta, (LivingEntity) target.getBukkitEntity(), !this.preventKnockback, this.preventImmunity);

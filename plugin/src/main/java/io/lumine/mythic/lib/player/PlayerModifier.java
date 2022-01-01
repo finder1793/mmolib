@@ -8,7 +8,7 @@ import io.lumine.mythic.lib.api.stat.modifier.ModifierSource;
  * to a player including the following
  * - stat modifier
  * - potion effect
- * - any passive skill
+ * - any triggered skill
  * <p>
  * Since MythicLib 1.2 it is a generalization of stat modifiers.
  * Still under development

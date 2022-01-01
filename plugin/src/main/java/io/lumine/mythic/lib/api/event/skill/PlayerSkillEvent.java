@@ -10,7 +10,7 @@ public abstract class PlayerSkillEvent extends MMOPlayerDataEvent {
     private final SkillResult result;
 
     public PlayerSkillEvent(SkillMetadata skillMeta, SkillResult result) {
-        super(skillMeta.getCaster());
+        super(skillMeta.getCaster().getData());
 
         this.skillMeta = skillMeta;
         this.result = result;

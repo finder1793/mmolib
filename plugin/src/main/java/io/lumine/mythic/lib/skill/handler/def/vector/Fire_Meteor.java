@@ -60,7 +60,7 @@ public class Fire_Meteor extends SkillHandler<VectorSkillResult> {
                     double radius = skillMeta.getModifier("radius");
                     for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
                         if (UtilityMethods.canTarget(caster, entity) && entity.getLocation().distanceSquared(loc) < radius * radius) {
-                            new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE), skillMeta.getStats()).damage((LivingEntity) entity);
+                            new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE), skillMeta.getCaster()).damage((LivingEntity) entity);
                             entity.setVelocity(entity.getLocation().toVector().subtract(loc.toVector()).multiply(.1 * knockback).setY(.4 * knockback));
                         }
                     cancel();

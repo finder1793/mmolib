@@ -28,10 +28,14 @@ public class MythicMobsSkillResult implements SkillResult {
         if (skillMeta.hasTargetEntity())
             targetEntities.add(BukkitAdapter.adapt(skillMeta.getTargetEntityOrNull()));
 
+        if (skillMeta.hasTargetLocation())
+            targetLocations.add(BukkitAdapter.adapt(skillMeta.getTargetLocationOrNull()));
+
         mmSkillMeta = new io.lumine.xikage.mythicmobs.skills.SkillMetadata(SkillTrigger.CAST, caster, trigger, BukkitAdapter.adapt(skillMeta.getCaster().getPlayer().getEyeLocation()), targetEntities, targetLocations, 1);
 
-        // Stats are cached inside a variable
-        mmSkillMeta.getVariables().putObject("MMOStatMap", skillMeta.getStats());
+        // Stats & cast skill are cached inside a variable
+        mmSkillMeta.getVariables().putObject("MMOStatMap", skillMeta.getCaster());
+        mmSkillMeta.getVariables().putObject("MMOSkill", skillMeta.getCast());
     }
 
     @Override

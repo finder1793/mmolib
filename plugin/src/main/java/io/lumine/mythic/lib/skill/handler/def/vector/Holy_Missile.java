@@ -67,7 +67,7 @@ public class Holy_Missile extends SkillHandler<VectorSkillResult> {
                             loc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, loc, 1);
                             loc.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, loc, 32, 0, 0, 0, .2);
                             loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 2, 1);
-                            new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE), skillMeta.getStats()).damage((LivingEntity) entity);
+                            new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE), skillMeta.getCaster()).damage((LivingEntity) entity);
                             cancel();
                             return;
                         }

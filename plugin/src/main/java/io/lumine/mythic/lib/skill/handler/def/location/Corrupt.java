@@ -50,7 +50,7 @@ public class Corrupt extends SkillHandler<LocationSkillResult> {
 
         for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
             if (UtilityMethods.canTarget(caster, entity) && entity.getLocation().distanceSquared(loc) <= radius * radius) {
-                new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC), skillMeta.getStats()).damage((LivingEntity) entity);
+                new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC), skillMeta.getCaster()).damage((LivingEntity) entity);
                 ((LivingEntity) entity).removePotionEffect(PotionEffectType.WITHER);
                 ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.WITHER, (int) (duration * 20), (int) amplifier));
             }

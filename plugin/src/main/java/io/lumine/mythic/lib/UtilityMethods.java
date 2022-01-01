@@ -105,14 +105,13 @@ public class UtilityMethods {
      */
     public static boolean canTarget(@Nullable Player source, @Nullable Location loc, Entity target, InteractionType interaction) {
 
-        // Check for easy checks and other as well
+        // Interaction type check
         if (!MythicLib.plugin.getEntities().canTarget(source, target, interaction))
             return false;
 
         // Check for bounding box
         return loc == null || MythicLib.plugin.getVersion().getWrapper().isInBoundingBox(target, loc);
     }
-
 
     /**
      * @param player Player to heal

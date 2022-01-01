@@ -1,6 +1,6 @@
 package io.lumine.mythic.lib.damage;
 
-import io.lumine.mythic.lib.api.stat.StatMap;
+import io.lumine.mythic.lib.player.PlayerMetadata;
 import org.bukkit.entity.Projectile;
 
 /**
@@ -17,11 +17,11 @@ public class ProjectileAttackMetadata extends AttackMetadata {
      * what the damager is so there might be problem with damage/reduction stat
      * application.
      *
-     * @param damage  The attack result
-     * @param statMap The entity who dealt the damage
+     * @param damage   The attack result
+     * @param attacker The entity who dealt the damage
      */
-    public ProjectileAttackMetadata(DamageMetadata damage, StatMap.CachedStatMap statMap, Projectile projectile) {
-        super(damage, statMap);
+    public ProjectileAttackMetadata(DamageMetadata damage, PlayerMetadata attacker, Projectile projectile) {
+        super(damage, attacker);
 
         this.projectile = projectile;
     }

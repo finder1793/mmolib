@@ -48,14 +48,14 @@ public class EntityManager {
             return false;
 
         // PvP flag
-        if (interaction.isOffense() && (target instanceof Player) && !MythicLib.plugin.getFlags().isPvpAllowed(target.getLocation()))
+        if (interaction.isOffense() && target instanceof Player && !MythicLib.plugin.getFlags().isPvpAllowed(target.getLocation()))
             return false;
-
 
         // Player ability damage for PvE servers
         if (interaction == InteractionType.OFFENSE_SKILL && !MythicLib.plugin.getMMOConfig().playerAbilityDamage)
             return false;
 
+        // Specific plugin checks (Citizens, Factions..)
         LivingEntity livingEntity = (LivingEntity) target;
         for (TargetRestriction restriction : restrictions)
             if (!restriction.canTarget(source, livingEntity, interaction))
