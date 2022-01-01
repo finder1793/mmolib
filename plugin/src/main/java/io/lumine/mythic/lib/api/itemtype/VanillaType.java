@@ -3,38 +3,35 @@ package io.lumine.mythic.lib.api.itemtype;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-public class VanillaType extends ItemType {
-    private final Material mat;
+import java.util.Objects;
 
-    public VanillaType(Material mat) {
-        this.mat = mat;
+public class VanillaType implements ItemType {
+    private final Material material;
+
+    public VanillaType(Material material) {
+        this.material = Objects.requireNonNull(material, "Material cannot be null");
     }
 
     @Override
     public boolean matches(ItemStack stack) {
-        return stack.getType() == mat;
+        return stack.getType() == material;
     }
 
     @Override
     public String display() {
-        return mat.name();
+        return material.name();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        VanillaType that = (VanillaType) o;
+        return material == that.material;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((mat == null) ? 0 : mat.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!(obj instanceof VanillaType))
-            return false;
-        VanillaType other = (VanillaType) obj;
-        return mat == other.mat;
+        return Objects.hash(material);
     }
 }
