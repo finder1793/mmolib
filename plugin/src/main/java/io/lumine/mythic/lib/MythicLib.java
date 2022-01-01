@@ -77,6 +77,7 @@ public class MythicLib extends LuminePlugin {
     private ScoreboardProvider scoreboardProvider;
     private PlaceholderParser placeholderParser;
 
+
     /**
      * MMOItems has a similar public field. If these don't match
      * then MMOItems cannot run with the installed build of MythicLib
