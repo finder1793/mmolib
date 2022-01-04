@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.skill.handler.def.mmocore;
+package io.lumine.mythic.lib.skill.handler.def.simple;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;

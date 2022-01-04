@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.skill.handler.def.mmocore;
+package io.lumine.mythic.lib.skill.handler.def.target;
 
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.comp.target.InteractionType;
@@ -10,8 +10,8 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 
-public class Minor_Healings extends SkillHandler<TargetSkillResult> {
-    public Minor_Healings() {
+public class Greater_Healings extends SkillHandler<TargetSkillResult> {
+    public Greater_Healings() {
         super();
 
         registerModifiers("heal");

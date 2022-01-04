@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.skill.handler.def.mmocore;
+package io.lumine.mythic.lib.skill.handler.def.target;
 
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
