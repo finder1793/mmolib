@@ -6,15 +6,14 @@ import java.util.function.Predicate;
 
 public enum SoundServerVersion {
 
-    /*
-     * Latest version is NEVER used because it should be corresponding to the
-     * enum
+    /**
+     * Latest version is NEVER used because it should
+     * be corresponding to the enum
      */
     V1_16(version -> version.isStrictlyHigher(1, 15), 1),
 
     /**
-     * Corresponds to 1.13 all the way up to 1.15, never used by convention
-     * because sound names utilize sounds from 1.13 to 1.15
+     * Corresponds to 1.13 all the way up to 1.15
      */
     V1_13(version -> version.isStrictlyHigher(1, 12) && version.isBelowOrEqual(1, 15), 0),
 
