@@ -89,7 +89,7 @@ public class HelixMechanic extends Mechanic {
                             y,
                             r * Math.sin(yaw));
 
-                    onTick.cast(meta.clone(source, loc, null));
+                    onTick.cast(meta.clone(source, loc, null, null));
                 }
             }
         }.runTaskTimer(MythicLib.plugin, 0, timeInterval);

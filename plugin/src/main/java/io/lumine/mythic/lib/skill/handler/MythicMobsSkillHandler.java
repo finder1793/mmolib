@@ -24,16 +24,13 @@ public class MythicMobsSkillHandler extends SkillHandler<MythicMobsSkillResult> 
     private final Map<CheatType, Integer> antiCheat = new HashMap<>();
 
     public MythicMobsSkillHandler(ConfigurationSection config) {
-        super(config.getString("mythicmobs-skill-id"));
+        super(config, config.getString("mythicmobs-skill-id"));
 
         String skillName = config.getString("mythicmobs-skill-id");
 
         Optional<Skill> opt = MythicMobs.inst().getSkillManager().getSkill(skillName);
         Validate.isTrue(opt.isPresent(), "Could not find MM skill with name '" + skillName + "'");
         skill = opt.get();
-
-        if (config.contains("modifiers"))
-            registerModifiers(config.getStringList("modifiers"));
 
         if (config.isConfigurationSection("disable-anti-cheat"))
             for (String key : config.getConfigurationSection("disable-anti-cheat").getKeys(false)) {

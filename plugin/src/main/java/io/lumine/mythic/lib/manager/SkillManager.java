@@ -41,8 +41,9 @@ import io.lumine.mythic.lib.skill.custom.targeter.EntityTargeter;
 import io.lumine.mythic.lib.skill.custom.targeter.LocationTargeter;
 import io.lumine.mythic.lib.skill.custom.targeter.entity.*;
 import io.lumine.mythic.lib.skill.custom.targeter.location.*;
-import io.lumine.mythic.lib.skill.handler.CustomSkillHandler;
+import io.lumine.mythic.lib.skill.handler.MythicLibSkillHandler;
 import io.lumine.mythic.lib.skill.handler.MythicMobsSkillHandler;
+import io.lumine.mythic.lib.skill.handler.SkillAPISkillHandler;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.util.RecursiveFolderExplorer;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
@@ -187,7 +188,7 @@ public class SkillManager {
         registerCondition("has_damage_type", config -> new HasDamageTypeCondition(config));
 
         // Default skill handler types
-        registerSkillHandlerType(config -> config.contains("mythiclib-skill-id"), config -> new CustomSkillHandler(getSkillOrThrow(config.getString("mythiclib-skill"))));
+        registerSkillHandlerType(config -> config.contains("mythiclib-skill-id"), config -> new MythicLibSkillHandler(getSkillOrThrow(config.getString("mythiclib-skill"))));
     }
 
     /**
@@ -350,15 +351,22 @@ public class SkillManager {
             registration = false;
 
             // mkdir skill folders
+            File skillsFolder = new File(MythicLib.plugin.getDataFolder() + "/skill");
+            if (!skillsFolder.exists())
+                skillsFolder.mkdir();
+
+            // mkdir skill folders
             File customSkillsFolder = new File(MythicLib.plugin.getDataFolder() + "/skill/custom");
             if (!customSkillsFolder.exists())
                 customSkillsFolder.mkdir();
 
-            // MythicMobs skill handler
+            // MythicMobs skill handler type
             if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null)
                 registerSkillHandlerType(config -> config.contains("mythicmobs-skill-id"), config -> new MythicMobsSkillHandler(config));
 
-            // TODO SkillAPI skill handler
+            // SkillAPI skill handler type
+            if (Bukkit.getPluginManager().getPlugin("SkillAPI") != null)
+                registerSkillHandlerType(config -> config.contains("skillapi-skill-id"), config -> new SkillAPISkillHandler(config));
         }
 
         // Load default skills
@@ -387,7 +395,7 @@ public class SkillManager {
                     CustomSkill skill = new CustomSkill(config.getConfigurationSection(key));
                     registerCustomSkill(skill);
                 } catch (RuntimeException exception) {
-                    MythicLib.plugin.getLogger().log(Level.WARNING, "Could not initialize skill '" + key + "' from '" + file.getName() + "': " + exception.getMessage());
+                    MythicLib.plugin.getLogger().log(Level.WARNING, "Could not initialize custom skill '" + key + "' from '" + file.getName() + "': " + exception.getMessage());
                 }
 
         }, MythicLib.plugin, "Could not load custom skills").explore(new File(MythicLib.plugin.getDataFolder() + "/skill/custom"));
@@ -395,21 +403,23 @@ public class SkillManager {
         // Post load custom skills and register a skill handler
         for (CustomSkill skill : customSkills.values())
             try {
-                if (skill.isPublic())
-                    registerSkillHandler(new CustomSkillHandler(skill));
                 skill.postLoad();
+                if (skill.isPublic())
+                    registerSkillHandler(new MythicLibSkillHandler(skill));
             } catch (RuntimeException exception) {
                 MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill '" + skill.getId() + "': " + exception.getMessage());
             }
 
-
-        // Load MM skills
-        if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null) {
-
-
-        }
-        // TODO load MM skills
-
-        // TODO load SkillAPI skills
+        // Load skills
+        RecursiveFolderExplorer explorer = new RecursiveFolderExplorer(file -> {
+            try {
+                registerSkillHandler(loadSkillHandler(YamlConfiguration.loadConfiguration(file)));
+            } catch (RuntimeException exception) {
+                MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill from '" + file.getName() + "': " + exception.getMessage());
+            }
+        }, MythicLib.plugin, "Could not load skills");
+        for (File file : new File(MythicLib.plugin.getDataFolder() + "/skill").listFiles())
+            if (!file.isDirectory() || !file.getName().equals("custom"))
+                explorer.explore(file);
     }
 }

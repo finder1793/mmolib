@@ -5,6 +5,7 @@ import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.result.SkillResult;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,10 +39,18 @@ public abstract class SkillHandler<T extends SkillResult> {
 
     protected static final Random random = new Random();
 
+    /**
+     * Used by default MythicLib skill handlers
+     */
     public SkillHandler() {
         this(true);
     }
 
+    /**
+     * Used by default MythicLib skill handlers
+     *
+     * @param triggerable If the skill can be triggered
+     */
     public SkillHandler(boolean triggerable) {
         this.id = formatId(getClass().getSimpleName());
         this.triggerable = triggerable;
@@ -49,14 +58,33 @@ public abstract class SkillHandler<T extends SkillResult> {
         registerModifiers("cooldown", "mana", "stamina");
     }
 
-    public SkillHandler(String id) {
-        this(id, true);
+    /**
+     * Used to register a custom skill handler
+     *
+     * @param id Skill handler identifier
+     */
+    public SkillHandler(@NotNull String id) {
+        this.id = formatId(id);
+        this.triggerable = true;
+
+        registerModifiers("cooldown", "mana", "stamina");
     }
 
-    public SkillHandler(String id, boolean triggerable) {
+    /**
+     * Used to register a custom skill handler
+     *
+     * @param config Configuration section to load the skill handler from
+     * @param id     Skill handler identifier
+     */
+    public SkillHandler(@NotNull ConfigurationSection config, @NotNull String id) {
         this.id = formatId(id);
-        this.triggerable = triggerable;
+        this.triggerable = true;
 
+        // Register custom modifiers
+        if (config.contains("modifiers"))
+            registerModifiers(config.getStringList("modifiers"));
+
+        // Default modifiers
         registerModifiers("cooldown", "mana", "stamina");
     }
 

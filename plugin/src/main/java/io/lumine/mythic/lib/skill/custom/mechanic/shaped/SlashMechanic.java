@@ -81,12 +81,12 @@ public class SlashMechanic extends Mechanic {
                     // Add some curvature using f(x) = sqrt(1 - x²) to find the real location
                     double x = Math.abs(counter - points / 2) * 2d / points;
                     Location intermediate = current.clone().add(dir.clone().multiply(distance * Math.sqrt(1 - x * x)));
-                    onTick.cast(meta.clone(source, intermediate, null));
+                    onTick.cast(meta.clone(source, intermediate, null, null));
 
                     if (counter++ >= points) {
                         cancel();
                         if (onEnd != null)
-                            onEnd.cast(meta.clone(source, intermediate, null));
+                            onEnd.cast(meta.clone(source, intermediate, null, null));
                         return;
                     }
                 }

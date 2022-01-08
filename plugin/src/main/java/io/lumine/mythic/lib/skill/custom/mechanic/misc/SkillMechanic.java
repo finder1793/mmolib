@@ -93,6 +93,6 @@ public class SkillMechanic extends Mechanic {
         // Cast with every mathematically possible skill metadata
         for (Location targetLocation : newTargetLocations)
             for (Entity targetEntity : newTargetEntities)
-                skill.cast(old.clone(sourceLocation, targetLocation, targetEntity));
+                skill.cast(old.clone(sourceLocation, targetLocation, targetEntity, old.getOrientationOrNull()));
     }
 }

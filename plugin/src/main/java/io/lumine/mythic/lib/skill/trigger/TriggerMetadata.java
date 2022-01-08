@@ -6,6 +6,7 @@ import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.custom.variable.VariableList;
 import io.lumine.mythic.lib.skill.custom.variable.VariableScope;
+import io.lumine.mythic.lib.util.SkillOrientation;
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -65,6 +66,7 @@ public class TriggerMetadata extends PlayerMetadata {
      * @return Skill cast information containing all the previous information
      */
     public SkillMetadata toSkillMetadata(Skill cast) {
-        return new SkillMetadata(cast, this, new VariableList(VariableScope.SKILL), attack, getPlayer().getLocation(), null, target);
+
+        return new SkillMetadata(cast, this, new VariableList(VariableScope.SKILL), attack, getPlayer().getLocation(), null, target, null);
     }
 }

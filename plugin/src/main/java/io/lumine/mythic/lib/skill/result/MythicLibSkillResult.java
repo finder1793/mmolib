@@ -4,10 +4,10 @@ import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.custom.CustomSkill;
 import io.lumine.mythic.lib.skill.custom.condition.Condition;
 
-public class CustomSkillResult implements SkillResult {
+public class MythicLibSkillResult implements SkillResult {
     private final CustomSkill skill;
 
-    public CustomSkillResult(CustomSkill skill) {
+    public MythicLibSkillResult(CustomSkill skill) {
         this.skill = skill;
     }
 
