@@ -51,7 +51,7 @@ public class SkillAPISkillResult implements SkillResult {
 
             // Target Skills
         else if (skill instanceof TargetSkill) {
-            target = TargetHelper.getLivingTarget(skillPlayerData.getPlayer(), skill.getRange(level));
+            target = skillMeta.hasTargetEntity() && skillMeta.getTargetEntityOrNull() instanceof LivingEntity ? (LivingEntity) skillMeta.getTargetEntity() : TargetHelper.getLivingTarget(skillPlayerData.getPlayer(), skill.getRange(level));
 
             // Must have a target
             if (target == null)
