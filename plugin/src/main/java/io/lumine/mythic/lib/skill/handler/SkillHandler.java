@@ -13,8 +13,8 @@ import java.util.*;
 /**
  * The interface that groups up:
  * - custom MM skills
- * - custom MythicLib skills (not implemented yet)
- * - custom SkillAPI skills (not implemented yet)
+ * - custom MythicLib skills
+ * - custom SkillAPI skills
  * - default MythicLib skills
  * <p>
  * MythicLib has a huge default collection of "skills" however
