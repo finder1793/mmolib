@@ -3,13 +3,17 @@ package io.lumine.mythic.lib.skill;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Can be used to cast a skill handler without modifiers
+ * Can be used to cast a skill handler with configurable modifier input
  *
  * @author jules
  */
 public class SimpleSkill extends Skill {
     private final SkillHandler<?> handler;
+    private final Map<String, Double> modifiers = new HashMap<>();
 
     public SimpleSkill(SkillHandler<?> handler) {
         this.handler = handler;
@@ -33,6 +37,10 @@ public class SimpleSkill extends Skill {
 
     @Override
     public double getModifier(String path) {
-        return 0;
+        return modifiers.getOrDefault(path, 0d);
+    }
+
+    public void registerModifier(String path, double value) {
+        modifiers.put(path, value);
     }
 }

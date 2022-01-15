@@ -9,11 +9,12 @@ import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.player.TemporaryPlayerData;
 import io.lumine.mythic.lib.player.cooldown.CooldownMap;
 import io.lumine.mythic.lib.player.cooldown.CooldownType;
+import io.lumine.mythic.lib.player.particle.ParticleEffectMap;
+import io.lumine.mythic.lib.player.potion.PermanentPotionEffectMap;
+import io.lumine.mythic.lib.player.skill.PassiveSkillMap;
 import io.lumine.mythic.lib.skill.custom.variable.VariableList;
 import io.lumine.mythic.lib.skill.custom.variable.VariableScope;
-import io.lumine.mythic.lib.skill.handler.SkillHandler;
-import io.lumine.mythic.lib.skill.handler.def.passive.Backstab;
-import io.lumine.mythic.lib.skill.trigger.PassiveSkill;
+import io.lumine.mythic.lib.player.skill.PassiveSkill;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.apache.commons.lang.Validate;
@@ -41,8 +42,10 @@ public class MMOPlayerData {
     // Temporary player data
     private final CooldownMap cooldownMap;
     private final StatMap statMap;
-    private final VariableList skillVariableList;
-    private final Set<PassiveSkill> passiveSkills;
+    private final PermanentPotionEffectMap permEffectMap;
+    private final ParticleEffectMap particleEffectMap;
+    private final PassiveSkillMap passiveSkillMap;
+    private final VariableList variableList;
 
     private static final Map<UUID, MMOPlayerData> data = new HashMap<>();
 
@@ -52,8 +55,10 @@ public class MMOPlayerData {
 
         this.cooldownMap = new CooldownMap();
         this.statMap = new StatMap(this);
-        this.skillVariableList = new VariableList(VariableScope.PLAYER);
-        this.passiveSkills = new HashSet<>();
+        this.variableList = new VariableList(VariableScope.PLAYER);
+        this.permEffectMap = new PermanentPotionEffectMap(this);
+        this.particleEffectMap = new ParticleEffectMap(this);
+        this.passiveSkillMap = new PassiveSkillMap(this);
     }
 
     private MMOPlayerData(Player player, TemporaryPlayerData tempData) {
@@ -62,8 +67,10 @@ public class MMOPlayerData {
 
         this.cooldownMap = tempData.getCooldownMap();
         this.statMap = tempData.getStatMap();
-        this.skillVariableList = tempData.getSkillVariableList();
-        this.passiveSkills = tempData.getPassiveSkills();
+        this.permEffectMap = tempData.getPermanentEffectMap();
+        this.particleEffectMap = tempData.getParticleEffectMap();
+        this.variableList = tempData.getSkillVariableList();
+        this.passiveSkillMap = tempData.getPassiveSkills();
     }
 
     public UUID getUniqueId() {
@@ -79,59 +86,19 @@ public class MMOPlayerData {
         return statMap;
     }
 
+    public PermanentPotionEffectMap getPermanentEffectMap() {
+        return permEffectMap;
+    }
+
+    public ParticleEffectMap getParticleEffectMap() {
+        return particleEffectMap;
+    }
+
     /**
      * @return All active skill triggers
      */
-    public Set<PassiveSkill> getPassiveSkills() {
-        return passiveSkills;
-    }
-
-    /**
-     * Unregisters active skill triggers with a specific key
-     *
-     * @param key
-     */
-    public void unregisterSkillTriggers(String key) {
-        Iterator<PassiveSkill> iter = passiveSkills.iterator();
-        while (iter.hasNext()) {
-            PassiveSkill trigger = iter.next();
-            if (trigger.getKey().equals(key))
-                iter.remove();
-        }
-    }
-
-    /**
-     * This method can be used to check if a player has a specific
-     * passive skill registered in his skill set.
-     * <p>
-     * This is the method utilized to keep MythicLib compatible
-     * with default ML passive skills like {@link Backstab}
-     * <p>
-     * A player can have multiple passive skills with the same
-     * skill handler. The output function is completely random
-     * given the use of an HashSet which does not feature order
-     *
-     * @param handler Some passive skill handler
-     * @return Any passive skill with the same handler
-     */
-    @Nullable
-    public PassiveSkill getPassiveSkill(@NotNull SkillHandler handler) {
-        for (PassiveSkill passive : passiveSkills)
-            if (passive.getTriggeredSkill().getHandler().equals(handler))
-                return passive;
-        return null;
-    }
-
-    /**
-     * Registers as active a skill trigger. It can be unregistered
-     * later if necessary using {@link #unregisterSkillTriggers(String)}.
-     * From the time where that method is called, performing an action will
-     * cause the saved TriggeredSkill to be executed.
-     *
-     * @param trigger Trigger to register
-     */
-    public void registerSkillTrigger(PassiveSkill trigger) {
-        passiveSkills.add(trigger);
+    public PassiveSkillMap getPassiveSkillMap() {
+        return passiveSkillMap;
     }
 
     /**
@@ -153,7 +120,7 @@ public class MMOPlayerData {
      * @param attackMetadata The attack being performed
      */
     public void triggerSkills(TriggerType triggerType, @Nullable AttackMetadata attackMetadata, @Nullable Entity target) {
-        triggerSkills(triggerType, attackMetadata, target, passiveSkills);
+        triggerSkills(triggerType, attackMetadata, target, passiveSkillMap.getModifiers());
     }
 
     /**
@@ -176,8 +143,8 @@ public class MMOPlayerData {
                 skill.getTriggeredSkill().cast(triggerMeta);
     }
 
-    public VariableList getSkillVariableList() {
-        return skillVariableList;
+    public VariableList getVariableList() {
+        return variableList;
     }
 
     /**

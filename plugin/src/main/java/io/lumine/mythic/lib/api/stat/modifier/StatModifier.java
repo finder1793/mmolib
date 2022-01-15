@@ -6,10 +6,14 @@ import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.player.modifier.ModifierSource;
 import io.lumine.mythic.lib.player.modifier.ModifierType;
 import io.lumine.mythic.lib.player.modifier.PlayerModifier;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
 
 import java.text.DecimalFormat;
 
+/**
+ * Stat modifiers do NOT utilize the player modifier UUID
+ */
 public class StatModifier extends PlayerModifier {
     private final String stat;
     private final double value;
@@ -68,6 +72,26 @@ public class StatModifier extends PlayerModifier {
         this.stat = stat;
     }
 
+    public StatModifier(ConfigObject object) {
+        super(object.getString("key"), EquipmentSlot.OTHER, ModifierSource.OTHER);
+
+        this.stat = object.getString("stat");
+        this.value = object.getDouble("value");
+        type = object.getBoolean("multiplicative", false) ? ModifierType.RELATIVE : ModifierType.FLAT;
+    }
+
+    public String getStat() {
+        return stat;
+    }
+
+    public ModifierType getType() {
+        return type;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
     /**
      * Used to multiply some existing stat modifier by a constant, usually an
      * integer, for instance when MMOCore party modifiers scale with the
@@ -80,22 +104,14 @@ public class StatModifier extends PlayerModifier {
         return new StatModifier(getKey(), stat, value * coef, type, getSlot(), getSource());
     }
 
-    public ModifierType getType() {
-        return type;
-    }
-
-    public double getValue() {
-        return value;
-    }
-
     @Override
     public void register(MMOPlayerData playerData) {
-
+        playerData.getStatMap().getInstance(stat).addModifier(this);
     }
 
     @Override
     public void unregister(MMOPlayerData playerData) {
-
+        playerData.getStatMap().getInstance(stat).remove(getKey());
     }
 
     @Override

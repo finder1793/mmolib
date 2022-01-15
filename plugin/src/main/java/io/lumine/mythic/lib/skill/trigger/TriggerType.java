@@ -120,13 +120,6 @@ public enum TriggerType {
     LOGIN,
 
     /**
-     * This trigger type is never called. It can be used
-     * as a trigger type for passive skills
-     */
-    @Deprecated
-    PASSIVE,
-
-    /**
      * Called when a player toggles on or off sneaking.
      * This trigger displays cooldown/mana restriction messages.
      */

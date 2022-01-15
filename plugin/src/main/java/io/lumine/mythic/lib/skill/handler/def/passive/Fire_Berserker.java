@@ -5,7 +5,7 @@ import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
-import io.lumine.mythic.lib.skill.trigger.PassiveSkill;
+import io.lumine.mythic.lib.player.skill.PassiveSkill;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -35,7 +35,7 @@ public class Fire_Berserker extends SkillHandler<SimpleSkillResult> implements L
         if (event.getPlayer().getFireTicks() <= 0)
             return;
 
-        PassiveSkill skill = data.getPassiveSkill(this);
+        PassiveSkill skill = data.getPassiveSkillMap().getSkill(this);
         if (skill == null)
             return;
 

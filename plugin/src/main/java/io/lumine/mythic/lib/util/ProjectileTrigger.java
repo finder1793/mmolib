@@ -9,7 +9,7 @@ import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.ProjectileAttackMetadata;
 import io.lumine.mythic.lib.player.PlayerMetadata;
-import io.lumine.mythic.lib.skill.trigger.PassiveSkill;
+import io.lumine.mythic.lib.player.skill.PassiveSkill;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -66,7 +66,7 @@ public class ProjectileTrigger extends TemporaryListener {
         this.projectileType = projectileType;
 
         // Cache important stuff
-        this.cachedSkills = new HashSet<>(caster.getPassiveSkills());
+        this.cachedSkills = isolateSkills(hand);
         this.attacker = caster.getStatMap().cache(hand);
 
         runnable = new BukkitRunnable() {
@@ -76,6 +76,27 @@ public class ProjectileTrigger extends TemporaryListener {
             }
         };
         runnable.runTaskTimer(MythicLib.plugin, 0, 1);
+    }
+
+    /**
+     * This fixes an issue where skills from the RIGHT hand are being
+     * applied when firing arrows using a bow held in LEFT hand which
+     * doesn't make any sense.
+     * <p>
+     * However it makes sense to apply skills given by armor pieces or
+     * accessories. This methods only bans skills from the opposite hand.
+     *
+     * @param hand Hand used to shoot the projectile
+     * @return Skills that will potentially be triggered
+     */
+    private Set<PassiveSkill> isolateSkills(EquipmentSlot hand) {
+        Set<PassiveSkill> skills = new HashSet<>();
+
+        for (PassiveSkill skill : caster.getPassiveSkillMap().getModifiers())
+            if (skill.getSlot() != hand.getOppositeHand())
+                skills.add(skill);
+
+        return skills;
     }
 
     @EventHandler

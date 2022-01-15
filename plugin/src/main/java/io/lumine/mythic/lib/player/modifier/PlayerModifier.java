@@ -37,6 +37,10 @@ public abstract class PlayerModifier {
         this.source = source;
     }
 
+    public UUID getUniqueId() {
+        return uniqueId;
+    }
+
     public String getKey() {
         return key;
     }

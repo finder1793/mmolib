@@ -6,7 +6,7 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
-import io.lumine.mythic.lib.skill.trigger.PassiveSkill;
+import io.lumine.mythic.lib.player.skill.PassiveSkill;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -42,7 +42,7 @@ public class Backstab extends SkillHandler<SimpleSkillResult> implements Listene
                 || event.getPlayer().getEyeLocation().getDirection().angle(target.getEyeLocation().getDirection()) > Math.PI / 6)
             return;
 
-        PassiveSkill skill = data.getPassiveSkill(this);
+        PassiveSkill skill = data.getPassiveSkillMap().getSkill(this);
         if (skill == null)
             return;
 

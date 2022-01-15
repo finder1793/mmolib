@@ -313,7 +313,7 @@ public class SkillMetadata {
             return var;
 
         // Check for PLAYER scope
-        var = getCaster().getData().getSkillVariableList().getVariable(name);
+        var = getCaster().getData().getVariableList().getVariable(name);
         return Objects.requireNonNull(var, "Could not find custom variable with name '" + name + "'");
     }
 

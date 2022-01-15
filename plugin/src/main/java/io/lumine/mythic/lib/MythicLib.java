@@ -66,6 +66,7 @@ public class MythicLib extends LuminePlugin {
     private final ConfigManager configManager = new ConfigManager();
     private final ElementManager elementManager = new ElementManager();
     private final SkillManager skillManager = new SkillManager();
+    private final ModifierManager modifierManager = new ModifierManager();
 
     private AntiCheatSupport antiCheatSupport;
     private ServerVersion version;
@@ -84,7 +85,7 @@ public class MythicLib extends LuminePlugin {
      * and should not enable on server startup. This smoothly lets the
      * user know when they have to update their plugin builds.
      */
-    public static final int MMOITEMS_COMPATIBILITY_INDEX = 2;
+    public static final int MMOITEMS_COMPATIBILITY_INDEX = 3;
 
     /**
      * MMOCore has a similar public field. If these don't match
@@ -92,7 +93,7 @@ public class MythicLib extends LuminePlugin {
      * and should not enable on server startup. This smoothly lets the
      * user know when they have to update their plugin builds.
      */
-    public static final int MMOCORE_COMPATIBILITY_INDEX = 2;
+    public static final int MMOCORE_COMPATIBILITY_INDEX = 3;
 
     @Override
     public void load() {
@@ -269,6 +270,10 @@ public class MythicLib extends LuminePlugin {
 
     public SkillManager getSkills() {
         return skillManager;
+    }
+
+    public ModifierManager getModifiers() {
+        return modifierManager;
     }
 
     /**

@@ -2,8 +2,10 @@ package io.lumine.mythic.lib.api.stat;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
-import io.lumine.mythic.lib.player.modifier.ModifierType;
 import io.lumine.mythic.lib.api.stat.modifier.StatModifier;
+import io.lumine.mythic.lib.player.modifier.Closeable;
+import io.lumine.mythic.lib.player.modifier.ModifierType;
+import org.apache.commons.lang.Validate;
 
 import java.util.*;
 import java.util.function.Function;
@@ -118,11 +120,10 @@ public class StatInstance {
     /**
      * Registers a stat modifier and run the required player stat updates
      *
-     * @param key      The string key of the stat
      * @param modifier The stat modifier being registered
      */
-    public void addModifier(String key, StatModifier modifier) {
-        modifiers.put(key, modifier);
+    public void addModifier(StatModifier modifier) {
+        modifiers.put(modifier.getKey(), modifier);
 
         MythicLib.plugin.getStats().runUpdate(map, stat);
     }
@@ -185,7 +186,6 @@ public class StatInstance {
      *            The string key of the external stat modifier source or plugin
      */
     public void remove(String key) {
-
         if (!modifiers.containsKey(key))
             return;
 
@@ -218,11 +218,10 @@ public class StatInstance {
         /**
          * Registers a stat modifier and run the required player stat updates
          *
-         * @param key      The string key of the stat
          * @param modifier The stat modifier being registered
          */
-        public void addModifier(String key, StatModifier modifier) {
-            modifiers.put(key, modifier);
+        public void addModifier(StatModifier modifier) {
+            modifiers.put(modifier.getKey(), modifier);
         }
 
         /**

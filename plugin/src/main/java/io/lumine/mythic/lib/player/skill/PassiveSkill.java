@@ -1,9 +1,14 @@
-package io.lumine.mythic.lib.skill.trigger;
+package io.lumine.mythic.lib.player.skill;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.player.modifier.ModifierSource;
 import io.lumine.mythic.lib.player.modifier.PlayerModifier;
+import io.lumine.mythic.lib.skill.SimpleSkill;
 import io.lumine.mythic.lib.skill.Skill;
+import io.lumine.mythic.lib.skill.trigger.TriggerType;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 
 /**
  * There is one TriggeredSkill instance per active/passive skill the player
@@ -49,6 +54,13 @@ public class PassiveSkill extends PlayerModifier {
         this.triggered = triggered;
     }
 
+    public PassiveSkill(ConfigObject obj) {
+        super(obj.getString("key"), EquipmentSlot.OTHER, ModifierSource.OTHER);
+
+        triggered = new SimpleSkill(MythicLib.plugin.getSkills().getHandlerOrThrow(obj.getString("skill")));
+        type = triggered.getHandler().isTriggerable() ? TriggerType.valueOf(obj.getString("trigger").toUpperCase().replace(" ", "_").replace("-", "_")) : null;
+    }
+
     /**
      * @param key       A key like 'item' or 'itemSet' indicating what is giving a passive skill to the player.
      *                  There can be multiple skills with the same key, it's not a unique identifier.
@@ -71,5 +83,15 @@ public class PassiveSkill extends PlayerModifier {
 
     public TriggerType getType() {
         return type;
+    }
+
+    @Override
+    public void register(MMOPlayerData playerData) {
+        playerData.getPassiveSkillMap().addModifier(this);
+    }
+
+    @Override
+    public void unregister(MMOPlayerData playerData) {
+        playerData.getPassiveSkillMap().removeModifier(getUniqueId());
     }
 }

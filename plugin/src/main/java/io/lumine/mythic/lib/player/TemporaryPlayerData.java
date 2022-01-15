@@ -4,7 +4,9 @@ import io.lumine.mythic.lib.api.event.TemporaryDataSavedEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.player.cooldown.CooldownMap;
-import io.lumine.mythic.lib.skill.trigger.PassiveSkill;
+import io.lumine.mythic.lib.player.particle.ParticleEffectMap;
+import io.lumine.mythic.lib.player.potion.PermanentPotionEffectMap;
+import io.lumine.mythic.lib.player.skill.PassiveSkillMap;
 import io.lumine.mythic.lib.skill.custom.variable.VariableList;
 import org.bukkit.entity.Player;
 
@@ -32,8 +34,10 @@ import java.util.*;
 public class TemporaryPlayerData {
     private final CooldownMap cooldownMap;
     private final StatMap statMap;
+    private final PermanentPotionEffectMap permEffectMap;
     private final VariableList skillVariableList;
-    private final Set<PassiveSkill> passiveSkills;
+    private final ParticleEffectMap particleEffectMap;
+    private final PassiveSkillMap passiveSkills;
     private final long lastDisconnection;
 
     /**
@@ -52,8 +56,10 @@ public class TemporaryPlayerData {
     public TemporaryPlayerData(MMOPlayerData loggingOff) {
         this.cooldownMap = loggingOff.getCooldownMap();
         this.statMap = loggingOff.getStatMap();
-        this.skillVariableList = loggingOff.getSkillVariableList();
-        this.passiveSkills = loggingOff.getPassiveSkills();
+        this.permEffectMap = loggingOff.getPermanentEffectMap();
+        particleEffectMap = loggingOff.getParticleEffectMap();
+        this.skillVariableList = loggingOff.getVariableList();
+        this.passiveSkills = loggingOff.getPassiveSkillMap();
         this.lastDisconnection = System.currentTimeMillis();
     }
 
@@ -69,11 +75,19 @@ public class TemporaryPlayerData {
         return statMap;
     }
 
+    public PermanentPotionEffectMap getPermanentEffectMap() {
+        return permEffectMap;
+    }
+
+    public ParticleEffectMap getParticleEffectMap() {
+        return particleEffectMap;
+    }
+
     public VariableList getSkillVariableList() {
         return skillVariableList;
     }
 
-    public Set<PassiveSkill> getPassiveSkills() {
+    public PassiveSkillMap getPassiveSkills() {
         return passiveSkills;
     }
 
