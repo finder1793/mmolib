@@ -1,8 +1,8 @@
 package io.lumine.mythic.lib.skill.custom.mechanic.raytrace;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.skill.custom.CustomSkill;
 import io.lumine.mythic.lib.skill.SkillMetadata;
+import io.lumine.mythic.lib.skill.custom.CustomSkill;
 import io.lumine.mythic.lib.skill.custom.mechanic.MechanicMetadata;
 import io.lumine.mythic.lib.skill.custom.mechanic.type.DirectionMechanic;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
@@ -56,16 +56,18 @@ public class RayTraceAnyMechanic extends DirectionMechanic {
         if (onTick != null)
             for (double j = 0; j < length; j += step) {
                 Location intermediate = source.clone().add(dir.clone().multiply(j));
-                onTick.cast(meta.clone(source, intermediate, null));
+                onTick.cast(meta.clone(source, intermediate, null, null));
             }
 
         if (result == null)
             return;
 
+        Location hitPosition = result.getHitPosition().toLocation(source.getWorld());
+
         if (onHitBlock != null && result.getHitBlock() != null)
-            onHitBlock.cast(meta.clone(source, result.getHitPosition().toLocation(source.getWorld()), null));
+            onHitBlock.cast(meta.clone(source, hitPosition, null, null));
 
         if (onHitEntity != null && result.getHitEntity() != null)
-            onHitEntity.cast(meta.clone(source, null, result.getHitEntity()));
+            onHitEntity.cast(meta.clone(source, hitPosition, result.getHitEntity(), null));
     }
 }

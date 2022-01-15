@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Provides a location
+ * Provides a location which coordinates are provided as parameters
  */
 public class CustomLocationTargeter implements LocationTargeter {
     private final DoubleFormula x, y,z;

@@ -14,9 +14,9 @@
     <name>MythicLib</name>
 
     <properties>
-        <revision>1.3-R12</revision>
         <downloadSources>false</downloadSources>
         <downloadJavadocs>false</downloadJavadocs>
+        <revision>1.3</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>

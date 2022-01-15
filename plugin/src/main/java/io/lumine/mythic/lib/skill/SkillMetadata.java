@@ -15,6 +15,7 @@ import io.lumine.mythic.lib.skill.custom.variable.def.PlayerVariable;
 import io.lumine.mythic.lib.skill.custom.variable.def.PositionVariable;
 import io.lumine.mythic.lib.skill.custom.variable.def.StatsVariable;
 import io.lumine.mythic.lib.util.EntityLocationType;
+import io.lumine.mythic.lib.util.SkillOrientation;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -65,8 +66,11 @@ public class SkillMetadata {
     @Nullable
     private final Entity targetEntity;
 
+    @Nullable
+    public final SkillOrientation orientation;
+
     public SkillMetadata(Skill cast, @NotNull MMOPlayerData caster) {
-        this(cast, caster.getStatMap().cache(EquipmentSlot.MAIN_HAND), new VariableList(VariableScope.SKILL), null, caster.getPlayer().getLocation(), null, null);
+        this(cast, caster.getStatMap().cache(EquipmentSlot.MAIN_HAND), new VariableList(VariableScope.SKILL), null, caster.getPlayer().getLocation(), null, null, null);
     }
 
     /**
@@ -77,7 +81,7 @@ public class SkillMetadata {
      * @param targetEntity   The skill/mechanic target entity
      */
     public SkillMetadata(Skill cast, @NotNull AttackMetadata attackMeta, @NotNull Location source, @Nullable Location targetLocation, @Nullable Entity targetEntity) {
-        this(cast, attackMeta, new VariableList(VariableScope.SKILL), attackMeta, source, targetLocation, targetEntity);
+        this(cast, attackMeta, new VariableList(VariableScope.SKILL), attackMeta, source, targetLocation, targetEntity, null);
     }
 
     /**
@@ -88,8 +92,9 @@ public class SkillMetadata {
      * @param source         The location at which the skill/mechanic was cast
      * @param targetLocation The skill/mechanic target location
      * @param targetEntity   The skill/mechanic target entity
+     * @param orientation    Skill orientation if some rotation is required later on
      */
-    public SkillMetadata(Skill cast, @NotNull PlayerMetadata caster, @NotNull VariableList vars, @Nullable AttackMetadata attackMeta, @NotNull Location source, @Nullable Location targetLocation, @Nullable Entity targetEntity) {
+    public SkillMetadata(Skill cast, @NotNull PlayerMetadata caster, @NotNull VariableList vars, @Nullable AttackMetadata attackMeta, @NotNull Location source, @Nullable Location targetLocation, @Nullable Entity targetEntity, @Nullable SkillOrientation orientation) {
         this.cast = cast;
         this.caster = caster;
         this.vars = vars;
@@ -97,6 +102,7 @@ public class SkillMetadata {
         this.source = source;
         this.targetLocation = targetLocation;
         this.targetEntity = targetEntity;
+        this.orientation = orientation;
     }
 
     public Skill getCast() {
@@ -163,6 +169,20 @@ public class SkillMetadata {
         return targetLocation != null;
     }
 
+    @NotNull
+    public SkillOrientation getOrientation() {
+        return Objects.requireNonNull(orientation, "Skill has no orientation");
+    }
+
+    @Nullable
+    public SkillOrientation getOrientationOrNull() {
+        return orientation;
+    }
+
+    public boolean hasOrientation() {
+        return orientation != null;
+    }
+
     /**
      * Analog of {@link #getSkillEntity(boolean)}. Used when a skill requires a
      * location when no targeter is provided
@@ -186,14 +206,27 @@ public class SkillMetadata {
     }
 
     /**
+     * Analog of {@link #getSkillEntity(boolean)} or {@link #getSkillLocation(boolean)}
+     * being used when a location targeter requires an orientation in order
+     * to potentially orient locations.
+     *
+     * @return Skill orientation if not null. If it is, it tries to create
+     *         one using the skill target and source location if it is not null.
+     *         Throws a NPE if the metadata has neither an orientation nor a target location.
+     */
+    public SkillOrientation getSkillOrientation() {
+        return orientation != null ? orientation : new SkillOrientation(Objects.requireNonNull(targetLocation, "Skill has no orientation"), targetLocation.subtract(source).toVector());
+    }
+
+    /**
      * Keeps the same skill caster and variables. Used when
      * casting subskills with different targets. This has the
      * effect of keeping every skill data, put aside targets.
      *
      * @return New skill metadata for other subskills
      */
-    public SkillMetadata clone(Location source, Location targetLocation, Entity targetEntity) {
-        return new SkillMetadata(cast, caster, vars, attackMeta, source, targetLocation, targetEntity);
+    public SkillMetadata clone(Location source, Location targetLocation, Entity targetEntity, SkillOrientation orientation) {
+        return new SkillMetadata(cast, caster, vars, attackMeta, source, targetLocation, targetEntity, orientation);
     }
 
     /**

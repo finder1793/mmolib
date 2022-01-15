@@ -92,20 +92,20 @@ public class ProjectileMechanic extends DirectionMechanic {
                 if (onTick != null)
                     for (double j = 0; j < dl; j += smallest_d) {
                         Location intermediate = current.clone().add(dir.clone().multiply(j));
-                        onTick.cast(meta.clone(source, intermediate, null));
+                        onTick.cast(meta.clone(source, intermediate, null, null));
                     }
 
                 if (result == null)
                     return;
 
                 if (onHitBlock != null && result.getHitBlock() != null) {
-                    onHitBlock.cast(meta.clone(source, result.getHitPosition().toLocation(current.getWorld()), null));
+                    onHitBlock.cast(meta.clone(source, result.getHitPosition().toLocation(current.getWorld()), null, null));
                     if (stopOnBlock)
                         cancel();
                 }
 
                 if (onHitEntity != null && result.getHitEntity() != null) {
-                    onHitEntity.cast(meta.clone(source, null, result.getHitEntity()));
+                    onHitEntity.cast(meta.clone(source, result.getHitPosition().toLocation(current.getWorld()), result.getHitEntity(), null));
 
                     // Check for entity hits
                     if (entityHits++ >= hitLimit)
