@@ -38,6 +38,6 @@ public class EntityStatProvider implements StatProvider {
         for (NBTItem nbt : equipment)
             d += nbt.getStat(id);
 
-        return 0;
+        return d;
     }
 }
