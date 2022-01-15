@@ -2,13 +2,17 @@ package io.lumine.mythic.lib.api.stat.modifier;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
-import io.lumine.mythic.lib.player.PlayerModifier;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.player.modifier.ModifierSource;
+import io.lumine.mythic.lib.player.modifier.ModifierType;
+import io.lumine.mythic.lib.player.modifier.PlayerModifier;
 import org.apache.commons.lang.Validate;
 
 import java.text.DecimalFormat;
 
 public class StatModifier extends PlayerModifier {
-    private final double d;
+    private final String stat;
+    private final double value;
     private final ModifierType type;
 
     private static final DecimalFormat oneDigit = MythicLib.plugin.getMMOConfig().newDecimalFormat("0.#");
@@ -16,36 +20,34 @@ public class StatModifier extends PlayerModifier {
     /**
      * Flat stat modifier (simplest modifier you can think about)
      */
-    public StatModifier(double d) {
-        this(d, ModifierType.FLAT, EquipmentSlot.OTHER, ModifierSource.OTHER);
+    public StatModifier(String key, String stat, double value) {
+        this(key, stat, value, ModifierType.FLAT, EquipmentSlot.OTHER, ModifierSource.OTHER);
     }
 
     /**
      * Stat modifier given by an external mecanic, like a party buff, item set bonuses,
      * skills or abilities... Anything apart from items and armor.
      */
-    public StatModifier(double d, ModifierType type) {
-        this(d, type, EquipmentSlot.OTHER, ModifierSource.OTHER);
+    public StatModifier(String key, String stat, double value, ModifierType type) {
+        this(key, stat, value, type, EquipmentSlot.OTHER, ModifierSource.OTHER);
     }
 
     /**
      * Stat modifier given by an item, either a weapon or an armor piece.
      *
+     * @param stat   Stat being modified
+     * @param key    Player modifier key
+     * @param value  Value of stat modifier
+     * @param type   Is the modifier flat or multiplicative
      * @param slot   Slot of the item granting the stat modifier
      * @param source Type of the item granting the stat modifier
      */
-    public StatModifier(double d, ModifierType type, EquipmentSlot slot, ModifierSource source) {
-        super(slot, source);
+    public StatModifier(String key, String stat, double value, ModifierType type, EquipmentSlot slot, ModifierSource source) {
+        super(key, slot, source);
 
-        this.d = d;
+        this.stat = stat;
+        this.value = value;
         this.type = type;
-    }
-
-    /**
-     * Clones a stat modifier
-     */
-    public StatModifier(StatModifier mod) {
-        this(mod.d, mod.type, mod.getSlot(), mod.getSource());
     }
 
     /**
@@ -55,14 +57,15 @@ public class StatModifier extends PlayerModifier {
      *
      * @param str The string to be parsed
      */
-    public StatModifier(String str) {
-        super(EquipmentSlot.OTHER, ModifierSource.OTHER);
+    public StatModifier(String key, String stat, String str) {
+        super(key, EquipmentSlot.OTHER, ModifierSource.OTHER);
 
         Validate.notNull(str, "String cannot be null");
         Validate.notEmpty(str, "String cannot be empty");
 
         type = str.toCharArray()[str.length() - 1] == '%' ? ModifierType.RELATIVE : ModifierType.FLAT;
-        d = Double.parseDouble(type == ModifierType.RELATIVE ? str.substring(0, str.length() - 1) : str);
+        value = Double.parseDouble(type == ModifierType.RELATIVE ? str.substring(0, str.length() - 1) : str);
+        this.stat = stat;
     }
 
     /**
@@ -74,7 +77,7 @@ public class StatModifier extends PlayerModifier {
      * @return A new instance of StatModifier with modified value
      */
     public StatModifier multiply(double coef) {
-        return new StatModifier(d * coef, type, getSlot(), getSource());
+        return new StatModifier(getKey(), stat, value * coef, type, getSlot(), getSource());
     }
 
     public ModifierType getType() {
@@ -82,12 +85,22 @@ public class StatModifier extends PlayerModifier {
     }
 
     public double getValue() {
-        return d;
+        return value;
+    }
+
+    @Override
+    public void register(MMOPlayerData playerData) {
+
+    }
+
+    @Override
+    public void unregister(MMOPlayerData playerData) {
+
     }
 
     @Override
     public String toString() {
-        return oneDigit.format(d) + (type == ModifierType.RELATIVE ? "%" : "");
+        return oneDigit.format(value) + (type == ModifierType.RELATIVE ? "%" : "");
     }
 }
 

@@ -3,9 +3,12 @@ package io.lumine.mythic.lib.api.stat.modifier;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.stat.StatInstance;
+import io.lumine.mythic.lib.player.modifier.ModifierSource;
+import io.lumine.mythic.lib.player.modifier.ModifierType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class TemporaryStatModifier extends StatModifier implements Closable {
+@Deprecated
+public class TemporaryStatModifier extends StatModifier implements Closeable {
     private final BukkitRunnable runnable;
 
     /**
@@ -25,8 +28,9 @@ public class TemporaryStatModifier extends StatModifier implements Closable {
      * @param ins
      *            The StatInstance the modifier must be registered in
      */
+    @Deprecated
     public TemporaryStatModifier(double d, long duration, ModifierType type, EquipmentSlot slot, ModifierSource source, String key, StatInstance ins) {
-        super(d, type, slot, source);
+        super(key, ins.getStat(), d, type, slot, source);
 
         (runnable = new BukkitRunnable() {
             public void run() {

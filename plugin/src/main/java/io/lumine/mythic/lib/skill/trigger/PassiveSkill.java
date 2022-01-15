@@ -1,8 +1,8 @@
 package io.lumine.mythic.lib.skill.trigger;
 
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
-import io.lumine.mythic.lib.api.stat.modifier.ModifierSource;
-import io.lumine.mythic.lib.player.PlayerModifier;
+import io.lumine.mythic.lib.player.modifier.ModifierSource;
+import io.lumine.mythic.lib.player.modifier.PlayerModifier;
 import io.lumine.mythic.lib.skill.Skill;
 
 /**
@@ -34,13 +34,6 @@ public class PassiveSkill extends PlayerModifier {
     private final TriggerType type;
 
     /**
-     * Identifier given to skills to differentiate between them.
-     * Every plugin like MMOItems has a key to be able to manipulate
-     * the triggers that were registered on the player at any time
-     */
-    private final String key;
-
-    /**
      * @param key            A key like 'item' or 'itemSet' indicating what is giving a triggered skill to the player.
      *                       There can be multiple skills with the same key, it's not a unique identifier.
      *                       It can be later used to isolate and unregister skills with a certain key.
@@ -50,9 +43,8 @@ public class PassiveSkill extends PlayerModifier {
      * @param modifierSource The source of the passive skill
      */
     public PassiveSkill(String key, TriggerType type, Skill triggered, EquipmentSlot equipmentSlot, ModifierSource modifierSource) {
-        super(equipmentSlot, modifierSource);
+        super(key, equipmentSlot, modifierSource);
 
-        this.key = key;
         this.type = type;
         this.triggered = triggered;
     }
@@ -67,9 +59,8 @@ public class PassiveSkill extends PlayerModifier {
      */
     @Deprecated
     public PassiveSkill(String key, TriggerType type, Skill triggered) {
-        super(EquipmentSlot.OTHER, ModifierSource.OTHER);
+        super(key, EquipmentSlot.OTHER, ModifierSource.OTHER);
 
-        this.key = key;
         this.type = type;
         this.triggered = triggered;
     }
@@ -80,9 +71,5 @@ public class PassiveSkill extends PlayerModifier {
 
     public TriggerType getType() {
         return type;
-    }
-
-    public String getKey() {
-        return key;
     }
 }

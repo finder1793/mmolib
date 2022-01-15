@@ -2,8 +2,7 @@ package io.lumine.mythic.lib.api.stat;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
-import io.lumine.mythic.lib.api.stat.modifier.Closable;
-import io.lumine.mythic.lib.api.stat.modifier.ModifierType;
+import io.lumine.mythic.lib.player.modifier.ModifierType;
 import io.lumine.mythic.lib.api.stat.modifier.StatModifier;
 
 import java.util.*;
@@ -158,8 +157,8 @@ public class StatInstance {
             if (condition.test(entry.getKey())) {
 
                 StatModifier modifier = entry.getValue();
-                if (modifier instanceof Closable)
-                    ((Closable) modifier).close();
+                if (modifier instanceof Closeable)
+                    ((Closeable) modifier).close();
 
                 iterator.remove();
                 check = true;
@@ -196,8 +195,8 @@ public class StatInstance {
          * though the attribute was cancelled before hand
          */
         StatModifier mod = modifiers.get(key);
-        if (mod instanceof Closable)
-            ((Closable) mod).close();
+        if (mod instanceof Closeable)
+            ((Closeable) mod).close();
 
         modifiers.remove(key);
         MythicLib.plugin.getStats().runUpdate(map, stat);
@@ -239,8 +238,8 @@ public class StatInstance {
                 if (condition.test(entry.getKey())) {
 
                     StatModifier modifier = entry.getValue();
-                    if (modifier instanceof Closable)
-                        ((Closable) modifier).close();
+                    if (modifier instanceof Closeable)
+                        ((Closeable) modifier).close();
 
                     iterator.remove();
                 }

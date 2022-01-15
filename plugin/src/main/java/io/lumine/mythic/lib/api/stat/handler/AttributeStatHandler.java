@@ -3,7 +3,7 @@ package io.lumine.mythic.lib.api.stat.handler;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.stat.StatInstance;
 import io.lumine.mythic.lib.api.stat.StatMap;
-import io.lumine.mythic.lib.api.stat.modifier.ModifierSource;
+import io.lumine.mythic.lib.player.modifier.ModifierSource;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;

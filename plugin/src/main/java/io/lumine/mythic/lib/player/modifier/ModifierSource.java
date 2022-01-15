@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.api.stat.modifier;
+package io.lumine.mythic.lib.player.modifier;
 
 /**
  * Main problem solved by the modifier source is being able to calculate
