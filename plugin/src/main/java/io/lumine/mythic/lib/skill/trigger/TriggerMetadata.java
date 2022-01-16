@@ -66,7 +66,6 @@ public class TriggerMetadata extends PlayerMetadata {
      * @return Skill cast information containing all the previous information
      */
     public SkillMetadata toSkillMetadata(Skill cast) {
-
         return new SkillMetadata(cast, this, new VariableList(VariableScope.SKILL), attack, getPlayer().getLocation(), null, target, null);
     }
 }

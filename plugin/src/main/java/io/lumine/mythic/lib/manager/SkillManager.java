@@ -207,13 +207,21 @@ public class SkillManager {
     }
 
     @NotNull
-    public SkillHandler<?> loadSkillHandler(ConfigurationSection config) {
+    public SkillHandler<?> loadSkillHandler(Object obj) {
 
-        for (Map.Entry<Predicate<ConfigurationSection>, Function<ConfigurationSection, SkillHandler>> type : skillHandlerTypes.entrySet())
-            if (type.getKey().test(config))
-                return type.getValue().apply(config);
+        if (obj instanceof String)
+            return getHandlerOrThrow(obj.toString());
 
-        throw new IllegalArgumentException("Could not match handler type to config");
+        if (obj instanceof ConfigurationSection) {
+            ConfigurationSection config = (ConfigurationSection) obj;
+            for (Map.Entry<Predicate<ConfigurationSection>, Function<ConfigurationSection, SkillHandler>> type : skillHandlerTypes.entrySet())
+                if (type.getKey().test(config))
+                    return type.getValue().apply(config);
+
+            throw new IllegalArgumentException("Could not match handler type to config");
+        }
+
+        throw new IllegalArgumentException("Provide either a string or configuration section");
     }
 
     public void registerSkillHandler(SkillHandler<?> handler) {
@@ -249,7 +257,7 @@ public class SkillManager {
             return skill;
         }
 
-        throw new IllegalArgumentException("Please provide a string or configuration section");
+        throw new IllegalArgumentException("Provide either a string or configuration section");
     }
 
     public Collection<CustomSkill> getCustomSkills() {

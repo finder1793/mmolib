@@ -5,8 +5,7 @@ import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.element.Element;
-import io.lumine.mythic.lib.skill.SimpleSkill;
-import io.lumine.mythic.lib.skill.handler.MythicLibSkillHandler;
+import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -63,8 +62,9 @@ public class ElementalDamage implements Listener {
             event.getDamage().add(damage, el, DamageType.WEAPON);
 
             // Apply critical strikes
-            SimpleSkill skill = new SimpleSkill(new MythicLibSkillHandler(el.getSkill(random.nextDouble() < critChance / 100)));
-            skill.cast(new TriggerMetadata(event.getAttack(), event.getEntity()));
+            Skill skill = el.getSkill(random.nextDouble() < critChance / 100);
+            if (skill != null)
+                skill.cast(new TriggerMetadata(event.getAttack(), event.getEntity()));
         }
     }
 }
