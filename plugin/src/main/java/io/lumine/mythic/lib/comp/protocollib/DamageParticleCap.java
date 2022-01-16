@@ -13,13 +13,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class CapHearts {
+public class DamageParticleCap {
     // im typing this in discord so i dont think this is 100% correct
 
     private final Map<UUID, Integer> particles = new HashMap<>();
-    private final int LIMIT = 10; // particles sent per tick
+    private final int LIMIT; // Particles sent per tick
 
-    public CapHearts() {
+    public DamageParticleCap(int maxPerTick) {
+
+        LIMIT = maxPerTick;
 
         // particle listener
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(MythicLib.plugin) {
@@ -55,7 +57,6 @@ public class CapHearts {
 
         if (amount == originalAmount)
             return; // nothing to change
-
 
         event.getPacket().getIntegers().write(0, amount); // set the new particle amount
     }

@@ -27,6 +27,7 @@ import io.lumine.mythic.lib.comp.placeholder.DefaultPlaceholderParser;
 import io.lumine.mythic.lib.comp.placeholder.PlaceholderAPIHook;
 import io.lumine.mythic.lib.comp.placeholder.PlaceholderAPIParser;
 import io.lumine.mythic.lib.comp.placeholder.PlaceholderParser;
+import io.lumine.mythic.lib.comp.protocollib.DamageParticleCap;
 import io.lumine.mythic.lib.comp.target.CitizensTargetRestriction;
 import io.lumine.mythic.lib.comp.target.FactionsRestriction;
 import io.lumine.mythic.lib.gui.PluginInventory;
@@ -189,6 +190,12 @@ public class MythicLib extends LuminePlugin {
         if (Bukkit.getPluginManager().getPlugin("Citizens") != null) {
             entityManager.registerRestriction(new CitizensTargetRestriction());
             getLogger().log(Level.INFO, "Hooked onto Citizens");
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("ProtocolLib") != null) {
+            if (getConfig().getBoolean("damage-particles-cap.enabled"))
+                new DamageParticleCap(getConfig().getInt("damage-particles-cap.max-per-tick"));
+            getLogger().log(Level.INFO, "Hooked onto ProtocolLib");
         }
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
