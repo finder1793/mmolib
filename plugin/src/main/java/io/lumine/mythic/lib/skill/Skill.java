@@ -2,10 +2,8 @@ package io.lumine.mythic.lib.skill;
 
 import io.lumine.mythic.lib.api.event.skill.PlayerCastSkillEvent;
 import io.lumine.mythic.lib.api.event.skill.SkillCastEvent;
-import io.lumine.mythic.lib.comp.mythicmobs.MythicSkillInfo;
 import io.lumine.mythic.lib.player.cooldown.CooldownObject;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
-import io.lumine.mythic.lib.skill.result.MythicLibSkillResult;
 import io.lumine.mythic.lib.skill.result.SkillResult;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import org.bukkit.Bukkit;
@@ -20,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author jules
  */
-public abstract class Skill implements CooldownObject, MythicSkillInfo {
+public abstract class Skill implements CooldownObject {
     public SkillResult cast(TriggerMetadata triggerMeta) {
         return cast(triggerMeta.toSkillMetadata(this));
     }
