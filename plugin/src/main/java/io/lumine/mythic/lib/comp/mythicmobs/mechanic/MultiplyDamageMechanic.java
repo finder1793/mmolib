@@ -13,11 +13,11 @@ import org.apache.commons.lang.Validate;
  * Mechanic used to increase the damage for a specific
  * source only. This can be used inside of any skill cast
  * using MMOCore or MMOItems.
- *
+ * <p>
  * If the skill trigger is set to DAMAGE for instance, the damage
  * metadata will be saved into a variable so that it can
  * be edited inside of a MM skill using this mechanic.
- *
+ * <p>
  * This means that you can have on-hit skills which increase
  * the attack damage by X%. The only thing to make sure on the
  * user end is that the skill trigger is chosen carefully.
@@ -36,7 +36,6 @@ public class MultiplyDamageMechanic extends SkillMechanic implements INoTargetSk
         this.type = typeFormat.isEmpty() ? null : DamageType.valueOf(typeFormat.toUpperCase().replace(" ", "_").replace("-", "_"));
     }
 
-
     @Override
     public boolean cast(SkillMetadata skillMetadata) {
         Validate.isTrue(skillMetadata.getVariables().has("MMOAttack"), "No attack meta is provided");
@@ -44,9 +43,9 @@ public class MultiplyDamageMechanic extends SkillMechanic implements INoTargetSk
 
         double a = this.amount.get(skillMetadata.getCaster());
         if (type == null)
-            attackMeta.getDamage().multiply(a);
+            attackMeta.getDamage().multiplicativeModifier(a);
         else
-            attackMeta.getDamage().multiply(a, type);
+            attackMeta.getDamage().multiplicativeModifier(a, type);
 
         return true;
     }

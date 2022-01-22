@@ -148,19 +148,14 @@ public class PlayerAttackEventListener implements Listener {
      */
     private DamageType[] getDamageTypes(EntityDamageByEntityEvent event) {
 
-        /*
-         * If the attacker has no item in his hand when attacking, attack is
-         * only physical
-         */
+        // Physical attack with bare fists.
         if (event.getDamager() instanceof LivingEntity) {
             LivingEntity damager = (LivingEntity) event.getDamager();
             if (isAir(damager.getEquipment().getItemInMainHand()))
                 return new DamageType[]{DamageType.PHYSICAL};
         }
 
-        /*
-         * By default a physical attack is a weapon-physical attack
-         */
+        // By default a physical attack is a weapon-physical attack
         return new DamageType[]{DamageType.WEAPON, DamageType.PHYSICAL};
     }
 

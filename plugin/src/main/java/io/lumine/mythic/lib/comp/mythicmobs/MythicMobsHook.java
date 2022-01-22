@@ -18,7 +18,7 @@ public class MythicMobsHook implements Listener {
         // Apply MythicMobs faction damage
         String faction = getFaction(event.getEntity());
         if (faction != null)
-            event.getDamage().multiply(1 + event.getData().getStatMap().getStat("FACTION_DAMAGE_" + faction.toUpperCase()) / 100);
+            event.getDamage().additiveModifier(event.getData().getStatMap().getStat("FACTION_DAMAGE_" + faction.toUpperCase()) / 100);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

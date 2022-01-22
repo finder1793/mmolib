@@ -4,8 +4,8 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.custom.mechanic.MechanicMetadata;
 import io.lumine.mythic.lib.skill.custom.mechanic.type.TargetMechanic;
-import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import io.lumine.mythic.lib.util.DoubleFormula;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.bukkit.entity.Entity;
 
 @MechanicMetadata
@@ -25,8 +25,8 @@ public class MultiplyDamageMechanic extends TargetMechanic {
     @Override
     public void cast(SkillMetadata meta, Entity target) {
         if (damageType == null)
-            meta.getAttack().getDamage().multiply(amount.evaluate(meta));
+            meta.getAttack().getDamage().multiplicativeModifier(amount.evaluate(meta));
         else
-            meta.getAttack().getDamage().multiply(amount.evaluate(meta), damageType);
+            meta.getAttack().getDamage().multiplicativeModifier(amount.evaluate(meta), damageType);
     }
 }

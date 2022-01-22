@@ -107,7 +107,7 @@ public class Empowered_Attack extends SkillHandler<SimpleSkillResult> {
                  * Apply damage afterwards otherwise the damage dealt to nearby
                  * entities scale with the extra ability damage.
                  */
-                event.getAttack().getDamage().multiply(1 + c, DamageType.WEAPON);
+                event.getAttack().getDamage().multiplicativeModifier(c, DamageType.WEAPON);
             }
         }
     }

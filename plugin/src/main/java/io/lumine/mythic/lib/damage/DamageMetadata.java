@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.damage;
 
 import io.lumine.mythic.lib.element.Element;
-import io.lumine.mythic.lib.element.ElementalDamagePacket;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,16 +27,20 @@ public class DamageMetadata implements Cloneable {
 
     public double getDamage() {
         double d = 0;
+
         for (DamagePacket packet : packets)
-            d += packet.getValue();
+            d += packet.getFinalValue();
+
         return d;
     }
 
     public double getDamage(DamageType type) {
         double d = 0;
+
         for (DamagePacket packet : packets)
             if (packet.hasType(type))
-                d += packet.getValue();
+                d += packet.getFinalValue();
+
         return d;
     }
 
@@ -52,7 +56,7 @@ public class DamageMetadata implements Cloneable {
         Set<DamageType> collected = new HashSet<>();
 
         for (DamagePacket packet : packets)
-            for (DamageType type : packet.getTypes())
+            for (DamageType type : packet.types)
                 collected.add(type);
 
         return collected;
@@ -63,9 +67,11 @@ public class DamageMetadata implements Cloneable {
      *         see if any has this damage type.
      */
     public boolean hasType(DamageType type) {
+
         for (DamagePacket packet : packets)
             if (packet.hasType(type))
                 return true;
+
         return false;
     }
 
@@ -97,37 +103,132 @@ public class DamageMetadata implements Cloneable {
     }
 
     /**
-     * Multiply all registered damage packets
+     * Register a multiplicative damage modifier in all damage packets.
+     * <p>
+     * This is used for critical strikes which modifier should
+     * NOT stack up with damage boosting statistics.
      *
-     * @param coef Multiplicative coefficient
-     * @return
+     * @param coef Multiplicative coefficient. 1.5 will
+     *             increase final damage by 50%
+     * @return The same damage metadata
      */
-    public DamageMetadata multiply(double coef) {
+    public DamageMetadata multiplicativeModifier(double coef) {
         for (DamagePacket packet : packets)
-            packet.multiplyValue(coef);
+            packet.value *= coef;
         return this;
     }
 
     /**
-     * Multiply damage from a specific source only
+     * Registers a multiplicative damage modifier
+     * which applies to any damage packet
      *
-     * @param coef      Multiplicative coefficient
-     * @param concerned Concerned damage type
-     * @return
+     * @param multiplier From 0 to infinity, 1 increases damage by 100%.
+     *                   This can be negative as well
+     * @return The same damage metadata
      */
-    public DamageMetadata multiply(double coef, DamageType concerned) {
+    public DamageMetadata additiveModifier(double multiplier) {
+        for (DamagePacket packet : packets)
+            packet.additiveModifiers += multiplier;
+        return this;
+    }
+
+    /**
+     * Register a multiplicative damage modifier for a specific
+     * damage type.
+     * <p>
+     * This is not being used in MMOCore nor MMOItems
+     *
+     * @param coef      Multiplicative coefficient. 1.5 will
+     *                  increase final damage by 50%
+     * @param concerned Concerned damage type
+     * @return The same damage metadata
+     */
+    public DamageMetadata multiplicativeModifier(double coef, @NotNull DamageType concerned) {
         for (DamagePacket packet : packets)
             if (packet.hasType(concerned))
-                packet.multiplyValue(coef);
+                packet.value *= coef;
+        return this;
+    }
+
+    /**
+     * Registers a multiplicative damage modifier which only
+     * applies to a specific damage type
+     *
+     * @param multiplier From 0 to infinity, 1 increases damage by 100%.
+     *                   This can be negative as well
+     * @param concerned  Specific damage type
+     * @return The same damage metadata
+     */
+    public DamageMetadata additiveModifier(double multiplier, @NotNull DamageType concerned) {
+        for (DamagePacket packet : packets)
+            if (packet.hasType(concerned))
+                packet.additiveModifiers += multiplier;
         return this;
     }
 
     @Override
     public DamageMetadata clone() {
         DamageMetadata clone = new DamageMetadata();
+
         for (DamagePacket packet : packets)
-            clone.packets.add(packet.clone());
+            clone.packets.add(packet);
 
         return clone;
+    }
+
+    /**
+     * Some damage value weighted by a specific set of damage types. This helps
+     * divide any attack into multiple parts that can be manipulated independently.
+     * <p>
+     * For instance, a melee sword attack would add one physical-weapon damage packet.
+     * Then, casting an on-hit ability like Starfall would add an extra magic-skill
+     * damage packet, independently of the packet that is already there. If we were
+     * to then apply the 'Melee Damage' stat, it would only apply to the first packet.
+     * <p>
+     * Damage packets are completed hidden from developpers. Just like nodes
+     * for the HashMap implementation.
+     *
+     * @author jules
+     */
+    class DamagePacket {
+        private final DamageType[] types;
+        private double value, additiveModifiers;
+
+        public DamagePacket(double value, DamageType... types) {
+            this.value = value;
+            this.types = types;
+        }
+
+        /**
+         * @return Final value of the damage packet taking into account
+         *         all the damage modifiers that have been registered
+         */
+        public double getFinalValue() {
+
+            // Make sure the returned value is positive
+            return value * Math.max(0, 1 + additiveModifiers);
+        }
+
+        /**
+         * @return Checks if the current packet has that damage type
+         */
+        public boolean hasType(DamageType type) {
+
+            for (DamageType checked : this.types)
+                if (checked == type)
+                    return true;
+
+            return false;
+        }
+    }
+
+    class ElementalDamagePacket extends DamagePacket {
+        private final Element element;
+
+        public ElementalDamagePacket(double value, Element element, DamageType... types) {
+            super(value, types);
+
+            this.element = element;
+        }
     }
 }

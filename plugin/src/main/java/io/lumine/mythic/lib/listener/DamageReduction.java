@@ -125,21 +125,21 @@ public class DamageReduction implements Listener {
         @Nullable
         private final Predicate<EntityDamageEvent> apply;
 
-        private DamageReductionType(DamageType damageType) {
+        DamageReductionType(DamageType damageType) {
             this(damageType, null);
         }
 
-        private DamageReductionType(Predicate<EntityDamageEvent> apply) {
+        DamageReductionType(Predicate<EntityDamageEvent> apply) {
             this(null, apply);
         }
 
-        private DamageReductionType(DamageType damageType, Predicate<EntityDamageEvent> apply) {
+        DamageReductionType(DamageType damageType, Predicate<EntityDamageEvent> apply) {
             this.stat = name() + "_DAMAGE_REDUCTION";
             this.damageType = damageType;
             this.apply = apply;
         }
 
-        private DamageReductionType(String stat, DamageType damageType, Predicate<EntityDamageEvent> apply) {
+        DamageReductionType(String stat, DamageType damageType, Predicate<EntityDamageEvent> apply) {
             this.stat = stat;
             this.damageType = damageType;
             this.apply = apply;
@@ -149,15 +149,11 @@ public class DamageReduction implements Listener {
 
             // Environmental damage reduction
             if (apply != null && apply.test(event))
-                damageMeta.multiply(getCoefficient(statMap));
+                damageMeta.multiplicativeModifier(1 - statMap.getStat(stat) / 100);
 
                 // Specific damage type reduction
             else if (damageType != null)
-                damageMeta.multiply(getCoefficient(statMap), damageType);
-        }
-
-        private double getCoefficient(StatMap statMap) {
-            return 1 - Math.max(0, Math.min(1, statMap.getStat(stat) / 100));
+                damageMeta.multiplicativeModifier(1 - statMap.getStat(stat) / 100, damageType);
         }
     }
 
@@ -167,9 +163,7 @@ public class DamageReduction implements Listener {
      */
     private static LivingEntity getDamager(EntityDamageByEntityEvent event) {
 
-        /*
-         * Check direct damager
-         */
+        // Check direct damager
         if (event.getDamager() instanceof LivingEntity)
             return (LivingEntity) event.getDamager();
 
