@@ -99,6 +99,7 @@ public class MythicLib extends LuminePlugin {
     public void load() {
         plugin = this;
 
+
         try {
             version = new ServerVersion(Bukkit.getServer().getClass());
             getLogger().log(Level.INFO, "Detected Bukkit Version: " + version.toString());
