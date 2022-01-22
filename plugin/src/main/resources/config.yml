@@ -109,4 +109,4 @@ fix-movement-speed: true
 # can be quite annoying and can even crash the client if there are too many.
 damage-particles-cap:
   max-per-tick: 10
-  enabled: true
+  enabled: false

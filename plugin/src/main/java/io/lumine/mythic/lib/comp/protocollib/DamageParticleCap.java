@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.comp.protocollib;
 
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
@@ -14,17 +15,18 @@ import java.util.Map;
 import java.util.UUID;
 
 public class DamageParticleCap {
-    // im typing this in discord so i dont think this is 100% correct
-
     private final Map<UUID, Integer> particles = new HashMap<>();
-    private final int LIMIT; // Particles sent per tick
 
-    public DamageParticleCap(int maxPerTick) {
+    /**
+     * Maximum amount of particles sent per tick
+     */
+    private final int tickLimit;
 
-        LIMIT = maxPerTick;
+    public DamageParticleCap(int tickLimit) {
+        this.tickLimit = tickLimit;
 
-        // particle listener
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(MythicLib.plugin) {
+        // Particle listener
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(MythicLib.plugin, PacketType.Play.Server.WORLD_PARTICLES) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 onSend(event);
@@ -35,29 +37,35 @@ public class DamageParticleCap {
     private void onSend(PacketEvent event) {
         final PacketContainer packet = event.getPacket();
         final Player player = event.getPlayer();
-        if (packet.getNewParticles().read(0).getParticle() != Particle.DAMAGE_INDICATOR) // I think that's what the particle is? if this doesn't work, try printing out the particle
+        if (packet.getNewParticles().read(0).getParticle() != Particle.DAMAGE_INDICATOR)
             return;
 
         final int originalAmount = packet.getIntegers().read(0);
-        final int storedAmount = particles.getOrDefault(player.getUniqueId(), 0); // particles already sent
-        if (storedAmount >= LIMIT)
+        final int storedAmount = particles.getOrDefault(player.getUniqueId(), 0); // Particles already sent
+        if (storedAmount >= tickLimit)
             return;
 
-        final int amountLeft = LIMIT - storedAmount; // amount of particles left that can be sent this tick
-        final int amount = Math.min(amountLeft, packet.getIntegers().read(0)); // amount of particles to send, limiting it to amountLeft
-        if (amount <= 0) { // no particles
-            event.setCancelled(true); // no point in sending a particle packet if there are none
+        final int amountLeft = tickLimit - storedAmount; // Amount of particles left that can be sent this tick
+        final int amount = Math.min(amountLeft, packet.getIntegers().read(0)); // Amount of particles to send, limiting it to amountLeft
+
+        // No point in sending packet if 0 particles
+        if (amount <= 0) {
+            event.setCancelled(true);
             return;
         }
 
+        // Update counter and put it down next tick
+        particles.put(player.getUniqueId(), storedAmount + amount);
         Bukkit.getScheduler().runTask(MythicLib.plugin, () -> {
             final int current = particles.getOrDefault(player.getUniqueId(), 0);
-            particles.put(player.getUniqueId(), current - amount);
-        }); // put the counter down next tick
+            final int safeNew = Math.max(0, Math.min(tickLimit, current - amount));
+            particles.put(player.getUniqueId(), safeNew);
+        });
 
+        // Nothing to change
         if (amount == originalAmount)
-            return; // nothing to change
+            return;
 
-        event.getPacket().getIntegers().write(0, amount); // set the new particle amount
+        event.getPacket().getIntegers().write(0, amount); // Set the new particle amount
     }
 }
