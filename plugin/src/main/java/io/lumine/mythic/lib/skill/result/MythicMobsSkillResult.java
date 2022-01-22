@@ -36,6 +36,8 @@ public class MythicMobsSkillResult implements SkillResult {
         // Stats & cast skill are cached inside a variable
         mmSkillMeta.getVariables().putObject("MMOStatMap", skillMeta.getCaster());
         mmSkillMeta.getVariables().putObject("MMOSkill", skillMeta.getCast());
+        if (skillMeta.hasAttackBound())
+            mmSkillMeta.getVariables().putObject("MMOAttack", skillMeta.getAttack());
     }
 
     @Override
