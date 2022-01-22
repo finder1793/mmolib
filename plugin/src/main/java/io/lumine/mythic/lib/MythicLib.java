@@ -79,14 +79,13 @@ public class MythicLib extends LuminePlugin {
     private ScoreboardProvider scoreboardProvider;
     private PlaceholderParser placeholderParser;
 
-
     /**
      * MMOItems has a similar public field. If these don't match
      * then MMOItems cannot run with the installed build of MythicLib
      * and should not enable on server startup. This smoothly lets the
      * user know when they have to update their plugin builds.
      */
-    public static final int MMOITEMS_COMPATIBILITY_INDEX = 3;
+    public static final int MMOITEMS_COMPATIBILITY_INDEX = 4;
 
     /**
      * MMOCore has a similar public field. If these don't match
@@ -94,7 +93,7 @@ public class MythicLib extends LuminePlugin {
      * and should not enable on server startup. This smoothly lets the
      * user know when they have to update their plugin builds.
      */
-    public static final int MMOCORE_COMPATIBILITY_INDEX = 3;
+    public static final int MMOCORE_COMPATIBILITY_INDEX = 4;
 
     @Override
     public void load() {
