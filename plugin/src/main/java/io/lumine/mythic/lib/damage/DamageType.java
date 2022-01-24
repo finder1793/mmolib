@@ -25,7 +25,12 @@ public enum DamageType {
     /**
      * Projectile based weapons or skills
      */
-    PROJECTILE;
+    PROJECTILE,
+
+    /**
+     * To allow no scaling!
+     */
+    NONE;
 
     public String getPath() {
         return name().toLowerCase();

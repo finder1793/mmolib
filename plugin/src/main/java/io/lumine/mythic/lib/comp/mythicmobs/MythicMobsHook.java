@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.comp.mythicmobs;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicReloadedEvent;

@@ -8,7 +8,6 @@ import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.skills.Skill;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +23,7 @@ public class MythicMobsSkillHandler extends SkillHandler<MythicMobsSkillResult> 
     private final Map<CheatType, Integer> antiCheat = new HashMap<>();
 
     public MythicMobsSkillHandler(ConfigurationSection config) {
-        super(config, config.getName());
+        super(config, config.getName().isEmpty() ? config.getString("mythicmobs-skill-id", "") : config.getName());
 
         String skillName = config.getString("mythicmobs-skill-id");
 

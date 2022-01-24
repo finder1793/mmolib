@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.damage;
 
+import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.element.Element;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,8 +29,13 @@ public class DamageMetadata implements Cloneable {
     public double getDamage() {
         double d = 0;
 
-        for (DamagePacket packet : packets)
+        for (DamagePacket packet : packets) {
+
+            MythicCraftingManager.log("\u00a78DAMAGE\u00a77 Adding up damage: \u00a7a" + packet.toString());
             d += packet.getFinalValue();
+        }
+
+        MythicCraftingManager.log("\u00a78DAMAGE\u00a77 Total: \u00a7a" + d);
 
         return d;
     }
@@ -219,6 +225,16 @@ public class DamageMetadata implements Cloneable {
                     return true;
 
             return false;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            for (DamageType d : types) { if (sb.length() != 0) { sb.append('/'); } sb.append(d.toString()); }
+            sb.append(" x").append(value);
+
+            // Yes
+            return sb.toString();
         }
     }
 

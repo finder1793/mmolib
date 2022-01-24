@@ -85,9 +85,10 @@ public class PassiveSkillMap implements ModifierMap<PassiveSkill> {
      */
     @Nullable
     public PassiveSkill getSkill(@NotNull SkillHandler handler) {
-        for (PassiveSkill passive : skills.values())
-            if (passive.getTriggeredSkill().getHandler().equals(handler))
-                return passive;
+        for (PassiveSkill passive : skills.values()) {
+            if (passive == null) { continue; }
+            if (passive.getTriggeredSkill() == null) { continue; }
+            if (handler.equals(passive.getTriggeredSkill().getHandler())) { return passive; } }
         return null;
     }
 }

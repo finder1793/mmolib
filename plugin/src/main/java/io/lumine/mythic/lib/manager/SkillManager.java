@@ -206,18 +206,14 @@ public class SkillManager {
         skillHandlerTypes.put(matcher, provider);
     }
 
-    @NotNull public SkillHandler<?> loadSkillHandler(Object obj) throws IllegalArgumentException {
+    @NotNull public SkillHandler<?> loadSkillHandler(Object obj) throws IllegalArgumentException, IllegalStateException {
 
         // By handler name
-        if (obj instanceof String) {
-            MythicLib.plugin.getLogger().log(Level.WARNING, "String Method");
-
-            return getHandlerOrThrow(obj.toString()); }
+        if (obj instanceof String) {return getHandlerOrThrow(obj.toString()); }
 
         // By type of configuration section
         if (obj instanceof ConfigurationSection) {
             ConfigurationSection config = (ConfigurationSection) obj;
-            MythicLib.plugin.getLogger().log(Level.WARNING, "Configuration Section Method ~ " + skillHandlerTypes.entrySet().size());
 
             // Match to the registered handlers
             for (Map.Entry<Predicate<ConfigurationSection>, Function<ConfigurationSection, SkillHandler>> type : skillHandlerTypes.entrySet()) {
@@ -226,7 +222,10 @@ public class SkillManager {
                 if (type.getKey().test(config)) {
 
                     // Bingo
-                    return type.getValue().apply(config);
+                    try { return type.getValue().apply(config); } catch (IllegalArgumentException e) {
+
+                        throw new IllegalStateException("Could not handle: " + e.getMessage());
+                    }
                 }
             }
 
@@ -382,11 +381,11 @@ public class SkillManager {
 
             // MythicMobs skill handler type
             if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null)
-                registerSkillHandlerType(config -> !config.getString("mythicmobs-skill-id", "").isEmpty(), config -> new MythicMobsSkillHandler(config));
+                registerSkillHandlerType(config -> config.contains("mythicmobs-skill-id"), config -> new MythicMobsSkillHandler(config));
 
             // SkillAPI skill handler type
             if (Bukkit.getPluginManager().getPlugin("SkillAPI") != null)
-                registerSkillHandlerType(config -> !config.getString("skillapi-skill-id", "").isEmpty(), config -> new SkillAPISkillHandler(config));
+                registerSkillHandlerType(config -> config.contains("skillapi-skill-id"), config -> new SkillAPISkillHandler(config));
         }
 
         // Load default skills
@@ -427,22 +426,14 @@ public class SkillManager {
         // Post load custom skills and register a skill handler
         for (CustomSkill skill : customSkills.values())
             try {
+
                 skill.postLoad();
+                // Public?
                 if (skill.isPublic()) {
-                    try {
-                        MythicLib.plugin.getLogger().log(Level.WARNING, "Checking Handler for " + skill.getId() + "... ");
 
+                    // Default skill handler, requires post-loading
+                    registerSkillHandler(new MythicLibSkillHandler(skill)); }
 
-                        // Attempt to find the correct skill handler
-                        registerSkillHandler(loadSkillHandler(skill.getOriginalConfig()));
-
-                    } catch (IllegalArgumentException ignored) {
-                        MythicLib.plugin.getLogger().log(Level.WARNING, "Could not match skill handler to " + skill.getId() + ", using default: " + ignored.getMessage());
-
-                        // Default skill handler
-                        registerSkillHandler(new MythicLibSkillHandler(skill));
-                    }
-                }
             } catch (RuntimeException exception) {
                 MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill '" + skill.getId() + "': " + exception.getMessage());
             }
@@ -450,11 +441,38 @@ public class SkillManager {
         // Load skills
         RecursiveFolderExplorer explorer = new RecursiveFolderExplorer(file -> {
             try {
-                registerSkillHandler(loadSkillHandler(YamlConfiguration.loadConfiguration(file)));
+
+                try {
+
+                    // Attempt to load as normal section
+                    registerSkillHandler(loadSkillHandler(YamlConfiguration.loadConfiguration(file)));
+
+                } catch (IllegalArgumentException|IllegalStateException e) {
+
+                    // Attempt to parse every key I guess
+                    ConfigurationSection config = YamlConfiguration.loadConfiguration(file);
+                    for (String key : config.getKeys(false)) {
+
+                        // Get as configuration section
+                        ConfigurationSection section = config.getConfigurationSection(key);
+                        if (section == null) { continue; }
+
+                        try {
+
+                            // Attempt to load as normal section
+                            registerSkillHandler(loadSkillHandler(section));
+
+                        } catch (IllegalArgumentException|IllegalStateException exception) {
+                            MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill '" + section.getName() + "' from '" + file.getName() + "': " + exception.getMessage());
+                        }
+                    }
+                }
+
             } catch (RuntimeException exception) {
                 MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill from '" + file.getName() + "': " + exception.getMessage());
             }
         }, MythicLib.plugin, "Could not load skills");
+
         for (File file : new File(MythicLib.plugin.getDataFolder() + "/skill").listFiles())
             if (!file.isDirectory() || !file.getName().equals("custom"))
                 explorer.explore(file);

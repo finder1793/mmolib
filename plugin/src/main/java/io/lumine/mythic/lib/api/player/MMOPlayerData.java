@@ -15,6 +15,7 @@ import io.lumine.mythic.lib.player.skill.PassiveSkillMap;
 import io.lumine.mythic.lib.skill.custom.variable.VariableList;
 import io.lumine.mythic.lib.skill.custom.variable.VariableScope;
 import io.lumine.mythic.lib.player.skill.PassiveSkill;
+import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.apache.commons.lang.Validate;
@@ -138,9 +139,15 @@ public class MMOPlayerData {
         PlayerMetadata caster = attackMetadata == null ? statMap.cache(EquipmentSlot.MAIN_HAND) : attackMetadata;
         TriggerMetadata triggerMeta = new TriggerMetadata(caster, attackMetadata, target);
 
-        for (PassiveSkill skill : skills)
-            if (skill.getType() == triggerType && skill.getTriggeredSkill().getHandler().isTriggerable())
+        for (PassiveSkill skill : skills) {
+            if (skill == null) { continue; }
+            SkillHandler handler = skill.getTriggeredSkill().getHandler();
+
+            // Type must match, and handler must exist
+            if (skill.getType() == triggerType && handler != null && handler.isTriggerable()) {
                 skill.getTriggeredSkill().cast(triggerMeta);
+            }
+        }
     }
 
     public VariableList getVariableList() {

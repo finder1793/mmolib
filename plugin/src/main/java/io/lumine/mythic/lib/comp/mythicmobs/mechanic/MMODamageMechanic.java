@@ -19,7 +19,9 @@ import io.lumine.xikage.mythicmobs.skills.placeholders.parsers.PlaceholderDouble
 import io.lumine.xikage.mythicmobs.util.annotations.MythicMechanic;
 import org.bukkit.entity.LivingEntity;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 @MythicMechanic(
@@ -37,7 +39,22 @@ public class MMODamageMechanic extends DamagingMechanic implements ITargetedEnti
 
         this.amount = PlaceholderDouble.of(config.getString(new String[]{"amount", "a"}, "1", new String[0]));
         String[] typesFormat = config.getString(new String[]{"type", "t"}, "SKILL,MAGIC", new String[0]).split("\\,");
-        this.types = Arrays.asList(typesFormat).stream().map(str -> DamageType.valueOf(str.toUpperCase())).collect(Collectors.toList()).toArray(new DamageType[0]);
+
+        // Parse damage types
+        ArrayList<DamageType> parsedTypes = new ArrayList<>();
+        for (String unparsedType : typesFormat) {
+            DamageType parsedType;
+            try { parsedType = DamageType.valueOf(unparsedType); } catch (IllegalArgumentException ignored) {
+
+                MythicLib.plugin.getLogger().log(Level.WARNING, "Invalid Damage Type " + unparsedType + " for MMODamage Mechanic. ");
+                continue; }
+
+            // Include
+            parsedTypes.add(parsedType);
+        }
+
+        // Accept those types
+        this.types = parsedTypes.toArray(new DamageType[0]);
     }
 
     @Override

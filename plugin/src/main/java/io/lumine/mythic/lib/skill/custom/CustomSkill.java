@@ -20,17 +20,14 @@ public class CustomSkill extends PostLoadObject {
     private final String id;
     private final boolean publicSkill;
 
-    @NotNull public ConfigurationSection getOriginalConfig() { return originalConfig; }
-    @NotNull ConfigurationSection originalConfig;
-
     private final List<Condition> conditions = new ArrayList<>();
     private final List<Mechanic> mechanics = new ArrayList<>();
 
-    public CustomSkill(@NotNull ConfigurationSection config) {
+    public CustomSkill(@NotNull ConfigurationSection config) { this(config, config.getName()); }
+    public CustomSkill(@NotNull ConfigurationSection config, @NotNull String id) {
         super(config);
 
         this.id = config.getName();
-        originalConfig = config;
         publicSkill = config.getBoolean("public", false);
     }
 

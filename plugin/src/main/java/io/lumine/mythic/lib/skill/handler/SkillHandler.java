@@ -82,17 +82,8 @@ public abstract class SkillHandler<T extends SkillResult> {
         this.id = formatId(id);
         this.triggerable = true;
 
-        MythicLib.plugin.getLogger().log(Level.WARNING, "Loading " + id + " as " + getClass().getSimpleName());
-
         // Register custom modifiers
-        if (config.contains("modifiers")) {
-            MythicLib.plugin.getLogger().log(Level.WARNING, "Modifiers x" + config.getStringList("modifiers").size());
-
-            registerModifiers(config.getStringList("modifiers"));
-        } else {
-
-            MythicLib.plugin.getLogger().log(Level.WARNING, "No Modifiers");
-        }
+        if (config.contains("modifiers")) { registerModifiers(config.getStringList("modifiers")); }
 
         // Default modifiers
         registerModifiers("cooldown", "mana", "stamina");
