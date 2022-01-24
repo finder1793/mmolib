@@ -7,6 +7,7 @@ import io.lumine.mythic.lib.skill.custom.condition.Condition;
 import io.lumine.mythic.lib.skill.custom.mechanic.Mechanic;
 import io.lumine.mythic.lib.util.configobject.ConfigSectionObject;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,18 +20,22 @@ public class CustomSkill extends PostLoadObject {
     private final String id;
     private final boolean publicSkill;
 
+    @NotNull public ConfigurationSection getOriginalConfig() { return originalConfig; }
+    @NotNull ConfigurationSection originalConfig;
+
     private final List<Condition> conditions = new ArrayList<>();
     private final List<Mechanic> mechanics = new ArrayList<>();
 
-    public CustomSkill(ConfigurationSection config) {
+    public CustomSkill(@NotNull ConfigurationSection config) {
         super(config);
 
         this.id = config.getName();
+        originalConfig = config;
         publicSkill = config.getBoolean("public", false);
     }
 
     @Override
-    public void whenPostLoaded(ConfigurationSection config) {
+    public void whenPostLoaded(@NotNull ConfigurationSection config) {
 
         // Load conditions
         if (config.isConfigurationSection("conditions"))

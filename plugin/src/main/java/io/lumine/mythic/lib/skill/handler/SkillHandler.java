@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.skill.handler;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.SkillMetadata;
@@ -10,6 +11,7 @@ import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * The interface that groups up:
@@ -80,9 +82,17 @@ public abstract class SkillHandler<T extends SkillResult> {
         this.id = formatId(id);
         this.triggerable = true;
 
+        MythicLib.plugin.getLogger().log(Level.WARNING, "Loading " + id + " as " + getClass().getSimpleName());
+
         // Register custom modifiers
-        if (config.contains("modifiers"))
+        if (config.contains("modifiers")) {
+            MythicLib.plugin.getLogger().log(Level.WARNING, "Modifiers x" + config.getStringList("modifiers").size());
+
             registerModifiers(config.getStringList("modifiers"));
+        } else {
+
+            MythicLib.plugin.getLogger().log(Level.WARNING, "No Modifiers");
+        }
 
         // Default modifiers
         registerModifiers("cooldown", "mana", "stamina");

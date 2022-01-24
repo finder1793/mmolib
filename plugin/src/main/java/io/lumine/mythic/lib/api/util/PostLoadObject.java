@@ -1,9 +1,12 @@
 package io.lumine.mythic.lib.api.util;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class PostLoadObject {
-    private ConfigurationSection config;
+    @Nullable public ConfigurationSection getPostLoadConfig() { return config; }
+    @Nullable private ConfigurationSection config;
 
     /**
      * Objects which must load some data afterwards, like quests which must load
@@ -13,13 +16,12 @@ public abstract class PostLoadObject {
      * @param config Config section being cached in
      *               memory until {@link #postLoad()} is called
      */
-    public PostLoadObject(ConfigurationSection config) {
+    public PostLoadObject(@Nullable ConfigurationSection config) {
         this.config = config;
     }
 
     public void postLoad() {
-        if (config == null)
-            return;
+        if (config == null) { return; }
 
         whenPostLoaded(config);
 
@@ -27,5 +29,5 @@ public abstract class PostLoadObject {
         config = null;
     }
 
-    protected abstract void whenPostLoaded(ConfigurationSection config);
+    protected abstract void whenPostLoaded(@NotNull ConfigurationSection config);
 }

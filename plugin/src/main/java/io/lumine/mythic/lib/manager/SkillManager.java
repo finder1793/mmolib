@@ -206,22 +206,34 @@ public class SkillManager {
         skillHandlerTypes.put(matcher, provider);
     }
 
-    @NotNull
-    public SkillHandler<?> loadSkillHandler(Object obj) {
+    @NotNull public SkillHandler<?> loadSkillHandler(Object obj) throws IllegalArgumentException {
 
-        if (obj instanceof String)
-            return getHandlerOrThrow(obj.toString());
+        // By handler name
+        if (obj instanceof String) {
+            MythicLib.plugin.getLogger().log(Level.WARNING, "String Method");
 
+            return getHandlerOrThrow(obj.toString()); }
+
+        // By type of configuration section
         if (obj instanceof ConfigurationSection) {
             ConfigurationSection config = (ConfigurationSection) obj;
-            for (Map.Entry<Predicate<ConfigurationSection>, Function<ConfigurationSection, SkillHandler>> type : skillHandlerTypes.entrySet())
-                if (type.getKey().test(config))
+            MythicLib.plugin.getLogger().log(Level.WARNING, "Configuration Section Method ~ " + skillHandlerTypes.entrySet().size());
+
+            // Match to the registered handlers
+            for (Map.Entry<Predicate<ConfigurationSection>, Function<ConfigurationSection, SkillHandler>> type : skillHandlerTypes.entrySet()) {
+
+                // Does this handler match?
+                if (type.getKey().test(config)) {
+
+                    // Bingo
                     return type.getValue().apply(config);
+                }
+            }
 
             throw new IllegalArgumentException("Could not match handler type to config");
         }
 
-        throw new IllegalArgumentException("Provide either a string or configuration section");
+        throw new IllegalArgumentException("Provide either a string or configuration section instead of " + obj.getClass().getSimpleName());
     }
 
     public void registerSkillHandler(SkillHandler<?> handler) {
@@ -235,7 +247,7 @@ public class SkillManager {
         return Objects.requireNonNull(handlers.get(id), "Could not find handler with ID '" + id + "'");
     }
 
-    public void registerCustomSkill(CustomSkill skill) {
+    public void registerCustomSkill(@NotNull CustomSkill skill) {
         Validate.isTrue(!customSkills.containsKey(skill.getId()), "A skill with the same name already exists");
 
         customSkills.put(skill.getId(), skill);
@@ -370,11 +382,11 @@ public class SkillManager {
 
             // MythicMobs skill handler type
             if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null)
-                registerSkillHandlerType(config -> config.contains("mythicmobs-skill-id"), config -> new MythicMobsSkillHandler(config));
+                registerSkillHandlerType(config -> !config.getString("mythicmobs-skill-id", "").isEmpty(), config -> new MythicMobsSkillHandler(config));
 
             // SkillAPI skill handler type
             if (Bukkit.getPluginManager().getPlugin("SkillAPI") != null)
-                registerSkillHandlerType(config -> config.contains("skillapi-skill-id"), config -> new SkillAPISkillHandler(config));
+                registerSkillHandlerType(config -> !config.getString("skillapi-skill-id", "").isEmpty(), config -> new SkillAPISkillHandler(config));
         }
 
         // Load default skills
@@ -400,8 +412,12 @@ public class SkillManager {
             FileConfiguration config = YamlConfiguration.loadConfiguration(file);
             for (String key : config.getKeys(false))
                 try {
-                    CustomSkill skill = new CustomSkill(config.getConfigurationSection(key));
-                    registerCustomSkill(skill);
+                    ConfigurationSection section = config.getConfigurationSection(key);
+                    if (section == null) { continue; }
+
+                    // Register skill
+                    registerCustomSkill(new CustomSkill(section));
+
                 } catch (RuntimeException exception) {
                     MythicLib.plugin.getLogger().log(Level.WARNING, "Could not initialize custom skill '" + key + "' from '" + file.getName() + "': " + exception.getMessage());
                 }
@@ -412,8 +428,21 @@ public class SkillManager {
         for (CustomSkill skill : customSkills.values())
             try {
                 skill.postLoad();
-                if (skill.isPublic())
-                    registerSkillHandler(new MythicLibSkillHandler(skill));
+                if (skill.isPublic()) {
+                    try {
+                        MythicLib.plugin.getLogger().log(Level.WARNING, "Checking Handler for " + skill.getId() + "... ");
+
+
+                        // Attempt to find the correct skill handler
+                        registerSkillHandler(loadSkillHandler(skill.getOriginalConfig()));
+
+                    } catch (IllegalArgumentException ignored) {
+                        MythicLib.plugin.getLogger().log(Level.WARNING, "Could not match skill handler to " + skill.getId() + ", using default: " + ignored.getMessage());
+
+                        // Default skill handler
+                        registerSkillHandler(new MythicLibSkillHandler(skill));
+                    }
+                }
             } catch (RuntimeException exception) {
                 MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill '" + skill.getId() + "': " + exception.getMessage());
             }
