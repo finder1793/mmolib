@@ -31,11 +31,11 @@ public class DamageMetadata implements Cloneable {
 
         for (DamagePacket packet : packets) {
 
-            MythicCraftingManager.log("\u00a78DAMAGE\u00a77 Adding up damage: \u00a7a" + packet.toString());
+            //MythicCraftingManager.log("\u00a78DAMAGE\u00a77 Adding up damage: \u00a7a" + packet.toString());
             d += packet.getFinalValue();
         }
 
-        MythicCraftingManager.log("\u00a78DAMAGE\u00a77 Total: \u00a7a" + d);
+        //MythicCraftingManager.log("\u00a78DAMAGE\u00a77 Total: \u00a7a" + d);
 
         return d;
     }
