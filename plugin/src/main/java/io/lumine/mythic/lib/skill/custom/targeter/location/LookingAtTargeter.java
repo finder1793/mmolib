@@ -15,11 +15,13 @@ import java.util.List;
  * Targets the block the player is looking at. Precisely, it uses a ray trace
  * to find the exact location where his line of sight hits the target block.
  */
-public class LookingAtTargeter implements LocationTargeter {
+public class LookingAtTargeter extends LocationTargeter {
     private final double rayCastLength;
     private final boolean ignorePassable;
 
     public LookingAtTargeter(ConfigObject config) {
+        super(false);
+
         this.rayCastLength = config.getDouble("length", 50);
         ignorePassable = config.getBoolean("ignore-passable", false);
     }

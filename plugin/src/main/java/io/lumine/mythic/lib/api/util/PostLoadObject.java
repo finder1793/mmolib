@@ -1,12 +1,16 @@
 package io.lumine.mythic.lib.api.util;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public abstract class PostLoadObject {
-    @Nullable public ConfigurationSection getPostLoadConfig() { return config; }
-    @Nullable private ConfigurationSection config;
+
+    @Nullable
+    private ConfigurationSection config;
 
     /**
      * Objects which must load some data afterwards, like quests which must load
@@ -20,12 +24,16 @@ public abstract class PostLoadObject {
         this.config = config;
     }
 
+    private static final String ERROR_MESSAGE = "Objet already post loaded";
+
+    @NotNull
+    public ConfigurationSection getPostLoadConfig() {
+        return Objects.requireNonNull(config, ERROR_MESSAGE);
+    }
+
     public void postLoad() {
-        if (config == null) { return; }
-
+        Validate.notNull(config, ERROR_MESSAGE);
         whenPostLoaded(config);
-
-        // Clean config object for garbage collection
         config = null;
     }
 

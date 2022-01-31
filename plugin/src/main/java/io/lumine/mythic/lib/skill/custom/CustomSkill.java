@@ -23,8 +23,7 @@ public class CustomSkill extends PostLoadObject {
     private final List<Condition> conditions = new ArrayList<>();
     private final List<Mechanic> mechanics = new ArrayList<>();
 
-    public CustomSkill(@NotNull ConfigurationSection config) { this(config, config.getName()); }
-    public CustomSkill(@NotNull ConfigurationSection config, @NotNull String id) {
+    public CustomSkill(@NotNull ConfigurationSection config) {
         super(config);
 
         this.id = config.getName();

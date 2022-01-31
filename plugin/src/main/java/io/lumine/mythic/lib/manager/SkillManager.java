@@ -209,25 +209,15 @@ public class SkillManager {
     @NotNull public SkillHandler<?> loadSkillHandler(Object obj) throws IllegalArgumentException, IllegalStateException {
 
         // By handler name
-        if (obj instanceof String) {return getHandlerOrThrow(obj.toString()); }
+        if (obj instanceof String)
+            return getHandlerOrThrow(obj.toString());
 
         // By type of configuration section
         if (obj instanceof ConfigurationSection) {
             ConfigurationSection config = (ConfigurationSection) obj;
-
-            // Match to the registered handlers
-            for (Map.Entry<Predicate<ConfigurationSection>, Function<ConfigurationSection, SkillHandler>> type : skillHandlerTypes.entrySet()) {
-
-                // Does this handler match?
-                if (type.getKey().test(config)) {
-
-                    // Bingo
-                    try { return type.getValue().apply(config); } catch (IllegalArgumentException e) {
-
-                        throw new IllegalStateException("Could not handle: " + e.getMessage());
-                    }
-                }
-            }
+            for (Map.Entry<Predicate<ConfigurationSection>, Function<ConfigurationSection, SkillHandler>> type : skillHandlerTypes.entrySet())
+                if (type.getKey().test(config))
+                    return type.getValue().apply(config);
 
             throw new IllegalArgumentException("Could not match handler type to config");
         }
@@ -426,13 +416,9 @@ public class SkillManager {
         // Post load custom skills and register a skill handler
         for (CustomSkill skill : customSkills.values())
             try {
-
                 skill.postLoad();
-                // Public?
-                if (skill.isPublic()) {
-
-                    // Default skill handler, requires post-loading
-                    registerSkillHandler(new MythicLibSkillHandler(skill)); }
+                if (skill.isPublic())
+                    registerSkillHandler(new MythicLibSkillHandler(skill));
 
             } catch (RuntimeException exception) {
                 MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill '" + skill.getId() + "': " + exception.getMessage());

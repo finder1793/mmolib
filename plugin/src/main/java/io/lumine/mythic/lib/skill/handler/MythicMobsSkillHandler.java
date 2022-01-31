@@ -23,7 +23,7 @@ public class MythicMobsSkillHandler extends SkillHandler<MythicMobsSkillResult> 
     private final Map<CheatType, Integer> antiCheat = new HashMap<>();
 
     public MythicMobsSkillHandler(ConfigurationSection config) {
-        super(config, config.getName().isEmpty() ? config.getString("mythicmobs-skill-id", "") : config.getName());
+        super(config, config.getName().isEmpty() ? config.getString("mythicmobs-skill-id") : config.getName());
 
         String skillName = config.getString("mythicmobs-skill-id");
 

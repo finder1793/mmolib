@@ -1,12 +1,24 @@
 package io.lumine.mythic.lib.skill.custom.targeter;
 
 import io.lumine.mythic.lib.skill.SkillMetadata;
+import io.lumine.mythic.lib.skill.custom.targeter.location.Orientable;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 
 import java.util.List;
 
-@FunctionalInterface
-public interface LocationTargeter {
+public abstract class LocationTargeter {
+    private final boolean oriented;
 
-    public List<Location> findTargets(SkillMetadata meta);
+    protected LocationTargeter(ConfigObject config) {
+        this(config.getBoolean("oriented", false));
+    }
+
+    protected LocationTargeter(boolean oriented) {
+        this.oriented = oriented;
+        Validate.isTrue(!oriented || getClass().isAnnotationPresent(Orientable.class), "Tried creating an oriented location targeter with a non orientable type");
+    }
+
+    public abstract List<Location> findTargets(SkillMetadata meta);
 }

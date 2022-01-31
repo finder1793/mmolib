@@ -10,7 +10,10 @@ import java.util.List;
 /**
  * Takes target location or source location if null/prioritized
  */
-public class DefaultLocationTargeter implements LocationTargeter {
+public class DefaultLocationTargeter extends LocationTargeter {
+    public DefaultLocationTargeter() {
+        super(false);
+    }
 
     @Override
     public List<Location> findTargets(SkillMetadata meta) {

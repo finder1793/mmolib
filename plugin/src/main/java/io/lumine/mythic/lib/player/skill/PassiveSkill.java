@@ -9,6 +9,10 @@ import io.lumine.mythic.lib.skill.SimpleSkill;
 import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 /**
  * There is one TriggeredSkill instance per active/passive skill the player
@@ -51,7 +55,7 @@ public class PassiveSkill extends PlayerModifier {
         super(key, equipmentSlot, modifierSource);
 
         this.type = type;
-        this.triggered = triggered;
+        this.triggered = Objects.requireNonNull(triggered, "Skill cannot be null");
     }
 
     public PassiveSkill(ConfigObject obj) {
@@ -77,10 +81,12 @@ public class PassiveSkill extends PlayerModifier {
         this.triggered = triggered;
     }
 
+    @NotNull
     public Skill getTriggeredSkill() {
         return triggered;
     }
 
+    @Nullable
     public TriggerType getType() {
         return type;
     }

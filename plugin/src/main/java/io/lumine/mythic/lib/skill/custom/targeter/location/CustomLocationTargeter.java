@@ -12,10 +12,13 @@ import java.util.List;
 /**
  * Provides a location which coordinates are provided as parameters
  */
-public class CustomLocationTargeter implements LocationTargeter {
+@Orientable
+public class CustomLocationTargeter extends LocationTargeter {
     private final DoubleFormula x, y,z;
 
     public CustomLocationTargeter(ConfigObject config) {
+        super(config);
+
         config.validateKeys("x", "y", "z");
 
         this.x = new DoubleFormula(config.getString("x"));

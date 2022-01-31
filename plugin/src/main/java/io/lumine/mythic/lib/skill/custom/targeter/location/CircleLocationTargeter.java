@@ -16,11 +16,14 @@ import java.util.List;
  * Generates a circle around target location. It can be oriented
  * and can appear at source or target location.
  */
-public class CircleLocationTargeter implements LocationTargeter {
+@Orientable
+public class CircleLocationTargeter extends LocationTargeter {
     private final boolean orient, source;
     private final DoubleFormula radius, amount;
 
     public CircleLocationTargeter(ConfigObject config) {
+        super(config);
+
         config.validateKeys("radius", "amount");
 
         orient = config.getBoolean("orient", false);

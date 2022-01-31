@@ -11,10 +11,13 @@ import org.bukkit.Location;
 import java.util.Arrays;
 import java.util.List;
 
-public class VariableLocationTargeter implements LocationTargeter {
+@Orientable
+public class VariableLocationTargeter extends LocationTargeter {
     private final String[] args;
 
     public VariableLocationTargeter(ConfigObject config) {
+        super(config);
+
         config.validateKeys("name");
 
         args = config.getString("name").split("\\.");
