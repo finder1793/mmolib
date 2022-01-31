@@ -85,7 +85,7 @@ public class MythicLib extends LuminePlugin {
      * and should not enable on server startup. This smoothly lets the
      * user know when they have to update their plugin builds.
      */
-    public static final int MMOITEMS_COMPATIBILITY_INDEX = 4;
+    public static final int MMOITEMS_COMPATIBILITY_INDEX = 5;
 
     /**
      * MMOCore has a similar public field. If these don't match

@@ -10,6 +10,7 @@ import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -339,4 +340,19 @@ public class MythicRecipeBlueprint {
      * @see #deploy(MythicRecipeStation,Ref)
      */
     public void disable() {  for (MythicRecipeStation st : getDeployedFor()) { MythicCraftingManager.disableBlueprint(this, st); } deployedFor.clear(); }
+
+    //region Permissions I guess
+    @NotNull public ArrayList<String> getRequiredPermissions() { return requiredPermissions; }
+    @NotNull final ArrayList<String> requiredPermissions = new ArrayList<>();
+    public void addRequiredPermission(@NotNull String perm) { requiredPermissions.add(perm); }
+    public void clearRequiredPermissions() { requiredPermissions.clear(); }
+    public boolean checkPermissions(@NotNull Permissible player) {
+
+        // Any lack of permission cancels
+        for (String perm : getRequiredPermissions()) { if (!player.hasPermission(perm)) { return false; } }
+
+        // No cancellation means success
+        return true;
+    }
+    //endregion
 }

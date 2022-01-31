@@ -510,6 +510,19 @@ public class MythicCraftingManager implements Listener {
             if (limitedCrafted) { continue; }
             */
 
+            // DOes the player match permission?
+            boolean permBlock = false;
+            for (Player viewer : viewers) {
+                if (viewer == null) { continue; }
+
+                // Cancel if permission
+                if (!blueprint.checkPermissions(viewer)) {
+
+                    permBlock = true;
+                    break; } }
+            if (permBlock) { continue; }
+
+
             // Well, whats the modified version?
             Ref<Integer> timesCrafted = new Ref<>();
             MythicBlueprintInventory finalBlueprint = blueprint.matches(inventory, timesCrafted);
