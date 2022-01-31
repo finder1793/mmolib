@@ -30,6 +30,13 @@ public class CustomSkill extends PostLoadObject {
         publicSkill = config.getBoolean("public", false);
     }
 
+    public CustomSkill(String id, boolean publicSkill) {
+        super(null);
+
+        this.id = id;
+        this.publicSkill = publicSkill;
+    }
+
     @Override
     public void whenPostLoaded(@NotNull ConfigurationSection config) {
 
