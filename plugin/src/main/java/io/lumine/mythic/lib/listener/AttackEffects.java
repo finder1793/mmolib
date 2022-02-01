@@ -68,7 +68,12 @@ public class AttackEffects implements Listener {
                 && random.nextDouble() <= Math.min(stats.getStat("CRITICAL_STRIKE_CHANCE"), maxWeaponCritChance) / 100
                 && !event.getData().isOnCooldown(CooldownType.WEAPON_CRIT)) {
             event.getData().applyCooldown(CooldownType.WEAPON_CRIT, weaponCritCooldown);
-            event.getDamage().multiplicativeModifier(weaponCritCoef + stats.getStat("CRITICAL_STRIKE_POWER") / 100, DamageType.WEAPON);
+
+            // Works for both weapon and unarmed damage
+            double damageMultiplicator = weaponCritCoef + stats.getStat("CRITICAL_STRIKE_POWER") / 100;
+            event.getDamage().multiplicativeModifier(damageMultiplicator, DamageType.WEAPON);
+            event.getDamage().multiplicativeModifier(damageMultiplicator, DamageType.UNARMED);
+
             event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 1);
             event.getEntity().getWorld().spawnParticle(Particle.FIREWORKS_SPARK, event.getEntity().getLocation().add(0, 1, 0), 16, 0, 0, 0, .1);
         }
