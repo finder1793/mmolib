@@ -28,9 +28,9 @@ public enum DamageType {
     PROJECTILE,
 
     /**
-     * To allow no scaling!
+     * Hitting an enemy with bare hands
      */
-    NONE;
+    UNARMED;
 
     public String getPath() {
         return name().toLowerCase();

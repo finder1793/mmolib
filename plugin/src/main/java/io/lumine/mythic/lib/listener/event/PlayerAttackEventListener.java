@@ -152,7 +152,7 @@ public class PlayerAttackEventListener implements Listener {
         if (event.getDamager() instanceof LivingEntity) {
             LivingEntity damager = (LivingEntity) event.getDamager();
             if (isAir(damager.getEquipment().getItemInMainHand()))
-                return new DamageType[]{DamageType.PHYSICAL};
+                return new DamageType[]{DamageType.UNARMED, DamageType.PHYSICAL};
         }
 
         // By default a physical attack is a weapon-physical attack
