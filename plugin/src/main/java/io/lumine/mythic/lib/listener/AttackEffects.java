@@ -64,7 +64,7 @@ public class AttackEffects implements Listener {
         event.getDamage().additiveModifier(stats.getStat(event.getEntity() instanceof Player ? "PVP_DAMAGE" : "PVE_DAMAGE") / 100);
 
         // Weapon critical strikes
-        if (event.getDamage().hasType(DamageType.WEAPON)
+        if ((event.getDamage().hasType(DamageType.WEAPON) || event.getDamage().hasType(DamageType.UNARMED))
                 && random.nextDouble() <= Math.min(stats.getStat("CRITICAL_STRIKE_CHANCE"), maxWeaponCritChance) / 100
                 && !event.getData().isOnCooldown(CooldownType.WEAPON_CRIT)) {
             event.getData().applyCooldown(CooldownType.WEAPON_CRIT, weaponCritCooldown);
