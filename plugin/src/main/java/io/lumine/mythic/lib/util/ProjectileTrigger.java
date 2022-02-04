@@ -19,6 +19,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -145,23 +146,30 @@ public class ProjectileTrigger extends TemporaryListener {
         ARROW,
         TRIDENT;
 
-        private final TriggerType tick, hit, land;
+        @NotNull private final TriggerType tick, hit, land;
 
         ProjectileType() {
-            tick = TriggerType.valueOf(name() + "_TICK");
-            hit = TriggerType.valueOf(name() + "_HIT");
-            land = TriggerType.valueOf(name() + "_LAND");
+
+            // Create them
+            tick = new TriggerType(name() + "_TICK");
+            hit = new TriggerType(name() + "_HIT");
+            land = new TriggerType(name() + "_LAND");
+
+            // Register them
+            TriggerType.register(tick);
+            TriggerType.register(hit);
+            TriggerType.register(land);
         }
 
-        public TriggerType getTickTrigger() {
+        @NotNull public TriggerType getTickTrigger() {
             return tick;
         }
 
-        public TriggerType getHitTrigger() {
+        @NotNull public TriggerType getHitTrigger() {
             return hit;
         }
 
-        public TriggerType getLandTrigger() {
+        @NotNull public TriggerType getLandTrigger() {
             return land;
         }
     }

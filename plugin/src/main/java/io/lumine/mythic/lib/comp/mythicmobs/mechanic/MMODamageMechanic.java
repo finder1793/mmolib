@@ -40,7 +40,7 @@ public class MMODamageMechanic extends DamagingMechanic implements ITargetedEnti
 
         this.amount = PlaceholderDouble.of(config.getString(new String[]{"amount", "a"}, "1", new String[0]));
         String typesString = config.getString(new String[]{"type", "t"}, null, new String[0]);
-        this.types = typesString == null || typesString.isEmpty() ? new DamageType[0] : toDamageTypeArray(typesString);
+        this.types = (typesString == null || typesString.isEmpty() || "NONE".equalsIgnoreCase(typesString)) ? new DamageType[0] : toDamageTypeArray(typesString);
     }
 
     private DamageType[] toDamageTypeArray(String typesString) {

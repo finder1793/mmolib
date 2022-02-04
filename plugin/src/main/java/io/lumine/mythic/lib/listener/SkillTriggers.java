@@ -5,11 +5,12 @@ import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.event.PlayerKillEntityEvent;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.skill.trigger.TimerTrigger;
 import io.lumine.mythic.lib.util.ProjectileTrigger;
 import io.lumine.mythic.lib.comp.target.InteractionType;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
 import org.bukkit.event.*;
@@ -20,8 +21,17 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class SkillTriggers implements Listener {
+
+    /**
+     * The constructor initializes trigger types
+     */
+    public static void initialize() {
+        TriggerType.registerAll();
+        TimerTrigger.deploy();
+    }
 
     @EventHandler
     public void killEntity(PlayerKillEntityEvent event) {
@@ -36,7 +46,7 @@ public class SkillTriggers implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void damagedByEntity(EntityDamageByEntityEvent event) {
-        if (event.getEntity().getType() == EntityType.PLAYER && MMOPlayerData.has(event.getEntity().getUniqueId())
+        if (event.getEntity() instanceof Player && MMOPlayerData.has(event.getEntity().getUniqueId())
                 && MythicLib.plugin.getEntities().canTarget((Player) event.getEntity(), event.getDamager(), InteractionType.OFFENSE_SKILL)) {
             MMOPlayerData caster = MMOPlayerData.get(event.getEntity().getUniqueId());
             caster.triggerSkills(TriggerType.DAMAGED_BY_ENTITY, event.getDamager());
@@ -45,7 +55,7 @@ public class SkillTriggers implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void damaged(EntityDamageEvent event) {
-        if (event.getEntityType() == EntityType.PLAYER && MMOPlayerData.has(event.getEntity().getUniqueId())) {
+        if (event.getEntity() instanceof Player && MMOPlayerData.has(event.getEntity().getUniqueId())) {
             MMOPlayerData caster = MMOPlayerData.get(event.getEntity().getUniqueId());
             caster.triggerSkills(TriggerType.DAMAGED, null);
         }
@@ -67,15 +77,30 @@ public class SkillTriggers implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void shootBow(EntityShootBowEvent event) {
-        if (event.getEntity().getType() == EntityType.PLAYER && MMOPlayerData.has(event.getEntity().getUniqueId())) {
+        if (event.getEntity() instanceof Player && MMOPlayerData.has(event.getEntity().getUniqueId())) {
             MMOPlayerData caster = MMOPlayerData.get(event.getEntity().getUniqueId());
-            caster.triggerSkills(TriggerType.SHOOT_BOW, event.getProjectile());
+
+            if (!syncInfiniteRecursionBlock) {
+
+                // Trigger skills only if not within a stacked call
+                syncInfiniteRecursionBlock = true;
+                caster.triggerSkills(TriggerType.SHOOT_BOW, event.getProjectile());
+                syncInfiniteRecursionBlock = false;
+            }
 
             // Register a runnable to trigger projectile skills
             EquipmentSlot hand = getShootHand(((Player) event.getEntity()).getInventory());
             new ProjectileTrigger(caster, ProjectileTrigger.ProjectileType.ARROW, event.getProjectile(), hand);
         }
     }
+
+    /*
+     * Its pretty funny when a bow skill can trigger another bow
+     * and it causes the bow to fire again at 0 cooldown but uuuh
+     * yeah this should do the trick to prevent this from feeding
+     * itself forever.
+     */
+    static boolean syncInfiniteRecursionBlock = false;
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void shootTrident(ProjectileLaunchEvent event) {
