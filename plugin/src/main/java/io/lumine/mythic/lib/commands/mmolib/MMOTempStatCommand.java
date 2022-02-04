@@ -18,7 +18,7 @@ import java.util.UUID;
 public class MMOTempStatCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length < 3) {
+        if (args.length < 4) {
             sender.sendMessage(ChatColor.RED + "Not enough args.");
             sender.sendMessage(ChatColor.YELLOW + "Usage: /mmotempstat <player> <stat name> <value> <tick duration>");
             return true;

@@ -43,7 +43,7 @@ public class VanillaUIFilter implements UIFilter {
         } else {
 
             FriendlyFeedbackProvider.log(ffp, FriendlyFeedbackCategory.FAILURE,
-                    "Item material '$u{0}$b' failed to match expected material $f{0}$b. ", item.getType().toString().toLowerCase().replace("_"," "), materialName);
+                    "Item material '$u{0}$b' failed to match expected material $f{1}$b. ", item.getType().toString().toLowerCase().replace("_"," "), materialName);
             return false;
         }
     }

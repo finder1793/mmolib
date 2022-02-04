@@ -3,6 +3,7 @@ package io.lumine.mythic.lib;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.MegaWorkbenchMapping;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.SuperWorkbenchMapping;
+import io.lumine.mythic.lib.api.crafting.uifilters.MythicItemUIFilter;
 import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.commands.BaseCommand;
@@ -169,6 +170,7 @@ public class MythicLib extends LuminePlugin {
         if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null) {
             damageManager.registerHandler(new MythicMobsAttackHandler());
             Bukkit.getPluginManager().registerEvents(new MythicMobsHook(), this);
+            MythicItemUIFilter.register();
             getLogger().log(Level.INFO, "Hooked onto MythicMobs");
         }
 
