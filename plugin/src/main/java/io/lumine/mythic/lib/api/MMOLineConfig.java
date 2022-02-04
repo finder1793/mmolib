@@ -41,7 +41,7 @@ public class MMOLineConfig {
         key = value.substring(0, begin);
 
         try {
-            json = new JsonParser().parse(value.substring(begin, end)).getAsJsonObject();
+            json = new JsonParser().parse(value.substring(begin, end).replace(" ", "__")).getAsJsonObject();
         } catch (JsonParseException exception) {
             throw new IllegalArgumentException("Could not load config");
         }
