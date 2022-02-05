@@ -139,9 +139,7 @@ public class MMOLineConfig {
      *
      * @param count The amount of arguments
      */
-    public void validateArgs(int count) {
-        Validate.isTrue(args.length >= count, "Config must have at least " + count + " parameters");
-    }
+    public void validateArgs(int count) { Validate.isTrue(args.length >= count, "Config must have at least " + count + " parameters"); }
 
     @Override
     public String toString() {
