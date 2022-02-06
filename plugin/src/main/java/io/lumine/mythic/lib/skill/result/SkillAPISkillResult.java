@@ -8,8 +8,10 @@ import com.sucy.skill.api.skills.TargetSkill;
 import com.sucy.skill.api.target.TargetHelper;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import org.bukkit.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class SkillAPISkillResult implements SkillResult {
     private final PlayerData skillPlayerData;
@@ -33,9 +35,9 @@ public class SkillAPISkillResult implements SkillResult {
         return level;
     }
 
-    @Nullable
+    @NotNull
     public LivingEntity getTarget() {
-        return target;
+        return Objects.requireNonNull(target, "Skill has no target");
     }
 
     @Override

@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.player.skill;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.player.modifier.Closeable;
 import io.lumine.mythic.lib.player.modifier.ModifierMap;
+import io.lumine.mythic.lib.player.modifier.Openable;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.handler.def.passive.Backstab;
 import org.jetbrains.annotations.NotNull;
@@ -26,13 +27,15 @@ public class PassiveSkillMap implements ModifierMap<PassiveSkill> {
      * Registers as active a skill trigger. It can be unregistered
      * later if necessary using {@link #removeModifiers(String)}.
      * From the time where that method is called, performing an action will
-     * cause the saved TriggeredSkill to be executed.
+     * cause the saved PassiveSkill to be executed.
      *
      * @param skill Skill to register
      */
     @Override
     public void addModifier(PassiveSkill skill) {
         skills.put(skill.getUniqueId(), skill);
+
+        skill.open(playerData);
     }
 
     /**
@@ -42,8 +45,8 @@ public class PassiveSkillMap implements ModifierMap<PassiveSkill> {
     public void removeModifier(UUID uuid) {
         PassiveSkill skill = skills.remove(uuid);
 
-        if (skill != null && skill instanceof Closeable)
-            ((Closeable) skill).close();
+        if (skill != null)
+            skill.close();
     }
 
     /**

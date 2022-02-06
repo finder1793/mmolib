@@ -149,16 +149,9 @@ public class ProjectileTrigger extends TemporaryListener {
         @NotNull private final TriggerType tick, hit, land;
 
         ProjectileType() {
-
-            // Create them
             tick = new TriggerType(name() + "_TICK");
             hit = new TriggerType(name() + "_HIT");
             land = new TriggerType(name() + "_LAND");
-
-            // Register them
-            TriggerType.register(tick);
-            TriggerType.register(hit);
-            TriggerType.register(land);
         }
 
         @NotNull public TriggerType getTickTrigger() {

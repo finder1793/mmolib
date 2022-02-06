@@ -5,11 +5,9 @@ import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.event.PlayerKillEntityEvent;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.skill.trigger.TimerTrigger;
 import io.lumine.mythic.lib.util.ProjectileTrigger;
 import io.lumine.mythic.lib.comp.target.InteractionType;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
@@ -21,17 +19,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class SkillTriggers implements Listener {
-
-    /**
-     * The constructor initializes trigger types
-     */
-    public static void initialize() {
-        TriggerType.registerAll();
-        TimerTrigger.deploy();
-    }
 
     @EventHandler
     public void killEntity(PlayerKillEntityEvent event) {

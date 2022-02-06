@@ -2,7 +2,6 @@ package io.lumine.mythic.lib.skill.trigger;
 
 import io.lumine.mythic.lib.UtilityMethods;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -177,6 +176,7 @@ public class TriggerType {
 
         register(LOGIN);
         register(SNEAK);
+        register(TIMER);
         register(CAST);
         register(API);
     }
@@ -200,7 +200,9 @@ public class TriggerType {
 
     /**
      * When set to false, any skill with this trigger type should
-     * send a message to the player if this skill cannot be used.
+     * send a message to the player if this skill cannot be used
+     * i.e if the caster doesn't have enough mana, if it's on
+     * cooldown...
      */
     public boolean isSilent() {
         return silent;
@@ -228,12 +230,12 @@ public class TriggerType {
      * @throws IllegalArgumentException If the string does not correspond to a trigger type
      */
     @NotNull
-    public static TriggerType valueOf(@Nullable String id) {
+    public static TriggerType valueOf(String id) {
         return Objects.requireNonNull(BY_ID.get(id), "Could not find trigger type with ID '" + id + "'");
     }
 
     public static void register(TriggerType trigger) {
-        BY_ID.put(trigger.name(), trigger);
+        BY_ID.put(Objects.requireNonNull(trigger, "Trigger type cannot be null").name(), trigger);
     }
 
     public static Collection<TriggerType> values() {
