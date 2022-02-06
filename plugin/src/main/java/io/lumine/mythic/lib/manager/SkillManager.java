@@ -16,6 +16,7 @@ import io.lumine.mythic.lib.skill.custom.mechanic.buff.SaturateMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.buff.stat.AddStatModifierMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.buff.stat.RemoveStatModifierMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.misc.DelayMechanic;
+import io.lumine.mythic.lib.skill.custom.mechanic.misc.DispatchCommandMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.misc.LightningStrikeMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.misc.SkillMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.movement.TeleportMechanic;
@@ -23,6 +24,8 @@ import io.lumine.mythic.lib.skill.custom.mechanic.movement.VelocityMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.offense.DamageMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.offense.MultiplyDamageMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.offense.PotionMechanic;
+import io.lumine.mythic.lib.skill.custom.mechanic.player.GiveItemMechanic;
+import io.lumine.mythic.lib.skill.custom.mechanic.player.SudoMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.raytrace.RayTraceAnyMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.raytrace.RayTraceBlocksMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.raytrace.RayTraceEntitiesMechanic;
@@ -116,6 +119,7 @@ public class SkillManager {
         registerMechanic("delay", config -> new DelayMechanic(config));
         registerMechanic("lightning", config -> new LightningStrikeMechanic(config));
         registerMechanic("reduce_cooldown", config -> new ReduceCooldownMechanic(config));
+        registerMechanic("dispatch_command", DispatchCommandMechanic::new);
 
         registerMechanic("velocity", config -> new VelocityMechanic(config));
         registerMechanic("teleport", config -> new TeleportMechanic(config));
@@ -135,6 +139,9 @@ public class SkillManager {
         registerMechanic("damage", config -> new DamageMechanic(config));
         registerMechanic("multiply_damage", config -> new MultiplyDamageMechanic(config));
         registerMechanic("potion", config -> new PotionMechanic(config));
+
+        registerMechanic("sudo", config -> new SudoMechanic(config));
+        registerMechanic("give_item", config -> new GiveItemMechanic(config));
 
         registerMechanic("heal", config -> new HealMechanic(config));
         registerMechanic("feed", config -> new FeedMechanic(config));
@@ -206,7 +213,8 @@ public class SkillManager {
         skillHandlerTypes.put(matcher, provider);
     }
 
-    @NotNull public SkillHandler<?> loadSkillHandler(Object obj) throws IllegalArgumentException, IllegalStateException {
+    @NotNull
+    public SkillHandler<?> loadSkillHandler(Object obj) throws IllegalArgumentException, IllegalStateException {
 
         // By handler name
         if (obj instanceof String)
@@ -402,7 +410,9 @@ public class SkillManager {
             for (String key : config.getKeys(false))
                 try {
                     ConfigurationSection section = config.getConfigurationSection(key);
-                    if (section == null) { continue; }
+                    if (section == null) {
+                        continue;
+                    }
 
                     // Register skill
                     registerCustomSkill(new CustomSkill(section));
@@ -433,7 +443,7 @@ public class SkillManager {
                     // Attempt to load as normal section
                     registerSkillHandler(loadSkillHandler(YamlConfiguration.loadConfiguration(file)));
 
-                } catch (IllegalArgumentException|IllegalStateException e) {
+                } catch (IllegalArgumentException | IllegalStateException e) {
 
                     // Attempt to parse every key I guess
                     ConfigurationSection config = YamlConfiguration.loadConfiguration(file);
@@ -441,14 +451,16 @@ public class SkillManager {
 
                         // Get as configuration section
                         ConfigurationSection section = config.getConfigurationSection(key);
-                        if (section == null) { continue; }
+                        if (section == null) {
+                            continue;
+                        }
 
                         try {
 
                             // Attempt to load as normal section
                             registerSkillHandler(loadSkillHandler(section));
 
-                        } catch (IllegalArgumentException|IllegalStateException exception) {
+                        } catch (IllegalArgumentException | IllegalStateException exception) {
                             MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill '" + section.getName() + "' from '" + file.getName() + "': " + exception.getMessage());
                         }
                     }

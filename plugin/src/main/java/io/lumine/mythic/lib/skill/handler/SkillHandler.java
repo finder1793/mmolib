@@ -1,6 +1,5 @@
 package io.lumine.mythic.lib.skill.handler;
 
-import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.SkillMetadata;
@@ -11,7 +10,6 @@ import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.logging.Level;
 
 /**
  * The interface that groups up:
@@ -57,7 +55,7 @@ public abstract class SkillHandler<T extends SkillResult> {
         this.id = formatId(getClass().getSimpleName());
         this.triggerable = triggerable;
 
-        registerModifiers("cooldown", "mana", "stamina");
+        registerModifiers("cooldown", "mana", "stamina", "timer");
     }
 
     /**
@@ -69,7 +67,7 @@ public abstract class SkillHandler<T extends SkillResult> {
         this.id = formatId(id);
         this.triggerable = true;
 
-        registerModifiers("cooldown", "mana", "stamina");
+        registerModifiers("cooldown", "mana", "stamina", "timer");
     }
 
     /**
@@ -83,10 +81,11 @@ public abstract class SkillHandler<T extends SkillResult> {
         this.triggerable = true;
 
         // Register custom modifiers
-        if (config.contains("modifiers")) { registerModifiers(config.getStringList("modifiers")); }
+        if (config.contains("modifiers"))
+            registerModifiers(config.getStringList("modifiers"));
 
         // Default modifiers
-        registerModifiers("cooldown", "mana", "stamina");
+        registerModifiers("cooldown", "mana", "stamina", "timer");
     }
 
     private String formatId(String str) {

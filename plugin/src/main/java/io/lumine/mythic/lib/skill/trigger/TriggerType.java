@@ -1,14 +1,10 @@
 package io.lumine.mythic.lib.skill.trigger;
 
-import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.logging.Level;
+import java.util.*;
 
 public class TriggerType {
 
@@ -18,7 +14,8 @@ public class TriggerType {
      * Called when a player kills an entity
      * Metadata target is the entity dying
      */
-    @NotNull public static TriggerType KILL_ENTITY = new TriggerType("KILL_ENTITY"),
+    @NotNull
+    public static TriggerType KILL_ENTITY = new TriggerType("KILL_ENTITY"),
 
     /**
      * Called when a player attacks any other entity
@@ -134,6 +131,12 @@ public class TriggerType {
     SNEAK = new TriggerType("SNEAK", false),
 
     /**
+     * Casts the skill at regular time intervals. Timer period
+     * can be edited using the corresponding skill modifier.
+     */
+    TIMER,
+
+    /**
      * Called when a player casts a skill (e.g MMOCore skill
      * casting system)
      */
@@ -145,46 +148,27 @@ public class TriggerType {
      */
     API = new TriggerType("API");
 
-
-    public TriggerType(@NotNull String internal_name) { this(internal_name, true); }
-    public TriggerType(@NotNull String internal_name, boolean silent) {
-        name = internal_name;
-        this.silent = silent;
-    }
-
-    /**
-     * When set to false, any skill with this trigger type should
-     * send a message to the player if this skill cannot be used.
-     */
-    public boolean isSilent() { return silent; }
+    private final String id;
     private final boolean silent;
 
-    public String getName() { return UtilityMethods.caseOnWords(name().toLowerCase().replace("_", " ")); }
-    public String getLowerCaseId() { return name().toLowerCase().replace("_", "-"); }
+    private static final Map<String, TriggerType> BY_ID = new HashMap<>();
 
-    /**
-     * @param format The string trying to convert
-     *
-     * @return The trigger type of this name
-     *
-     * @throws IllegalArgumentException If the string does not correspond to a trigger type
-     */
-    @NotNull public static TriggerType valueOf(@Nullable String format) throws IllegalArgumentException {
-        TriggerType ret = safeValueOf(format);
-        if (ret == null) { throw new IllegalArgumentException("No trigger type of name '" + format + "' found. "); }
-        return ret;
-    }
-
-    public static void registerAll() {
+    static {
         register(KILL_ENTITY);
         register(ATTACK);
         register(DAMAGED);
         register(DAMAGED_BY_ENTITY);
         register(DEATH);
+
         register(SHOOT_BOW);
         register(ARROW_TICK);
         register(ARROW_HIT);
         register(ARROW_LAND);
+
+        register(SHOOT_TRIDENT);
+        register(TRIDENT_TICK);
+        register(TRIDENT_HIT);
+        register(TRIDENT_LAND);
 
         register(RIGHT_CLICK);
         register(LEFT_CLICK);
@@ -196,55 +180,76 @@ public class TriggerType {
         register(CAST);
         register(API);
     }
-    public static void register(@NotNull TriggerType trigger) { triggers.add(trigger); }
-    @NotNull public static ArrayList<TriggerType> values() { return triggers; }
-    @NotNull static ArrayList<TriggerType> triggers = new ArrayList<>();
 
-    /**
-     * Must use this method in order to allow use triggers of {@link TimerTrigger} type.
-     *
-     * @param format String you want to convert to a trigger.
-     *               Usually exactly the trigger name.
-     *
-     * @return The string, parsed, if it made sense.
-     */
-    @Nullable public static TriggerType safeValueOf(@Nullable String format) {
-        if (format == null) { return null; }
-
-        // Is it?
-        for (TriggerType type : values()) { if (type.is(format)) { return type; } }
-
-        // No base matched, lets try the special ones
-        if (format.startsWith("TIMER_")) {
-
-            // Strip that
-            Integer time = SilentNumbers.IntegerParse(format.substring("TIMER_".length()));
-
-            // Valid?
-            if(time != null && time > 0) {
-
-                // Make one of those chad timer triggers
-                return TimerTrigger.newTimerTrigger(time);
-            }
-        }
-        return null;
+    public TriggerType(String id) {
+        this(id, true);
     }
 
-    /**
-     * @param format String that we are trying to match
-     *
-     * @return If this trigger is the one named after the string.
-     */
-    public boolean is(@NotNull String format) { return name.equals(format); }
-
-    /**
-     * @return This trigger type serialized into a string, undoes {@link #safeValueOf(String)}
-     */
-    @Override public String toString() { return name(); }
+    public TriggerType(String id, boolean silent) {
+        this.id = id;
+        this.silent = silent;
+    }
 
     /**
      * @return Identical to {@link #toString()}
      */
-    @NotNull public String name() { return name; }
-    @NotNull String name;
+    @NotNull
+    public String name() {
+        return id;
+    }
+
+    /**
+     * When set to false, any skill with this trigger type should
+     * send a message to the player if this skill cannot be used.
+     */
+    public boolean isSilent() {
+        return silent;
+    }
+
+    public String getName() {
+        return UtilityMethods.caseOnWords(name().toLowerCase().replace("_", " "));
+    }
+
+    public String getLowerCaseId() {
+        return name().toLowerCase().replace("_", "-");
+    }
+
+    /**
+     * @return This trigger type serialized into a string
+     */
+    @Override
+    public String toString() {
+        return name();
+    }
+
+    /**
+     * @param id The string trying to convert
+     * @return The trigger type of this name
+     * @throws IllegalArgumentException If the string does not correspond to a trigger type
+     */
+    @NotNull
+    public static TriggerType valueOf(@Nullable String id) {
+        return Objects.requireNonNull(BY_ID.get(id), "Could not find trigger type with ID '" + id + "'");
+    }
+
+    public static void register(TriggerType trigger) {
+        BY_ID.put(trigger.name(), trigger);
+    }
+
+    public static Collection<TriggerType> values() {
+        return BY_ID.values();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TriggerType that = (TriggerType) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
