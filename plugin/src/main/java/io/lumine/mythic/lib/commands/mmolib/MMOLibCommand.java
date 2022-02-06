@@ -7,6 +7,7 @@ import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.skill.SimpleSkill;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
+import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -36,7 +37,7 @@ public class MMOLibCommand implements CommandExecutor {
                     sender.sendMessage("Could not find skill with ID '" + skillId + "'");
                 }
 
-                SimpleSkill castable = new SimpleSkill(handler);
+                SimpleSkill castable = new SimpleSkill(TriggerType.CAST, handler);
                 PlayerMetadata caster = MMOPlayerData.get((Player) sender).getStatMap().cache(EquipmentSlot.MAIN_HAND);
                 castable.cast(new TriggerMetadata(caster, null, null));
             }

@@ -1,6 +1,8 @@
 package io.lumine.mythic.lib.skill.trigger;
 
 import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.skill.handler.SkillHandler;
+import io.lumine.mythic.lib.skill.handler.def.passive.Backstab;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -136,19 +138,21 @@ public class TriggerType {
     TIMER,
 
     /**
-     * Called when a player casts a skill (e.g MMOCore skill
-     * casting system)
+     * Used when a player actively casts a skill (e.g MMOCore
+     * skill casting system). This is the only trigger type
+     * which you can use to create an active skill. Any other
+     * trigger type is used for passive skills.
      */
-    CAST = new TriggerType("CAST"),
+    CAST = new TriggerType("CAST", false, false),
 
     /**
-     * Should be used by plugins when skills get triggered by
-     * another cause not listed in {@link TriggerType}
+     * Should be used by plugins when passive skills get triggered by
+     * another cause not listed in {@link TriggerType}. This trigger
+     * type is used by any hard coded passive skills like {@link Backstab}.
+     *
+     * @see {@link SkillHandler#isTriggerable()}
      */
     API = new TriggerType("API");
-
-    private final String id;
-    private final boolean silent;
 
     private static final Map<String, TriggerType> BY_ID = new HashMap<>();
 
@@ -181,13 +185,29 @@ public class TriggerType {
         register(API);
     }
 
+    private final String id;
+    private final boolean silent, passive;
+
     public TriggerType(String id) {
         this(id, true);
     }
 
     public TriggerType(String id, boolean silent) {
+        this(id, silent, true);
+    }
+
+    /**
+     * This constructor is made private to make sure there is only
+     * one trigger type that generates active skills.
+     *
+     * @param id      The trigger type ID
+     * @param silent  Does this trigger type generate silent skills
+     * @param passive Does this trigger type generate passive skills
+     */
+    private TriggerType(String id, boolean silent, boolean passive) {
         this.id = id;
         this.silent = silent;
+        this.passive = passive;
     }
 
     /**
@@ -206,6 +226,18 @@ public class TriggerType {
      */
     public boolean isSilent() {
         return silent;
+    }
+
+    /**
+     * There are two types of passive skills:
+     * - hard coded passive skills which use the API trigger type
+     * - passive skills created using other skill plugins using
+     * any other trigger type apart from the CAST trigger type
+     *
+     * @return If this skill is passive
+     */
+    public boolean isPassive() {
+        return passive;
     }
 
     public String getName() {

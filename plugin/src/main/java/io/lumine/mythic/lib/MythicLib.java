@@ -86,7 +86,7 @@ public class MythicLib extends LuminePlugin {
      * and should not enable on server startup. This smoothly lets the
      * user know when they have to update their plugin builds.
      */
-    public static final int MMOITEMS_COMPATIBILITY_INDEX = 6;
+    public static final int MMOITEMS_COMPATIBILITY_INDEX = 7;
 
     /**
      * MMOCore has a similar public field. If these don't match
@@ -94,7 +94,7 @@ public class MythicLib extends LuminePlugin {
      * and should not enable on server startup. This smoothly lets the
      * user know when they have to update their plugin builds.
      */
-    public static final int MMOCORE_COMPATIBILITY_INDEX = 6;
+    public static final int MMOCORE_COMPATIBILITY_INDEX = 7;
 
     @Override
     public void load() {
@@ -119,14 +119,6 @@ public class MythicLib extends LuminePlugin {
 
     @Override
     public void enable() {
-
-        /*
-         * This method registers all TriggerTypes so they can be
-         * found by all other plugins and constants. Should be
-         * done before any files have a chance to load
-         */
-        SkillTriggers.initialize();
-
         registerCommand("mythiclib", new BaseCommand(this));
 
         new bStats(this);

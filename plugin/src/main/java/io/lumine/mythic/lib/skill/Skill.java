@@ -6,8 +6,11 @@ import io.lumine.mythic.lib.player.cooldown.CooldownObject;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.SkillResult;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
+import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 /**
  * Implemented by MMOItems abilities or MMOCore class skills.
@@ -19,6 +22,12 @@ import org.jetbrains.annotations.NotNull;
  * @author jules
  */
 public abstract class Skill implements CooldownObject {
+    private final TriggerType trigger;
+
+    public Skill(TriggerType trigger) {
+        this.trigger = Objects.requireNonNull(trigger, "Trigger cannot be null");
+    }
+
     public SkillResult cast(TriggerMetadata triggerMeta) {
         return cast(triggerMeta.toSkillMetadata(this));
     }
@@ -79,6 +88,18 @@ public abstract class Skill implements CooldownObject {
     public abstract void whenCast(SkillMetadata skillMeta);
 
     public abstract SkillHandler<?> getHandler();
+
+    /**
+     * This contains the following information:
+     * - whether or not the skill is active or passive
+     * - whether or not the skill is silent
+     *
+     * @return Context in which this skill is triggered
+     */
+    @NotNull
+    public TriggerType getTrigger() {
+        return trigger;
+    }
 
     public abstract double getModifier(String path);
 

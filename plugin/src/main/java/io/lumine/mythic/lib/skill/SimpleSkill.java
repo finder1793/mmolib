@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.skill;
 
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
+import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -15,7 +16,9 @@ public class SimpleSkill extends Skill {
     private final SkillHandler<?> handler;
     private final Map<String, Double> modifiers = new HashMap<>();
 
-    public SimpleSkill(SkillHandler<?> handler) {
+    public SimpleSkill(TriggerType trigger, SkillHandler<?> handler) {
+        super(trigger);
+
         this.handler = handler;
     }
 

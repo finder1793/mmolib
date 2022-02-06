@@ -18,12 +18,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.print.attribute.standard.MediaSize;
 import java.util.Objects;
 
 /**
- * There is one PassiveSkill instance per active/passive skill the player
- * has. A passive skill can be registered by MMOItems items or MMOCore
- * passive skills.
+ * There is one PassiveSkill instance per passive skill the player has.
+ * A passive skill can be registered by MMOItems items or MMOCore passive skills.
  * <p>
  * The distinction between active and passive skills is pretty vague.
  * <p>
@@ -31,6 +31,7 @@ import java.util.Objects;
  * we consider a skill that is cast when right clicking active (for
  * instance when holding an item) even though it's handled just like
  * an on-hit passive skill within MythicLib. It seems pretty confusing.
+ * <p>
  * It's better to consider ANY MMOITEMS SKILL to be passive and
  * distinguish silent from non-silent trigger types.
  * See {@link TriggerType#isSilent()}
@@ -39,6 +40,10 @@ import java.util.Objects;
  * Skills that are cast in MMOCore using the casting mode are also
  * active and any skill that has to be triggered is passive. It's
  * much less confusing in that context
+ * <p>
+ * Conclusion:
+ * The only active skills are the ones cast using MMOCore casting mode
+ * i.e using {@link TriggerType#CAST}; any other skill is passive.
  *
  * @author indyuce
  */
@@ -49,51 +54,41 @@ public class PassiveSkill extends PlayerModifier implements Openable, Closeable 
      */
     private final Skill triggered;
 
-    private final TriggerType type;
-
     /**
-     * Null when {@link #type} is not {@link TriggerType#TIMER}.
+     * Null when {@link #getType()} is not {@link TriggerType#TIMER}.
      */
     @Nullable
     private BukkitRunnable timerRunnable;
+
+    @Deprecated
+    public PassiveSkill(String key, TriggerType type, Skill triggered, EquipmentSlot equipmentSlot, ModifierSource modifierSource) {
+        this(key, triggered, equipmentSlot, modifierSource);
+    }
 
     /**
      * @param key            A key like 'item' or 'itemSet' indicating what is giving a triggered skill to the player.
      *                       There can be multiple skills with the same key, it's not a unique identifier.
      *                       It can be later used to isolate and unregister skills with a certain key.
-     * @param type           When that skill should trigger
      * @param triggered      The skill
      * @param equipmentSlot  The equipment slot granting this passive skill
      * @param modifierSource The source of the passive skill
      */
-    public PassiveSkill(String key, TriggerType type, Skill triggered, EquipmentSlot equipmentSlot, ModifierSource modifierSource) {
+    public PassiveSkill(String key, Skill triggered, EquipmentSlot equipmentSlot, ModifierSource modifierSource) {
         super(key, equipmentSlot, modifierSource);
 
-        this.type = type;
+        Validate.isTrue(triggered.getTrigger().isPassive(), "Skill is active");
         this.triggered = Objects.requireNonNull(triggered, "Skill cannot be null");
+    }
+
+    @Deprecated
+    public PassiveSkill(String key, TriggerType type, Skill triggered) {
+        this(key, triggered, EquipmentSlot.OTHER, ModifierSource.OTHER);
     }
 
     public PassiveSkill(ConfigObject obj) {
         super(obj.getString("key"), EquipmentSlot.OTHER, ModifierSource.OTHER);
 
-        triggered = new SimpleSkill(MythicLib.plugin.getSkills().getHandlerOrThrow(obj.getString("skill")));
-        type = triggered.getHandler().isTriggerable() ? TriggerType.valueOf(obj.getString("trigger").toUpperCase().replace(" ", "_").replace("-", "_")) : null;
-    }
-
-    /**
-     * @param key       A key like 'item' or 'itemSet' indicating what is giving a passive skill to the player.
-     *                  There can be multiple skills with the same key, it's not a unique identifier.
-     *                  It can be later used to isolate and unregister skills with a certain key.
-     * @param type      When that skill should trigger
-     * @param triggered The skill
-     * @deprecated Equipment slot and modifier source required in MythicLib 1.2+
-     */
-    @Deprecated
-    public PassiveSkill(String key, TriggerType type, Skill triggered) {
-        super(key, EquipmentSlot.OTHER, ModifierSource.OTHER);
-
-        this.type = type;
-        this.triggered = triggered;
+        triggered = new SimpleSkill(TriggerType.API, MythicLib.plugin.getSkills().getHandlerOrThrow(obj.getString("skill")));
     }
 
     @NotNull
@@ -101,9 +96,9 @@ public class PassiveSkill extends PlayerModifier implements Openable, Closeable 
         return triggered;
     }
 
-    @Nullable
+    @NotNull
     public TriggerType getType() {
-        return type;
+        return triggered.getTrigger();
     }
 
     @Override
@@ -118,7 +113,7 @@ public class PassiveSkill extends PlayerModifier implements Openable, Closeable 
 
     @Override
     public void open(MMOPlayerData playerData) {
-        if (type != TriggerType.TIMER)
+        if (getType() != TriggerType.TIMER)
             return;
 
         Validate.isTrue(timerRunnable == null, "Passive skill already opened");
@@ -135,7 +130,7 @@ public class PassiveSkill extends PlayerModifier implements Openable, Closeable 
 
     @Override
     public void close() {
-        if (type != TriggerType.TIMER)
+        if (getType() != TriggerType.TIMER)
             return;
 
         Validate.isTrue(timerRunnable.isCancelled(), "Passive skill already closed");
