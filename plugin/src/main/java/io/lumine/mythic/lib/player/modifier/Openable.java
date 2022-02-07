@@ -12,7 +12,9 @@ import io.lumine.mythic.lib.api.player.MMOPlayerData;
  * to initialize and start a bukkit task.
  *
  * @author jules
+ * @deprecated Not used anymore
  */
+@Deprecated
 public interface Openable {
 
     void open(MMOPlayerData player);

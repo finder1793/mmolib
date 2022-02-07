@@ -1,11 +1,14 @@
 package io.lumine.mythic.lib.player.skill;
 
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.player.modifier.Closeable;
 import io.lumine.mythic.lib.player.modifier.ModifierMap;
 import io.lumine.mythic.lib.player.modifier.Openable;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.handler.def.passive.Backstab;
+import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
+import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,6 +17,12 @@ import java.util.*;
 public class PassiveSkillMap implements ModifierMap<PassiveSkill> {
     private final MMOPlayerData playerData;
     private final Map<UUID, PassiveSkill> skills = new HashMap<>();
+
+    /**
+     * Key: skill handler identifier
+     * Value: last time that skill was cast due to a timer
+     */
+    private final Map<String, Long> lastCast = new HashMap<>();
 
     public PassiveSkillMap(MMOPlayerData playerData) {
         this.playerData = playerData;
@@ -34,8 +43,6 @@ public class PassiveSkillMap implements ModifierMap<PassiveSkill> {
     @Override
     public void addModifier(PassiveSkill skill) {
         skills.put(skill.getUniqueId(), skill);
-
-        skill.open(playerData);
     }
 
     /**
@@ -43,10 +50,7 @@ public class PassiveSkillMap implements ModifierMap<PassiveSkill> {
      */
     @Override
     public void removeModifier(UUID uuid) {
-        PassiveSkill skill = skills.remove(uuid);
-
-        if (skill != null)
-            skill.close();
+        skills.remove(uuid);
     }
 
     /**
@@ -59,11 +63,8 @@ public class PassiveSkillMap implements ModifierMap<PassiveSkill> {
         Iterator<PassiveSkill> iter = skills.values().iterator();
         while (iter.hasNext()) {
             PassiveSkill skill = iter.next();
-            if (skill.getKey().equals(key)) {
+            if (skill.getKey().equals(key))
                 iter.remove();
-                if (skill instanceof Closeable)
-                    ((Closeable) skill).close();
-            }
         }
     }
 
@@ -92,5 +93,33 @@ public class PassiveSkillMap implements ModifierMap<PassiveSkill> {
             if (handler.equals(passive.getTriggeredSkill().getHandler()))
                 return passive;
         return null;
+    }
+
+    /**
+     * Keep in mind this method is called 20 times a second for
+     * every player in the server. It's pretty important to have
+     * this method properly optimize and avoid things like useless
+     * map checkups
+     *
+     * @author jules
+     * @deprecated Pretty terrible implementation but without reworking
+     * the player inventory there is no other option available.
+     */
+    @Deprecated
+    public void tickTimerSkills() {
+
+        // Do not initialize triggerMeta unless absolutely necessary
+        TriggerMetadata triggerMeta = null;
+
+        for (PassiveSkill passive : skills.values())
+            if (passive.getType() == TriggerType.TIMER) {
+                String key = passive.getTriggeredSkill().getHandler().getId();
+                long lastCast = Objects.requireNonNullElse(this.lastCast.get(key), 0l); // Avoids one map checkup taking advantage of non null values
+                if (lastCast + passive.getTimerPeriod() > System.currentTimeMillis())
+                    continue;
+
+                this.lastCast.put(key, System.currentTimeMillis());
+                passive.getTriggeredSkill().cast(triggerMeta != null ? triggerMeta : (triggerMeta = new TriggerMetadata(getPlayerData().getStatMap().cache(EquipmentSlot.MAIN_HAND), null, null)));
+            }
     }
 }

@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class MMOPlayerData {
     private final UUID uuid;
@@ -306,6 +307,20 @@ public class MMOPlayerData {
      */
     public static Collection<MMOPlayerData> getLoaded() {
         return data.values();
+    }
+
+    /**
+     * Calls some method for every player online. Performance method
+     * to avoid useless list calculations since it is being used by
+     * MythicLib 20 times a second for every online player.
+     * <p>
+     * This method is more performant than the following code:
+     * <code>Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.get(player)......);</code>
+     */
+    public static void forEachOnline(Consumer<MMOPlayerData> action) {
+        for (MMOPlayerData registered : data.values())
+            if (registered.isOnline())
+                action.accept(registered);
     }
 
     @Override

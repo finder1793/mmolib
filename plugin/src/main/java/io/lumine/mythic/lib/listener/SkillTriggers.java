@@ -8,6 +8,7 @@ import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.util.ProjectileTrigger;
 import io.lumine.mythic.lib.comp.target.InteractionType;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
@@ -21,6 +22,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 public class SkillTriggers implements Listener {
+
+    public SkillTriggers() {
+        Bukkit.getScheduler().runTaskTimer(MythicLib.plugin, () -> MMOPlayerData.forEachOnline(online -> online.getPassiveSkillMap().tickTimerSkills()), 0, 1);
+    }
 
     @EventHandler
     public void killEntity(PlayerKillEntityEvent event) {
@@ -112,13 +117,13 @@ public class SkillTriggers implements Listener {
 
     /**
      * @implNote {@link Cancellable#isCancelled()} does not work with PlayerInteractEvent
-     *         because there are now two possible ways to cancel the event, either
-     *         by canceling the item interaction, either by canceling the block interaction.
-     *         <p>
-     *         Checking if the event is cancelled points towards the block interaction
-     *         and not the item interaction which is NOT what MythicLib is interested in
+     * because there are now two possible ways to cancel the event, either
+     * by canceling the item interaction, either by canceling the block interaction.
+     * <p>
+     * Checking if the event is cancelled points towards the block interaction
+     * and not the item interaction which is NOT what MythicLib is interested in
      * @implNote Scrap this, it's 100% useless to check if the event is cancelled.
-     *         It makes sense to trigger skills even if the item or block interactions are canceled
+     * It makes sense to trigger skills even if the item or block interactions are canceled
      */
     @EventHandler(priority = EventPriority.HIGH)
     public void click(PlayerInteractEvent event) {
@@ -134,7 +139,7 @@ public class SkillTriggers implements Listener {
 
     /**
      * @return Hand used to shoot a projectile (arrow/trident) based on
-     *         what items the player is holding in his two hands
+     * what items the player is holding in his two hands
      */
     private EquipmentSlot getShootHand(PlayerInventory inv) {
         ItemStack main = inv.getItemInMainHand();
