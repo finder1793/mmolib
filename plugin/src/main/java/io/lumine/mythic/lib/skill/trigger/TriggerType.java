@@ -135,7 +135,7 @@ public class TriggerType {
      * Casts the skill at regular time intervals. Timer period
      * can be edited using the corresponding skill modifier.
      */
-    TIMER,
+    TIMER = new TriggerType("TIMER"),
 
     /**
      * Used when a player actively casts a skill (e.g MMOCore
@@ -189,7 +189,7 @@ public class TriggerType {
     private final boolean silent, passive;
 
     public TriggerType(String id) {
-        this(id, true);
+        this(id, true, true);
     }
 
     public TriggerType(String id, boolean silent) {
