@@ -1,17 +1,14 @@
 package io.lumine.mythic.lib.skill.handler.def.target;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.damage.AttackMetadata;
-import io.lumine.mythic.lib.damage.DamageMetadata;
+import io.lumine.mythic.lib.comp.target.InteractionType;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
-import io.lumine.mythic.lib.skill.handler.SkillHandlerInfo;
 import io.lumine.mythic.lib.skill.result.def.TargetSkillResult;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class Combo_Attack extends SkillHandler<TargetSkillResult> {
@@ -23,7 +20,7 @@ public class Combo_Attack extends SkillHandler<TargetSkillResult> {
 
     @Override
     public TargetSkillResult getResult(SkillMetadata meta) {
-        return new TargetSkillResult(meta);
+        return new TargetSkillResult(meta, 10, InteractionType.OFFENSE_SKILL);
     }
 
     @Override
