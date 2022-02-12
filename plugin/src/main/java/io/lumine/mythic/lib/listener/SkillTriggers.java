@@ -114,8 +114,10 @@ public class SkillTriggers implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void sneak(PlayerToggleSneakEvent event) {
-        MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
-        caster.triggerSkills(TriggerType.SNEAK, null);
+        if (event.isSneaking()) {
+            MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
+            caster.triggerSkills(TriggerType.SNEAK, null);
+        }
     }
 
     /**
@@ -144,7 +146,7 @@ public class SkillTriggers implements Listener {
 
     /**
      * @return Hand used to shoot a projectile (arrow/trident) based on
-     * what items the player is holding in his two hands
+     *         what items the player is holding in his two hands
      */
     private EquipmentSlot getShootHand(PlayerInventory inv) {
         ItemStack main = inv.getItemInMainHand();
