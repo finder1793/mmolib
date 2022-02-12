@@ -293,6 +293,13 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
+
+        <dependency>
+            <groupId>com.gmail.nossr50</groupId>
+            <artifactId>mcMMO</artifactId>
+            <version>2.1.104</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>com.Zrips</groupId>
             <artifactId>CMILib</artifactId>

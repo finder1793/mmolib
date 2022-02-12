@@ -12,6 +12,7 @@ import io.lumine.mythic.lib.commands.mmolib.ExploreAttributesCommand;
 import io.lumine.mythic.lib.commands.mmolib.MMODebugCommand;
 import io.lumine.mythic.lib.commands.mmolib.MMOLibCommand;
 import io.lumine.mythic.lib.commands.mmolib.MMOTempStatCommand;
+import io.lumine.mythic.lib.comp.McMMODamageHandler;
 import io.lumine.mythic.lib.comp.anticheat.AntiCheatSupport;
 import io.lumine.mythic.lib.comp.anticheat.SpartanPlugin;
 import io.lumine.mythic.lib.comp.flags.DefaultFlagHandler;
@@ -197,6 +198,11 @@ public class MythicLib extends LuminePlugin {
             if (getConfig().getBoolean("damage-particles-cap.enabled"))
                 new DamageParticleCap(getConfig().getInt("damage-particles-cap.max-per-tick"));
             getLogger().log(Level.INFO, "Hooked onto ProtocolLib");
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("mcMMO") != null) {
+            getDamage().registerHandler(new McMMODamageHandler());
+            getLogger().log(Level.INFO, "Hooked onto mcMMO");
         }
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
