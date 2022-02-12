@@ -219,7 +219,7 @@ public class MMODebugCommand implements CommandExecutor {
             JsonObject modifiers = new JsonObject();
             for (String key : stat.getKeys()) {
                 JsonObject mod = new JsonObject();
-                StatModifier modifier = stat.getAttribute(key);
+                StatModifier modifier = stat.getModifier(key);
                 mod.addProperty("value", modifier.getValue());
                 mod.addProperty("type", modifier.getType().name());
                 modifiers.add(key, mod);
