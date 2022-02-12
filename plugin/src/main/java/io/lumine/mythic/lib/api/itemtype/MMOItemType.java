@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.api.itemtype;
 
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import org.bukkit.inventory.ItemStack;
 
@@ -9,8 +10,8 @@ public class MMOItemType implements ItemType {
     private final String type, id;
 
     public MMOItemType(String type, String id) {
-        this.type = Objects.requireNonNull(type, "Type cannot be null");
-        this.id = Objects.requireNonNull(id, "ID cannot be null");
+        this.type = Objects.requireNonNull(UtilityMethods.enumName(type), "Type cannot be null");
+        this.id = Objects.requireNonNull(UtilityMethods.enumName(id), "ID cannot be null");
     }
 
     @Override
