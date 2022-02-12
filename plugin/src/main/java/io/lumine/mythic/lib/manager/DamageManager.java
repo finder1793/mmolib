@@ -1,22 +1,23 @@
 package io.lumine.mythic.lib.manager;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.damage.AttackMetadata;
-import io.lumine.mythic.lib.damage.DamageMetadata;
-import io.lumine.mythic.lib.damage.AttackHandler;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.damage.AttackHandler;
+import io.lumine.mythic.lib.damage.AttackMetadata;
+import io.lumine.mythic.lib.damage.DamageMetadata;
 import org.apache.commons.lang.Validate;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -40,17 +41,14 @@ public class DamageManager implements Listener, AttackHandler {
      */
     public void registerHandler(AttackHandler handler) {
         Validate.notNull(handler, "Damage handler cannot be null");
+
         handlers.add(handler);
     }
 
     @Override
-    public boolean isAttacked(Entity entity) {
-        return customDamage.containsKey(entity.getEntityId());
-    }
-
-    @Override
-    public AttackMetadata getAttack(Entity entity) {
-        return customDamage.get(entity.getEntityId());
+    @Nullable
+    public AttackMetadata getAttack(EntityDamageEvent event) {
+        return customDamage.get(event.getEntity().getEntityId());
     }
 
     /**
@@ -107,9 +105,9 @@ public class DamageManager implements Listener, AttackHandler {
     /**
      * Forces a player to damage an entity.
      *
-     * @param metadata  The class containing all info about the current attack
-     * @param target    The entity being damaged
-     * @param knockback If the attack should deal knockback
+     * @param metadata       The class containing all info about the current attack
+     * @param target         The entity being damaged
+     * @param knockback      If the attack should deal knockback
      * @param ignoreImmunity The attack will not produce immunity frames.
      */
     public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target, boolean knockback, boolean ignoreImmunity) {
@@ -144,15 +142,18 @@ public class DamageManager implements Listener, AttackHandler {
     }
 
     /**
-     * @param entity The entity to check
+     * @param event Damage event.
      * @return Null if the entity is being damaged through vanilla
      *         actions, or the corresponding RegisteredAttack if MythicLib
      *         found a plugin responsible for that damage
      */
-    public AttackMetadata findInfo(Entity entity) {
-        for (AttackHandler handler : handlers)
-            if (handler.isAttacked(entity))
-                return handler.getAttack(entity);
+    @Nullable
+    public AttackMetadata findInfo(EntityDamageEvent event) {
+        for (AttackHandler handler : handlers) {
+            AttackMetadata found = handler.getAttack(event);
+            if (found != null)
+                return found;
+        }
         return null;
     }
 

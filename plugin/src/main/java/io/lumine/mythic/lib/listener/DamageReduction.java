@@ -34,7 +34,7 @@ public class DamageReduction implements Listener {
 
         // Get sweet data
         MMOPlayerData data = MMOPlayerData.get((OfflinePlayer) event.getEntity());
-        AttackMetadata attackMeta = MythicLib.plugin.getDamage().findInfo(event.getEntity());
+        AttackMetadata attackMeta = MythicLib.plugin.getDamage().findInfo(event);
         DamageMetadata damageMeta = attackMeta == null ? new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL) : attackMeta.getDamage();
 
         // Applies specific damage reduction

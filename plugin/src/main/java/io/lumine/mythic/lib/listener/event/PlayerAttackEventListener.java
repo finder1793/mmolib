@@ -91,7 +91,7 @@ public class PlayerAttackEventListener implements Listener {
          * Checks in the MythicLib registered attack. This is used by MMOItems skills,
          * MMOCore skills, or any other plugin that implement MythicLib compatibility.
          */
-        AttackMetadata custom = MythicLib.plugin.getDamage().findInfo(event.getEntity());
+        AttackMetadata custom = MythicLib.plugin.getDamage().findInfo(event);
         if (custom != null)
             return custom;
 
