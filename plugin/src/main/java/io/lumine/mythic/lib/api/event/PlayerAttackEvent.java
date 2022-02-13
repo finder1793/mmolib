@@ -1,6 +1,5 @@
 package io.lumine.mythic.lib.api.event;
 
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import org.bukkit.entity.LivingEntity;
@@ -17,12 +16,11 @@ public class PlayerAttackEvent extends MMOPlayerDataEvent implements Cancellable
     /**
      * Called whenever a player deals damage to another entity.
      *
-     * @param data   the MMOPlayerData of the player damager
      * @param event  The corresponding damage event
      * @param attack The generated attack result which can be edited
      */
-    public PlayerAttackEvent(MMOPlayerData data, EntityDamageByEntityEvent event, AttackMetadata attack) {
-        super(data);
+    public PlayerAttackEvent(EntityDamageByEntityEvent event, AttackMetadata attack) {
+        super(attack.getData());
 
         this.event = event;
         this.attack = attack;

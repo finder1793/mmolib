@@ -63,8 +63,7 @@ public class PlayerAttackEventListener implements Listener {
         /*
          * Call the Bukkit event with the attack meta found
          */
-        MMOPlayerData playerData = MMOPlayerData.get(attack.getPlayer());
-        PlayerAttackEvent attackEvent = new PlayerAttackEvent(playerData, event, attack);
+        PlayerAttackEvent attackEvent = new PlayerAttackEvent(event, attack);
         Bukkit.getPluginManager().callEvent(attackEvent);
         if (attackEvent.isCancelled())
             return;
@@ -75,7 +74,7 @@ public class PlayerAttackEventListener implements Listener {
          * Call the death event if the entity is being killed
          */
         if (event.getFinalDamage() >= ((Damageable) event.getEntity()).getHealth())
-            Bukkit.getPluginManager().callEvent(new PlayerKillEntityEvent(playerData, attack, (LivingEntity) event.getEntity()));
+            Bukkit.getPluginManager().callEvent(new PlayerKillEntityEvent(attack, (LivingEntity) event.getEntity()));
     }
 
     /**
