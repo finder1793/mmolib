@@ -409,14 +409,7 @@ public class SkillManager {
             FileConfiguration config = YamlConfiguration.loadConfiguration(file);
             for (String key : config.getKeys(false))
                 try {
-                    ConfigurationSection section = config.getConfigurationSection(key);
-                    if (section == null) {
-                        continue;
-                    }
-
-                    // Register skill
-                    registerCustomSkill(new CustomSkill(section));
-
+                    registerCustomSkill(new CustomSkill(Objects.requireNonNull(config.getConfigurationSection(key), "Config is null")));
                 } catch (RuntimeException exception) {
                     MythicLib.plugin.getLogger().log(Level.WARNING, "Could not initialize custom skill '" + key + "' from '" + file.getName() + "': " + exception.getMessage());
                 }
@@ -429,7 +422,6 @@ public class SkillManager {
                 skill.postLoad();
                 if (skill.isPublic())
                     registerSkillHandler(new MythicLibSkillHandler(skill));
-
             } catch (RuntimeException exception) {
                 MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill '" + skill.getId() + "': " + exception.getMessage());
             }
@@ -437,35 +429,7 @@ public class SkillManager {
         // Load skills
         RecursiveFolderExplorer explorer = new RecursiveFolderExplorer(file -> {
             try {
-
-                try {
-
-                    // Attempt to load as normal section
-                    registerSkillHandler(loadSkillHandler(YamlConfiguration.loadConfiguration(file)));
-
-                } catch (IllegalArgumentException | IllegalStateException e) {
-
-                    // Attempt to parse every key I guess
-                    ConfigurationSection config = YamlConfiguration.loadConfiguration(file);
-                    for (String key : config.getKeys(false)) {
-
-                        // Get as configuration section
-                        ConfigurationSection section = config.getConfigurationSection(key);
-                        if (section == null) {
-                            continue;
-                        }
-
-                        try {
-
-                            // Attempt to load as normal section
-                            registerSkillHandler(loadSkillHandler(section));
-
-                        } catch (IllegalArgumentException | IllegalStateException exception) {
-                            MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill '" + section.getName() + "' from '" + file.getName() + "': " + exception.getMessage());
-                        }
-                    }
-                }
-
+                registerSkillHandler(loadSkillHandler(YamlConfiguration.loadConfiguration(file)));
             } catch (RuntimeException exception) {
                 MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill from '" + file.getName() + "': " + exception.getMessage());
             }
