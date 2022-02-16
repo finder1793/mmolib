@@ -100,7 +100,8 @@ public class TemporaryPlayerData {
     }
 
     public double getDouble(String key) {
-        return (double) data.get(key);
+        Object value = data.get(key);
+        return value == null ? 0 : (double) value;
     }
 
     public void set(String key, Object obj) {
