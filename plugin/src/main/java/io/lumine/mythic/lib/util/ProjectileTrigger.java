@@ -73,7 +73,7 @@ public class ProjectileTrigger extends TemporaryListener {
         runnable = new BukkitRunnable() {
             @Override
             public void run() {
-                caster.triggerSkills(projectileType.getTickTrigger(), clearAttackMetadata(), projectile, cachedSkills);
+                caster.triggerSkills(projectileType.getTickTrigger(), attacker, null, projectile, cachedSkills);
             }
         };
         runnable.runTaskTimer(MythicLib.plugin, 0, 1);
@@ -110,7 +110,7 @@ public class ProjectileTrigger extends TemporaryListener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void triggerHit(PlayerAttackEvent event) {
         if (event.getAttack() instanceof ProjectileAttackMetadata && ((ProjectileAttackMetadata) event.getAttack()).getProjectile().getEntityId() == entityId)
-            caster.triggerSkills(projectileType.getHitTrigger(), event.getAttack(), event.getEntity(), cachedSkills);
+            caster.triggerSkills(projectileType.getHitTrigger(), attacker, event.getAttack(), event.getEntity(), cachedSkills);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -118,7 +118,7 @@ public class ProjectileTrigger extends TemporaryListener {
 
         // Make sure the projectile landed on a block
         if (event.getHitBlock() != null && event.getEntity().getEntityId() == entityId)
-            caster.triggerSkills(projectileType.getLandTrigger(), clearAttackMetadata(), event.getEntity(), cachedSkills);
+            caster.triggerSkills(projectileType.getLandTrigger(), attacker, null, event.getEntity(), cachedSkills);
     }
 
     @EventHandler
@@ -138,15 +138,11 @@ public class ProjectileTrigger extends TemporaryListener {
         runnable.cancel();
     }
 
-    private AttackMetadata clearAttackMetadata() {
-        return new AttackMetadata(new DamageMetadata(), attacker);
-    }
-
     public enum ProjectileType {
         ARROW,
         TRIDENT;
 
-        @NotNull private final TriggerType tick, hit, land;
+        private final TriggerType tick, hit, land;
 
         ProjectileType() {
             tick = new TriggerType(name() + "_TICK");
@@ -154,15 +150,15 @@ public class ProjectileTrigger extends TemporaryListener {
             land = new TriggerType(name() + "_LAND");
         }
 
-        @NotNull public TriggerType getTickTrigger() {
+        public TriggerType getTickTrigger() {
             return tick;
         }
 
-        @NotNull public TriggerType getHitTrigger() {
+        public TriggerType getHitTrigger() {
             return hit;
         }
 
-        @NotNull public TriggerType getLandTrigger() {
+        public TriggerType getLandTrigger() {
             return land;
         }
     }

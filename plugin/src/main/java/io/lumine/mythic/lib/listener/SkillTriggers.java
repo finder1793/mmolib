@@ -76,28 +76,13 @@ public class SkillTriggers implements Listener {
     private void shootBow(EntityShootBowEvent event) {
         if (event.getEntity() instanceof Player && MMOPlayerData.has(event.getEntity().getUniqueId())) {
             MMOPlayerData caster = MMOPlayerData.get(event.getEntity().getUniqueId());
-
-            if (!syncInfiniteRecursionBlock) {
-
-                // Trigger skills only if not within a stacked call
-                syncInfiniteRecursionBlock = true;
-                caster.triggerSkills(TriggerType.SHOOT_BOW, event.getProjectile());
-                syncInfiniteRecursionBlock = false;
-            }
+            caster.triggerSkills(TriggerType.SHOOT_BOW, event.getProjectile());
 
             // Register a runnable to trigger projectile skills
             EquipmentSlot hand = getShootHand(((Player) event.getEntity()).getInventory());
             new ProjectileTrigger(caster, ProjectileTrigger.ProjectileType.ARROW, event.getProjectile(), hand);
         }
     }
-
-    /*
-     * Its pretty funny when a bow skill can trigger another bow
-     * and it causes the bow to fire again at 0 cooldown but uuuh
-     * yeah this should do the trick to prevent this from feeding
-     * itself forever.
-     */
-    static boolean syncInfiniteRecursionBlock = false;
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void shootTrident(ProjectileLaunchEvent event) {

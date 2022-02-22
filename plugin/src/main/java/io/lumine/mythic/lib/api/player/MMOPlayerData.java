@@ -111,7 +111,7 @@ public class MMOPlayerData {
      * @param target      The potential target to cast the skill onto
      */
     public void triggerSkills(TriggerType triggerType, @Nullable Entity target) {
-        triggerSkills(triggerType, null, target);
+        triggerSkills(triggerType, statMap.cache(EquipmentSlot.MAIN_HAND), null, target, passiveSkillMap.getModifiers());
     }
 
     /**
@@ -121,23 +121,26 @@ public class MMOPlayerData {
      * @param target         The potential target to cast the skill onto
      * @param attackMetadata The attack being performed
      */
-    public void triggerSkills(TriggerType triggerType, @Nullable AttackMetadata attackMetadata, @Nullable Entity target) {
-        triggerSkills(triggerType, attackMetadata, target, passiveSkillMap.getModifiers());
+    public void triggerSkills(TriggerType triggerType, @NotNull AttackMetadata attackMetadata, @Nullable Entity target) {
+        Validate.notNull(attackMetadata, "Attack meta cannot be null");
+        triggerSkills(triggerType, attackMetadata, attackMetadata, target, passiveSkillMap.getModifiers());
     }
 
     /**
      * Trigger a specific set of skills, with an attack metadata.
+     * You can also provide the player statistics used to cast the skills
+     * which is for instance used for projectile trigger types.
      *
      * @param triggerType    Action performed to trigger the skills
+     * @param caster         The player cached statistics
      * @param target         The potential target to cast the skill onto
      * @param attackMetadata The attack being performed
      * @param skills         The list of skills currently active for the player
      */
-    public void triggerSkills(TriggerType triggerType, @Nullable AttackMetadata attackMetadata, @Nullable Entity target, @NotNull Collection<PassiveSkill> skills) {
+    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable AttackMetadata attackMetadata, @Nullable Entity target, @NotNull Collection<PassiveSkill> skills) {
         if (!MythicLib.plugin.getFlags().isFlagAllowed(getPlayer(), CustomFlag.MMO_ABILITIES))
             return;
 
-        PlayerMetadata caster = attackMetadata == null ? statMap.cache(EquipmentSlot.MAIN_HAND) : attackMetadata;
         TriggerMetadata triggerMeta = new TriggerMetadata(caster, attackMetadata, target);
 
         for (PassiveSkill skill : skills) {
