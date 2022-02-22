@@ -2,13 +2,13 @@ package io.lumine.mythic.lib.skill.handler.def.simple;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.api.MMORayTraceResult;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
+import io.lumine.mythic.lib.util.RayTrace;
 import io.lumine.mythic.lib.version.VersionSound;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -79,10 +79,10 @@ public class Fireball extends SkillHandler<SimpleSkillResult> {
                                 Vector dir = randomDirection();
                                 loc.getWorld().playSound(loc, Sound.ENTITY_BLAZE_HURT, 2, 1.5f);
 
-                                MMORayTraceResult result = MythicLib.plugin.getVersion().getWrapper().rayTrace(loc, dir, range, entity -> UtilityMethods.canTarget(caster, entity));
+                                RayTrace result = new RayTrace(loc, dir, range, entity -> UtilityMethods.canTarget(caster, entity));
                                 if (result.hasHit())
                                     new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.PROJECTILE, DamageType.MAGIC), skillMeta.getCaster()).damage(result.getHit());
-                                result.draw(loc.clone(), dir, 8, tick -> tick.getWorld().spawnParticle(Particle.FLAME, tick, 0));
+                                result.draw(.13, tick -> tick.getWorld().spawnParticle(Particle.FLAME, tick, 0));
 
                             }
                         }.runTaskTimer(MythicLib.plugin, 3, 3);

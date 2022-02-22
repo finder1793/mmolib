@@ -10,9 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Consumer;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
+import javax.annotation.Nullable;
 import java.util.function.Predicate;
 
 public class RayTrace {
@@ -60,9 +59,9 @@ public class RayTrace {
         return hitEntity != null;
     }
 
-    @NotNull
-    public Entity getHit() {
-        return Objects.requireNonNull(hitEntity, "Did not hit any entity");
+    @Nullable
+    public LivingEntity getHit() {
+        return hitEntity;
     }
 
     public double getDistanceTraveled() {
