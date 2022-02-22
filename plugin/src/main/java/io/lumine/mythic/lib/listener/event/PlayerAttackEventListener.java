@@ -6,6 +6,7 @@ import io.lumine.mythic.lib.api.event.PlayerKillEntityEvent;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.damage.*;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Damageable;
@@ -123,10 +124,7 @@ public class PlayerAttackEventListener implements Listener {
         if (event.getDamager() instanceof Projectile) {
             Projectile projectile = (Projectile) event.getDamager();
             ProjectileSource source = projectile.getShooter();
-            if (source == null)
-                return null;
-
-            if (!source.equals(event.getEntity()) && isValidPlayer(source))
+            if (source != null && !source.equals(event.getEntity()) && isValidPlayer(source))
                 return new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
                         MMOPlayerData.get((Player) source).getStatMap().cache(EquipmentSlot.MAIN_HAND), projectile);
         }
@@ -146,13 +144,12 @@ public class PlayerAttackEventListener implements Listener {
      * @return The damage types of a vanilla melee entity attack
      */
     private DamageType[] getDamageTypes(EntityDamageByEntityEvent event) {
+        Validate.isTrue(event.getDamager() instanceof LivingEntity, "Not an entity attack");
 
         // Physical attack with bare fists.
-        if (event.getDamager() instanceof LivingEntity) {
-            LivingEntity damager = (LivingEntity) event.getDamager();
-            if (isAir(damager.getEquipment().getItemInMainHand()))
-                return new DamageType[]{DamageType.UNARMED, DamageType.PHYSICAL};
-        }
+        LivingEntity damager = (LivingEntity) event.getDamager();
+        if (isAir(damager.getEquipment().getItemInMainHand()))
+            return new DamageType[]{DamageType.UNARMED, DamageType.PHYSICAL};
 
         // By default a physical attack is a weapon-physical attack
         return new DamageType[]{DamageType.WEAPON, DamageType.PHYSICAL};
