@@ -7,6 +7,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Consumer;
 import org.bukkit.util.Vector;
 
+@Deprecated
 public class MMORayTraceResult {
     private final LivingEntity entity;
     private final double range;

@@ -25,14 +25,17 @@ public interface VersionWrapper {
 
     FurnaceRecipe getFurnaceRecipe(String path, ItemStack item, Material material, float exp, int cook);
 
+    @Deprecated
     default MMORayTraceResult rayTrace(Player player, double range, Predicate<Entity> predicate) {
         return rayTrace(player.getEyeLocation(), player.getEyeLocation().getDirection(), range, predicate);
     }
 
+    @Deprecated
     default MMORayTraceResult rayTrace(Player player, Vector direction, double range, Predicate<Entity> predicate) {
         return rayTrace(player.getEyeLocation(), direction, range, predicate);
     }
 
+    @Deprecated
     MMORayTraceResult rayTrace(Location loc, Vector direction, double range, Predicate<Entity> predicate);
 
     /*
