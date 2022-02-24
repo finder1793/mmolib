@@ -237,6 +237,9 @@ public class StatInstance {
             }
         }
 
+        /**
+         * Only runs an update if absolutely necessary
+         */
         public void runUpdate() {
             if (updateRequired)
                 MythicLib.plugin.getStats().runUpdate(map, stat);
