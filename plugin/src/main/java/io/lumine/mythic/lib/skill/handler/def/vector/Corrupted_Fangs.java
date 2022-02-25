@@ -4,6 +4,9 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.util.TemporaryListener;
 import io.lumine.mythic.lib.damage.AttackMetadata;
+import io.lumine.mythic.lib.damage.DamageMetadata;
+import io.lumine.mythic.lib.damage.DamageType;
+import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.VectorSkillResult;
@@ -14,6 +17,7 @@ import org.bukkit.entity.EvokerFangs;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -41,7 +45,7 @@ public class Corrupted_Fangs extends SkillHandler<VectorSkillResult> {
         new BukkitRunnable() {
             final Vector vec = result.getTarget().setY(0).multiply(2);
             final Location loc = caster.getLocation();
-            final FangsHandler handler = new FangsHandler(skillMeta.getAttack(), skillMeta.getModifier("damage"));
+            final FangsHandler handler = new FangsHandler(skillMeta.getCaster(), skillMeta.getModifier("damage"));
             final double fangAmount = skillMeta.getModifier("fangs");
             double ti = 0;
 
@@ -61,23 +65,27 @@ public class Corrupted_Fangs extends SkillHandler<VectorSkillResult> {
 
     public class FangsHandler extends TemporaryListener {
         private final Set<Integer> entities = new HashSet<>();
-        private final AttackMetadata attackMeta;
-        private final double damage;
+        private final PlayerMetadata caster;
+        private final double skillDamage;
 
-        public FangsHandler(AttackMetadata attackMeta, double damage) {
+        public FangsHandler(PlayerMetadata caster, double skillDamage) {
             super(EntityDamageByEntityEvent.getHandlerList());
 
-            this.attackMeta = attackMeta;
-            this.damage = damage;
+            this.caster = caster;
+            this.skillDamage = skillDamage;
         }
 
-        @EventHandler
+        private AttackMetadata newAttackMeta() {
+            return new AttackMetadata(new DamageMetadata(skillDamage, DamageType.MAGIC, DamageType.SKILL), caster);
+        }
+
+        @EventHandler(priority = EventPriority.LOWEST)
         public void a(EntityDamageByEntityEvent event) {
             if (event.getDamager() instanceof EvokerFangs && entities.contains(event.getDamager().getEntityId())) {
                 event.setCancelled(true);
 
-                if (UtilityMethods.canTarget(attackMeta.getPlayer(), event.getEntity()))
-                    attackMeta.damage((LivingEntity) event.getEntity());
+                if (UtilityMethods.canTarget(caster.getPlayer(), event.getEntity()))
+                    newAttackMeta().damage((LivingEntity) event.getEntity());
             }
         }
 
