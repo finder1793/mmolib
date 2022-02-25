@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.commands.mmolib;
+package io.lumine.mythic.lib.command.mythiclib;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -9,6 +9,7 @@ import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatInstance;
 import io.lumine.mythic.lib.api.stat.modifier.StatModifier;
 import io.lumine.mythic.lib.api.util.NBTTypeHelper;
+import io.lumine.mythic.lib.command.api.CommandTreeNode;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -17,8 +18,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -36,53 +35,60 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.Scanner;
 
-public class MMODebugCommand implements CommandExecutor {
+public class DebugCommand extends CommandTreeNode {
+    public DebugCommand(CommandTreeNode parent) {
+        super(parent, "debug");
+    }
+
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(args.length < 1) sender.sendMessage(ChatColor.RED + "Not enough args.");
-        else {
-            switch(args[0]) {
-                case "nbt":
-                    if (!(sender instanceof Player))
-                        sender.sendMessage(ChatColor.RED + "You can only run this as a player");
-                    else debugNBT(sender);
-                    break;
-                case "stats":
-                    if (!(sender instanceof Player))
-                        sender.sendMessage(ChatColor.RED + "You can only run this as a player");
-                    else debugStats(sender);
-                    break;
-                case "log":
-                    debugLog(sender);
-                    break;
-                case "versions":
-                    debugVersions(sender);
-                    break;
-                default:
-                    sender.sendMessage(ChatColor.RED + "Unknown command.");
-                    break;
-            }
+    public CommandResult execute(CommandSender sender, String[] args) {
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.RED + "> Usage: /mythiclib debug <nbt/stats/log/versions>");
+            return CommandResult.FAILURE;
         }
-        return true;
+
+        switch (args[1]) {
+            case "nbt":
+                if (!(sender instanceof Player))
+                    sender.sendMessage(ChatColor.RED + "You can only run this as a player");
+                else debugNBT(sender);
+                break;
+            case "stats":
+                if (!(sender instanceof Player))
+                    sender.sendMessage(ChatColor.RED + "You can only run this as a player");
+                else debugStats(sender);
+                break;
+            case "log":
+                debugLog(sender);
+                break;
+            case "versions":
+                debugVersions(sender);
+                break;
+            default:
+                sender.sendMessage(ChatColor.RED + "Unknown command.");
+                break;
+        }
+
+        return CommandResult.SUCCESS;
     }
 
     private void debugNBT(CommandSender sender) {
         Player player = (Player) sender;
         JsonObject inventory = new JsonObject();
-        if(isValid(player.getEquipment().getItemInMainHand()))
+        if (isValid(player.getEquipment().getItemInMainHand()))
             inventory.add("mainhand", fromNBT(NBTItem.get(player.getEquipment().getItemInMainHand())));
-        if(isValid(player.getEquipment().getItemInOffHand()))
+        if (isValid(player.getEquipment().getItemInOffHand()))
             inventory.add("offhand", fromNBT(NBTItem.get(player.getEquipment().getItemInOffHand())));
-        if(isValid(player.getEquipment().getHelmet()))
+        if (isValid(player.getEquipment().getHelmet()))
             inventory.add("helmet", fromNBT(NBTItem.get(player.getEquipment().getHelmet())));
-        if(isValid(player.getEquipment().getChestplate()))
+        if (isValid(player.getEquipment().getChestplate()))
             inventory.add("chest", fromNBT(NBTItem.get(player.getEquipment().getChestplate())));
-        if(isValid(player.getEquipment().getLeggings()))
+        if (isValid(player.getEquipment().getLeggings()))
             inventory.add("legs", fromNBT(NBTItem.get(player.getEquipment().getLeggings())));
-        if(isValid(player.getEquipment().getBoots()))
+        if (isValid(player.getEquipment().getBoots()))
             inventory.add("boots", fromNBT(NBTItem.get(player.getEquipment().getBoots())));
 
-        if(inventory.size() == 0) sender.sendMessage(ChatColor.RED + "No NBT items found");
+        if (inventory.size() == 0) sender.sendMessage(ChatColor.RED + "No NBT items found");
         //else sender.spigot().sendMessage(upload(MythicLib.plugin.getJson().toString(inventory)));
         //TODO make the above line work
         sender.sendMessage("Command is currently under maintenance.");
@@ -90,13 +96,13 @@ public class MMODebugCommand implements CommandExecutor {
 
     private JsonObject fromNBT(NBTItem nbt) {
         JsonObject data = new JsonObject();
-        for(String tag : nbt.getTags()) {
+        for (String tag : nbt.getTags()) {
             final int typeId = nbt.getTypeId(tag);
-            if(NBTTypeHelper.COMPOUND.is(typeId))
+            if (NBTTypeHelper.COMPOUND.is(typeId))
                 data.add(tag, fromCompound(nbt.getNBTCompound(tag)));
             else {
                 JsonObject nbtData = new JsonObject();
-                switch(typeId) {
+                switch (typeId) {
                     case 0:
                         data.addProperty(tag, "END");
                         break;
@@ -119,29 +125,29 @@ public class MMODebugCommand implements CommandExecutor {
                     case 8:
                         try {
                             JsonElement json = MythicLib.plugin.getJson().parse(nbt.get(tag).toString(), JsonElement.class);
-                            if(json.isJsonNull()) nbtData.add("null_string", json.getAsJsonNull());
-                            else if(json.isJsonPrimitive()) nbtData.add("string", json.getAsJsonPrimitive());
-                            else if(json.isJsonArray()) nbtData.add("string_list", json.getAsJsonArray());
-                            else if(json.isJsonObject()) nbtData.add("string_object", json.getAsJsonObject());
-                        } catch(Exception e) {
+                            if (json.isJsonNull()) nbtData.add("null_string", json.getAsJsonNull());
+                            else if (json.isJsonPrimitive()) nbtData.add("string", json.getAsJsonPrimitive());
+                            else if (json.isJsonArray()) nbtData.add("string_list", json.getAsJsonArray());
+                            else if (json.isJsonObject()) nbtData.add("string_object", json.getAsJsonObject());
+                        } catch (Exception e) {
                             nbtData.addProperty("string", nbt.getString(tag));
                         }
                         break;
                     case 9:
                         try {
                             JsonElement json = MythicLib.plugin.getJson().parse(nbt.get(tag).toString(), JsonElement.class);
-                            if(json.isJsonNull()) nbtData.add("null_list", json.getAsJsonNull());
-                            else if(json.isJsonPrimitive()) nbtData.add("primitive_list", json.getAsJsonPrimitive());
-                            else if(json.isJsonArray()) nbtData.add("array_list", json.getAsJsonArray());
-                            else if(json.isJsonObject()) nbtData.add("object_list", json.getAsJsonObject());
-                        } catch(Exception e) {
+                            if (json.isJsonNull()) nbtData.add("null_list", json.getAsJsonNull());
+                            else if (json.isJsonPrimitive()) nbtData.add("primitive_list", json.getAsJsonPrimitive());
+                            else if (json.isJsonArray()) nbtData.add("array_list", json.getAsJsonArray());
+                            else if (json.isJsonObject()) nbtData.add("object_list", json.getAsJsonObject());
+                        } catch (Exception e) {
                             nbtData.addProperty("unparsable_list", nbt.get(tag).toString());
                         }
                         break;
                     default:
                         nbtData.addProperty("unknown", nbt.get(tag).toString());
                 }
-                if(nbtData.size() != 0) {
+                if (nbtData.size() != 0) {
                     nbtData.addProperty("typeid", typeId);
                     data.add(tag, nbtData);
                 }
@@ -152,13 +158,13 @@ public class MMODebugCommand implements CommandExecutor {
 
     private JsonObject fromCompound(NBTCompound compound) {
         JsonObject data = new JsonObject();
-        for(String tag : compound.getTags()) {
+        for (String tag : compound.getTags()) {
             final int typeId = compound.getTypeId(tag);
-            if(NBTTypeHelper.COMPOUND.is(typeId))
+            if (NBTTypeHelper.COMPOUND.is(typeId))
                 data.add(tag, fromCompound(compound.getNBTCompound(tag)));
             else {
                 JsonObject nbtData = new JsonObject();
-                switch(typeId) {
+                switch (typeId) {
                     case 0:
                         data.addProperty(tag, "END");
                         break;
@@ -184,18 +190,18 @@ public class MMODebugCommand implements CommandExecutor {
                     case 9:
                         try {
                             JsonElement json = MythicLib.plugin.getJson().parse(compound.get(tag).toString(), JsonElement.class);
-                            if(json.isJsonNull()) nbtData.add("null_list", json.getAsJsonNull());
-                            else if(json.isJsonPrimitive()) nbtData.add("primitive_list", json.getAsJsonPrimitive());
-                            else if(json.isJsonArray()) nbtData.add("array_list", json.getAsJsonArray());
-                            else if(json.isJsonObject()) nbtData.add("object_list", json.getAsJsonObject());
-                        } catch(Exception e) {
+                            if (json.isJsonNull()) nbtData.add("null_list", json.getAsJsonNull());
+                            else if (json.isJsonPrimitive()) nbtData.add("primitive_list", json.getAsJsonPrimitive());
+                            else if (json.isJsonArray()) nbtData.add("array_list", json.getAsJsonArray());
+                            else if (json.isJsonObject()) nbtData.add("object_list", json.getAsJsonObject());
+                        } catch (Exception e) {
                             nbtData.addProperty("unparsable_list", compound.get(tag).toString());
                         }
                         break;
                     default:
                         nbtData.addProperty("unknown", compound.get(tag).toString());
                 }
-                if(nbtData.size() != 0) {
+                if (nbtData.size() != 0) {
                     nbtData.addProperty("typeid", typeId);
                     data.add(tag, nbtData);
                 }
@@ -251,10 +257,10 @@ public class MMODebugCommand implements CommandExecutor {
 
     private static void debugVersions(CommandSender sender) {
         StringBuilder builder = new StringBuilder();
-        for(Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+        for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
             builder.append("> ").append(plugin.getName()).append(": ")
                     .append(plugin.getDescription().getVersion());
-            if(!Bukkit.getPluginManager().isPluginEnabled(plugin))
+            if (!Bukkit.getPluginManager().isPluginEnabled(plugin))
                 builder.append(" (Disabled)");
             builder.append("\n");
         }
@@ -268,12 +274,18 @@ public class MMODebugCommand implements CommandExecutor {
         String error = "no error?";
         try {
             /* Start of Fix */
-            TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-                public java.security.cert.X509Certificate[] getAcceptedIssuers() { return null; }
-                public void checkClientTrusted(X509Certificate[] certs, String authType) { }
-                public void checkServerTrusted(X509Certificate[] certs, String authType) { }
+            TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
 
-            } };
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                }
+
+            }};
             SSLContext sc = SSLContext.getInstance("SSL");
             sc.init(null, trustAllCerts, new java.security.SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());

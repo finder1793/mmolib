@@ -11,14 +11,11 @@ commands:
     description: Reload mythiclib
     permission: mythiclib.reload
   healthscale:
-    description: Scales Player's health
+    description: Scales the player's health
     permission: mythiclib.command.healthscale
   exploreattributes:
     description: Explore player attributes.
     permission: mythiclib.explore-attributes
-  mmodebug:
-    description: Debug data by sending it straight to the devs
-    permission: mythiclib.debug
   mmotempstat:
     description: Add temporary stat modifier to player
     permission: mythiclib.tempstat
@@ -31,11 +28,11 @@ commands:
     description: Open the mega 6x6 workbench
     permission: mythiclib.megaworkbench
 permissions:
-  mythiclib.reload:
+  mythiclib.admin:
     default: op
   mythiclib.explore-attributes:
     default: op
-  mythiclib.debug:
+  mythiclib.mythiclib.command.healthscale:
     default: op
   mythiclib.tempstat:
     default: op

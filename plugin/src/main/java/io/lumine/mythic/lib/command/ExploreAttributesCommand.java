@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.commands.mmolib;
+package io.lumine.mythic.lib.command;
 
 import io.lumine.mythic.lib.api.explorer.AttributeData;
 import io.lumine.mythic.lib.gui.AttributeExplorer;
@@ -17,14 +17,15 @@ import java.util.Map;
 
 public class ExploreAttributesCommand implements CommandExecutor {
 
-    /*
-     * using strings to store item makes compatibility with older and newer
-     * stats much easier.
+    /**
+     * Using strings to store item makes compatibility
+     * with older and newer stats much easier.
      */
     public static final Map<String, AttributeData> data = new HashMap<>();
+
     public static final DecimalFormat format = new DecimalFormat("0.#####");
 
-    public ExploreAttributesCommand() {
+    static {
         data.put("ARMOR", new AttributeData(Material.IRON_CHESTPLATE, "Armor bonus of an Entity."));
         data.put("ARMOR_TOUGHNESS", new AttributeData(Material.GOLDEN_CHESTPLATE, "Armor durability bonus of an Entity."));
         data.put("ATTACK_DAMAGE", new AttributeData(Material.IRON_SWORD, "Attack damage of an Entity."));

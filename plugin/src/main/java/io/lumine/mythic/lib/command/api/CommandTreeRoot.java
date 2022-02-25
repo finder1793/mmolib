@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.commands.mmolib.api;
+package io.lumine.mythic.lib.command.api;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Deprecated
 public abstract class CommandTreeRoot extends CommandTreeNode implements CommandExecutor, TabCompleter {
     private final String permission;
 

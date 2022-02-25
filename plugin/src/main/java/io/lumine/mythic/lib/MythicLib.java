@@ -6,12 +6,11 @@ import io.lumine.mythic.lib.api.crafting.recipes.vmp.SuperWorkbenchMapping;
 import io.lumine.mythic.lib.api.crafting.uifilters.MythicItemUIFilter;
 import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.commands.BaseCommand;
-import io.lumine.mythic.lib.commands.HealthScaleCommand;
-import io.lumine.mythic.lib.commands.mmolib.ExploreAttributesCommand;
-import io.lumine.mythic.lib.commands.mmolib.MMODebugCommand;
-import io.lumine.mythic.lib.commands.mmolib.MMOLibCommand;
-import io.lumine.mythic.lib.commands.mmolib.MMOTempStatCommand;
+import io.lumine.mythic.lib.command.HealthScaleCommand;
+import io.lumine.mythic.lib.command.ExploreAttributesCommand;
+import io.lumine.mythic.lib.command.mythiclib.DebugCommand;
+import io.lumine.mythic.lib.command.mythiclib.MythicLibCommand;
+import io.lumine.mythic.lib.command.MMOTempStatCommand;
 import io.lumine.mythic.lib.comp.McMMODamageHandler;
 import io.lumine.mythic.lib.comp.anticheat.AntiCheatSupport;
 import io.lumine.mythic.lib.comp.anticheat.SpartanPlugin;
@@ -121,8 +120,6 @@ public class MythicLib extends LuminePlugin {
 
     @Override
     public void enable() {
-        registerCommand("mythiclib", new BaseCommand(this));
-
         new bStats(this);
 
         new SpigotPlugin(90306, this).checkForUpdate();
@@ -224,8 +221,7 @@ public class MythicLib extends LuminePlugin {
 
         // Command executors
         getCommand("exploreattributes").setExecutor(new ExploreAttributesCommand());
-        getCommand("mythiclib").setExecutor(new MMOLibCommand());
-        getCommand("mmodebug").setExecutor(new MMODebugCommand());
+        getCommand("mythiclib").setExecutor(new MythicLibCommand());
         getCommand("mmotempstat").setExecutor(new MMOTempStatCommand());
         getCommand("healthscale").setExecutor(new HealthScaleCommand());
 

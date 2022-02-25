@@ -1,8 +1,7 @@
-package io.lumine.mythic.lib.commands.mmolib.api;
+package io.lumine.mythic.lib.command.api;
 
 import java.util.List;
 
-@Deprecated
 public class CommandTreeExplorer {
     private final String[] args;
 

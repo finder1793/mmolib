@@ -1,10 +1,9 @@
-package io.lumine.mythic.lib.commands.mmolib.api;
+package io.lumine.mythic.lib.command.api;
 
 import org.bukkit.command.CommandSender;
 
 import java.util.*;
 
-@Deprecated
 public abstract class CommandTreeNode {
     private final String id;
     private final CommandTreeNode parent;

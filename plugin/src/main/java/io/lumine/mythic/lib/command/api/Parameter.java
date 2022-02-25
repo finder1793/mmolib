@@ -1,11 +1,10 @@
-package io.lumine.mythic.lib.commands.mmolib.api;
+package io.lumine.mythic.lib.command.api;
 
 import org.bukkit.Bukkit;
 
 import java.util.List;
 import java.util.function.BiConsumer;
 
-@Deprecated
 public class Parameter {
     private final String key;
     private final BiConsumer<CommandTreeExplorer, List<String>> autoComplete;

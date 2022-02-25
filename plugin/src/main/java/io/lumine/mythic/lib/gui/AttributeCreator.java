@@ -3,7 +3,7 @@ package io.lumine.mythic.lib.gui;
 import io.lumine.mythic.lib.api.explorer.ChatInput;
 import io.lumine.mythic.lib.api.explorer.ItemBuilder;
 import io.lumine.mythic.lib.api.util.AltChar;
-import io.lumine.mythic.lib.commands.mmolib.ExploreAttributesCommand;
+import io.lumine.mythic.lib.command.ExploreAttributesCommand;
 import io.lumine.mythic.lib.version.VersionMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
