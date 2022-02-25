@@ -69,7 +69,7 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 	@Override
 	public void sendJson(Player player, String message) {
 		((CraftPlayer) player).getHandle().connection.send(
-				new ClientboundChatPacket(net.minecraft.network.chat.Component.Serializer.fromJson(message), ChatType.GAME_INFO,
+				new ClientboundChatPacket(net.minecraft.network.chat.Component.Serializer.fromJson(message), ChatType.CHAT,
 						UUID.randomUUID()));
 	}
 
