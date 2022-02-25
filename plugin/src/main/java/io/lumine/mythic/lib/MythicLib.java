@@ -37,6 +37,7 @@ import io.lumine.mythic.lib.listener.*;
 import io.lumine.mythic.lib.listener.event.PlayerAttackEventListener;
 import io.lumine.mythic.lib.listener.option.DamageIndicators;
 import io.lumine.mythic.lib.listener.option.FixMovementSpeed;
+import io.lumine.mythic.lib.listener.option.HealthScale;
 import io.lumine.mythic.lib.listener.option.RegenIndicators;
 import io.lumine.mythic.lib.manager.*;
 import io.lumine.mythic.lib.metrics.bStats;
@@ -221,8 +222,8 @@ public class MythicLib extends LuminePlugin {
 //		if (Bukkit.getPluginManager().getPlugin("ShopKeepers") != null)
 //			entityManager.registerHandler(new ShopKeepersEntityHandler());
 
-        if (version.isStrictlyHigher(1, 12))
-            getCommand("exploreattributes").setExecutor(new ExploreAttributesCommand());
+        // Command executors
+        getCommand("exploreattributes").setExecutor(new ExploreAttributesCommand());
         getCommand("mythiclib").setExecutor(new MMOLibCommand());
         getCommand("mmodebug").setExecutor(new MMODebugCommand());
         getCommand("mmotempstat").setExecutor(new MMOTempStatCommand());

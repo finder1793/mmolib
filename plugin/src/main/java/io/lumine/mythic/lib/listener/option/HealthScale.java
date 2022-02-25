@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.listener;
+package io.lumine.mythic.lib.listener.option;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.utils.Schedulers;
