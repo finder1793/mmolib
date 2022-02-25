@@ -32,8 +32,7 @@ public class MMOTempStatCommand implements CommandExecutor {
         double value = Double.parseDouble(type == ModifierType.RELATIVE ? args[2].substring(0, args[2].length() - 1) : args[2]);
         long duration = Long.parseLong(args[3]);
 
-        String tempStatKey = UUID.randomUUID().toString();
-        new TemporaryStatModifier(args[1], tempStatKey, value, type, EquipmentSlot.OTHER, ModifierSource.OTHER).register(playerData, duration);
+        new TemporaryStatModifier(UUID.randomUUID().toString(), args[1], value, type, EquipmentSlot.OTHER, ModifierSource.OTHER).register(playerData, duration);
 
         return true;
     }
