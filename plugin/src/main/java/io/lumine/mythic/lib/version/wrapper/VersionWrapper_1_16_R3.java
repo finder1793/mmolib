@@ -1,13 +1,9 @@
 package io.lumine.mythic.lib.version.wrapper;
 
-import com.google.gson.JsonParseException;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import io.lumine.utils.adventure.text.Component;
 import io.lumine.utils.adventure.text.serializer.gson.GsonComponentSerializer;
-import io.lumine.utils.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_16_R3.BlockPosition;
 import net.minecraft.server.v1_16_R3.ChatMessage;
 import net.minecraft.server.v1_16_R3.ChatMessageType;
@@ -80,7 +76,7 @@ public class VersionWrapper_1_16_R3 implements VersionWrapper {
 	@Override
 	public void sendJson(Player player, String message) {
 		((CraftPlayer) player).getHandle().playerConnection
-				.sendPacket(new PacketPlayOutChat(ChatSerializer.a(message), ChatMessageType.SYSTEM, UUID.randomUUID()));
+				.sendPacket(new PacketPlayOutChat(ChatSerializer.a(message), ChatMessageType.CHAT, UUID.randomUUID()));
 	}
 
 	@Override

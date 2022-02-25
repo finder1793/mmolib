@@ -25,20 +25,32 @@ public interface VersionWrapper {
 
     FurnaceRecipe getFurnaceRecipe(String path, ItemStack item, Material material, float exp, int cook);
 
+    /**
+     * @see {@link io.lumine.mythic.lib.util.RayTrace}
+     * @deprecated No longer depends on the server version.
+     */
     @Deprecated
     default MMORayTraceResult rayTrace(Player player, double range, Predicate<Entity> predicate) {
         return rayTrace(player.getEyeLocation(), player.getEyeLocation().getDirection(), range, predicate);
     }
 
+    /**
+     * @see {@link io.lumine.mythic.lib.util.RayTrace}
+     * @deprecated No longer depends on the server version.
+     */
     @Deprecated
     default MMORayTraceResult rayTrace(Player player, Vector direction, double range, Predicate<Entity> predicate) {
         return rayTrace(player.getEyeLocation(), direction, range, predicate);
     }
 
+    /**
+     * @see {@link io.lumine.mythic.lib.util.RayTrace}
+     * @deprecated No longer depends on the server version.
+     */
     @Deprecated
     MMORayTraceResult rayTrace(Location loc, Vector direction, double range, Predicate<Entity> predicate);
 
-    /*
+    /**
      * used by MMOItems to update an item's durability bar in 1.12. in 1.12 you
      * need to update the item durability using the ItemStack instance, in 1.13+
      * you need to manipulate the itemMeta
@@ -60,9 +72,7 @@ public interface VersionWrapper {
 
     boolean isUndead(Entity entity);
 
-    /*
-     * mostly NMS based methods from here
-     */
+    // Mostly NMS based methods from here
     NBTItem getNBTItem(ItemStack item);
 
     void sendActionBar(Player player, String message);
@@ -93,8 +103,10 @@ public interface VersionWrapper {
 
     Object newContainerAnvil(Player player);
 
+    @Deprecated
     boolean isInBoundingBox(Entity entity, Location loc);
 
+    @Deprecated
     double distanceSquaredFromBoundingBox(Entity entity, Location loc);
 
     // What the hecky-smecky was this supposed to be?
