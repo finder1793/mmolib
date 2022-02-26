@@ -34,7 +34,7 @@ public class Combo_Attack extends SkillHandler<TargetSkillResult> {
 
             @Override
             public void run() {
-                if (c++ > count || skillMeta.getCaster().getData().isOnline()) {
+                if (c++ > count || !skillMeta.getCaster().getData().isOnline()) {
                     cancel();
                     return;
                 }
