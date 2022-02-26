@@ -1,6 +1,5 @@
 package io.lumine.mythic.lib.damage;
 
-import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.element.Element;
 import org.jetbrains.annotations.NotNull;
 
@@ -177,7 +176,7 @@ public class DamageMetadata implements Cloneable {
         DamageMetadata clone = new DamageMetadata();
 
         for (DamagePacket packet : packets)
-            clone.packets.add(packet);
+            clone.packets.add(packet.clone());
 
         return clone;
     }
@@ -196,7 +195,7 @@ public class DamageMetadata implements Cloneable {
      *
      * @author jules
      */
-    class DamagePacket {
+    class DamagePacket implements Cloneable {
         private final DamageType[] types;
         private double value, additiveModifiers;
 
@@ -235,6 +234,13 @@ public class DamageMetadata implements Cloneable {
 
             // Yes
             return sb.toString();
+        }
+
+        @Override
+        public DamagePacket clone() {
+            DamagePacket clone = new DamagePacket(value, types);
+            clone.additiveModifiers = additiveModifiers;
+            return clone;
         }
     }
 
