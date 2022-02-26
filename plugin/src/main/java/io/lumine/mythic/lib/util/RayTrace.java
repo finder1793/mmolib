@@ -1,5 +1,7 @@
 package io.lumine.mythic.lib.util;
 
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
@@ -35,6 +37,30 @@ public class RayTrace {
 
     public RayTrace(Player player, Vector direction, double range, Predicate<Entity> filter) {
         this(player.getEyeLocation(), direction, range, filter);
+    }
+
+    /**
+     * Casts a ray trace and saves the data used by MMOItems or MMOCore.
+     * This only saves the distance travelled and potentially the entity
+     * hit (used by MI staffs and other untargeted weapons).
+     *
+     * @param player Player casting ray
+     * @param hand   The ray trace will be cast from that particular hand
+     * @param range  The maximum ray cast range
+     * @param filter Filters entities selected by the ray cast
+     */
+    public RayTrace(Player player, EquipmentSlot hand, double range, Predicate<Entity> filter) {
+
+        // Calculate initial location
+        Validate.isTrue(hand.isHand(), "Not a hand equipment slot");
+        double a = Math.toRadians(player.getEyeLocation().getYaw() + 180 + 30 * (hand == EquipmentSlot.MAIN_HAND ? -1 : 1));
+        initialLocation = player.getEyeLocation().add(new Vector(Math.cos(a), 0, Math.sin(a)).multiply(.5));
+
+        // Ray trace
+        initialDirection = player.getEyeLocation().getDirection();
+        RayTraceResult result = initialLocation.getWorld().rayTrace(initialLocation, initialDirection, range, FLUID_COLLISION_MODE, IGNORE_PASSABLE_BLOCKS, RAY_SIZE, filter);
+        hitEntity = result.getHitEntity() == null ? null : (LivingEntity) result.getHitEntity();
+        distanceTraveled = result.getHitPosition().distance(initialLocation.toVector());
     }
 
     /**
