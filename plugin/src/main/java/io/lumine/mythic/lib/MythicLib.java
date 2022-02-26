@@ -6,15 +6,14 @@ import io.lumine.mythic.lib.api.crafting.recipes.vmp.SuperWorkbenchMapping;
 import io.lumine.mythic.lib.api.crafting.uifilters.MythicItemUIFilter;
 import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.command.HealthScaleCommand;
 import io.lumine.mythic.lib.command.ExploreAttributesCommand;
-import io.lumine.mythic.lib.command.mythiclib.DebugCommand;
-import io.lumine.mythic.lib.command.mythiclib.MythicLibCommand;
+import io.lumine.mythic.lib.command.HealthScaleCommand;
 import io.lumine.mythic.lib.command.MMOTempStatCommand;
+import io.lumine.mythic.lib.command.mythiclib.MythicLibCommand;
 import io.lumine.mythic.lib.comp.McMMODamageHandler;
 import io.lumine.mythic.lib.comp.anticheat.AntiCheatSupport;
 import io.lumine.mythic.lib.comp.anticheat.SpartanPlugin;
-import io.lumine.mythic.lib.comp.flags.DefaultFlagHandler;
+import io.lumine.mythic.lib.comp.flags.FlagHandler;
 import io.lumine.mythic.lib.comp.flags.FlagPlugin;
 import io.lumine.mythic.lib.comp.flags.ResidenceFlags;
 import io.lumine.mythic.lib.comp.flags.WorldGuardFlags;
@@ -70,13 +69,13 @@ public class MythicLib extends LuminePlugin {
     private final ElementManager elementManager = new ElementManager();
     private final SkillManager skillManager = new SkillManager();
     private final ModifierManager modifierManager = new ModifierManager();
+    private final FlagHandler flagHandler = new FlagHandler();
 
     private AntiCheatSupport antiCheatSupport;
     private ServerVersion version;
     private AttackEffects attackEffects;
     private MitigationMechanics mitigationMechanics;
     private ColorParser colorParser;
-    private FlagPlugin flagPlugin = new DefaultFlagHandler();
     @Getter
     private ScoreboardProvider scoreboardProvider;
     private PlaceholderParser placeholderParser;
@@ -111,7 +110,7 @@ public class MythicLib extends LuminePlugin {
         }
 
         if (Bukkit.getPluginManager().getPlugin("WorldGuard") != null) {
-            flagPlugin = new WorldGuardFlags();
+            flagHandler.registerPlugin(new WorldGuardFlags());
             getLogger().log(Level.INFO, "Hooked onto WorldGuard");
         }
 
@@ -173,7 +172,7 @@ public class MythicLib extends LuminePlugin {
         }
 
         if (Bukkit.getPluginManager().getPlugin("Residence") != null) {
-            flagPlugin = new ResidenceFlags();
+            flagHandler.registerPlugin(new ResidenceFlags());
             getLogger().log(Level.INFO, "Hooked onto Residence");
         }
 
@@ -303,8 +302,8 @@ public class MythicLib extends LuminePlugin {
         return configManager;
     }
 
-    public FlagPlugin getFlags() {
-        return flagPlugin;
+    public FlagHandler getFlags() {
+        return flagHandler;
     }
 
     public PlaceholderParser getPlaceholderParser() {
@@ -319,8 +318,9 @@ public class MythicLib extends LuminePlugin {
         return antiCheatSupport;
     }
 
+    @Deprecated
     public void handleFlags(FlagPlugin flagPlugin) {
-        this.flagPlugin = flagPlugin;
+        getFlags().registerPlugin(flagPlugin);
     }
 
     public boolean hasAntiCheat() {
