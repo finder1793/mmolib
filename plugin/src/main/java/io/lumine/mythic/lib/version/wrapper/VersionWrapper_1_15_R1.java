@@ -65,13 +65,21 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class VersionWrapper_1_15_R1 implements VersionWrapper {
+	private static final Map<Material, Material> oreDrops = new HashMap<>();
+
+	static {
+		oreDrops.put(Material.IRON_ORE, Material.IRON_INGOT);
+		oreDrops.put(Material.GOLD_ORE, Material.GOLD_INGOT);
+	}
+
+	@Override
+	public Map<Material, Material> getOreDrops() {
+		return oreDrops;
+	}
 
 	@Override
 	public void sendJson(Player player, String message) {

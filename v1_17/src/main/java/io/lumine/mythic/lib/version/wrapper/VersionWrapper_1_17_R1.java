@@ -59,13 +59,29 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class VersionWrapper_1_17_R1 implements VersionWrapper {
+	private static final Map<Material, Material> oreDrops = new HashMap<>();
+
+	static {
+		oreDrops.put(Material.IRON_ORE, Material.IRON_INGOT);
+		oreDrops.put(Material.GOLD_ORE, Material.GOLD_INGOT);
+		oreDrops.put(Material.COPPER_ORE, Material.COPPER_INGOT);
+
+		oreDrops.put(Material.ANCIENT_DEBRIS, Material.NETHERITE_INGOT);
+
+		oreDrops.put(Material.DEEPSLATE_IRON_ORE, Material.IRON_INGOT);
+		oreDrops.put(Material.DEEPSLATE_GOLD_ORE, Material.GOLD_INGOT);
+		oreDrops.put(Material.DEEPSLATE_COPPER_ORE, Material.COPPER_INGOT);
+	}
+
+	@Override
+	public Map<Material, Material> getOreDrops() {
+		return oreDrops;
+	}
+
 	@Override
 	public void sendJson(Player player, String message) {
 		((CraftPlayer) player).getHandle().connection.send(

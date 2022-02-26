@@ -19,9 +19,17 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import java.util.Map;
 import java.util.function.Predicate;
 
 public interface VersionWrapper {
+
+    /**
+     * Used by MMOItems to check if a block can be autosmelt.
+     *
+     * @return Map that maps to autosmeltable ores the corresponding drop
+     */
+    Map<Material, Material> getOreDrops();
 
     FurnaceRecipe getFurnaceRecipe(String path, ItemStack item, Material material, float exp, int cook);
 
