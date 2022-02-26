@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.api.player;
 
 import org.apache.commons.lang.Validate;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Used by MythicLib to make a difference between stat
@@ -47,6 +48,18 @@ public enum EquipmentSlot {
      * Apply stats in both hands, ie shields or catalysts.
      */
     BOTH_HANDS;
+
+    @NotNull
+    public org.bukkit.inventory.EquipmentSlot toBukkit() {
+        switch (this) {
+            case MAIN_HAND:
+                return org.bukkit.inventory.EquipmentSlot.HAND;
+            case OFF_HAND:
+                return org.bukkit.inventory.EquipmentSlot.OFF_HAND;
+            default:
+                throw new RuntimeException("Not a hand slot");
+        }
+    }
 
     public EquipmentSlot getOppositeHand() {
         Validate.isTrue(this == MAIN_HAND || this == OFF_HAND, "Not a hand equipment slot");
