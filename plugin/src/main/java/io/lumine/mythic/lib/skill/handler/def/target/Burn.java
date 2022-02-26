@@ -44,6 +44,12 @@ public class Burn extends SkillHandler<TargetSkillResult> {
             }
         }.runTaskTimer(MythicLib.plugin, 0, 1);
         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_BLAZE_HURT, 1, 2);
-        target.setFireTicks((int) (target.getFireTicks() + skillMeta.getModifier("duration") * 20));
+
+        /*
+         * Entity#getFireTicks() does NOT always return a positive
+         * value. For players it returns -20 which reduce the apparent
+         * skill duration by one second, hence Math#max(...)
+         */
+        target.setFireTicks((int) (Math.max(0, target.getFireTicks()) + skillMeta.getModifier("duration") * 20));
     }
 }
