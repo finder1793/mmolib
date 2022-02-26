@@ -31,6 +31,28 @@ public interface VersionWrapper {
      */
     Map<Material, Material> getOreDrops();
 
+    /**
+     * Used by MMOItems when eating consumables the vanilla way. There is an
+     * issue where when eating items, the saturation and food buff still applies
+     * which MMOItems need to take an offset of.
+     *
+     * @param item Has to be a food item
+     * @return Food restored when eating
+     * @throws NullPointerException If it is not a food item
+     */
+    int getFoodRestored(ItemStack item);
+
+    /**
+     * Used by MMOItems when eating consumables the vanilla way. There is an
+     * issue where when eating items, the saturation and food buff still applies
+     * which MMOItems need to take an offset of.
+     *
+     * @param item Has to be a food item
+     * @return Saturation restored when eating
+     * @throws NullPointerException If it is not a food item
+     */
+    float getSaturationRestored(ItemStack item);
+
     FurnaceRecipe getFurnaceRecipe(String path, ItemStack item, Material material, float exp, int cook);
 
     /**

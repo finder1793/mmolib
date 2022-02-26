@@ -4,30 +4,8 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import io.lumine.utils.adventure.text.Component;
 import io.lumine.utils.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.minecraft.server.v1_13_R2.BlockPosition;
-import net.minecraft.server.v1_13_R2.Blocks;
-import net.minecraft.server.v1_13_R2.ChatMessage;
-import net.minecraft.server.v1_13_R2.ChatMessageType;
-import net.minecraft.server.v1_13_R2.Container;
-import net.minecraft.server.v1_13_R2.ContainerAnvil;
-import net.minecraft.server.v1_13_R2.EntityHuman;
-import net.minecraft.server.v1_13_R2.EntityPlayer;
-import net.minecraft.server.v1_13_R2.EnumHand;
+import net.minecraft.server.v1_13_R2.*;
 import net.minecraft.server.v1_13_R2.IChatBaseComponent.ChatSerializer;
-import net.minecraft.server.v1_13_R2.MinecraftKey;
-import net.minecraft.server.v1_13_R2.NBTTagCompound;
-import net.minecraft.server.v1_13_R2.NBTTagList;
-import net.minecraft.server.v1_13_R2.NBTTagString;
-import net.minecraft.server.v1_13_R2.PacketPlayInArmAnimation;
-import net.minecraft.server.v1_13_R2.PacketPlayOutAnimation;
-import net.minecraft.server.v1_13_R2.PacketPlayOutChat;
-import net.minecraft.server.v1_13_R2.PacketPlayOutCloseWindow;
-import net.minecraft.server.v1_13_R2.PacketPlayOutOpenWindow;
-import net.minecraft.server.v1_13_R2.PlayerConnection;
-import net.minecraft.server.v1_13_R2.SoundEffect;
-import net.minecraft.server.v1_13_R2.SoundEffectType;
-import net.minecraft.server.v1_13_R2.TileEntitySkull;
-import net.minecraft.server.v1_13_R2.World;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.MMORayTraceResult;
 import io.lumine.mythic.lib.api.item.ItemTag;
@@ -78,6 +56,18 @@ public class VersionWrapper_1_13_R2 implements VersionWrapper {
 	@Override
 	public Map<Material, Material> getOreDrops() {
 		return oreDrops;
+	}
+
+	@Override
+	public int getFoodRestored(ItemStack item) {
+		ItemFood food = (ItemFood) Item.getById(Material.getMaterial(item.getType().name(), true).getId());
+		return food.getNutrition(null);
+	}
+
+	@Override
+	public float getSaturationRestored(ItemStack item) {
+		ItemFood food = (ItemFood) Item.getById(Material.getMaterial(item.getType().name(), true).getId());
+		return food.getNutrition(null);
 	}
 
 	@Override

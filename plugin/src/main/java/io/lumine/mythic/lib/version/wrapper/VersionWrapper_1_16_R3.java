@@ -83,6 +83,16 @@ public class VersionWrapper_1_16_R3 implements VersionWrapper {
 	}
 
 	@Override
+	public int getFoodRestored(ItemStack item) {
+		return CraftItemStack.asNMSCopy(item).getItem().getFoodInfo().getNutrition();
+	}
+
+	@Override
+	public float getSaturationRestored(ItemStack item) {
+		return CraftItemStack.asNMSCopy(item).getItem().getFoodInfo().getSaturationModifier();
+	}
+
+	@Override
 	public void sendJson(Player player, String message) {
 		((CraftPlayer) player).getHandle().playerConnection
 				.sendPacket(new PacketPlayOutChat(ChatSerializer.a(message), ChatMessageType.CHAT, UUID.randomUUID()));
