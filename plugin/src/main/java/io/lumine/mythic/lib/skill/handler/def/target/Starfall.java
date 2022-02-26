@@ -52,6 +52,6 @@ public class Starfall extends SkillHandler<TargetSkillResult> {
         }.runTaskTimer(MythicLib.plugin, 0, 1);
         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_WITHER_SHOOT, 2, 2);
 
-        skillMeta.getAttack().getDamage().add(skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.MAGIC);
+        skillMeta.attack(target, skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.MAGIC);
     }
 }
