@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.version.wrapper;
+package wrapper;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -8,6 +8,7 @@ import io.lumine.mythic.lib.api.item.ItemTag;
 import io.lumine.mythic.lib.api.item.NBTCompound;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import io.lumine.mythic.lib.api.util.NBTTypeHelper;
+import io.lumine.mythic.lib.version.wrapper.VersionWrapper;
 import io.lumine.utils.adventure.text.Component;
 import io.lumine.utils.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.core.BlockPos;
@@ -42,11 +43,11 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarFlag;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
-import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_18_R1.event.CraftEventFactory;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_18_R1.util.CraftMagicNumbers.NBT;
+import org.bukkit.craftbukkit.v1_18_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers.NBT;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -67,7 +68,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 
-public class VersionWrapper_1_18_R1 implements VersionWrapper {
+public class VersionWrapper_1_18_R2 implements VersionWrapper {
 	private static final Map<Material, Material> oreDrops = new HashMap<>();
 
 	static {

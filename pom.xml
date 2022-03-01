@@ -9,6 +9,7 @@
         <module>plugin</module>
         <module>v1_17</module>
         <module>v1_18</module>
+        <module>v1_18_r2</module>
         <module>dist</module>
     </modules>
     <name>MythicLib</name>
