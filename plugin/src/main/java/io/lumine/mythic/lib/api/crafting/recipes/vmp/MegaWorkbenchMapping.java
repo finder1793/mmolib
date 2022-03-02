@@ -194,18 +194,20 @@ public class MegaWorkbenchMapping  extends VanillaInventoryMapping implements Cu
          * Don't be thrown off by seeing negative height in these slot
          * numbers, it is kind of inverted, this is how it looks:
          *
-         * [0] [0] [0] [0] [0]  This is height 0
-         * [1] [1] [1] [1] [1]  This is height -1
-         * [2] [2] [2] [2] [2]  This is height -2
-         * [3] [3] [3] [3] [3]  This is height -3
-         * [4] [4] [4] [4] [4]  This is height -4
+         * [0] [0] [0] [0] [0] [0] This is height 0
+         * [1] [1] [1] [1] [1] [1] This is height -1
+         * [2] [2] [2] [2] [2] [2] This is height -2
+         * [3] [3] [3] [3] [3] [3] This is height -3
+         * [4] [4] [4] [4] [4] [4] This is height -4
+         * [5] [5] [5] [5] [5] [5] This is height -5
          *
          * The horizontal number is the normal, intuitive though.
-         * [0] [1] [2] [3] [4] This is height 0
-         * [0] [1] [2] [3] [4] This is height -1
-         * [0] [1] [2] [3] [4] This is height -2
-         * [0] [1] [2] [3] [4] This is height -3
-         * [0] [1] [2] [3] [4] This is height -4
+         * [0] [1] [2] [3] [4] [5] This is height 0
+         * [0] [1] [2] [3] [4] [5] This is height -1
+         * [0] [1] [2] [3] [4] [5] This is height -2
+         * [0] [1] [2] [3] [4] [5] This is height -3
+         * [0] [1] [2] [3] [4] [5] This is height -4
+         * [0] [1] [2] [3] [4] [5] This is height -5
          */
         switch (height) {
             case 0:

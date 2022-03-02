@@ -86,7 +86,7 @@ public class MythicIngredient implements Cloneable {
 
         // Set those
         substitutes = new ArrayList<>();
-        for (ProvidedUIFilter puff : ingredient) { if (puff != null) { substitutes.add(puff); }}
+        for (ProvidedUIFilter puff : ingredient) { if (puff != null) { substitutes.add(puff); if (puff.isAir()) { acceptsAir = true; } }}
         this.name = name;
 
         // It makes no sense that a UIFilter of an ingredient doesn't have an amount defined
@@ -146,6 +146,7 @@ public class MythicIngredient implements Cloneable {
 
         // Must have count
         substitutes.add(substitute);
+        if (substitute.isAir()) { acceptsAir = true; }
     }
     /**
      * The list of items this ingredient will accept.
@@ -168,7 +169,7 @@ public class MythicIngredient implements Cloneable {
      * <p><code>v JUNGLE_PLANKS 0</code>
      * </p><code>v BIRCH_PLANKS 0</code>
      */
-    public void clearSubstitutes() { substitutes.clear(); definesItem = false; }
+    public void clearSubstitutes() { substitutes.clear(); definesItem = false; acceptsAir = false; }
     /**
      * Recipes forcefully require an amount, it cannot be unspecified.
      */
@@ -235,9 +236,19 @@ public class MythicIngredient implements Cloneable {
             }
         }
 
+        // Count air
+        acceptsAir = false;
+        for (ProvidedUIFilter substitute : substitutes) { if (substitute.isAir()) { acceptsAir = true; } }
+
         // Send all
         ffp.sendTo(FriendlyFeedbackCategory.ERROR, MythicLib.plugin.getServer().getConsoleSender());
     }
+
+    /**
+     * @return If any of the substitutes of this is AIR for the vanilla UI Filter
+     */
+    public boolean acceptsAir() { return acceptsAir; }
+    boolean acceptsAir;
 
     /**
      * Is such an item suitable to fulfill this ingredient?

@@ -435,14 +435,19 @@ public class MythicRecipeInventory implements Cloneable {
      */
     @Nullable
     public ItemStack getFirst() {
+        //CRAFT//MythicCraftingManager.log("\u00a78MRInven \u00a7d1ST\u00a77 Finding first non-air item");
 
         // Iterate all items
         for (ArrayList<ItemStack> cont : contents.values()) { for (ItemStack itm : cont) {
+            //CRAFT//MythicCraftingManager.log("\u00a78MRInven \u00a7d1ST\u00a77Checking " + SilentNumbers.getItemName(itm ,true));
 
                 // Non null and a valid item? This is the one
-                if (!SilentNumbers.isAir(itm)) { return itm; }
+                if (!SilentNumbers.isAir(itm)) {
+                    //CRAFT//MythicCraftingManager.log("\u00a78MRInven \u00a7d1ST\u00a7a Accepted");
+                    return itm; }
 
             } }
+        //CRAFT//MythicCraftingManager.log("\u00a78MRInven \u00a7d1ST\u00a7c Everything is air.");
 
         // None found
         return null;

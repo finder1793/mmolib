@@ -691,18 +691,21 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
              * We must now read each of the affected inventories again and apply them with changes.
              */
             if (hasInputConsumption()) {
+                //CRAFT//MythicCraftingManager.log("\u00a78Craft \u00a76MR\u00a77 Input Consumption Finally");
 
                 // Items to spit back to the player
                 ArrayList<ItemStack> inputConsumptionOverflow = new ArrayList<>();
 
                 // Changes in the main inventory?
                 if (getMainInputConsumption() != null) {
+                    //CRAFT//MythicCraftingManager.log("\u00a78Craft \u00a76MAIN\u00a77 Main Input Consumption");
 
                     // Extract the new values
                     MythicRecipeInventory mainRead = map.getMainMythicInventory(eventTrigger.getInventory());
 
                     // Generate a result from the main input consumption
                     MythicRecipeInventory addedStuff = generateResultOf(getMainInputConsumption());
+                    //CRAFT//for (String str : addedStuff.toStrings("\u00a78Craft \u00a76MAIN\u00a77 ")) { MythicCraftingManager.log(str); }
 
                     // Include overflow
                     inputConsumptionOverflow.addAll(stackWhatsPossible(mainRead, addedStuff));

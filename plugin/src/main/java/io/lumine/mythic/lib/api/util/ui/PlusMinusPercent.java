@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
  */
 @SuppressWarnings({"unused", "SpellCheckingInspection"})
 public class PlusMinusPercent {
-    double value;
+    double constant;
     boolean relative;
     boolean multiply;
 
@@ -43,7 +43,7 @@ public class PlusMinusPercent {
      * @see #getFromString(String)
      */
     public PlusMinusPercent(double constant, boolean additive, boolean multiplicative) {
-        value = constant;
+        this.constant = constant;
         relative = additive;
         multiply = multiplicative;
     }
@@ -54,7 +54,7 @@ public class PlusMinusPercent {
     public double apply(double base) {
 
         // Stores a copy of the constant that may be freely modified through this method (makes math easier)
-        double oV = value;
+        double oV = constant;
 
         // Is it multiplicative?
         if (multiply) {
@@ -90,7 +90,7 @@ public class PlusMinusPercent {
     public double reverse(double base) {
 
         // Stores a copy of the constant that may be freely modified through this method (makes math easier)
-        double oV = value;
+        double oV = constant;
 
         // Is it multiplicative?
         if (multiply) {
@@ -118,7 +118,7 @@ public class PlusMinusPercent {
         }
     }
 
-    public void setConstant(double c) { value = c; }
+    public void setConstant(double c) { constant = c; }
     public void setAdditive(boolean additivity) { relative = additivity; }
     public void setMultiplicative(boolean multiplicativity) { multiply = multiplicativity; }
 
@@ -127,7 +127,7 @@ public class PlusMinusPercent {
      * <p></p>
      * I call it <b>C</b>.
      */
-    public double getConstant() { return value; }
+    public double getConstant() { return constant; }
     /**
      * Will <b>C</b> ({@link #getConstant()}) have an add or set behaviour?
      * <p></p>

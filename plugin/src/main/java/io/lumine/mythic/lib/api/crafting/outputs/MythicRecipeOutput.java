@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.api.crafting.outputs;
 import io.lumine.mythic.lib.api.crafting.ingredients.MythicBlueprintInventory;
 import io.lumine.mythic.lib.api.crafting.ingredients.MythicRecipeInventory;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicCachedResult;
+import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.VanillaInventoryMapping;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -104,7 +105,15 @@ public abstract class MythicRecipeOutput {
          * and then copy them onto the true inventory.
          */
         MythicRecipeInventory main = originalInventories.getMainInventory();
+
+        //CRAFT//MythicCraftingManager.log("\u00a78CRAFT \u00a7CSM\u00a77 Consuming items according to");
+        //CRAFT//for (String str : main.toStrings("\u00a78CRAFT \u00a7CSM\u00a77 ")) { MythicCraftingManager.log(str); }
+
+        // Copy the items current to final, only where final has null items
         processInventory(main, cache.getResultOfOperation().getMainInventory(), times);
+
+        //CRAFT//MythicCraftingManager.log("\u00a78CRAFT \u00a7CSM\u00a77 Processed as");
+        //CRAFT//for (String str : main.toStrings("\u00a78CRAFT \u00a7CSM\u00a77 ")) { MythicCraftingManager.log(str); }
         map.applyToMainInventory(inven, main, false);
 
         // Now do all side inventories

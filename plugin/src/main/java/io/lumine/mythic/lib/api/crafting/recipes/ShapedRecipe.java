@@ -12,6 +12,7 @@ import io.lumine.mythic.lib.api.util.ui.FFPMythicLib;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackProvider;
 import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -485,8 +486,28 @@ public class ShapedRecipe extends MythicRecipe implements VanillaBookableRecipe 
                  *
                  * In that case, I assume this recipe is just not for this crafting station,
                  * which means that this arrangement cannot match.
+                 *
+                 * ~ However the exception is if AIR is expected from crafting, don't want to
+                 * crash the crafting operation due to a weird grid type if the expected ingredient
+                 * is 'nothing' and the provided ingredient is... 'nothing'
                  */
-                if (found == null) { return null; }
+                if (found == null) {
+
+                    // If air is accepted, it will treat it as vanilla air
+                    if (ingredient.getIngredient().acceptsAir()) {
+
+                        // Yes, air
+                        //CRAFT//MythicCraftingManager.log("\u00a78Matches \u00a76R\u00a73 Null input restored as AIR for comparison");
+                        found = new ItemStack(Material.AIR);
+
+                    // Otherwise
+                    } else {
+
+                        // Operation is cancelled.
+                        //CRAFT//MythicCraftingManager.log("\u00a78Matches \u00a76R\u00a7c No Comparable Item");
+                        return null;
+                    }
+                }
 
                 // If it does not match, this combination is invalid
                 if (!ingredient.matches(found)) {
@@ -571,7 +592,7 @@ public class ShapedRecipe extends MythicRecipe implements VanillaBookableRecipe 
                             lowestTimes = times; }
 
                         //CRAFT//ItemStack parallel = result.getItemAt(item.getHorizontalOffset(), item.getVerticalOffset());
-                        //CRAFT//MythicCraftingManager.log("\u00a78Matches \u00a76AC\u00a77 Final: \u00a7e" + parallel.getAmount());
+                        //CRAFT//MythicCraftingManager.log("\u00a78Matches \u00a76AC\u00a77 Final: \u00a7e" + (parallel == null ? null : parallel.getAmount()));
 
                     }
 

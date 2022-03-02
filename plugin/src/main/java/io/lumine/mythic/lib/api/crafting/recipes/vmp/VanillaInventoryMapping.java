@@ -4,6 +4,7 @@ import io.lumine.mythic.lib.api.crafting.ingredients.MythicBlueprintInventory;
 import io.lumine.mythic.lib.api.crafting.ingredients.MythicRecipeInventory;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicRecipeStation;
+import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import io.lumine.utils.version.ServerVersion;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -451,8 +452,21 @@ public abstract class VanillaInventoryMapping {
      */
     public void applyToResultInventory(@NotNull Inventory inventory, @NotNull MythicRecipeInventory finalResult, boolean amountOnly) {
 
-        // For every main slot
-        for (int s = getResultInventoryStart(); s < (getResultInventorySize() + getResultInventoryStart()); s++) { setInventoryItem(inventory, s, finalResult.getItemAt(getResultWidth(s), getResultHeight(s)), amountOnly); }
+        // Skips
+        int z = 0;
+
+        // For every result slot
+        for (int s = getResultInventoryStart(); s < (getResultInventorySize() + getResultInventoryStart() + z); s++) {
+
+            // Read
+            int w = getResultWidth(s);
+            int h = getResultHeight(s);
+
+            // Any of them extraneous?
+            if (w < 0 || h > 0) { z++; continue; }
+
+            setInventoryItem(inventory, s, finalResult.getItemAt(getResultWidth(s), getResultHeight(s)), amountOnly);
+        }
 
         //APY//MythicCraftingManager.log("\u00a78Apply \u00a76R\u00a77 Applying to result inventory");
         //APY//for (int i = 1; i <= 9; i++) { MythicCraftingManager.log("\u00a78Apply \u00a76R\u00a77 Result: \u00a7b@" + i + " \u00a7f" + SilentNumbers.getItemName(inventory.getItem(i))); }
@@ -505,11 +519,11 @@ public abstract class VanillaInventoryMapping {
      */
     @NotNull public MythicBlueprintInventory extractFrom(@NotNull Inventory inven) {
 
-        //CRAFT//MythicCraftingManager.log("\u00a78Extract \u00a76I\u00a77 Getting Main Inventory...");
+        //CRAFT//MythicCraftingManager.log("\u00a78Extract \u00a76I\u00a77 Getting Main Inventory...\u00a78 " + getClass().getName());
         MythicRecipeInventory main = getMainMythicInventory(inven);
-        //CRAFT//MythicCraftingManager.log("\u00a78Extract\u00a76R\u00a77 Getting Result Inventory...");
+        //CRAFT//MythicCraftingManager.log("\u00a78Extract \u00a76R\u00a77 Getting Result Inventory...");
         MythicRecipeInventory result = getResultMythicInventory(inven);
-        //CRAFT//MythicCraftingManager.log("\u00a78Extract\u00a76S\u00a77 Getting Side Inventories...");
+        //CRAFT//MythicCraftingManager.log("\u00a78Extract \u00a76S\u00a77 Getting Side Inventories...");
         HashMap<String, MythicRecipeInventory> sideInventories = getSideMythicInventories(inven);
 
         // Create blueprint alv
@@ -647,7 +661,7 @@ public abstract class VanillaInventoryMapping {
      *
      * @throws IllegalArgumentException Always
      */
-    void throwOutOfBounds(int out) throws IllegalArgumentException { throw new IllegalArgumentException("Mapping " + getClass().getSimpleName() + " has no data for slot '" + out + "'"); }
+    public void throwOutOfBounds(int out) throws IllegalArgumentException { throw new IllegalArgumentException("Mapping " + getClass().getSimpleName() + " has no data for slot '" + out + "'"); }
     /**
      * Shorthand to throw the exception that says "HEY! Theres no such slot"
      *
@@ -656,7 +670,7 @@ public abstract class VanillaInventoryMapping {
      *
      * @throws IllegalArgumentException Always
      */
-    void throwOutOfBounds(int w, int h) throws IllegalArgumentException { throw new IllegalArgumentException("Mapping " + getClass().getSimpleName() + " has no data for slot at width '" + w + "' and height '" + h + "'"); }
+    public void throwOutOfBounds(int w, int h) throws IllegalArgumentException { throw new IllegalArgumentException("Mapping " + getClass().getSimpleName() + " has no data for slot at width '" + w + "' and height '" + h + "'"); }
     //endregion
 
     //region Managing Section

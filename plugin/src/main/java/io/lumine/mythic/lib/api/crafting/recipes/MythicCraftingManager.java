@@ -314,7 +314,7 @@ public class MythicCraftingManager implements Listener {
         //ISPM//for (int i = 0; i < inven.getSize(); i++) { MythicCraftingManager.log("\u00a78Pre Computation \u00a7f@" + i + " \u00a7f" + SilentNumbers.getItemName(inven.getItem(i))); }
 
 
-        boolean cResultSlot = mapping.isResultSlot(event.getSlot());
+        boolean cResultSlot = mapping.isResultSlot(event.getRawSlot());
         /*
          * Now that we know there is a reason for MythicLib's crafting system
          * to kick in (there are live recipes for this station), we must see
@@ -348,14 +348,7 @@ public class MythicCraftingManager implements Listener {
 
             //CRAFT//log("\u00a78Craft \u00a76C\u00a77 Checking the first item of the result..");
             // Find one item bro
-            MythicCachedResult cache = null;
-            for (int h = 0; h < resultInventory.getHeight(); h++) {
-                for (int w = 0; w < resultInventory.getWidth(); w++) {
-
-                    // Find cache :flushed:
-                    MythicCachedResult mcr = MythicCachedResult.get(resultInventory.getFirst());
-                    if (mcr != null) { cache = mcr; }
-                } }
+            MythicCachedResult cache = MythicCachedResult.get(resultInventory.getFirst());
 
             // Not found? Not our business
             if (cache == null) {
@@ -404,12 +397,8 @@ public class MythicCraftingManager implements Listener {
          */
         if (mapping.getIntendedInventory() == InventoryType.CHEST) {
 
-            // Yeah, otherwise it may not be removed and the item may be DUPED
-            for (int s = mapping.getResultInventoryStart(); s < (mapping.getResultInventorySize() + mapping.getResultInventoryStart()); s++) {
-
-                // Introduce clear
-                VanillaInventoryMapping.setInventoryItem(inven, s, AIR, false);
-            }
+            // Clear all result slots
+            mapping.applyToResultInventory(inven, new MythicRecipeInventory(), false);
         }
 
         (new BukkitRunnable() {
@@ -552,6 +541,8 @@ public class MythicCraftingManager implements Listener {
                  *      Brewing stand and Enchantment table suffer from this.
                  */
                 if (!mapping.mainIsResult()) {
+                    //CRAFT//log("\u00a78Display \u00a76C\u00a77 Onto Result Inventory");
+                    //CRAFT//for (String rw : finalResult.toStrings("\u00a78Display \u00a76C\u00a77 ")) { log(rw); }
 
                     // Actually show the display item to the player.
                     mapping.applyToResultInventory(inven, finalResult, false);
@@ -560,9 +551,7 @@ public class MythicCraftingManager implements Listener {
                 //ISPM//for (int i = 0; i < inven.getSize(); i++) { MythicCraftingManager.log("\u00a78Post Display \u00a76@" + i + " \u00a7f" + SilentNumbers.getItemName(inven.getItem(i))); }
 
                 // Update inventory yay
-                for (Player viewer : viewers) { if (viewer != null) {
-                    //noinspection deprecation
-                    viewer.updateInventory(); } }
+                for (Player viewer : viewers) { if (viewer != null) { viewer.updateInventory(); } }
 
                 // A recipe matched!
                 return true;
