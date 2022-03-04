@@ -8,8 +8,10 @@ import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.listener.event.PlayerAttackEventListener;
 import io.lumine.mythic.lib.player.cooldown.CooldownType;
+import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -76,7 +78,7 @@ public class AttackEffects implements Listener {
             event.getDamage().multiplicativeModifier(damageMultiplicator, DamageType.UNARMED);
 
             event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 1);
-            event.getEntity().getWorld().spawnParticle(Particle.FIREWORKS_SPARK, event.getEntity().getLocation().add(0, 1, 0), 16, 0, 0, 0, .1);
+            applyCritEffects(event.getEntity(), Particle.CRIT, 32, .4f);
         }
 
         // Skill critical strikes
@@ -86,7 +88,7 @@ public class AttackEffects implements Listener {
             event.getData().applyCooldown(CooldownType.SKILL_CRIT, skillCritCooldown);
             event.getDamage().multiplicativeModifier(skillCritCoef + stats.getStat("SPELL_CRITICAL_STRIKE_POWER") / 100, DamageType.SKILL);
             event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 2);
-            event.getEntity().getWorld().spawnParticle(Particle.TOTEM, event.getEntity().getLocation().add(0, 1, 0), 32, 0, 0, 0, .4);
+            applyCritEffects(event.getEntity(), Particle.TOTEM, 16, .4f);
         }
 
         // Apply spell vamp and lifesteal
@@ -94,5 +96,11 @@ public class AttackEffects implements Listener {
                 + event.getAttack().getDamage().getDamage(DamageType.SKILL) * event.getAttack().getStat(SharedStat.SPELL_VAMPIRISM)) / 100;
         if (heal > 0)
             UtilityMethods.heal(event.getPlayer(), heal);
+    }
+
+    private void applyCritEffects(Entity entity, Particle particle, int amount, double speed) {
+        Location loc = entity.getLocation().add(0, entity.getHeight() / 2, 0);
+        double offset = entity.getBoundingBox().getWidthX() / 2;
+        entity.getWorld().spawnParticle(particle, loc, amount, offset, offset, offset, speed);
     }
 }
