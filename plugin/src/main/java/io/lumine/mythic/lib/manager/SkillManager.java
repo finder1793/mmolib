@@ -429,7 +429,35 @@ public class SkillManager {
         // Load skills
         RecursiveFolderExplorer explorer = new RecursiveFolderExplorer(file -> {
             try {
-                registerSkillHandler(loadSkillHandler(YamlConfiguration.loadConfiguration(file)));
+
+                try {
+
+                    // Attempt to load as normal section
+                    registerSkillHandler(loadSkillHandler(YamlConfiguration.loadConfiguration(file)));
+
+                } catch (IllegalArgumentException | IllegalStateException e) {
+
+                    // Attempt to parse every key I guess
+                    ConfigurationSection config = YamlConfiguration.loadConfiguration(file);
+                    for (String key : config.getKeys(false)) {
+
+                        // Get as configuration section
+                        ConfigurationSection section = config.getConfigurationSection(key);
+                        if (section == null) {
+                            continue;
+                        }
+
+                        try {
+
+                            // Attempt to load as normal section
+                            registerSkillHandler(loadSkillHandler(section));
+
+                        } catch (IllegalArgumentException | IllegalStateException exception) {
+                            MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill '" + section.getName() + "' from '" + file.getName() + "': " + exception.getMessage());
+                        }
+                    }
+                }
+
             } catch (RuntimeException exception) {
                 MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill from '" + file.getName() + "': " + exception.getMessage());
             }
