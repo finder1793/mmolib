@@ -31,7 +31,7 @@ public class DamageMetadata implements Cloneable {
         StringBuilder damageTypes = new StringBuilder("\u00a73Damage Meta{");
 
         boolean packetAppended = false;
-        for (DamagePacket packet : getPackets()) {
+        for (DamagePacket packet : packets) {
             if (packetAppended) {
                 damageTypes.append("\u00a73;");
             }

@@ -39,8 +39,6 @@ public class MechanicQueue {
      * fully explored.
      * <p>
      * Call this method to start casting the skill.
-     * <p>
-     * This method calls itself recursively until it hits
      */
     public void next() {
         if (!queue.hasNext())

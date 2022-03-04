@@ -191,8 +191,7 @@ public class MMOPlayerData {
      */
     @NotNull
     public Player getPlayer() {
-        Validate.notNull(player, "Player is offline");
-        return player;
+        return Objects.requireNonNull(player, "Player is offline");
     }
 
     /**
@@ -201,7 +200,7 @@ public class MMOPlayerData {
      * @param player Player instance to cache
      */
     public void updatePlayer(@Nullable Player player) {
-        this.player = player;
+        this.player = Objects.requireNonNull(player, "Player cannot be null");
         this.lastLogActivity = System.currentTimeMillis();
     }
 

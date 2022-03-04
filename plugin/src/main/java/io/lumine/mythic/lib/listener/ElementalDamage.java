@@ -34,35 +34,37 @@ public class ElementalDamage implements Listener {
             return;
 
         double critChance = Math.min(event.getAttack().getStat("CRITICAL_STRIKE_CHANCE"), MythicLib.plugin.getAttackEffects().getMaxWeaponCritChance());
-        for (Element el : MythicLib.plugin.getElements().getAll()) {
+        for (Element element : MythicLib.plugin.getElements().getAll()) {
 
             // If the flat damage is 0; cancel everything asap
             StatProvider attackerStats = event.getAttack();
-            double damage = attackerStats.getStat(el.getUpperCaseId() + "_DAMAGE");
+            double damage = attackerStats.getStat(element.getUpperCaseId() + "_DAMAGE");
             if (damage == 0)
                 continue;
 
             // Multiply flat damage by the percent based stat
-            double percentDamage = attackerStats.getStat(el.getUpperCaseId() + "_DAMAGE_PERCENT");
-            damage *= damage * (1 + Math.max(-1, percentDamage / 100));
+            double percentDamage = attackerStats.getStat(element.getUpperCaseId() + "_DAMAGE_PERCENT");
+            damage *= 1 + Math.max(-1, percentDamage / 100);
+            if (damage == 0)
+                continue;
 
             // Apply elemental weakness
             StatProvider opponentStats = StatProvider.get(event.getEntity());
-            double weakness = opponentStats.getStat(el.getUpperCaseId() + "_WEAKNESS");
+            double weakness = opponentStats.getStat(element.getUpperCaseId() + "_WEAKNESS");
             damage *= 1 + Math.max(-1, weakness / 100);
             if (damage == 0)
                 continue;
 
             // Apply elemental defense
-            double defense = opponentStats.getStat(el.getUpperCaseId() + "_DEFENSE");
-            defense *= 1 + Math.max(-1, opponentStats.getStat(el.getUpperCaseId() + "_DEFENSE_PERCENT") / 100);
+            double defense = opponentStats.getStat(element.getUpperCaseId() + "_DEFENSE");
+            defense *= 1 + Math.max(-1, opponentStats.getStat(element.getUpperCaseId() + "_DEFENSE_PERCENT") / 100);
             damage = MythicLib.plugin.getMMOConfig().getAppliedElementalDamage(damage, defense);
 
             // Register the damage packet
-            event.getDamage().add(damage, el, DamageType.WEAPON);
+            event.getDamage().add(damage, element, DamageType.WEAPON);
 
             // Apply critical strikes
-            Skill skill = el.getSkill(random.nextDouble() < critChance / 100);
+            Skill skill = element.getSkill(random.nextDouble() < critChance / 100);
             if (skill != null)
                 skill.cast(new TriggerMetadata(event.getAttack(), event.getEntity()));
         }

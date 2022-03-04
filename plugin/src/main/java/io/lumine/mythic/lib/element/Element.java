@@ -1,12 +1,14 @@
 package io.lumine.mythic.lib.element;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.skill.SimpleSkill;
 import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
@@ -32,13 +34,13 @@ public class Element {
         return name;
     }
 
-    @Nullable
+    @NotNull
     public Skill getSkill(boolean criticalStrike) {
         SkillHandler<?> handler = criticalStrike && this.criticalStrike != null ? this.criticalStrike : regularAttack;
-        return handler == null ? null : new SimpleSkill(TriggerType.API, handler);
+        return new SimpleSkill(TriggerType.API, handler);
     }
 
     public String getUpperCaseId() {
-        return id.toUpperCase().replace("-", "_");
+        return UtilityMethods.enumName(id);
     }
 }

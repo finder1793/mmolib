@@ -14,8 +14,7 @@ import java.util.List;
  * Checks if the attackMeta bound to the skillMeta has some damage type.
  * This condition can only be used when using a trigger type like DAMAGED or DAMAGE
  * <p>
- * This checks if the attack has ALL the damage types provided; condition
- * will NOT be met if any of the damage type is not present in the attack
+ * This checks if the attack has at least one of the damage types provided.
  */
 public class HasDamageTypeCondition extends Condition {
     private final List<DamageType> types = new ArrayList<>();
@@ -31,12 +30,10 @@ public class HasDamageTypeCondition extends Condition {
 
     @Override
     public boolean isMet(SkillMetadata meta) {
-        Validate.isTrue(meta.hasAttackBound(), "Skill has no attack bound to it");
-
         for (DamageType checked : types)
-            if (!meta.getAttack().getDamage().hasType(checked))
-                return false;
+            if (meta.getAttack().getDamage().hasType(checked))
+                return true;
 
-        return true;
+        return false;
     }
 }

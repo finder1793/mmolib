@@ -5,6 +5,8 @@ import io.lumine.mythic.lib.exception.CalculatorException;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.util.parser.numeric.FunctionX;
 import lombok.SneakyThrows;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.logging.Level;
 
@@ -16,13 +18,14 @@ import java.util.logging.Level;
  * This represents 90% of the total skill system configurability
  */
 public class DoubleFormula {
+    @Nullable
     private final String value;
     private final double trivialValue;
     private final boolean trivial;
 
     public static final DoubleFormula ZERO = new DoubleFormula(0);
 
-    public DoubleFormula(String str) {
+    public DoubleFormula(@NotNull String str) {
         this.value = str;
 
         double trivialValue = 0;
