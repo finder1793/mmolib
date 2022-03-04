@@ -5,6 +5,8 @@ import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.stat.SharedStat;
 import io.lumine.mythic.lib.api.stat.StatMap;
+import io.lumine.mythic.lib.damage.AttackMetadata;
+import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.player.cooldown.CooldownType;
 import org.bukkit.Particle;
@@ -15,6 +17,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.Random;
+import java.util.logging.Level;
 
 public class AttackEffects implements Listener {
 
@@ -50,11 +53,11 @@ public class AttackEffects implements Listener {
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onHitAttackEffects(PlayerAttackEvent event) {
-        StatMap stats = event.getData().getStatMap();
+        //StatMap stats = event.getData().getStatMap();
+        AttackMetadata stats = event.getAttack();
 
         // Apply specific damage increase
-        for (DamageType type : DamageType.values())
-            event.getDamage().additiveModifier(stats.getStat(type.getOffenseStat()) / 100, type);
+        for (DamageType type : DamageType.values()) { event.getDamage().additiveModifier(stats.getStat(type.getOffenseStat()) / 100, type); }
 
         // Apply undead damage
         if (MythicLib.plugin.getVersion().getWrapper().isUndead(event.getEntity()))

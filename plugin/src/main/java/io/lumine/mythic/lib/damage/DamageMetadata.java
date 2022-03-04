@@ -25,6 +25,23 @@ public class DamageMetadata implements Cloneable {
         packets.add(new DamagePacket(damage, types));
     }
 
+    @Override
+    public String toString() {
+
+        StringBuilder damageTypes = new StringBuilder("\u00a73Damage Meta{");
+
+        boolean packetAppended = false;
+        for (DamagePacket packet : getPackets()) {
+            if (packetAppended) { damageTypes.append("\u00a73;"); }
+            packetAppended = true;
+
+            // Damage
+            damageTypes.append(packet); }
+
+        // Yeah
+        return damageTypes.append("\u00a73}").toString();
+    }
+
     public double getDamage() {
         double d = 0;
 
@@ -181,76 +198,4 @@ public class DamageMetadata implements Cloneable {
         return clone;
     }
 
-    /**
-     * Some damage value weighted by a specific set of damage types. This helps
-     * divide any attack into multiple parts that can be manipulated independently.
-     * <p>
-     * For instance, a melee sword attack would add one physical-weapon damage packet.
-     * Then, casting an on-hit ability like Starfall would add an extra magic-skill
-     * damage packet, independently of the packet that is already there. If we were
-     * to then apply the 'Melee Damage' stat, it would only apply to the first packet.
-     * <p>
-     * Damage packets are completed hidden from developpers. Just like nodes
-     * for the HashMap implementation.
-     *
-     * @author jules
-     */
-    class DamagePacket implements Cloneable {
-        private final DamageType[] types;
-        private double value, additiveModifiers;
-
-        public DamagePacket(double value, DamageType... types) {
-            this.value = value;
-            this.types = types;
-        }
-
-        /**
-         * @return Final value of the damage packet taking into account
-         *         all the damage modifiers that have been registered
-         */
-        public double getFinalValue() {
-
-            // Make sure the returned value is positive
-            return value * Math.max(0, 1 + additiveModifiers);
-        }
-
-        /**
-         * @return Checks if the current packet has that damage type
-         */
-        public boolean hasType(DamageType type) {
-
-            for (DamageType checked : this.types)
-                if (checked == type)
-                    return true;
-
-            return false;
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            for (DamageType d : types) { if (sb.length() != 0) { sb.append('/'); } sb.append(d.toString()); }
-            sb.append(" x").append(value);
-
-            // Yes
-            return sb.toString();
-        }
-
-        @Override
-        public DamagePacket clone() {
-            DamagePacket clone = new DamagePacket(value, types);
-            clone.additiveModifiers = additiveModifiers;
-            return clone;
-        }
-    }
-
-    class ElementalDamagePacket extends DamagePacket {
-        private final Element element;
-
-        public ElementalDamagePacket(double value, Element element, DamageType... types) {
-            super(value, types);
-
-            this.element = element;
-        }
-    }
 }

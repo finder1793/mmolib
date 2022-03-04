@@ -117,6 +117,9 @@ public class DamageManager implements Listener, AttackHandler {
         // Register custom damage
         customDamage.put(target.getEntityId(), metadata);
 
+        // Identify damage
+        double damageApplied = Math.max(metadata.getDamage().getDamage(), 0.001);
+
         /*
          * No knockback: temporarily apply a 100% knockback resistance
          * to the target before applying regular damage
@@ -124,7 +127,7 @@ public class DamageManager implements Listener, AttackHandler {
         if (!knockback)
             try {
                 target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).addModifier(noKnockback);
-                target.damage(metadata.getDamage().getDamage(), metadata.getPlayer());
+                target.damage(damageApplied, metadata.getPlayer());
             } catch (Exception anyError) {
                 MythicLib.plugin.getLogger().log(Level.WARNING, "An error occured while registering player damage");
                 anyError.printStackTrace();
@@ -134,7 +137,7 @@ public class DamageManager implements Listener, AttackHandler {
 
             // Apply default knockback
         else
-            target.damage(metadata.getDamage().getDamage(), metadata.getPlayer());
+            target.damage(damageApplied, metadata.getPlayer());
 
         // No damage immunity
         if (ignoreImmunity)
