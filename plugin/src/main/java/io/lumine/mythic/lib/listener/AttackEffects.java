@@ -4,10 +4,9 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.stat.SharedStat;
-import io.lumine.mythic.lib.api.stat.StatMap;
-import io.lumine.mythic.lib.damage.AttackMetadata;
-import io.lumine.mythic.lib.damage.DamageMetadata;
+import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.damage.DamageType;
+import io.lumine.mythic.lib.listener.event.PlayerAttackEventListener;
 import io.lumine.mythic.lib.player.cooldown.CooldownType;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -17,14 +16,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.Random;
-import java.util.logging.Level;
 
 public class AttackEffects implements Listener {
 
     // Critical strike configs
     private double weaponCritCoef, skillCritCoef, maxWeaponCritChance, maxSkillCritChance, weaponCritCooldown, skillCritCooldown;
 
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random();
 
     public AttackEffects() {
         reload();
@@ -46,18 +44,18 @@ public class AttackEffects implements Listener {
     }
 
     /**
-     * Read {@link io.lumine.mythic.lib.listener.event.PlayerAttackEventListener}
-     * <p>
      * See how easy it is to just listen to any player
      * attack and apply on-hit attack effects now??
+     *
+     * @see {@link PlayerAttackEventListener}
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onHitAttackEffects(PlayerAttackEvent event) {
-        //StatMap stats = event.getData().getStatMap();
-        AttackMetadata stats = event.getAttack();
+        StatProvider stats = event.getAttack();
 
         // Apply specific damage increase
-        for (DamageType type : DamageType.values()) { event.getDamage().additiveModifier(stats.getStat(type.getOffenseStat()) / 100, type); }
+        for (DamageType type : DamageType.values())
+            event.getDamage().additiveModifier(stats.getStat(type.getOffenseStat()) / 100, type);
 
         // Apply undead damage
         if (MythicLib.plugin.getVersion().getWrapper().isUndead(event.getEntity()))
@@ -68,7 +66,7 @@ public class AttackEffects implements Listener {
 
         // Weapon critical strikes
         if ((event.getDamage().hasType(DamageType.WEAPON) || event.getDamage().hasType(DamageType.UNARMED))
-                && random.nextDouble() <= Math.min(stats.getStat("CRITICAL_STRIKE_CHANCE"), maxWeaponCritChance) / 100
+                && RANDOM.nextDouble() <= Math.min(stats.getStat("CRITICAL_STRIKE_CHANCE"), maxWeaponCritChance) / 100
                 && !event.getData().isOnCooldown(CooldownType.WEAPON_CRIT)) {
             event.getData().applyCooldown(CooldownType.WEAPON_CRIT, weaponCritCooldown);
 
@@ -83,7 +81,7 @@ public class AttackEffects implements Listener {
 
         // Skill critical strikes
         if (event.getDamage().hasType(DamageType.SKILL)
-                && random.nextDouble() <= Math.min(stats.getStat("SPELL_CRITICAL_STRIKE_CHANCE"), maxSkillCritChance) / 100
+                && RANDOM.nextDouble() <= Math.min(stats.getStat("SPELL_CRITICAL_STRIKE_CHANCE"), maxSkillCritChance) / 100
                 && !event.getData().isOnCooldown(CooldownType.SKILL_CRIT)) {
             event.getData().applyCooldown(CooldownType.SKILL_CRIT, skillCritCooldown);
             event.getDamage().multiplicativeModifier(skillCritCoef + stats.getStat("SPELL_CRITICAL_STRIKE_POWER") / 100, DamageType.SKILL);

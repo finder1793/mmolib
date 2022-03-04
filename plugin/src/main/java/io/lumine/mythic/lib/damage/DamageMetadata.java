@@ -32,11 +32,14 @@ public class DamageMetadata implements Cloneable {
 
         boolean packetAppended = false;
         for (DamagePacket packet : getPackets()) {
-            if (packetAppended) { damageTypes.append("\u00a73;"); }
+            if (packetAppended) {
+                damageTypes.append("\u00a73;");
+            }
             packetAppended = true;
 
             // Damage
-            damageTypes.append(packet); }
+            damageTypes.append(packet);
+        }
 
         // Yeah
         return damageTypes.append("\u00a73}").toString();
@@ -45,13 +48,8 @@ public class DamageMetadata implements Cloneable {
     public double getDamage() {
         double d = 0;
 
-        for (DamagePacket packet : packets) {
-
-            //MythicCraftingManager.log("\u00a78DAMAGE\u00a77 Adding up damage: \u00a7a" + packet.toString());
+        for (DamagePacket packet : packets)
             d += packet.getFinalValue();
-        }
-
-        //MythicCraftingManager.log("\u00a78DAMAGE\u00a77 Total: \u00a7a" + d);
 
         return d;
     }
@@ -72,13 +70,13 @@ public class DamageMetadata implements Cloneable {
 
     /**
      * @return Set containing all damage types found
-     *         in all the different damage packets.
+     * in all the different damage packets.
      */
     public Set<DamageType> collectTypes() {
         Set<DamageType> collected = new HashSet<>();
 
         for (DamagePacket packet : packets)
-            for (DamageType type : packet.types)
+            for (DamageType type : packet.getTypes())
                 collected.add(type);
 
         return collected;
@@ -86,7 +84,7 @@ public class DamageMetadata implements Cloneable {
 
     /**
      * @return Iterates through all registered damage packets and
-     *         see if any has this damage type.
+     * see if any has this damage type.
      */
     public boolean hasType(DamageType type) {
 
@@ -130,13 +128,13 @@ public class DamageMetadata implements Cloneable {
      * This is used for critical strikes which modifier should
      * NOT stack up with damage boosting statistics.
      *
-     * @param coef Multiplicative coefficient. 1.5 will
-     *             increase final damage by 50%
+     * @param coefficient Multiplicative coefficient. 1.5 will
+     *                    increase final damage by 50%
      * @return The same damage metadata
      */
-    public DamageMetadata multiplicativeModifier(double coef) {
+    public DamageMetadata multiplicativeModifier(double coefficient) {
         for (DamagePacket packet : packets)
-            packet.value *= coef;
+            packet.multiplicativeModifier(coefficient);
         return this;
     }
 
@@ -150,7 +148,7 @@ public class DamageMetadata implements Cloneable {
      */
     public DamageMetadata additiveModifier(double multiplier) {
         for (DamagePacket packet : packets)
-            packet.additiveModifiers += multiplier;
+            packet.additiveModifier(multiplier);
         return this;
     }
 
@@ -160,15 +158,15 @@ public class DamageMetadata implements Cloneable {
      * <p>
      * This is not being used in MMOCore nor MMOItems
      *
-     * @param coef      Multiplicative coefficient. 1.5 will
+     * @param coefficient      Multiplicative coefficient. 1.5 will
      *                  increase final damage by 50%
      * @param concerned Concerned damage type
      * @return The same damage metadata
      */
-    public DamageMetadata multiplicativeModifier(double coef, @NotNull DamageType concerned) {
+    public DamageMetadata multiplicativeModifier(double coefficient, @NotNull DamageType concerned) {
         for (DamagePacket packet : packets)
             if (packet.hasType(concerned))
-                packet.value *= coef;
+                packet.multiplicativeModifier(coefficient);
         return this;
     }
 
@@ -184,7 +182,7 @@ public class DamageMetadata implements Cloneable {
     public DamageMetadata additiveModifier(double multiplier, @NotNull DamageType concerned) {
         for (DamagePacket packet : packets)
             if (packet.hasType(concerned))
-                packet.additiveModifiers += multiplier;
+                packet.additiveModifier(multiplier);
         return this;
     }
 
@@ -197,5 +195,4 @@ public class DamageMetadata implements Cloneable {
 
         return clone;
     }
-
 }

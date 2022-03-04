@@ -3,17 +3,24 @@ package io.lumine.mythic.lib.damage;
 import io.lumine.mythic.lib.element.Element;
 import org.jetbrains.annotations.NotNull;
 
-public
+import java.util.Objects;
 
-class ElementalDamagePacket extends DamagePacket {
+public class ElementalDamagePacket extends DamagePacket {
+    @NotNull
     private Element element;
-
-    @NotNull public Element getElement() { return element; }
-    public void setElement(@NotNull Element element) { this.element = element; }
 
     public ElementalDamagePacket(double value, @NotNull Element element, @NotNull DamageType... types) {
         super(value, types);
 
         this.element = element;
+    }
+
+    @NotNull
+    public Element getElement() {
+        return element;
+    }
+
+    public void setElement(@NotNull Element element) {
+        this.element = Objects.requireNonNull(element, "Element cannot be null");
     }
 }
