@@ -2,9 +2,7 @@ package io.lumine.mythic.lib.player.skill;
 
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.player.modifier.Closeable;
 import io.lumine.mythic.lib.player.modifier.ModifierMap;
-import io.lumine.mythic.lib.player.modifier.Openable;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.handler.def.passive.Backstab;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
@@ -103,7 +101,7 @@ public class PassiveSkillMap implements ModifierMap<PassiveSkill> {
      *
      * @author jules
      * @deprecated Pretty terrible implementation but without reworking
-     * the player inventory there is no other option available.
+     *         the player inventory there is no other option available.
      */
     @Deprecated
     public void tickTimerSkills() {
@@ -112,7 +110,7 @@ public class PassiveSkillMap implements ModifierMap<PassiveSkill> {
         TriggerMetadata triggerMeta = null;
 
         for (PassiveSkill passive : skills.values())
-            if (passive.getType() == TriggerType.TIMER) {
+            if (passive.getType().equals(TriggerType.TIMER)) {
                 String key = passive.getTriggeredSkill().getHandler().getId();
                 long lastCast = Objects.requireNonNullElse(this.lastCast.get(key), 0l); // Avoids one map checkup taking advantage of non null values
                 if (lastCast + passive.getTimerPeriod() > System.currentTimeMillis())

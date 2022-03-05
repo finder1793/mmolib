@@ -5,8 +5,6 @@ import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.util.TemporaryListener;
-import io.lumine.mythic.lib.damage.AttackMetadata;
-import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.ProjectileAttackMetadata;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.player.skill.PassiveSkill;
@@ -19,7 +17,6 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
