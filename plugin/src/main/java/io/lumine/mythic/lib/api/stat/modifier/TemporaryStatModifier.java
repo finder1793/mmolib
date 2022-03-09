@@ -32,7 +32,7 @@ public class TemporaryStatModifier extends StatModifier implements Closeable {
      * @param time       Time period after which the modifier will be unregistered
      */
     public void register(MMOPlayerData playerData, long time) {
-        register(playerData);
+        super.register(playerData);
         closeTask = new BukkitRunnable() {
             @Override
             public void run() {
@@ -40,6 +40,11 @@ public class TemporaryStatModifier extends StatModifier implements Closeable {
             }
         };
         closeTask.runTaskLater(MythicLib.plugin, time);
+    }
+
+    @Override
+    public void register(MMOPlayerData playerData) {
+        throw new UnsupportedOperationException("Use #register(MMOPlayerData, long) instead");
     }
 
     @Override

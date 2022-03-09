@@ -178,18 +178,22 @@ public class StatInstance {
     public class ModifierPacket {
 
         /**
-         * Set to true if some update is required.
-         * This is a small improvement in performance
+         * Set to true if some update is required. This is a small
+         * performance improvement as it reduces useless stat updates.
          */
         private boolean updateRequired;
 
         /**
-         * Registers a stat modifier and run the required player stat updates
+         * Registers a stat modifier and run the required player stat updates.
+         * If a modifier with the same key already exists, it is then unregistered
+         * and closed if required.
          *
          * @param modifier The stat modifier being registered
          */
         public void addModifier(StatModifier modifier) {
-            modifiers.put(modifier.getKey(), modifier);
+            StatModifier current = modifiers.put(modifier.getKey(), modifier);
+            if (current != null && current instanceof Closeable)
+                ((Closeable) current).close();
             updateRequired = true;
         }
 
