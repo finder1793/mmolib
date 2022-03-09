@@ -9,6 +9,7 @@ import java.sql.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
+@Deprecated
 public abstract class MMODataSource {
     protected final HikariConfig config = new HikariConfig();
     private HikariDataSource dataSource;

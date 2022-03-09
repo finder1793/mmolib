@@ -106,6 +106,7 @@ public class MythicLib extends LuminePlugin {
             getLogger().log(Level.INFO, "Detected Bukkit Version: " + version.toString());
         } catch (Exception exception) {
             getLogger().log(Level.INFO, net.md_5.bungee.api.ChatColor.RED + "Your server version is not compatible.");
+            exception.printStackTrace();
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }

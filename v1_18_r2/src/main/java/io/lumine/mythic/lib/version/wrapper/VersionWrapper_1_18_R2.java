@@ -1,4 +1,4 @@
-package wrapper;
+package io.lumine.mythic.lib.version.wrapper;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;

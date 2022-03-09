@@ -81,8 +81,8 @@ public class MMOPlayerData {
 
     /**
      * @return The player's StatMap which can be used by any other plugins to
-     * apply stat modifiers to ANY MMOItems/MMOCore/external stats,
-     * calculate stat values, etc.
+     *         apply stat modifiers to ANY MMOItems/MMOCore/external stats,
+     *         calculate stat values, etc.
      */
     public StatMap getStatMap() {
         return statMap;
@@ -145,7 +145,7 @@ public class MMOPlayerData {
 
         for (PassiveSkill skill : skills) {
             SkillHandler handler = skill.getTriggeredSkill().getHandler();
-            if (skill.getType() == triggerType && handler.isTriggerable())
+            if (skill.getType().equals(triggerType) && handler.isTriggerable())
                 skill.getTriggeredSkill().cast(triggerMeta);
         }
     }
@@ -262,8 +262,7 @@ public class MMOPlayerData {
      * server started/was reloaded.
      *
      * @param uuid The player UUID to check
-     * @return If the MMOPlayerData instance is loaded for a specific
-     * player
+     * @return If the MMOPlayerData instance is loaded for a specific player
      * @deprecated Use {@link #has(UUID)} instead
      */
     @Deprecated
@@ -303,9 +302,9 @@ public class MMOPlayerData {
 
     /**
      * @return Currently loaded MMOPlayerData instances. This can be used to
-     * apply things like resource regeneration or other runnable based
-     * tasks instead of looping through online players and having to
-     * resort to a map-lookup-based get(Player) call
+     *         apply things like resource regeneration or other runnable based
+     *         tasks instead of looping through online players and having to
+     *         resort to a map-lookup-based get(Player) call
      */
     public static Collection<MMOPlayerData> getLoaded() {
         return data.values();

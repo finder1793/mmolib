@@ -53,8 +53,8 @@ public class RayTrace {
 
         // Calculate initial location
         Validate.isTrue(hand.isHand(), "Not a hand equipment slot");
-        double a = Math.toRadians(player.getEyeLocation().getYaw() + 180 + 30 * (hand == EquipmentSlot.MAIN_HAND ? -1 : 1));
-        initialLocation = player.getEyeLocation().add(new Vector(Math.cos(a), 0, Math.sin(a)).multiply(.5));
+        double a = Math.toRadians(player.getEyeLocation().getYaw() + 90 + 45 * (hand == EquipmentSlot.MAIN_HAND ? 1 : -1));
+        initialLocation = player.getLocation().add(Math.cos(a) * .5, 1.5, Math.sin(a) * .5);
 
         // Ray trace
         initialDirection = player.getEyeLocation().getDirection();
