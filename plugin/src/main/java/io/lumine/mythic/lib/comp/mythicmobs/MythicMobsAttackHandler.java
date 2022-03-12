@@ -1,13 +1,13 @@
 package io.lumine.mythic.lib.comp.mythicmobs;
 
+import io.lumine.mythic.api.adapters.AbstractPlayer;
+import io.lumine.mythic.bukkit.BukkitAdapter;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.damage.AttackHandler;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
-import io.lumine.xikage.mythicmobs.adapters.AbstractPlayer;
-import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +34,7 @@ public class MythicMobsAttackHandler implements AttackHandler {
         if (!opt.isPresent())
             return null;
 
-        io.lumine.xikage.mythicmobs.skills.damage.DamageMetadata metadata = (io.lumine.xikage.mythicmobs.skills.damage.DamageMetadata) opt.get();
+        io.lumine.mythic.api.skills.damage.DamageMetadata metadata = (io.lumine.mythic.api.skills.damage.DamageMetadata) opt.get();
         if (!(metadata.getDamager().getEntity() instanceof AbstractPlayer))
             return null;
 

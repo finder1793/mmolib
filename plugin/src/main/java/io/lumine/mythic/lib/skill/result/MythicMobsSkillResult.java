@@ -1,19 +1,20 @@
 package io.lumine.mythic.lib.skill.result;
 
+import io.lumine.mythic.api.adapters.AbstractEntity;
+import io.lumine.mythic.api.adapters.AbstractLocation;
+import io.lumine.mythic.api.mobs.GenericCaster;
+import io.lumine.mythic.api.skills.SkillCaster;
+import io.lumine.mythic.bukkit.BukkitAdapter;
+import io.lumine.mythic.core.skills.SkillMetadataImpl;
+import io.lumine.mythic.core.skills.SkillTriggers;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.MythicMobsSkillHandler;
-import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
-import io.lumine.xikage.mythicmobs.adapters.AbstractLocation;
-import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
-import io.lumine.xikage.mythicmobs.mobs.GenericCaster;
-import io.lumine.xikage.mythicmobs.skills.SkillCaster;
-import io.lumine.xikage.mythicmobs.skills.SkillTrigger;
 
 import java.util.HashSet;
 
 public class MythicMobsSkillResult implements SkillResult {
     private final MythicMobsSkillHandler behaviour;
-    private final io.lumine.xikage.mythicmobs.skills.SkillMetadata mmSkillMeta;
+    private final SkillMetadataImpl mmSkillMeta;
 
     public MythicMobsSkillResult(SkillMetadata skillMeta, MythicMobsSkillHandler behaviour) {
         this.behaviour = behaviour;
@@ -31,7 +32,7 @@ public class MythicMobsSkillResult implements SkillResult {
         if (skillMeta.hasTargetLocation())
             targetLocations.add(BukkitAdapter.adapt(skillMeta.getTargetLocationOrNull()));
 
-        mmSkillMeta = new io.lumine.xikage.mythicmobs.skills.SkillMetadata(SkillTrigger.CAST, caster, trigger, BukkitAdapter.adapt(skillMeta.getCaster().getPlayer().getEyeLocation()), targetEntities, targetLocations, 1);
+        mmSkillMeta = new SkillMetadataImpl(SkillTriggers.API, caster, trigger, BukkitAdapter.adapt(skillMeta.getCaster().getPlayer().getEyeLocation()), targetEntities, targetLocations, 1);
 
         // Stats & cast skill are cached inside a variable
         mmSkillMeta.getVariables().putObject("MMOStatMap", skillMeta.getCaster());
@@ -45,7 +46,7 @@ public class MythicMobsSkillResult implements SkillResult {
         return behaviour.getSkill().isUsable(mmSkillMeta);
     }
 
-    public io.lumine.xikage.mythicmobs.skills.SkillMetadata getMythicMobskillMetadata() {
+    public SkillMetadataImpl getMythicMobskillMetadata() {
         return mmSkillMeta;
     }
 }

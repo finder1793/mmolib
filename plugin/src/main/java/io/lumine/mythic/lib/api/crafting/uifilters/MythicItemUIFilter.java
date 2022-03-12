@@ -1,14 +1,14 @@
 package io.lumine.mythic.lib.api.crafting.uifilters;
 
+import io.lumine.mythic.bukkit.MythicBukkit;
+import io.lumine.mythic.bukkit.adapters.BukkitItemStack;
+import io.lumine.mythic.core.items.MythicItem;
 import io.lumine.mythic.lib.api.crafting.uimanager.UIFilterManager;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackCategory;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackProvider;
 import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import io.lumine.utils.items.ItemFactory;
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitItemStack;
-import io.lumine.xikage.mythicmobs.items.MythicItem;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -60,7 +60,7 @@ public class MythicItemUIFilter implements UIFilter {
         if (reg) { return true; }
 
         // All right
-        Optional<MythicItem> hasMythicItem = MythicMobs.inst().getItemManager().getItem(argument);
+        Optional<MythicItem> hasMythicItem = MythicBukkit.inst().getItemManager().getItem(argument);
 
         // Not Present?
         if (!hasMythicItem.isPresent()) {
@@ -101,10 +101,10 @@ public class MythicItemUIFilter implements UIFilter {
         if (!isValid(argument, data, ffp)) { return null; }
 
         // Guaranteed to work
-        Optional<MythicItem> hasMythicItem = MythicMobs.inst().getItemManager().getItem(argument);
+        Optional<MythicItem> hasMythicItem = MythicBukkit.inst().getItemManager().getItem(argument);
 
         // Thing
-        ItemStack item = ((BukkitItemStack)((MythicItem)hasMythicItem.get()).generateItemStack(1)).build();
+        ItemStack item = ((BukkitItemStack) hasMythicItem.get().generateItemStack(1)).build();
 
         FriendlyFeedbackProvider.log(ffp, FriendlyFeedbackCategory.SUCCESS,
                 "Successfully generated $r{0}$b. ", SilentNumbers.getItemName(item));
@@ -121,10 +121,10 @@ public class MythicItemUIFilter implements UIFilter {
         if (!isValid(argument, data, ffp)) { return ItemFactory.of(Material.BARRIER).name("\u00a7cInvalid MythicItem \u00a7e" + argument).build(); }
 
         // Guaranteed to work
-        Optional<MythicItem> hasMythicItem = MythicMobs.inst().getItemManager().getItem(argument);
+        Optional<MythicItem> hasMythicItem = MythicBukkit.inst().getItemManager().getItem(argument);
 
         // Thing
-        ItemStack item = ((BukkitItemStack)((MythicItem)hasMythicItem.get()).generateItemStack(1)).build();
+        ItemStack item = ((BukkitItemStack)hasMythicItem.get().generateItemStack(1)).build();
 
         FriendlyFeedbackProvider.log(ffp, FriendlyFeedbackCategory.SUCCESS,
                 "Successfully generated $r{0}$b. ", SilentNumbers.getItemName(item));
@@ -141,7 +141,7 @@ public class MythicItemUIFilter implements UIFilter {
         if (!isValid(argument, data, null)) { return SilentNumbers.toArrayList("This mythic type is $finvalid$b."); }
 
         // Guaranteed to work
-        Optional<MythicItem> hasMythicItem = MythicMobs.inst().getItemManager().getItem(argument);
+        Optional<MythicItem> hasMythicItem = MythicBukkit.inst().getItemManager().getItem(argument);
 
         // Description is thus
         return SilentNumbers.toArrayList("This item must be a $r" + SilentNumbers.getItemName(((BukkitItemStack)((MythicItem)hasMythicItem.get()).generateItemStack(1)).build()) + "$b.");
@@ -149,7 +149,7 @@ public class MythicItemUIFilter implements UIFilter {
 
     @Override public boolean determinateGeneration() { return true; }
 
-    static ArrayList<String> getMythicItemNames() { return new ArrayList<>(MythicMobs.inst().getItemManager().getItemNames()); }
+    static ArrayList<String> getMythicItemNames() { return new ArrayList<>(MythicBukkit.inst().getItemManager().getItemNames()); }
 
     /*
      *  Tracking

@@ -1,12 +1,12 @@
 package io.lumine.mythic.lib.comp.mythicmobs.mechanic;
 
+import io.lumine.mythic.api.config.MythicLineConfig;
+import io.lumine.mythic.api.skills.INoTargetSkill;
+import io.lumine.mythic.api.skills.SkillMetadata;
+import io.lumine.mythic.api.skills.SkillResult;
+import io.lumine.mythic.api.skills.placeholders.PlaceholderDouble;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
-import io.lumine.xikage.mythicmobs.io.MythicLineConfig;
-import io.lumine.xikage.mythicmobs.skills.INoTargetSkill;
-import io.lumine.xikage.mythicmobs.skills.SkillMechanic;
-import io.lumine.xikage.mythicmobs.skills.SkillMetadata;
-import io.lumine.xikage.mythicmobs.skills.placeholders.parsers.PlaceholderDouble;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -24,29 +24,36 @@ import org.apache.commons.lang.Validate;
  *
  * @author indyuce
  */
-public class MultiplyDamageMechanic extends SkillMechanic implements INoTargetSkill {
+public class MultiplyDamageMechanic implements INoTargetSkill {
     protected final PlaceholderDouble amount;
     protected final DamageType type;
+    protected final boolean additive;
 
-    public MultiplyDamageMechanic(String skill, MythicLineConfig mlc) {
-        super(skill, mlc);
-
+    public MultiplyDamageMechanic(MythicLineConfig config) {
         this.amount = PlaceholderDouble.of(config.getString(new String[]{"amount", "a"}, "1", new String[0]));
         String typeFormat = config.getString(new String[]{"type", "t"}, "", new String[0]);
         this.type = typeFormat.isEmpty() ? null : DamageType.valueOf(typeFormat.toUpperCase().replace(" ", "_").replace("-", "_"));
+        this.additive = config.getBoolean("additive", false);
     }
 
     @Override
-    public boolean cast(SkillMetadata skillMetadata) {
+    public SkillResult cast(SkillMetadata skillMetadata) {
         Validate.isTrue(skillMetadata.getVariables().has("MMOAttack"), "No attack meta is provided");
         AttackMetadata attackMeta = (AttackMetadata) skillMetadata.getVariables().get("MMOAttack").get();
 
         double a = this.amount.get(skillMetadata.getCaster());
-        if (type == null)
-            attackMeta.getDamage().multiplicativeModifier(a);
-        else
-            attackMeta.getDamage().multiplicativeModifier(a, type);
+        if (additive) {
+            if (type == null)
+                attackMeta.getDamage().additiveModifier(a);
+            else
+                attackMeta.getDamage().additiveModifier(a, type);
+        } else {
+            if (type == null)
+                attackMeta.getDamage().multiplicativeModifier(a);
+            else
+                attackMeta.getDamage().multiplicativeModifier(a, type);
+        }
 
-        return true;
+        return SkillResult.SUCCESS;
     }
 }

@@ -1,11 +1,11 @@
 package io.lumine.mythic.lib.skill.handler;
 
+import io.lumine.mythic.api.skills.Skill;
+import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.comp.anticheat.CheatType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.result.MythicMobsSkillResult;
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.skills.Skill;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -27,7 +27,7 @@ public class MythicMobsSkillHandler extends SkillHandler<MythicMobsSkillResult> 
 
         String skillName = config.getString("mythicmobs-skill-id");
 
-        Optional<Skill> opt = MythicMobs.inst().getSkillManager().getSkill(skillName);
+        Optional<Skill> opt = MythicBukkit.inst().getSkillManager().getSkill(skillName);
         Validate.isTrue(opt.isPresent(), "Could not find MM skill with name '" + skillName + "'");
         skill = opt.get();
 

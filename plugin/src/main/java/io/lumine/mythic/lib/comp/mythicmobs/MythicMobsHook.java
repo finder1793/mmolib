@@ -1,11 +1,10 @@
 package io.lumine.mythic.lib.comp.mythicmobs;
 
+import io.lumine.mythic.bukkit.MythicBukkit;
+import io.lumine.mythic.bukkit.events.MythicReloadedEvent;
+import io.lumine.mythic.core.mobs.ActiveMob;
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicReloadedEvent;
-import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -30,7 +29,7 @@ public class MythicMobsHook implements Listener {
     }
 
     private String getFaction(Entity entity) {
-        ActiveMob mob = MythicMobs.inst().getMobManager().getMythicMobInstance(entity);
+        ActiveMob mob = MythicBukkit.inst().getMobManager().getMythicMobInstance(entity);
         return mob != null && mob.hasFaction() ? mob.getFaction() : null;
     }
 }

@@ -1,5 +1,14 @@
 package io.lumine.mythic.lib.comp.mythicmobs.mechanic;
 
+import io.lumine.mythic.api.adapters.AbstractEntity;
+import io.lumine.mythic.api.config.MythicLineConfig;
+import io.lumine.mythic.api.skills.ITargetedEntitySkill;
+import io.lumine.mythic.api.skills.SkillMetadata;
+import io.lumine.mythic.api.skills.SkillResult;
+import io.lumine.mythic.api.skills.placeholders.PlaceholderDouble;
+import io.lumine.mythic.core.skills.SkillExecutor;
+import io.lumine.mythic.core.skills.damage.DamagingMechanic;
+import io.lumine.mythic.core.utils.annotations.MythicMechanic;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
@@ -8,14 +17,6 @@ import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.player.PlayerMetadata;
-import io.lumine.xikage.mythicmobs.adapters.AbstractEntity;
-import io.lumine.xikage.mythicmobs.io.MythicLineConfig;
-import io.lumine.xikage.mythicmobs.logging.MythicLogger;
-import io.lumine.xikage.mythicmobs.skills.ITargetedEntitySkill;
-import io.lumine.xikage.mythicmobs.skills.SkillMetadata;
-import io.lumine.xikage.mythicmobs.skills.damage.DamagingMechanic;
-import io.lumine.xikage.mythicmobs.skills.placeholders.parsers.PlaceholderDouble;
-import io.lumine.xikage.mythicmobs.util.annotations.MythicMechanic;
 import org.bukkit.entity.LivingEntity;
 
 @MythicMechanic(
@@ -35,8 +36,8 @@ public class MMODamageMechanic extends DamagingMechanic implements ITargetedEnti
      */
     protected final DamageType[] types;
 
-    public MMODamageMechanic(String line, MythicLineConfig config) {
-        super(line, config);
+    public MMODamageMechanic(SkillExecutor manager, String line, MythicLineConfig config) {
+        super(manager, line, config);
 
         this.amount = PlaceholderDouble.of(config.getString(new String[]{"amount", "a"}, "1", new String[0]));
         String typesString = config.getString(new String[]{"type", "t", "types"}, null, new String[0]);
@@ -54,21 +55,20 @@ public class MMODamageMechanic extends DamagingMechanic implements ITargetedEnti
     }
 
     @Override
-    public boolean castAtEntity(SkillMetadata data, AbstractEntity target) {
-
+    public SkillResult castAtEntity(SkillMetadata data, AbstractEntity target) {
         if (target.isDead() || !(target.getBukkitEntity() instanceof LivingEntity) || data.getCaster().isUsingDamageSkill() || target.getHealth() <= 0)
-            return false;
+            return SkillResult.INVALID_TARGET;
 
         double damage = amount.get(data, target) * data.getPower();
+        if (data.getVariables().has("MMOAttack")) {
+            AttackMetadata currentAttack = (AttackMetadata) data.getVariables().get("MMOAttack").get();
+            currentAttack.getDamage().add(damage, types);
+            return SkillResult.SUCCESS;
+        }
 
         PlayerMetadata caster = data.getVariables().has("MMOStatMap") ? (PlayerMetadata) data.getVariables().get("MMOStatMap").get()
                 : MMOPlayerData.get(data.getCaster().getEntity().getUniqueId()).getStatMap().cache(EquipmentSlot.MAIN_HAND);
-        AttackMetadata attackMeta = new AttackMetadata(new DamageMetadata(damage, types), caster);
-
-        // Cooler damage types yeah
-        MythicLib.plugin.getDamage().damage(attackMeta, (LivingEntity) target.getBukkitEntity(), !this.preventKnockback, this.preventImmunity);
-
-        MythicLogger.debug(MythicLogger.DebugLevel.MECHANIC, "+ MMODamageMechanic fired for {0} with {1} power", new Object[]{damage, data.getPower()});
-        return true;
+        MythicLib.plugin.getDamage().damage(new AttackMetadata(new DamageMetadata(damage, types), caster), (LivingEntity) target.getBukkitEntity(), !this.preventKnockback, this.preventImmunity);
+        return SkillResult.SUCCESS;
     }
 }
