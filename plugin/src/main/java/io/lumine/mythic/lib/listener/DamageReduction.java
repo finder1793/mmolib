@@ -18,6 +18,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 
@@ -35,7 +38,7 @@ public class DamageReduction implements Listener {
         // Get sweet data
         MMOPlayerData data = MMOPlayerData.get((OfflinePlayer) event.getEntity());
         AttackMetadata attackMeta = MythicLib.plugin.getDamage().findInfo(event);
-        DamageMetadata damageMeta = attackMeta == null ? new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL) : attackMeta.getDamage();
+        DamageMetadata damageMeta = attackMeta == null ? new DamageMetadata(event.getDamage()) : attackMeta.getDamage();
 
         // Applies specific damage reduction
         for (DamageReductionType type : DamageReductionType.values())
@@ -81,6 +84,13 @@ public class DamageReduction implements Listener {
         }
     }
 
+    private static final Set<EntityDamageEvent.DamageCause> PHYSICAL_DAMAGE_CAUSES = new HashSet<>(Arrays.asList(
+            EntityDamageEvent.DamageCause.CONTACT, EntityDamageEvent.DamageCause.CRAMMING, EntityDamageEvent.DamageCause.ENTITY_ATTACK,
+            EntityDamageEvent.DamageCause.ENTITY_EXPLOSION, EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK, EntityDamageEvent.DamageCause.BLOCK_EXPLOSION,
+            EntityDamageEvent.DamageCause.FALLING_BLOCK, EntityDamageEvent.DamageCause.PROJECTILE, EntityDamageEvent.DamageCause.SUFFOCATION)),
+
+    FIRE_DAMAGE_CAUSES = new HashSet<>(Arrays.asList(EntityDamageEvent.DamageCause.FIRE, EntityDamageEvent.DamageCause.FIRE_TICK, EntityDamageEvent.DamageCause.LAVA));
+
     /**
      * All different types of damage reduction.
      */
@@ -90,16 +100,16 @@ public class DamageReduction implements Listener {
         ENVIRONMENTAL("DAMAGE_REDUCTION", null, event -> true),
 
         // Vanilla damage types
-        PVP(event -> event instanceof EntityDamageByEntityEvent && getDamager((EntityDamageByEntityEvent) event) instanceof Player),
-        PVE(event -> event instanceof EntityDamageByEntityEvent && !(getDamager((EntityDamageByEntityEvent) event) instanceof Player)),
-        FIRE(event -> event.getCause() == EntityDamageEvent.DamageCause.FIRE || event.getCause() == EntityDamageEvent.DamageCause.FIRE_TICK),
-        FALL(event -> event.getCause() == EntityDamageEvent.DamageCause.FALL),
+        PVP(null, event -> event instanceof EntityDamageByEntityEvent && getDamager((EntityDamageByEntityEvent) event) instanceof Player),
+        PVE(null, event -> event instanceof EntityDamageByEntityEvent && !(getDamager((EntityDamageByEntityEvent) event) instanceof Player)),
+        FIRE(null, event -> FIRE_DAMAGE_CAUSES.contains(event.getCause())),
+        FALL(null, event -> event.getCause() == EntityDamageEvent.DamageCause.FALL),
 
         // Custom damage types
         MAGIC(DamageType.MAGIC, event -> event.getCause() == EntityDamageEvent.DamageCause.MAGIC),
-        PHYSICAL(DamageType.PHYSICAL, event -> event instanceof EntityDamageByEntityEvent),
-        WEAPON(DamageType.WEAPON),
-        SKILL(DamageType.SKILL),
+        PHYSICAL(DamageType.PHYSICAL, event -> PHYSICAL_DAMAGE_CAUSES.contains(event.getCause())),
+        WEAPON(DamageType.WEAPON, null),
+        SKILL(DamageType.SKILL, null),
         PROJECTILE(DamageType.PROJECTILE, event -> event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) event).getDamager() instanceof Projectile);
 
         /**
@@ -125,14 +135,6 @@ public class DamageReduction implements Listener {
         @Nullable
         private final Predicate<EntityDamageEvent> apply;
 
-        DamageReductionType(DamageType damageType) {
-            this(damageType, null);
-        }
-
-        DamageReductionType(Predicate<EntityDamageEvent> apply) {
-            this(null, apply);
-        }
-
         DamageReductionType(DamageType damageType, Predicate<EntityDamageEvent> apply) {
             this.stat = name() + "_DAMAGE_REDUCTION";
             this.damageType = damageType;
@@ -147,13 +149,14 @@ public class DamageReduction implements Listener {
 
         public void applyReduction(StatMap statMap, DamageMetadata damageMeta, EntityDamageEvent event) {
 
-            // Environmental damage reduction
-            if (apply != null && apply.test(event))
+            // Specific damage type reduction
+            if (damageType != null)
+                damageMeta.multiplicativeModifier(1 - statMap.getStat(stat) / 100, damageType);
+
+                // Environmental damage reduction
+            else if (apply != null && apply.test(event))
                 damageMeta.multiplicativeModifier(1 - statMap.getStat(stat) / 100);
 
-                // Specific damage type reduction
-            else if (damageType != null)
-                damageMeta.multiplicativeModifier(1 - statMap.getStat(stat) / 100, damageType);
         }
     }
 

@@ -236,6 +236,7 @@ public class DebugCommand extends CommandTreeNode {
         //TODO fix this debug
         //sender.spigot().sendMessage(upload(MythicLib.plugin.getJson().toString(stats)));
         sender.sendMessage("Command is currently under maintenance.");
+        sender.sendMessage(stats.toString());
     }
 
     private static void debugLog(CommandSender sender) {
