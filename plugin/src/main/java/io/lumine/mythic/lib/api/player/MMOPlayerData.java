@@ -200,7 +200,7 @@ public class MMOPlayerData {
      * @param player Player instance to cache
      */
     public void updatePlayer(@Nullable Player player) {
-        this.player = Objects.requireNonNull(player, "Player cannot be null");
+        this.player = player;
         this.lastLogActivity = System.currentTimeMillis();
     }
 
