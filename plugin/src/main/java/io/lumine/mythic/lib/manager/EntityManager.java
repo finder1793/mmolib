@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class EntityManager {
-    public final Set<TargetRestriction> restrictions = new HashSet<>();
+    private final Set<TargetRestriction> restrictions = new HashSet<>();
 
     /**
      * See {@link TargetRestriction} for more information. This should be

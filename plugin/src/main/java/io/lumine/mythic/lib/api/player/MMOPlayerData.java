@@ -195,9 +195,10 @@ public class MMOPlayerData {
     }
 
     /**
-     * Caches a new Player instance and refreshes the last log activity
+     * Caches a new Player instance and refreshes the last log activity.
+     * Provided player can be null if the player is disconnecting
      *
-     * @param player Player instance to cache
+     * @param player Player instance to cache (null if logging off)
      */
     public void updatePlayer(@Nullable Player player) {
         this.player = player;
