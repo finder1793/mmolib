@@ -30,7 +30,12 @@ public enum DamageType {
     /**
      * Hitting an enemy with bare hands
      */
-    UNARMED;
+    UNARMED,
+
+    /**
+     * Damage over time
+     */
+    DOT;
 
     public String getPath() {
         return name().toLowerCase();
