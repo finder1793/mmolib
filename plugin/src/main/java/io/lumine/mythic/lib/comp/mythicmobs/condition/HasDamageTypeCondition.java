@@ -52,11 +52,11 @@ public class HasDamageTypeCondition extends SkillCondition implements ISkillMeta
 
     @Override
     public boolean check(SkillMetadata skillMetadata) {
-        /*DTC*/MythicCraftingManager.log("\u00a78DTC\u00a73 ST\u00a77 Searching for types\u00a7f x" + types.length);
+        //DTC//MythicCraftingManager.log("\u00a78DTC\u00a73 ST\u00a77 Searching for types\u00a7f x" + types.length);
 
         // Missing?
         if (!skillMetadata.getVariables().has(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK)) {
-            /*DTC*/MythicCraftingManager.log("\u00a78DTC\u00a73 ST\u00a77 Skill had no damage meta\u00a7e " + (types.length == 0));
+            //DTC//MythicCraftingManager.log("\u00a78DTC\u00a73 ST\u00a77 Skill had no damage meta\u00a7e " + (types.length == 0));
 
             /*
              * Must have no required damage types to succeed.
@@ -69,7 +69,7 @@ public class HasDamageTypeCondition extends SkillCondition implements ISkillMeta
 
         // All right let us check the skill metadata
         AttackMetadata attack = (AttackMetadata) skillMetadata.getVariables().get(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK).get();
-        /*DTC*/MythicCraftingManager.log("\u00a78DTC\u00a73 ST\u00a77 Meta\u00a7f " + attack.getDamage().toString());
+        //DTC//MythicCraftingManager.log("\u00a78DTC\u00a73 ST\u00a77 Meta\u00a7f " + attack.getDamage().toString());
 
         // Read all damage types of this attack
         ArrayList<DamageType> therein = new ArrayList<>();
@@ -99,13 +99,13 @@ public class HasDamageTypeCondition extends SkillCondition implements ISkillMeta
 
             // Not contained? That's a failure
             if (!contained) {
-                /*DTC*/MythicCraftingManager.log("\u00a78DTC\u00a73 ST\u00a77 Not contained\u00a7c " + required.toString());
+                //DTC//MythicCraftingManager.log("\u00a78DTC\u00a73 ST\u00a77 Not contained\u00a7c " + required.toString());
                 return false; }
         }
 
         // All the required types were contained, if not exact, we are done here
         if (!exact) {
-            /*DTC*/MythicCraftingManager.log("\u00a78DTC\u00a73 ST\u00a7a All Types Contained");
+            //DTC//MythicCraftingManager.log("\u00a78DTC\u00a73 ST\u00a7a All Types Contained");
             return true; }
 
         // Must require all types
@@ -124,12 +124,12 @@ public class HasDamageTypeCondition extends SkillCondition implements ISkillMeta
 
             // Not contained? That's a failure
             if (!contained) {
-                /*DTC*/MythicCraftingManager.log("\u00a78DTC\u00a73 ST\u00a77 Not expected\u00a7c " + observed.toString());
+                //DTC//MythicCraftingManager.log("\u00a78DTC\u00a73 ST\u00a77 Not expected\u00a7c " + observed.toString());
                 return false; }
         }
 
         // Success
-        /*DTC*/MythicCraftingManager.log("\u00a78DTC\u00a73 ST\u00a7a Exact Types Matched");
+        //DTC//MythicCraftingManager.log("\u00a78DTC\u00a73 ST\u00a7a Exact Types Matched");
         return true;
     }
 }
