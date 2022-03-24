@@ -437,25 +437,32 @@ public class SkillManager {
 
                 } catch (IllegalArgumentException | IllegalStateException e) {
 
+                    boolean oneSuccess = false;
+
                     // Attempt to parse every key I guess
                     ConfigurationSection config = YamlConfiguration.loadConfiguration(file);
                     for (String key : config.getKeys(false)) {
 
                         // Get as configuration section
                         ConfigurationSection section = config.getConfigurationSection(key);
-                        if (section == null) {
-                            continue;
-                        }
+                        if (section == null) { continue; }
 
                         try {
 
                             // Attempt to load as normal section
                             registerSkillHandler(loadSkillHandler(section));
+                            oneSuccess = true;
 
                         } catch (IllegalArgumentException | IllegalStateException exception) {
                             MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill '" + section.getName() + "' from '" + file.getName() + "': " + exception.getMessage());
                         }
                     }
+
+                    /*
+                     * Apparently users were not getting the correct 'messages' so this
+                     * should tell the correct message if no skill was loaded right.
+                     */
+                    if (!oneSuccess) { MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill from '" + file.getName() + "': " + e.getMessage()); }
                 }
 
             } catch (RuntimeException exception) {

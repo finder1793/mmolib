@@ -9,6 +9,7 @@ import io.lumine.mythic.core.skills.SkillMetadataImpl;
 import io.lumine.mythic.core.skills.SkillTriggers;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.MythicMobsSkillHandler;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 
@@ -35,11 +36,15 @@ public class MythicMobsSkillResult implements SkillResult {
         mmSkillMeta = new SkillMetadataImpl(SkillTriggers.API, caster, trigger, BukkitAdapter.adapt(skillMeta.getCaster().getPlayer().getEyeLocation()), targetEntities, targetLocations, 1);
 
         // Stats & cast skill are cached inside a variable
-        mmSkillMeta.getVariables().putObject("MMOStatMap", skillMeta.getCaster());
-        mmSkillMeta.getVariables().putObject("MMOSkill", skillMeta.getCast());
+        mmSkillMeta.getVariables().putObject(MMOSKILL_VAR_STATS, skillMeta.getCaster());
+        mmSkillMeta.getVariables().putObject(MMOSKILL_VAR_SKILL, skillMeta.getCast());
         if (skillMeta.hasAttackBound())
-            mmSkillMeta.getVariables().putObject("MMOAttack", skillMeta.getAttack());
+            mmSkillMeta.getVariables().putObject(MMOSKILL_VAR_ATTACK, skillMeta.getAttack());
     }
+
+    @NotNull public static final String MMOSKILL_VAR_STATS = "MMOStatMap";
+    @NotNull public static final String MMOSKILL_VAR_SKILL = "MMOSkill";
+    @NotNull public static final String MMOSKILL_VAR_ATTACK = "MMOAttack";
 
     @Override
     public boolean isSuccessful(SkillMetadata skillMeta) {

@@ -11,13 +11,18 @@ import io.lumine.mythic.core.skills.damage.DamagingMechanic;
 import io.lumine.mythic.core.utils.annotations.MythicMechanic;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.player.PlayerMetadata;
+import io.lumine.mythic.lib.skill.result.MythicMobsSkillResult;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
 
 @MythicMechanic(
         author = "Indyuce",
@@ -27,6 +32,7 @@ import org.bukkit.entity.LivingEntity;
 )
 public class MMODamageMechanic extends DamagingMechanic implements ITargetedEntitySkill {
     protected final PlaceholderDouble amount;
+    boolean ignoreMMOAttack;
 
     /**
      * Can be empty if no damage type is registered.
@@ -41,32 +47,54 @@ public class MMODamageMechanic extends DamagingMechanic implements ITargetedEnti
 
         this.amount = PlaceholderDouble.of(config.getString(new String[]{"amount", "a"}, "1", new String[0]));
         String typesString = config.getString(new String[]{"type", "t", "types"}, null, new String[0]);
+        this.ignoreMMOAttack = config.getBoolean(new String[]{"ignoreMMOAttack", "immo"}, false);
         this.types = (typesString == null || typesString.isEmpty() || "NONE".equalsIgnoreCase(typesString)) ? new DamageType[0] : toDamageTypeArray(typesString);
     }
 
     private DamageType[] toDamageTypeArray(String typesString) {
-        String[] split = typesString.split("\\,");
-        DamageType[] array = new DamageType[split.length];
+        String[] split = typesString.replace("<&cm>", ",").split("\\,");
+        ArrayList<DamageType> types = new ArrayList<>();
 
-        for (int i = 0; i < array.length; i++)
-            array[i] = DamageType.valueOf(UtilityMethods.enumName(split[i]));
+        for (String s : split) {
+            try {
+                DamageType t = DamageType.valueOf(UtilityMethods.enumName(s));
+                types.add(t);
 
-        return array;
+            } catch (IllegalArgumentException ignored) { } }
+
+        // To Array
+        DamageType[] l = new DamageType[types.size()];
+        return types.toArray(l);
     }
 
     @Override
     public SkillResult castAtEntity(SkillMetadata data, AbstractEntity target) {
+
         if (target.isDead() || !(target.getBukkitEntity() instanceof LivingEntity) || data.getCaster().isUsingDamageSkill() || target.getHealth() <= 0)
             return SkillResult.INVALID_TARGET;
 
+        // Calculate damage
         double damage = amount.get(data, target) * data.getPower();
-        if (data.getVariables().has("MMOAttack")) {
-            AttackMetadata currentAttack = (AttackMetadata) data.getVariables().get("MMOAttack").get();
+
+        /*
+         * If the caster is not a player, this method falls off to the normal
+         * DamageMechanic of vanilla mythicmobs, rather than generating a null
+         * pointer exception when trying to find the PlayerData of this entity.
+         */
+        if (!(data.getCaster().getEntity().getBukkitEntity() instanceof Player)) {
+
+            // Deals damage like normal mythicmobs hit each other
+            this.doDamage(data.getCaster(), target, damage);
+            return SkillResult.SUCCESS;
+        }
+
+        if (data.getVariables().has(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK) && !ignoreMMOAttack) {
+            AttackMetadata currentAttack = (AttackMetadata) data.getVariables().get(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK).get();
             currentAttack.getDamage().add(damage, types);
             return SkillResult.SUCCESS;
         }
 
-        PlayerMetadata caster = data.getVariables().has("MMOStatMap") ? (PlayerMetadata) data.getVariables().get("MMOStatMap").get()
+        PlayerMetadata caster = data.getVariables().has(MythicMobsSkillResult.MMOSKILL_VAR_STATS) ? (PlayerMetadata) data.getVariables().get(MythicMobsSkillResult.MMOSKILL_VAR_STATS).get()
                 : MMOPlayerData.get(data.getCaster().getEntity().getUniqueId()).getStatMap().cache(EquipmentSlot.MAIN_HAND);
         MythicLib.plugin.getDamage().damage(new AttackMetadata(new DamageMetadata(damage, types), caster), (LivingEntity) target.getBukkitEntity(), !this.preventKnockback, this.preventImmunity);
         return SkillResult.SUCCESS;

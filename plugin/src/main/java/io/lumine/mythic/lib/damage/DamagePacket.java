@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.damage;
 
+import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -23,6 +24,9 @@ public class DamagePacket implements Cloneable {
     private DamageType[] types;
     private double value;
     private double additiveModifiers;
+
+    public double getValue() { return value; }
+    public void setValue(double value) { this.value = value; }
 
     public DamagePacket(double value, @NotNull DamageType... types) {
         this.value = value;

@@ -7,6 +7,7 @@ import io.lumine.mythic.api.skills.SkillResult;
 import io.lumine.mythic.api.skills.placeholders.PlaceholderDouble;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
+import io.lumine.mythic.lib.skill.result.MythicMobsSkillResult;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -38,8 +39,8 @@ public class MultiplyDamageMechanic implements INoTargetSkill {
 
     @Override
     public SkillResult cast(SkillMetadata skillMetadata) {
-        Validate.isTrue(skillMetadata.getVariables().has("MMOAttack"), "No attack meta is provided");
-        AttackMetadata attackMeta = (AttackMetadata) skillMetadata.getVariables().get("MMOAttack").get();
+        Validate.isTrue(skillMetadata.getVariables().has(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK), "No attack meta is provided");
+        AttackMetadata attackMeta = (AttackMetadata) skillMetadata.getVariables().get(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK).get();
 
         double a = this.amount.get(skillMetadata.getCaster());
         if (additive) {
