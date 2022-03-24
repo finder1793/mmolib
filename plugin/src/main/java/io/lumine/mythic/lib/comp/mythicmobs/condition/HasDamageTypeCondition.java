@@ -9,7 +9,6 @@ import io.lumine.mythic.core.skills.conditions.ConditionAction;
 import io.lumine.mythic.core.utils.annotations.MythicCondition;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
-import io.lumine.mythic.lib.comp.mythicmobs.mechanic.MMODamageMechanic;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamagePacket;
 import io.lumine.mythic.lib.damage.DamageType;
@@ -18,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-@MythicCondition(author = "Gunging", name = "mmoDamageType", aliases = {}, description = "If the skill is of this damage type. ")
+@MythicCondition(author = "Gunging", name = "mmodamagetype", aliases = {}, description = "If the skill is of this damage type. ")
 public class HasDamageTypeCondition extends SkillCondition implements ISkillMetaCondition {
 
     boolean exact;
@@ -27,29 +26,10 @@ public class HasDamageTypeCondition extends SkillCondition implements ISkillMeta
     public HasDamageTypeCondition(@NotNull MythicLineConfig mlc) {
         super(mlc.getLine());
 
-        //region Fix alternative condition actions
-        String action = mlc.getString(new String[] {"action", "a"}, "REQUIRED");
-        action = action.replace("<&sp>", " ");
-        if (action.startsWith("\"")) { action = action.substring(1); }
-        if (action.endsWith("\"")) { action = action.substring(0, action.length() - 1); }
-        this.ACTION = ConditionAction.REQUIRED;
-        this.actionVar = null;
-        String[] split = action.split(" ");
-        if (split.length >= 1) {
-            if (ConditionAction.isAction(split[0])) {
-                this.ACTION = ConditionAction.valueOf(split[0].toUpperCase());
-                if (split.length > 1) {
-                    this.actionVar = PlaceholderString.of(split[1]); }
-            } else {
-                this.conditionVar = split[0];
-                if (split.length > 1 && ConditionAction.isAction(split[1])) {
-                    this.ACTION = ConditionAction.valueOf(split[1].toUpperCase());
-                    if (split.length > 2) { this.actionVar = PlaceholderString.of(split[2]); } } } }
-        //endregion
-
+        // Require exact damage types
         this.exact = mlc.getBoolean("exact", false);
 
-        // Read types being seeked
+        // Read types being sought
         String typesString = mlc.getString(new String[]{"type", "t", "types"}, null, new String[0]);
         this.types = (typesString == null || typesString.isEmpty() || "NONE".equalsIgnoreCase(typesString)) ? new DamageType[0] : toDamageTypeArray(typesString);
     }

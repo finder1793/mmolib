@@ -12,7 +12,7 @@ import io.lumine.mythic.lib.comp.target.InteractionType;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 
-@MythicCondition(author = "Indyuce", name = "mmoCanTarget", aliases = {}, description = "Whether the caster can interact with the target")
+@MythicCondition(author = "Indyuce", name = "mmocantarget", aliases = {}, description = "Whether the caster can interact with the target")
 public class CanTargetCondition extends SkillCondition implements IEntityComparisonCondition {
     private final InteractionType interaction;
 

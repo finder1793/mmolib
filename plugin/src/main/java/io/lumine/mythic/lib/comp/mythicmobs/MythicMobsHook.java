@@ -1,10 +1,13 @@
 package io.lumine.mythic.lib.comp.mythicmobs;
 
 import io.lumine.mythic.bukkit.MythicBukkit;
+import io.lumine.mythic.bukkit.events.MythicConditionLoadEvent;
 import io.lumine.mythic.bukkit.events.MythicReloadedEvent;
 import io.lumine.mythic.core.mobs.ActiveMob;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
+import io.lumine.mythic.lib.comp.mythicmobs.condition.CanTargetCondition;
+import io.lumine.mythic.lib.comp.mythicmobs.condition.HasDamageTypeCondition;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -26,6 +29,23 @@ public class MythicMobsHook implements Listener {
 
         // Reload skills
         MythicLib.plugin.getSkills().initialize(true);
+    }
+
+
+    @EventHandler
+    public void c(MythicConditionLoadEvent event) {
+        String conditionName = event.getConditionName().toLowerCase();
+        int s = event.getConditionName().indexOf(" "); if (s > 0) { conditionName = conditionName.substring(0, s); }
+
+        switch (conditionName) {
+            case "mmodamagetype":
+                event.register(new HasDamageTypeCondition(event.getConfig()));
+                break;
+            case "mmocantarget":
+                event.register(new CanTargetCondition(event.getConfig().getLine(), event.getConfig()));
+                break;
+            default: break;
+        }
     }
 
     private String getFaction(Entity entity) {
