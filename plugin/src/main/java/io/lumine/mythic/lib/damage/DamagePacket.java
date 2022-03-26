@@ -1,6 +1,5 @@
 package io.lumine.mythic.lib.damage;
 
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -23,14 +22,15 @@ public class DamagePacket implements Cloneable {
     @NotNull
     private DamageType[] types;
     private double value;
-    private double additiveModifiers;
-
-    public double getValue() { return value; }
-    public void setValue(double value) { this.value = value; }
+    private double additiveModifiers, multiplicativeModifiers;
 
     public DamagePacket(double value, @NotNull DamageType... types) {
         this.value = value;
         this.types = types;
+    }
+
+    public double getValue() {
+        return value;
     }
 
     /**
@@ -46,6 +46,15 @@ public class DamagePacket implements Cloneable {
     }
 
     /**
+     * Directly edits the damage packet value.
+     *
+     * @param value New damage value
+     */
+    public void setValue(double value) {
+        this.value = value;
+    }
+
+    /**
      * Register a multiplicative damage modifier.
      * <p>
      * This is used for critical strikes which modifier should
@@ -55,7 +64,7 @@ public class DamagePacket implements Cloneable {
      *                    increase final damage by 50%
      */
     public void multiplicativeModifier(double coefficient) {
-        this.value *= coefficient;
+        this.multiplicativeModifiers *= coefficient;
     }
 
     public void additiveModifier(double multiplier) {
@@ -64,12 +73,12 @@ public class DamagePacket implements Cloneable {
 
     /**
      * @return Final value of the damage packet taking into account
-     * all the damage modifiers that have been registered
+     *         all the damage modifiers that have been registered
      */
     public double getFinalValue() {
 
         // Make sure the returned value is positive
-        return value * Math.max(0, 1 + additiveModifiers);
+        return value * Math.max(0, 1 + additiveModifiers) * Math.max(0, multiplicativeModifiers);
     }
 
     /**

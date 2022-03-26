@@ -11,7 +11,6 @@ import io.lumine.mythic.core.skills.damage.DamagingMechanic;
 import io.lumine.mythic.core.utils.annotations.MythicMechanic;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.damage.AttackMetadata;
@@ -22,8 +21,6 @@ import io.lumine.mythic.lib.skill.result.MythicMobsSkillResult;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-
 @MythicMechanic(
         author = "Indyuce",
         name = "mmodamage",
@@ -32,7 +29,7 @@ import java.util.ArrayList;
 )
 public class MMODamageMechanic extends DamagingMechanic implements ITargetedEntitySkill {
     protected final PlaceholderDouble amount;
-    boolean ignoreMMOAttack;
+    protected final boolean ignoreMMOAttack;
 
     /**
      * Can be empty if no damage type is registered.
@@ -52,19 +49,13 @@ public class MMODamageMechanic extends DamagingMechanic implements ITargetedEnti
     }
 
     private DamageType[] toDamageTypeArray(String typesString) {
-        String[] split = typesString.replace("<&cm>", ",").split("\\,");
-        ArrayList<DamageType> types = new ArrayList<>();
+        String[] split = typesString.split("\\,");
+        DamageType[] array = new DamageType[split.length];
 
-        for (String s : split) {
-            try {
-                DamageType t = DamageType.valueOf(UtilityMethods.enumName(s));
-                types.add(t);
+        for (int i = 0; i < array.length; i++)
+            array[i] = DamageType.valueOf(UtilityMethods.enumName(split[i]));
 
-            } catch (IllegalArgumentException ignored) { } }
-
-        // To Array
-        DamageType[] l = new DamageType[types.size()];
-        return types.toArray(l);
+        return array;
     }
 
     @Override
