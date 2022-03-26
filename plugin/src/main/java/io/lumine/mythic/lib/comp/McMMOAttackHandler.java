@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-public class McMMODamageHandler implements AttackHandler {
+public class McMMOAttackHandler implements AttackHandler {
     private static final String METADATA_KEY = "mcMMO: Custom Damage";
 
     @Override

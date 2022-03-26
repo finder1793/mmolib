@@ -9,7 +9,7 @@ import io.lumine.mythic.lib.player.PlayerMetadata;
 public class MeleeAttackMetadata extends AttackMetadata {
 
     /**
-     * Used by DamageHandler instances to register attacks. AttackResult only
+     * Used by AttackHandler instances to register attacks. AttackResult only
      * gives information about the attack damage and types while this class also
      * contains info about the damager. Some plugins don't let MythicLib determine
      * what the damager is so there might be problem with damage/reduction stat

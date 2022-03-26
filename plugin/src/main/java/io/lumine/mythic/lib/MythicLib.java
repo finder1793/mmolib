@@ -10,7 +10,7 @@ import io.lumine.mythic.lib.command.ExploreAttributesCommand;
 import io.lumine.mythic.lib.command.HealthScaleCommand;
 import io.lumine.mythic.lib.command.MMOTempStatCommand;
 import io.lumine.mythic.lib.command.mythiclib.MythicLibCommand;
-import io.lumine.mythic.lib.comp.McMMODamageHandler;
+import io.lumine.mythic.lib.comp.McMMOAttackHandler;
 import io.lumine.mythic.lib.comp.anticheat.AntiCheatSupport;
 import io.lumine.mythic.lib.comp.anticheat.SpartanPlugin;
 import io.lumine.mythic.lib.comp.flags.FlagHandler;
@@ -200,7 +200,7 @@ public class MythicLib extends LuminePlugin {
         }
 
         if (Bukkit.getPluginManager().getPlugin("mcMMO") != null) {
-            getDamage().registerHandler(new McMMODamageHandler());
+            getDamage().registerHandler(new McMMOAttackHandler());
             getLogger().log(Level.INFO, "Hooked onto mcMMO");
         }
 
