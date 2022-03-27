@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.comp.hologram.factory;
 
 import com.Zrips.CMI.CMI;
-import io.lumine.mythic.lib.comp.hologram.MMOItemsHologram;
+import io.lumine.mythic.lib.comp.hologram.MMOHologram;
 import io.lumine.utils.holograms.Hologram;
 import io.lumine.utils.holograms.HologramFactory;
 import io.lumine.utils.serialize.Position;
@@ -39,17 +39,19 @@ public class CMIHologramFactory implements HologramFactory {
         return new CMIHologram(position, list);
     }
 
-    public class CMIHologram extends MMOItemsHologram {
+    public class CMIHologram extends MMOHologram {
         private final com.Zrips.CMI.Modules.Holograms.CMIHologram holo;
 
         public CMIHologram(Position position, List<String> list) {
             holo = new com.Zrips.CMI.Modules.Holograms.CMIHologram("MythicLib-" + UUID.randomUUID().toString(), new CMILocation(position.toLocation()));
             holo.setLines(list);
-            CMI.getInstance().getHologramManager().addHologram(holo);
-
-            holo.update();
         }
 
+        @Override
+        public void spawn() {
+            CMI.getInstance().getHologramManager().addHologram(holo);
+            holo.update();
+        }
 
         @Override
         public void updateLines(@NotNull List<String> list) {

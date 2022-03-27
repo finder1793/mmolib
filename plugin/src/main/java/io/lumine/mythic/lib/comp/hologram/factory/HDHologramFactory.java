@@ -2,7 +2,7 @@ package io.lumine.mythic.lib.comp.hologram.factory;
 
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.comp.hologram.MMOItemsHologram;
+import io.lumine.mythic.lib.comp.hologram.MMOHologram;
 import io.lumine.utils.holograms.Hologram;
 import io.lumine.utils.holograms.HologramFactory;
 import io.lumine.utils.serialize.Position;
@@ -34,7 +34,7 @@ public class HDHologramFactory implements HologramFactory {
         return new HDHologram(position, list);
     }
 
-    public class HDHologram extends MMOItemsHologram {
+    public class HDHologram extends MMOHologram {
         private final com.gmail.filoghost.holographicdisplays.api.Hologram holo;
         private final List<String> lines;
 
@@ -43,6 +43,11 @@ public class HDHologramFactory implements HologramFactory {
             this.lines = list;
             for (String line : lines)
                 holo.appendTextLine(line);
+        }
+
+        @Override
+        public void spawn() {
+            // Spawns on instanciation
         }
 
         @Override

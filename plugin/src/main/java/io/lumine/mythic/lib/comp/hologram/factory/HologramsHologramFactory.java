@@ -3,7 +3,7 @@ package io.lumine.mythic.lib.comp.hologram.factory;
 import com.sainttx.holograms.HologramPlugin;
 import com.sainttx.holograms.api.HologramManager;
 import com.sainttx.holograms.api.line.TextLine;
-import io.lumine.mythic.lib.comp.hologram.MMOItemsHologram;
+import io.lumine.mythic.lib.comp.hologram.MMOHologram;
 import io.lumine.utils.holograms.Hologram;
 import io.lumine.utils.holograms.HologramFactory;
 import io.lumine.utils.serialize.Position;
@@ -35,13 +35,18 @@ public class HologramsHologramFactory implements HologramFactory {
         return new CustomHologram(position, list);
     }
 
-    public class CustomHologram extends MMOItemsHologram {
+    public class CustomHologram extends MMOHologram {
         private final com.sainttx.holograms.api.Hologram holo;
 
         public CustomHologram(Position position, List<String> list) {
             holo = new com.sainttx.holograms.api.Hologram("MythicLib-" + UUID.randomUUID().toString(), position.toLocation());
             for (String str : list)
                 holo.addLine(new TextLine(holo, str));
+        }
+
+        @Override
+        public void spawn() {
+            // Spawns on instanciation
         }
 
         @Override

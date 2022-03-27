@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.function.Consumer;
 
-public abstract class MMOItemsHologram implements Hologram {
+public abstract class MMOHologram implements Hologram {
     private boolean spawned = true;
 
     public abstract List<String> getLines();
@@ -19,11 +19,6 @@ public abstract class MMOItemsHologram implements Hologram {
     @Nonnull
     public JsonObject serialize() {
         return JsonBuilder.object().add("position", getPosition()).add("lines", JsonBuilder.array().addStrings(getLines()).build()).build();
-    }
-
-    @Override
-    public void spawn() {
-        throw new RuntimeException("Hologram spawns on class instanciation");
     }
 
     @Override

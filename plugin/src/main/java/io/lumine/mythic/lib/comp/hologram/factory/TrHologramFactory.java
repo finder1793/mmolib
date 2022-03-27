@@ -1,6 +1,6 @@
 package io.lumine.mythic.lib.comp.hologram.factory;
 
-import io.lumine.mythic.lib.comp.hologram.MMOItemsHologram;
+import io.lumine.mythic.lib.comp.hologram.MMOHologram;
 import io.lumine.utils.holograms.Hologram;
 import io.lumine.utils.holograms.HologramFactory;
 import io.lumine.utils.serialize.Position;
@@ -32,7 +32,7 @@ public class TrHologramFactory implements HologramFactory {
         return new TrHologram(position, list);
     }
 
-    public class TrHologram extends MMOItemsHologram {
+    public class TrHologram extends MMOHologram {
         private final me.arasple.mc.trhologram.module.display.Hologram holo;
         private final List<String> lines;
 
@@ -42,6 +42,11 @@ public class TrHologramFactory implements HologramFactory {
                 builder.append(line);
             holo = builder.build();
             this.lines = list;
+        }
+
+        @Override
+        public void spawn() {
+            // Spawns on instanciation
         }
 
         @Override
