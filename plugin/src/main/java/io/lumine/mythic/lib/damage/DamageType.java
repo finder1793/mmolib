@@ -35,9 +35,9 @@ public enum DamageType {
     /**
      * For use with {@link io.lumine.mythic.lib.comp.mythicmobs.mechanic.MMODamageMechanic}
      * and {@link io.lumine.mythic.lib.comp.mythicmobs.condition.HasDamageTypeCondition}
-     * to make passive skills that inflict damage but don't infinitely loop themselves.
+     * to make on-hit skills that inflict damage but don't infinitely loop themselves.
      */
-    PASSIVE,
+    ON_HIT,
 
     /**
      * For use with {@link io.lumine.mythic.lib.comp.mythicmobs.mechanic.MMODamageMechanic}
