@@ -33,6 +33,21 @@ public enum DamageType {
     UNARMED,
 
     /**
+     * For use with {@link io.lumine.mythic.lib.comp.mythicmobs.mechanic.MMODamageMechanic}
+     * and {@link io.lumine.mythic.lib.comp.mythicmobs.condition.HasDamageTypeCondition}
+     * to make passive skills that inflict damage but don't infinitely loop themselves.
+     */
+    PASSIVE,
+
+    /**
+     * For use with {@link io.lumine.mythic.lib.comp.mythicmobs.mechanic.MMODamageMechanic}
+     * and {@link io.lumine.mythic.lib.comp.mythicmobs.condition.HasDamageTypeCondition}
+     * to make summoner class abilities, supposing you had a system for it built with MythicMobs
+     * or another plugin (GooP Maybe!??);
+     */
+    MINION,
+
+    /**
      * Damage over time
      */
     DOT;
