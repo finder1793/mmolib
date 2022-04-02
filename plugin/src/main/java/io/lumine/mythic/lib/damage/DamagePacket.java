@@ -22,7 +22,7 @@ public class DamagePacket implements Cloneable {
     @NotNull
     private DamageType[] types;
     private double value;
-    private double additiveModifiers, multiplicativeModifiers;
+    private double additiveModifiers, multiplicativeModifiers = 1;
 
     public DamagePacket(double value, @NotNull DamageType... types) {
         this.value = value;
