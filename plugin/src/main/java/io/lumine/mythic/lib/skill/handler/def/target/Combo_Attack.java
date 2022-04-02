@@ -23,18 +23,22 @@ public class Combo_Attack extends SkillHandler<TargetSkillResult> {
         return new TargetSkillResult(meta, 10, InteractionType.OFFENSE_SKILL);
     }
 
+    private static final long ATTACK_PERIOD = 5;
+
     @Override
     public void whenCast(TargetSkillResult result, SkillMetadata skillMeta) {
-        new BukkitRunnable() {
-            final int count = (int) skillMeta.getModifier("count");
-            final double damage = skillMeta.getModifier("damage") / count;
-            final LivingEntity target = result.getTarget();
+        final int count = (int) skillMeta.getModifier("count");
+        final double damage = skillMeta.getModifier("damage") / count;
+        final LivingEntity target = result.getTarget();
 
-            int c = 0;
+        skillMeta.attack(target, damage, DamageType.SKILL, DamageType.PHYSICAL);
+
+        new BukkitRunnable() {
+            int counter = 0;
 
             @Override
             public void run() {
-                if (c++ > count || !skillMeta.getCaster().getData().isOnline()) {
+                if (counter++ > count || !skillMeta.getCaster().getData().isOnline()) {
                     cancel();
                     return;
                 }
@@ -43,6 +47,6 @@ public class Combo_Attack extends SkillHandler<TargetSkillResult> {
                 target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, target.getHeight() / 2, 0), 24, 0, 0, 0, .7);
                 skillMeta.attack(target, damage, DamageType.SKILL, DamageType.PHYSICAL);
             }
-        }.runTaskTimer(MythicLib.plugin, 0, 5);
+        }.runTaskTimer(MythicLib.plugin, ATTACK_PERIOD, ATTACK_PERIOD);
     }
 }

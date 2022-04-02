@@ -61,19 +61,17 @@ public class PlayerAttackEventListener implements Listener {
         if (attack == null)
             return;
 
-        /*
-         * Call the Bukkit event with the attack meta found
-         */
+        // Call the Bukkit event with the attack meta found
+        Validate.isTrue(!attack.hasExpired(), "Attack has already expired");
         PlayerAttackEvent attackEvent = new PlayerAttackEvent(event, attack);
         Bukkit.getPluginManager().callEvent(attackEvent);
+        attack.expire();
         if (attackEvent.isCancelled())
             return;
 
         event.setDamage(attack.getDamage().getDamage());
 
-        /*
-         * Call the death event if the entity is being killed
-         */
+        // Call the death event if the entity is being killed
         if (event.getFinalDamage() >= ((Damageable) event.getEntity()).getHealth())
             Bukkit.getPluginManager().callEvent(new PlayerKillEntityEvent(attack, (LivingEntity) event.getEntity()));
     }

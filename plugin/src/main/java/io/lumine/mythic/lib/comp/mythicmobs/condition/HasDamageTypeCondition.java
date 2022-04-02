@@ -36,13 +36,11 @@ public class HasDamageTypeCondition extends SkillCondition implements ISkillMeta
     @Override
     public boolean check(SkillMetadata skillMetadata) {
         Validate.isTrue(skillMetadata.getVariables().has(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK), "No attack meta is provided");
-
-        // All right let us check the skill metadata
-        AttackMetadata attack = (AttackMetadata) skillMetadata.getVariables().get(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK).get();
-        //DTC//MythicCraftingManager.log("\u00a78DTC\u00a73 ST\u00a77 Meta\u00a7f " + attack.getDamage().toString());
+        AttackMetadata attackMeta = (AttackMetadata) skillMetadata.getVariables().get(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK).get();
+        Validate.isTrue(!attackMeta.hasExpired(), "Attack meta has expired");
 
         // Read all damage types of this attack
-        Set<DamageType> attackDamageTypes = attack.getDamage().collectTypes();
+        Set<DamageType> attackDamageTypes = attackMeta.getDamage().collectTypes();
 
         // Exact match
         if (exact)

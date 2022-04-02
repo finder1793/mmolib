@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.damage;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.LivingEntity;
@@ -12,6 +13,14 @@ import org.bukkit.entity.LivingEntity;
  */
 public class AttackMetadata extends PlayerMetadata {
     private final DamageMetadata damage;
+
+    /**
+     * Attacks expire as soon as the corresponding {@link PlayerAttackEvent}
+     * was called. This simple boolean makes it easy to keep track of current
+     * registered attacks and whether or not this attack can still be used
+     * to modify the outcome of the Bukkit damage event.
+     */
+    private boolean expired;
 
     /**
      * Used by AttackHandler instances to register attacks. AttackResult only
@@ -36,6 +45,18 @@ public class AttackMetadata extends PlayerMetadata {
      */
     public DamageMetadata getDamage() {
         return damage;
+    }
+
+    /**
+     * @return Whether or not the corresponding attack is closed.
+     */
+    public boolean hasExpired() {
+        return expired;
+    }
+
+    public void expire() {
+        Validate.isTrue(!expired, "Attack has expired already");
+        expired = true;
     }
 
     public AttackMetadata clone() {

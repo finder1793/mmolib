@@ -347,8 +347,9 @@ public class SkillMetadata {
      * @param types  Type of target
      * @return The (modified) attack metadata
      */
+    @NotNull
     public AttackMetadata attack(LivingEntity target, double damage, DamageType... types) {
-        if (attackMeta != null) {
+        if (attackMeta != null && !attackMeta.hasExpired()) {
             attackMeta.getDamage().add(damage, types);
             return attackMeta;
         }

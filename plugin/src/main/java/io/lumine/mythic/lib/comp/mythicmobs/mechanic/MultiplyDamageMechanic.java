@@ -41,6 +41,7 @@ public class MultiplyDamageMechanic implements INoTargetSkill {
     public SkillResult cast(SkillMetadata skillMetadata) {
         Validate.isTrue(skillMetadata.getVariables().has(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK), "No attack meta is provided");
         AttackMetadata attackMeta = (AttackMetadata) skillMetadata.getVariables().get(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK).get();
+        Validate.isTrue(!attackMeta.hasExpired(), "Attack meta has expired");
 
         double a = this.amount.get(skillMetadata.getCaster());
         if (additive) {
