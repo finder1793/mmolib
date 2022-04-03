@@ -2,12 +2,15 @@ package io.lumine.mythic.lib.skill.handler.def.target;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.comp.target.InteractionType;
+import io.lumine.mythic.lib.damage.AttackMetadata;
+import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.TargetSkillResult;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -31,22 +34,27 @@ public class Combo_Attack extends SkillHandler<TargetSkillResult> {
         final double damage = skillMeta.getModifier("damage") / count;
         final LivingEntity target = result.getTarget();
 
+        playEffect(target);
         skillMeta.attack(target, damage, DamageType.SKILL, DamageType.PHYSICAL);
 
         new BukkitRunnable() {
-            int counter = 0;
+            int counter = 1;
 
             @Override
             public void run() {
-                if (counter++ > count || !skillMeta.getCaster().getData().isOnline()) {
+                if (counter++ >= count || !skillMeta.getCaster().getData().isOnline()) {
                     cancel();
                     return;
                 }
 
-                target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 1, 2);
-                target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, target.getHeight() / 2, 0), 24, 0, 0, 0, .7);
-                skillMeta.attack(target, damage, DamageType.SKILL, DamageType.PHYSICAL);
+                playEffect(target);
+                MythicLib.plugin.getDamage().damage(new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.PHYSICAL), skillMeta.getCaster()), target, true, true);
             }
         }.runTaskTimer(MythicLib.plugin, ATTACK_PERIOD, ATTACK_PERIOD);
+    }
+
+    private void playEffect(Entity target) {
+        target.getWorld().playSound(target.getLocation(), Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 1, 2);
+        target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, target.getHeight() / 2, 0), 24, 0, 0, 0, .7);
     }
 }

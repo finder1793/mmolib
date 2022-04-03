@@ -8,6 +8,7 @@ import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import org.apache.commons.lang.Validate;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -26,7 +27,8 @@ public class DamageManager implements Listener, AttackHandler {
     private final Map<Integer, AttackMetadata> customDamage = new HashMap<>();
     private final Set<AttackHandler> handlers = new HashSet<>();
 
-    private static final AttributeModifier noKnockback = new AttributeModifier(UUID.randomUUID(), "noKnockback", 100, AttributeModifier.Operation.ADD_NUMBER);
+    private static final AttributeModifier NO_KNOCKBACK = new AttributeModifier(UUID.randomUUID(), "noKnockback", 100, AttributeModifier.Operation.ADD_NUMBER);
+    private static final double MINIMUM_DAMAGE = .001;
 
     public DamageManager() {
         handlers.add(this);
@@ -111,37 +113,46 @@ public class DamageManager implements Listener, AttackHandler {
      * @param ignoreImmunity The attack will not produce immunity frames.
      */
     public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target, boolean knockback, boolean ignoreImmunity) {
+
+        // TODO remove this check which should be useless
         if (target.hasMetadata("NPC") || metadata.getPlayer().hasMetadata("NPC"))
             return;
 
-        // Register custom damage
         customDamage.put(target.getEntityId(), metadata);
+        applyDamage(Math.max(metadata.getDamage().getDamage(), MINIMUM_DAMAGE), target, metadata.getPlayer(), knockback, ignoreImmunity);
+    }
 
-        // Identify damage
-        double damageApplied = Math.max(metadata.getDamage().getDamage(), 0.001);
+    private void applyDamage(double damage, LivingEntity target, Player damager, boolean knockback, boolean ignoreImmunity) {
 
-        /*
-         * No knockback: temporarily apply a 100% knockback resistance
-         * to the target before applying regular damage
-         */
-        if (!knockback)
+        // Should knockback be applied
+        if (!knockback) {
+            AttributeInstance instance = target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE);
             try {
-                target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).addModifier(noKnockback);
-                target.damage(damageApplied, metadata.getPlayer());
+                instance.addModifier(NO_KNOCKBACK);
+                applyDamage(damage, target, damager, true, ignoreImmunity);
             } catch (Exception anyError) {
-                MythicLib.plugin.getLogger().log(Level.WARNING, "An error occured while registering player damage");
+                MythicLib.plugin.getLogger().log(Level.SEVERE, "An error occured while registering player damage");
                 anyError.printStackTrace();
             } finally {
-                target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).removeModifier(noKnockback);
+                instance.removeModifier(NO_KNOCKBACK);
             }
 
-            // Apply default knockback
-        else
-            target.damage(damageApplied, metadata.getPlayer());
+            // Should damage immunity be taken into account
+        } else if (ignoreImmunity) {
+            int noDamageTicks = target.getNoDamageTicks();
+            try {
+                target.setNoDamageTicks(0);
+                applyDamage(damage, target, damager, true, false);
+            } catch (Exception anyError) {
+                MythicLib.plugin.getLogger().log(Level.SEVERE, "An error occured while registering player damage");
+                anyError.printStackTrace();
+            } finally {
+                target.setNoDamageTicks(noDamageTicks);
+            }
 
-        // No damage immunity
-        if (ignoreImmunity)
-            target.setNoDamageTicks(0);
+            // Just damage entity
+        } else
+            target.damage(damage, damager);
     }
 
     /**
