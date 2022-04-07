@@ -715,7 +715,7 @@ public class SilentNumbers {
     @NotNull public static ArrayList<String> split(@NotNull String str, @NotNull String seq) {
 
         // If contained
-        if (str.contains(seq)) {
+        if (!str.contains(seq)) {
 
             // New with only one entry
             ArrayList<String> ret = new ArrayList<>();
