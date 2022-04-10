@@ -11,9 +11,16 @@ import io.lumine.mythic.lib.api.util.NBTTypeHelper;
 import io.lumine.utils.adventure.text.Component;
 import io.lumine.utils.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.ByteTag;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.FloatTag;
+import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.LongTag;
+import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
@@ -58,6 +65,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -240,19 +248,50 @@ public class VersionWrapper_1_18_R1 implements VersionWrapper {
 
 		@Override
 		public NBTItem addTag(List<ItemTag> tags) {
-			tags.forEach(tag -> {
-				if (tag.getValue() instanceof Boolean) compound.putBoolean(tag.getPath(), (boolean) tag.getValue());
-				else if (tag.getValue() instanceof Double) compound.putDouble(tag.getPath(), (double) tag.getValue());
-				else if (tag.getValue() instanceof String) compound.putString(tag.getPath(), (String) tag.getValue());
-				else if (tag.getValue() instanceof Integer) compound.putInt(tag.getPath(), (int) tag.getValue());
-				else if (tag.getValue() instanceof List<?>) {
-					ListTag tagList = new ListTag();
-					for (Object s : (List<?>) tag.getValue())
-						if (s instanceof String) tagList.add(StringTag.valueOf((String) s));
-					compound.put(tag.getPath(), tagList);
-				}
-			});
+			tags.forEach(tag -> put(compound, tag.getPath(), tag.getValue()));
 			return this;
+		}
+
+		private static void put(CompoundTag compound, String path, Object value) {
+			Tag tag = tagOf(value);
+			if (tag instanceof CompoundTag) {
+				compound.put(path, compound.getCompound(path).merge((CompoundTag) tag));
+			} else {
+				compound.put(path, tag);
+			}
+		}
+
+		private static Tag tagOf(Object value) {
+			if (value instanceof Map<?, ?>) return getCompoundTag((Map<?, ?>) value, null);
+			if (value instanceof List<?>)   return getListTag((List<?>) value);
+			if (value instanceof Boolean)   return ByteTag.valueOf((Boolean) value);
+			if (value instanceof String)    return StringTag.valueOf((String) value);
+			if (value instanceof Double)    return DoubleTag.valueOf((Float) value);
+			if (value instanceof Float)     return FloatTag.valueOf((Float) value);
+			if (value instanceof Long)      return LongTag.valueOf((Long) value);
+			if (value instanceof Integer)   return IntTag.valueOf((Integer) value);
+			if (value instanceof Short)     return ShortTag.valueOf((Short) value);
+			if (value instanceof Byte)      return ByteTag.valueOf((Byte) value);
+			return null;
+		}
+
+		private static ListTag getListTag(List<?> list) {
+			ListTag tagList = new ListTag();
+			for (Object o : list) {
+				tagList.add(tagOf(o));
+			}
+			return tagList;
+		}
+
+		private static CompoundTag getCompoundTag(Map<?, ?> map, @Nullable CompoundTag previous) {
+			final CompoundTag compoundTag;
+			if (previous == null) {
+				compoundTag = new CompoundTag();
+			} else {
+				compoundTag = previous;
+			}
+			map.entrySet().forEach(entry -> put(compoundTag, entry.getKey().toString(), entry.getValue()));
+			return compoundTag;
 		}
 
 		@Override

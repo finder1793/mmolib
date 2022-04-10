@@ -40,6 +40,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -249,24 +250,50 @@ public class VersionWrapper_1_13_R2 implements VersionWrapper {
 
 		@Override
 		public NBTItem addTag(List<ItemTag> tags) {
-			tags.forEach(tag -> {
-				if (tag.getValue() instanceof Boolean)
-					compound.setBoolean(tag.getPath(), (boolean) tag.getValue());
-				else if (tag.getValue() instanceof Double)
-					compound.setDouble(tag.getPath(), (double) tag.getValue());
-				else if (tag.getValue() instanceof String)
-					compound.setString(tag.getPath(), (String) tag.getValue());
-				else if (tag.getValue() instanceof Integer)
-					compound.setInt(tag.getPath(), (int) tag.getValue());
-				else if (tag.getValue() instanceof List<?>) {
-					NBTTagList tagList = new NBTTagList();
-					for (Object s : (List<?>) tag.getValue())
-						if (s instanceof String)
-							tagList.add(new NBTTagString((String) s));
-					compound.set(tag.getPath(), tagList);
-				}
-			});
+			tags.forEach(tag -> put(compound, tag.getPath(), tag.getValue()));
 			return this;
+		}
+
+		private static void put(NBTTagCompound compound, String path, Object value) {
+			NBTBase tag = tagOf(value);
+			if (tag instanceof NBTTagCompound) {
+				compound.set(path, compound.getCompound(path).a((NBTTagCompound) tag));
+			} else {
+				compound.set(path, tag);
+			}
+		}
+
+		private static NBTBase tagOf(Object value) {
+			if (value instanceof Map<?, ?>) return getCompoundTag((Map<?, ?>) value, null);
+			if (value instanceof List<?>)   return getListTag((List<?>) value);
+			if (value instanceof Boolean)   return ((Boolean) value) ? new NBTTagByte((byte) 1) : new NBTTagByte((byte) 0);
+			if (value instanceof String)    return new NBTTagString((String) value);
+			if (value instanceof Double)    return new NBTTagDouble((Float) value);
+			if (value instanceof Float)     return new NBTTagFloat((Float) value);
+			if (value instanceof Long)      return new NBTTagLong((Long) value);
+			if (value instanceof Integer)   return new NBTTagInt((Integer) value);
+			if (value instanceof Short)     return new NBTTagShort((Short) value);
+			if (value instanceof Byte)      return new NBTTagByte((Byte) value);
+			return null;
+		}
+
+		private static NBTTagList getListTag(List<?> list) {
+			NBTTagList tagList = new NBTTagList();
+			for (Object o : list) {
+				tagList.add(tagOf(o));
+			}
+			return tagList;
+		}
+
+		private static NBTTagCompound getCompoundTag(Map<?, ?> map, @Nullable NBTTagCompound previous) {
+			final NBTTagCompound compoundTag;
+			if (previous == null) {
+				compoundTag = new NBTTagCompound();
+			} else {
+				compoundTag = previous;
+			}
+			map.entrySet().forEach(entry -> put(compoundTag, entry.getKey().toString(), entry.getValue()));
+			return compoundTag;
 		}
 
 		@Override

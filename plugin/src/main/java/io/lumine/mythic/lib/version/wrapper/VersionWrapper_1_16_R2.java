@@ -15,8 +15,15 @@ import net.minecraft.server.v1_16_R2.EntityPlayer;
 import net.minecraft.server.v1_16_R2.EnumHand;
 import net.minecraft.server.v1_16_R2.IChatBaseComponent.ChatSerializer;
 import net.minecraft.server.v1_16_R2.MinecraftKey;
+import net.minecraft.server.v1_16_R2.NBTBase;
+import net.minecraft.server.v1_16_R2.NBTTagByte;
 import net.minecraft.server.v1_16_R2.NBTTagCompound;
+import net.minecraft.server.v1_16_R2.NBTTagDouble;
+import net.minecraft.server.v1_16_R2.NBTTagFloat;
+import net.minecraft.server.v1_16_R2.NBTTagInt;
 import net.minecraft.server.v1_16_R2.NBTTagList;
+import net.minecraft.server.v1_16_R2.NBTTagLong;
+import net.minecraft.server.v1_16_R2.NBTTagShort;
 import net.minecraft.server.v1_16_R2.NBTTagString;
 import net.minecraft.server.v1_16_R2.PacketPlayInArmAnimation;
 import net.minecraft.server.v1_16_R2.PacketPlayOutAnimation;
@@ -63,6 +70,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -232,24 +240,50 @@ public class VersionWrapper_1_16_R2 implements VersionWrapper {
 
 		@Override
 		public NBTItem addTag(List<ItemTag> tags) {
-			tags.forEach(tag -> {
-				if (tag.getValue() instanceof Boolean)
-					compound.setBoolean(tag.getPath(), (boolean) tag.getValue());
-				else if (tag.getValue() instanceof Double)
-					compound.setDouble(tag.getPath(), (double) tag.getValue());
-				else if (tag.getValue() instanceof String)
-					compound.setString(tag.getPath(), (String) tag.getValue());
-				else if (tag.getValue() instanceof Integer)
-					compound.setInt(tag.getPath(), (int) tag.getValue());
-				else if (tag.getValue() instanceof List<?>) {
-					NBTTagList tagList = new NBTTagList();
-					for (Object s : (List<?>) tag.getValue())
-						if (s instanceof String)
-							tagList.add(NBTTagString.a((String) s));
-					compound.set(tag.getPath(), tagList);
-				}
-			});
+			tags.forEach(tag -> put(compound, tag.getPath(), tag.getValue()));
 			return this;
+		}
+
+		private static void put(NBTTagCompound compound, String path, Object value) {
+			NBTBase tag = tagOf(value);
+			if (tag instanceof NBTTagCompound) {
+				compound.set(path, compound.getCompound(path).a((NBTTagCompound) tag));
+			} else {
+				compound.set(path, tag);
+			}
+		}
+
+		private static NBTBase tagOf(Object value) {
+			if (value instanceof Map<?, ?>) return getCompoundTag((Map<?, ?>) value, null);
+			if (value instanceof List<?>)   return getListTag((List<?>) value);
+			if (value instanceof Boolean)   return NBTTagByte.a((Boolean) value);
+			if (value instanceof String)    return NBTTagString.a((String) value);
+			if (value instanceof Double)    return NBTTagDouble.a((Float) value);
+			if (value instanceof Float)     return NBTTagFloat.a((Float) value);
+			if (value instanceof Long)      return NBTTagLong.a((Long) value);
+			if (value instanceof Integer)   return NBTTagInt.a((Integer) value);
+			if (value instanceof Short)     return NBTTagShort.a((Short) value);
+			if (value instanceof Byte)      return NBTTagByte.a((Byte) value);
+			return null;
+		}
+
+		private static NBTTagList getListTag(List<?> list) {
+			NBTTagList tagList = new NBTTagList();
+			for (Object o : list) {
+				tagList.add(tagOf(o));
+			}
+			return tagList;
+		}
+
+		private static NBTTagCompound getCompoundTag(Map<?, ?> map, @Nullable NBTTagCompound previous) {
+			final NBTTagCompound compoundTag;
+			if (previous == null) {
+				compoundTag = new NBTTagCompound();
+			} else {
+				compoundTag = previous;
+			}
+			map.entrySet().forEach(entry -> put(compoundTag, entry.getKey().toString(), entry.getValue()));
+			return compoundTag;
 		}
 
 		@Override
