@@ -26,7 +26,7 @@ import java.util.Map;
 public class PlayerMetadata implements StatProvider {
     private final Player player;
     private final MMOPlayerData playerData;
-    public final Map<String, Double> playerStats;
+    private final Map<String, Double> playerStats;
 
     public PlayerMetadata(PlayerMetadata parent) {
         Validate.notNull(parent, "Parent cannot be null");
