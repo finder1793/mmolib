@@ -255,7 +255,7 @@ public class VersionWrapper_1_13_R2 implements VersionWrapper {
 		}
 
 		private static void put(NBTTagCompound compound, String path, Object value) {
-			NBTBase tag = tagOf(value);
+			NBTBase tag = tagOf(value, compound.getCompound(path));
 			if (tag instanceof NBTTagCompound) {
 				compound.set(path, compound.getCompound(path).a((NBTTagCompound) tag));
 			} else {
@@ -263,8 +263,8 @@ public class VersionWrapper_1_13_R2 implements VersionWrapper {
 			}
 		}
 
-		private static NBTBase tagOf(Object value) {
-			if (value instanceof Map<?, ?>) return getCompoundTag((Map<?, ?>) value, null);
+		private static NBTBase tagOf(Object value, NBTTagCompound existing) {
+			if (value instanceof Map<?, ?>) return getCompoundTag((Map<?, ?>) value, existing);
 			if (value instanceof List<?>)   return getListTag((List<?>) value);
 			if (value instanceof Boolean)   return ((boolean) value) ? new NBTTagByte((byte) 1) : new NBTTagByte((byte) 0);
 			if (value instanceof String)    return new NBTTagString((String) value);
@@ -280,7 +280,7 @@ public class VersionWrapper_1_13_R2 implements VersionWrapper {
 		private static NBTTagList getListTag(List<?> list) {
 			NBTTagList tagList = new NBTTagList();
 			for (Object o : list) {
-				tagList.add(tagOf(o));
+				tagList.add(tagOf(o, null));
 			}
 			return tagList;
 		}

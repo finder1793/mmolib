@@ -249,7 +249,7 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 		}
 
 		private static void put(CompoundTag compound, String path, Object value) {
-			Tag tag = tagOf(value);
+			Tag tag = tagOf(value, compound.getCompound(path));
 			if (tag instanceof CompoundTag) {
 				compound.put(path, compound.getCompound(path).merge((CompoundTag) tag));
 			} else {
@@ -257,8 +257,8 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 			}
 		}
 
-		private static Tag tagOf(Object value) {
-			if (value instanceof Map<?, ?>) return getCompoundTag((Map<?, ?>) value, null);
+		private static Tag tagOf(Object value, CompoundTag existing) {
+			if (value instanceof Map<?, ?>) return getCompoundTag((Map<?, ?>) value, existing);
 			if (value instanceof List<?>)   return getListTag((List<?>) value);
 			if (value instanceof Boolean)   return ByteTag.valueOf((boolean) value);
 			if (value instanceof String)    return StringTag.valueOf((String) value);
@@ -274,7 +274,7 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 		private static ListTag getListTag(List<?> list) {
 			ListTag tagList = new ListTag();
 			for (Object o : list) {
-				tagList.add(tagOf(o));
+				tagList.add(tagOf(o, null));
 			}
 			return tagList;
 		}
