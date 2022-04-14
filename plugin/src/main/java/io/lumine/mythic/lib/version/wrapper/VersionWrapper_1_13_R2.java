@@ -266,14 +266,14 @@ public class VersionWrapper_1_13_R2 implements VersionWrapper {
 		private static NBTBase tagOf(Object value) {
 			if (value instanceof Map<?, ?>) return getCompoundTag((Map<?, ?>) value, null);
 			if (value instanceof List<?>)   return getListTag((List<?>) value);
-			if (value instanceof Boolean)   return ((Boolean) value) ? new NBTTagByte((byte) 1) : new NBTTagByte((byte) 0);
+			if (value instanceof Boolean)   return ((boolean) value) ? new NBTTagByte((byte) 1) : new NBTTagByte((byte) 0);
 			if (value instanceof String)    return new NBTTagString((String) value);
-			if (value instanceof Double)    return new NBTTagDouble((Float) value);
-			if (value instanceof Float)     return new NBTTagFloat((Float) value);
-			if (value instanceof Long)      return new NBTTagLong((Long) value);
-			if (value instanceof Integer)   return new NBTTagInt((Integer) value);
-			if (value instanceof Short)     return new NBTTagShort((Short) value);
-			if (value instanceof Byte)      return new NBTTagByte((Byte) value);
+			if (value instanceof Double)    return new NBTTagDouble((double) value);
+			if (value instanceof Float)     return new NBTTagFloat((float) value);
+			if (value instanceof Long)      return new NBTTagLong((long) value);
+			if (value instanceof Integer)   return new NBTTagInt((int) value);
+			if (value instanceof Short)     return new NBTTagShort((short) value);
+			if (value instanceof Byte)      return new NBTTagByte((byte) value);
 			return null;
 		}
 

@@ -264,14 +264,14 @@ public class VersionWrapper_1_18_R2 implements VersionWrapper {
 		private static Tag tagOf(Object value) {
             if (value instanceof Map<?, ?>) return getCompoundTag((Map<?, ?>) value, null);
             if (value instanceof List<?>)   return getListTag((List<?>) value);
-            if (value instanceof Boolean)   return ByteTag.valueOf((Boolean) value);
+            if (value instanceof Boolean)   return ByteTag.valueOf((boolean) value);
             if (value instanceof String)    return StringTag.valueOf((String) value);
-            if (value instanceof Double)    return DoubleTag.valueOf((Float) value);
-            if (value instanceof Float)     return FloatTag.valueOf((Float) value);
-            if (value instanceof Long)      return LongTag.valueOf((Long) value);
-            if (value instanceof Integer)   return IntTag.valueOf((Integer) value);
-            if (value instanceof Short)     return ShortTag.valueOf((Short) value);
-            if (value instanceof Byte)      return ByteTag.valueOf((Byte) value);
+            if (value instanceof Double)    return DoubleTag.valueOf((double) value);
+            if (value instanceof Float)     return FloatTag.valueOf((float) value);
+            if (value instanceof Long)      return LongTag.valueOf((long) value);
+            if (value instanceof Integer)   return IntTag.valueOf((int) value);
+            if (value instanceof Short)     return ShortTag.valueOf((short) value);
+            if (value instanceof Byte)      return ByteTag.valueOf((byte) value);
             return null;
         }
 
