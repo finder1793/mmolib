@@ -48,7 +48,7 @@ public class PlayerMetadata implements StatProvider {
         if (castSlot.isHand()) {
             EquipmentSlot ignored = castSlot.getOppositeHand();
             for (StatInstance ins : statMap.getInstances())
-                this.playerStats.put(ins.getStat(), ins.getFilteredTotal(mod -> mod.getSlot() != ignored));
+                this.playerStats.put(ins.getStat(), ins.getFilteredTotal(mod -> !mod.getSource().isWeapon() || mod.getSlot() != ignored));
 
             /*
              * Not casting the attack with a specific

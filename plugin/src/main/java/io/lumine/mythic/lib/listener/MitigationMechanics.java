@@ -4,9 +4,9 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.mitigation.PlayerBlockEvent;
 import io.lumine.mythic.lib.api.event.mitigation.PlayerDodgeEvent;
 import io.lumine.mythic.lib.api.event.mitigation.PlayerParryEvent;
-import io.lumine.mythic.lib.player.cooldown.CooldownType;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatMap;
+import io.lumine.mythic.lib.player.cooldown.CooldownType;
 import io.lumine.mythic.lib.version.VersionSound;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
@@ -67,7 +67,18 @@ public class MitigationMechanics implements Listener {
         actionBarMessage = MythicLib.plugin.getConfig().getBoolean("mitigation.message.action-bar");
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    /**
+     * Use priority HIGHEST to make sure damage mitigation runs
+     * after the PlayerAttackEvent registration. This fixes
+     * https://git.lumine.io/mythiccraft/mmoitems/-/issues/701
+     * <p>
+     * If it happens to run before this event registration, the damage
+     * output change will not be registered because PlayerAttackEvent,
+     * when called, does NOT take the EntityDamageEvent damage into account
+     * as long as there is a DamageMetadata registered. So when a player deals
+     * custom damage to another player, blocking is NOT applied.
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void a(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player) || !mitigationCauses.contains(event.getCause()) || event.getEntity().hasMetadata("NPC"))
             return;

@@ -92,6 +92,7 @@ public interface VersionWrapper {
 
     ItemStack textureItem(Material material, int model);
 
+    @Deprecated
     BossBar createBossBar(NamespacedKey key, String title, BarColor color, BarStyle style, BarFlag... flags);
 
     Enchantment getEnchantmentFromString(String s);
