@@ -249,6 +249,11 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 		}
 
 		private static void put(CompoundTag compound, String path, Object value) {
+			// remove the tag if the inserted value is null
+			if(value == null) {
+				compound.remove(path);
+				return;
+			}
 			Tag tag = tagOf(value, compound.getCompound(path));
 			if (tag instanceof CompoundTag) {
 				compound.put(path, compound.getCompound(path).merge((CompoundTag) tag));

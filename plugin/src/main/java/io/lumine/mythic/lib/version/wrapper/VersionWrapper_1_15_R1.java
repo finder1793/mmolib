@@ -213,6 +213,11 @@ public class VersionWrapper_1_15_R1 implements VersionWrapper {
         }
 
         private static void put(NBTTagCompound compound, String path, Object value) {
+            // remove the tag if the inserted value is null
+            if(value == null) {
+                compound.remove(path);
+                return;
+            }
             NBTBase tag = tagOf(value, compound.getCompound(path));
             if (tag instanceof NBTTagCompound) {
                 compound.set(path, compound.getCompound(path).a((NBTTagCompound) tag));
