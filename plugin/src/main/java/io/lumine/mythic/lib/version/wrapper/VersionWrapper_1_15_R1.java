@@ -245,7 +245,17 @@ public class VersionWrapper_1_15_R1 implements VersionWrapper {
         private static NBTTagList getListTag(List<?> list) {
             NBTTagList tagList = new NBTTagList();
             for (Object o : list) {
-                tagList.add(tagOf(o, null));
+                NBTBase tag = tagOf(o, null);
+                if(tag == null) {
+                    // could not turn the object to a tag,
+                    // or it was already null
+                    // ignore the tag
+                    continue;
+                }
+                if(!tagList.b(tagList.size(), tag)) {
+                    // could not add tag to the list
+                    // do something ?
+                }
             }
             return tagList;
         }

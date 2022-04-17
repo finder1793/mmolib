@@ -281,7 +281,17 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 		private static ListTag getListTag(List<?> list) {
 			ListTag tagList = new ListTag();
 			for (Object o : list) {
-				tagList.add(tagOf(o, null));
+				Tag tag = tagOf(o, null);
+				if(tag == null) {
+					// could not turn the object to a tag,
+					// or it was already null
+					// ignore the tag
+					continue;
+				}
+				if(!tagList.addTag(tagList.size(), tag)) {
+					// could not add tag to the list
+					// do something ?
+				}
 			}
 			return tagList;
 		}
