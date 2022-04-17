@@ -259,7 +259,9 @@ public class VersionWrapper_1_18_R1 implements VersionWrapper {
 				return;
 			}
 			Tag tag = tagOf(value, compound.getCompound(path));
-			if (tag instanceof CompoundTag) {
+			if (tag == null) {
+				// silently ignore it when the tag could not be converted
+			} else if (tag instanceof CompoundTag) {
 				compound.put(path, compound.getCompound(path).merge((CompoundTag) tag));
 			} else {
 				compound.put(path, tag);

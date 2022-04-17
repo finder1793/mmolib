@@ -219,7 +219,9 @@ public class VersionWrapper_1_14_R1 implements VersionWrapper {
                 return;
             }
             NBTBase tag = tagOf(value, compound.getCompound(path));
-            if (tag instanceof NBTTagCompound) {
+            if (tag == null) {
+                // silently ignore it when the tag could not be converted
+            } else if (tag instanceof NBTTagCompound) {
                 compound.set(path, compound.getCompound(path).a((NBTTagCompound) tag));
             } else {
                 compound.set(path, tag);
