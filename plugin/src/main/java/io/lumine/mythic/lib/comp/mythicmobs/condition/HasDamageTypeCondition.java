@@ -27,20 +27,41 @@ public class HasDamageTypeCondition extends SkillCondition implements ISkillMeta
         this.exact = mlc.getBoolean("exact", false);
 
         // Read types being sought
-        String typesString = mlc.getString(new String[]{"type", "t", "types"}, null, new String[0]);
+        String typesString = mlc.getString(new String[]{"type", "t", "types"}, null);
         if (typesString != null && !typesString.isEmpty() && !typesString.equalsIgnoreCase("NONE"))
-            for (String str : typesString.replace("<&cm>", ",").split("\\,"))
+            for (String str : typesString.replace("<&cm>", ",").split(","))
                 this.types.add(DamageType.valueOf(UtilityMethods.enumName(str)));
     }
 
     @Override
     public boolean check(SkillMetadata skillMetadata) {
-        Validate.isTrue(skillMetadata.getVariables().has(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK), "No attack meta is provided");
-        AttackMetadata attackMeta = (AttackMetadata) skillMetadata.getVariables().get(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK).get();
-        Validate.isTrue(!attackMeta.hasExpired(), "Attack meta has expired");
 
-        // Read all damage types of this attack
-        Set<DamageType> attackDamageTypes = attackMeta.getDamage().collectTypes();
+        /*
+         * Making it a Validate statement would cause MythicMob skills to crash
+         * and stop execution if the condition was used through a means that
+         * produced no attack meta, where at least I personally would use this
+         * very condition to check if the skill had no damage meta at all.
+         */
+
+        Set<DamageType> attackDamageTypes;
+
+        // Skill has no damage types
+        if (!skillMetadata.getVariables().has(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK)) {
+
+            // Empty set
+            attackDamageTypes = new HashSet<>();
+
+        // Skill does have damage types
+        } else {
+
+            // Retrieve Attack Meta
+            AttackMetadata attackMeta = (AttackMetadata) skillMetadata.getVariables().get(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK).get();
+            Validate.isTrue(!attackMeta.hasExpired(), "Attack meta has expired");
+
+            // Read all damage types of this attack
+            attackDamageTypes = attackMeta.getDamage().collectTypes();
+        }
+
 
         // Exact match
         if (exact)
