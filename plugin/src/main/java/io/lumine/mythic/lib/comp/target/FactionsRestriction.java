@@ -24,10 +24,6 @@ public class FactionsRestriction implements TargetRestriction {
             return true;
 
         Relationship relation = faction.getRelationshipTo(api.getFPlayer((Player) target));
-        return isEnemy(relation) == interaction.isOffense();
-    }
-
-    private boolean isEnemy(Relationship relation) {
-        return relation == Relationship.ENEMY || relation == Relationship.NONE;
+        return relation == Relationship.NONE || ((relation == Relationship.ENEMY) == interaction.isOffense());
     }
 }
