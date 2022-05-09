@@ -193,6 +193,9 @@ public class SkillManager {
         registerCondition("is_living", config -> new IsLivingCondition(config));
         registerCondition("can_target", config -> new CanTargetCondition(config));
         registerCondition("has_damage_type", config -> new HasDamageTypeCondition(config));
+        registerCondition("world", config -> new WorldCondition(config));
+        registerCondition("permission", config -> new PermissionCondition(config));
+        registerCondition("biome", config -> new BiomeCondition(config));
 
         // Default skill handler types
         registerSkillHandlerType(config -> config.contains("mythiclib-skill-id"), config -> new MythicLibSkillHandler(getSkillOrThrow(config.getString("mythiclib-skill"))));
