@@ -23,7 +23,8 @@ health-scale:
   delay: 0
 
 # Set to false to prevent players from dealing damage to other
-# players using abilities. This is an useful option for PvE servers.
+# players using abilities OR custom weapons like staffs or muskets.
+# This is an useful option for PvE servers.
 player-ability-damage: true
 
 critical-strikes:
