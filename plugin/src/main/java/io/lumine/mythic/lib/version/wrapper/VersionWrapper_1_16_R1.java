@@ -49,7 +49,7 @@ public class VersionWrapper_1_16_R1 implements VersionWrapper {
     static {
         oreDrops.put(Material.IRON_ORE, Material.IRON_INGOT);
         oreDrops.put(Material.GOLD_ORE, Material.GOLD_INGOT);
-        oreDrops.put(Material.ANCIENT_DEBRIS, Material.NETHERITE_INGOT);
+        oreDrops.put(Material.ANCIENT_DEBRIS, Material.NETHERITE_SCRAP);
     }
 
     @Override

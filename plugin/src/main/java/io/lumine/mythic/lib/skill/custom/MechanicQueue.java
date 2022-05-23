@@ -39,10 +39,12 @@ public class MechanicQueue {
      * fully explored.
      * <p>
      * Call this method to start casting the skill.
+     *
+     * @return False if the queue has no more mechanic to cast
      */
-    public void next() {
+    public boolean next() {
         if (!queue.hasNext())
-            return;
+            return false;
 
         counter++;
         Mechanic mechanic = queue.next();
@@ -61,5 +63,7 @@ public class MechanicQueue {
             } catch (RuntimeException exception) {
                 MythicLib.plugin.getLogger().log(Level.WARNING, "Could not execute mechanic n" + counter + " from skill '" + skill.getId() + "': " + exception.getMessage());
             }
+
+        return true;
     }
 }

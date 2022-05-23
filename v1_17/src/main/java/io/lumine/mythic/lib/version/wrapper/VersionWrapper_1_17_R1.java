@@ -70,7 +70,7 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 		oreDrops.put(Material.GOLD_ORE, Material.GOLD_INGOT);
 		oreDrops.put(Material.COPPER_ORE, Material.COPPER_INGOT);
 
-		oreDrops.put(Material.ANCIENT_DEBRIS, Material.NETHERITE_INGOT);
+		oreDrops.put(Material.ANCIENT_DEBRIS, Material.NETHERITE_SCRAP);
 
 		oreDrops.put(Material.DEEPSLATE_IRON_ORE, Material.IRON_INGOT);
 		oreDrops.put(Material.DEEPSLATE_GOLD_ORE, Material.GOLD_INGOT);
