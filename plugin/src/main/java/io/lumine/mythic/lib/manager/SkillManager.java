@@ -240,6 +240,9 @@ public class SkillManager {
         Validate.isTrue(!handlers.containsKey(handler.getId()), "A skill handler with the same name already exists");
 
         handlers.put(handler.getId(), handler);
+
+        if (!registration && handler instanceof Listener)
+            Bukkit.getPluginManager().registerEvents((Listener) handler, MythicLib.plugin);
     }
 
     @NotNull
