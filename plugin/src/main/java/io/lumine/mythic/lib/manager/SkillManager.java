@@ -388,7 +388,7 @@ public class SkillManager {
                 registerSkillHandlerType(config -> config.contains("mythicmobs-skill-id"), config -> new MythicMobsSkillHandler(config));
 
             // SkillAPI skill handler type
-            if (Bukkit.getPluginManager().getPlugin("SkillAPI") != null)
+            if (Bukkit.getPluginManager().getPlugin("SkillAPI") != null || Bukkit.getPluginManager().getPlugin("ProSkillAPI") != null)
                 registerSkillHandlerType(config -> config.contains("skillapi-skill-id"), config -> new SkillAPISkillHandler(config));
         }
 
