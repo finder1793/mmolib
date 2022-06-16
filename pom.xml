@@ -11,13 +11,14 @@
         <module>v1_18</module>
         <module>v1_18_r2</module>
         <module>dist</module>
+        <module>v1_19</module>
     </modules>
     <name>MythicLib</name>
 
     <properties>
         <downloadSources>false</downloadSources>
         <downloadJavadocs>false</downloadJavadocs>
-        <revision>1.3.1</revision>
+        <revision>1.3.2</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>

@@ -9,19 +9,31 @@ import io.lumine.mythic.lib.api.item.NBTItem;
 import io.lumine.mythic.lib.api.util.NBTTypeHelper;
 import io.lumine.utils.adventure.text.Component;
 import io.lumine.utils.adventure.text.serializer.gson.GsonComponentSerializer;
-import net.minecraft.server.v1_16_R3.*;
-import net.minecraft.server.v1_16_R3.IChatBaseComponent.ChatSerializer;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
+import net.minecraft.network.protocol.game.ServerboundSwingPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.block.entity.SkullBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
-import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.reflect.FieldUtils;
-import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_16_R3.event.CraftEventFactory;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_16_R3.util.CraftMagicNumbers.NBT;
+import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_19_R1.util.CraftMagicNumbers;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -30,16 +42,21 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.reflect.Field;
 import java.util.*;
 
-public class VersionWrapper_1_16_R3 implements VersionWrapper {
+public class VersionWrapper_1_19_R1 implements VersionWrapper {
     private static final Map<Material, Material> oreDrops = new HashMap<>();
 
     static {
         oreDrops.put(Material.IRON_ORE, Material.IRON_INGOT);
         oreDrops.put(Material.GOLD_ORE, Material.GOLD_INGOT);
+        oreDrops.put(Material.COPPER_ORE, Material.COPPER_INGOT);
+
         oreDrops.put(Material.ANCIENT_DEBRIS, Material.NETHERITE_SCRAP);
+
+        oreDrops.put(Material.DEEPSLATE_IRON_ORE, Material.IRON_INGOT);
+        oreDrops.put(Material.DEEPSLATE_GOLD_ORE, Material.GOLD_INGOT);
+        oreDrops.put(Material.DEEPSLATE_COPPER_ORE, Material.COPPER_INGOT);
     }
 
     @Override
@@ -49,117 +66,88 @@ public class VersionWrapper_1_16_R3 implements VersionWrapper {
 
     @Override
     public int getFoodRestored(ItemStack item) {
-        return CraftItemStack.asNMSCopy(item).getItem().getFoodInfo().getNutrition();
+        return CraftItemStack.asNMSCopy(item).getItem().getFoodProperties().getNutrition();
     }
 
     @Override
     public float getSaturationRestored(ItemStack item) {
-        return CraftItemStack.asNMSCopy(item).getItem().getFoodInfo().getSaturationModifier();
+        return CraftItemStack.asNMSCopy(item).getItem().getFoodProperties().getSaturationModifier();
     }
 
     @Override
     public void sendJson(Player player, String message) {
-        ((CraftPlayer) player).getHandle().playerConnection
-                .sendPacket(new PacketPlayOutChat(ChatSerializer.a(message), ChatMessageType.CHAT, UUID.randomUUID()));
+        player.spigot().sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(message));
     }
 
     @Override
     public void sendActionBar(Player player, String message) {
-        ((CraftPlayer) player).getHandle().playerConnection
-                .sendPacket(new PacketPlayOutChat(ChatSerializer.a("{\"text\": \"" + message + "\"}"), ChatMessageType.GAME_INFO, UUID.randomUUID()));
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
     }
 
     @Override
     public int getNextContainerId(Player player) {
-        return toNMS(player).nextContainerCounter();
+        throw new NotImplementedException();
     }
 
     @Override
     public void handleInventoryCloseEvent(Player player) {
-        CraftEventFactory.handleInventoryCloseEvent(toNMS(player));
+        throw new NotImplementedException();
     }
 
     @Override
     public void sendPacketOpenWindow(Player player, int containerId) {
-        toNMS(player).playerConnection.sendPacket(new PacketPlayOutOpenWindow(containerId, Containers.ANVIL, new ChatMessage("Repair & Name")));
+        throw new NotImplementedException();
     }
 
     @Override
     public void sendPacketCloseWindow(Player player, int containerId) {
-        toNMS(player).playerConnection.sendPacket(new PacketPlayOutCloseWindow(containerId));
+        throw new NotImplementedException();
     }
 
     @Override
     public void setActiveContainerDefault(Player player) {
-        toNMS(player).activeContainer = toNMS(player).defaultContainer;
+        throw new NotImplementedException();
     }
 
     @Override
     public void setActiveContainer(Player player, Object container) {
-        toNMS(player).activeContainer = (Container) container;
+        throw new NotImplementedException();
     }
 
     @Override
     public void setActiveContainerId(Object container, int containerId) {
-        Field field = null;
-
-        try {
-            field = Container.class.getField("windowId");
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-
-        FieldUtils.removeFinalModifier(field);
-
-        try {
-            FieldUtils.writeField(field, container, containerId);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        throw new NotImplementedException();
     }
 
     @Override
     public void addActiveContainerSlotListener(Object container, Player player) {
-        ((Container) container).addSlotListener(toNMS(player));
+        throw new NotImplementedException();
     }
 
     @Override
     public Inventory toBukkitInventory(Object container) {
-        return ((Container) container).getBukkitView().getTopInventory();
+        throw new NotImplementedException();
     }
 
     @Override
     public Object newContainerAnvil(Player player) {
-        return new AnvilContainer(player);
-    }
-
-    private EntityPlayer toNMS(Player player) {
-        return ((CraftPlayer) player).getHandle();
-    }
-
-    private class AnvilContainer extends ContainerAnvil {
-        public AnvilContainer(Player player) {
-            super(getNextContainerId(player), ((CraftPlayer) player).getHandle().inventory,
-                    ContainerAccess.at(((CraftWorld) player.getWorld()).getHandle(), new BlockPosition(0, 0, 0)));
-            this.checkReachable = false;
-            setTitle(new ChatMessage("Repair & Name"));
-        }
+        throw new NotImplementedException();
     }
 
     @Override
-    public NBTItem getNBTItem(org.bukkit.inventory.ItemStack item) {
-        return new NBTItem_v1_16_R3(item);
+    public NBTItem getNBTItem(ItemStack item) {
+        return new CraftNBTItem(item);
     }
 
-    public static class NBTItem_v1_16_R3 extends NBTItem {
-        private final net.minecraft.server.v1_16_R3.ItemStack nms;
-        private final NBTTagCompound compound;
+    public static class CraftNBTItem extends NBTItem {
+        private final net.minecraft.world.item.ItemStack nms;
+        private final CompoundTag compound;
 
-        public NBTItem_v1_16_R3(org.bukkit.inventory.ItemStack item) {
+        public CraftNBTItem(ItemStack item) {
             super(item);
 
             nms = CraftItemStack.asNMSCopy(item);
-            compound = nms.hasTag() ? nms.getTag() : new NBTTagCompound();
+            compound = nms.hasTag() ? nms.getTag() : new CompoundTag();
         }
 
         @Override
@@ -174,7 +162,7 @@ public class VersionWrapper_1_16_R3 implements VersionWrapper {
 
         @Override
         public boolean hasTag(String path) {
-            return compound.hasKey(path);
+            return compound.contains(path);
         }
 
         @Override
@@ -194,26 +182,23 @@ public class VersionWrapper_1_16_R3 implements VersionWrapper {
 
         @Override
         public NBTCompound getNBTCompound(String path) {
-            return new NBTCompound_v1_16_R3(this, path);
+            return new CraftNBTCompound(this, path);
         }
 
         @Override
         public NBTItem addTag(List<ItemTag> tags) {
             tags.forEach(tag -> {
-                if (tag.getValue() instanceof Boolean)
-                    compound.setBoolean(tag.getPath(), (boolean) tag.getValue());
+                if (tag.getValue() instanceof Boolean) compound.putBoolean(tag.getPath(), (boolean) tag.getValue());
                 else if (tag.getValue() instanceof Double)
-                    compound.setDouble(tag.getPath(), (double) tag.getValue());
+                    compound.putDouble(tag.getPath(), (double) tag.getValue());
                 else if (tag.getValue() instanceof String)
-                    compound.setString(tag.getPath(), (String) tag.getValue());
-                else if (tag.getValue() instanceof Integer)
-                    compound.setInt(tag.getPath(), (int) tag.getValue());
+                    compound.putString(tag.getPath(), (String) tag.getValue());
+                else if (tag.getValue() instanceof Integer) compound.putInt(tag.getPath(), (int) tag.getValue());
                 else if (tag.getValue() instanceof List<?>) {
-                    NBTTagList tagList = new NBTTagList();
+                    ListTag tagList = new ListTag();
                     for (Object s : (List<?>) tag.getValue())
-                        if (s instanceof String)
-                            tagList.add(NBTTagString.a((String) s));
-                    compound.set(tag.getPath(), tagList);
+                        if (s instanceof String) tagList.add(StringTag.valueOf((String) s));
+                    compound.put(tag.getPath(), tagList);
                 }
             });
             return this;
@@ -228,23 +213,23 @@ public class VersionWrapper_1_16_R3 implements VersionWrapper {
 
         @Override
         public Set<String> getTags() {
-            return compound.getKeys();
+            return compound.getAllKeys();
         }
 
         @Override
-        public org.bukkit.inventory.ItemStack toItem() {
+        public ItemStack toItem() {
             nms.setTag(compound);
             return CraftItemStack.asBukkitCopy(nms);
         }
 
         @Override
         public int getTypeId(String path) {
-            return compound.get(path).getTypeId();
+            return compound.get(path).getId();
         }
 
         @Override
         public Component getDisplayNameComponent() {
-            if (compound.getCompound("display").hasKey("Name")) {
+            if (compound.getCompound("display").contains("Name")) {
                 return GsonComponentSerializer.gson().deserialize(compound.getCompound("display").getString("Name"));
             }
             return Component.empty();
@@ -254,17 +239,16 @@ public class VersionWrapper_1_16_R3 implements VersionWrapper {
         // Replaces the current name component with the passed parameter.
         public void setDisplayNameComponent(Component component) {
             if (component != null)
-                compound.getCompound("display").setString("Name", GsonComponentSerializer.gson().serialize(component));
-            else
-                compound.getCompound("display").remove("Name");
+                compound.getCompound("display").putString("Name", GsonComponentSerializer.gson().serialize(component));
+            else compound.getCompound("display").remove("Name");
         }
 
         @Override
         public List<Component> getLoreComponents() {
             List<Component> lore = new ArrayList<>();
 
-            if (compound.getCompound("display").hasKey("Lore")) {
-                NBTTagList strings = compound.getCompound("display").getList("Lore", NBT.TAG_STRING);
+            if (compound.getCompound("display").contains("Lore")) {
+                ListTag strings = compound.getCompound("display").getList("Lore", CraftMagicNumbers.NBT.TAG_STRING);
                 for (int i = 0; i < strings.size(); i++)
                     lore.add(GsonComponentSerializer.gson().deserialize(strings.getString(i)));
             }
@@ -275,39 +259,39 @@ public class VersionWrapper_1_16_R3 implements VersionWrapper {
         @Override
         // Replaces the current lore component with the passed parameter.
         public void setLoreComponents(List<Component> components) {
-            NBTTagList lore = new NBTTagList();
+            ListTag lore = new ListTag();
             if (components != null && !components.isEmpty()) {
                 for (Component component : components)
-                    lore.add(NBTTagString.a(GsonComponentSerializer.gson().serialize(component)));
+                    lore.add(StringTag.valueOf(GsonComponentSerializer.gson().serialize(component)));
 
-                compound.getCompound("display").set("Lore", lore);
+                compound.getCompound("display").put("Lore", lore);
             } else {
                 compound.getCompound("display").remove("Lore");
             }
         }
 
         @Override
-        public NBTItem_v1_16_R3 cancelVanillaAttributeModifiers() {
+        public CraftNBTItem cancelVanillaAttributeModifiers() {
             return this;
         }
     }
 
-    private static class NBTCompound_v1_16_R3 extends NBTCompound {
-        private final NBTTagCompound compound;
+    private static class CraftNBTCompound extends NBTCompound {
+        private final CompoundTag compound;
 
-        public NBTCompound_v1_16_R3(NBTItem_v1_16_R3 item, String path) {
+        public CraftNBTCompound(CraftNBTItem item, String path) {
             super();
-            compound = (item.hasTag(path) && NBTTypeHelper.COMPOUND.is(item.getTypeId(path))) ? item.compound.getCompound(path) : new NBTTagCompound();
+            compound = (item.hasTag(path) && NBTTypeHelper.COMPOUND.is(item.getTypeId(path))) ? item.compound.getCompound(path) : new CompoundTag();
         }
 
-        public NBTCompound_v1_16_R3(NBTCompound_v1_16_R3 comp, String path) {
+        public CraftNBTCompound(CraftNBTCompound comp, String path) {
             super();
-            compound = (comp.hasTag(path) && NBTTypeHelper.COMPOUND.is(comp.getTypeId(path))) ? comp.compound.getCompound(path) : new NBTTagCompound();
+            compound = (comp.hasTag(path) && NBTTypeHelper.COMPOUND.is(comp.getTypeId(path))) ? comp.compound.getCompound(path) : new CompoundTag();
         }
 
         @Override
         public boolean hasTag(String path) {
-            return compound.hasKey(path);
+            return compound.contains(path);
         }
 
         @Override
@@ -317,7 +301,7 @@ public class VersionWrapper_1_16_R3 implements VersionWrapper {
 
         @Override
         public NBTCompound getNBTCompound(String path) {
-            return new NBTCompound_v1_16_R3(this, path);
+            return new CraftNBTCompound(this, path);
         }
 
         @Override
@@ -342,64 +326,49 @@ public class VersionWrapper_1_16_R3 implements VersionWrapper {
 
         @Override
         public Set<String> getTags() {
-            return compound.getKeys();
+            return compound.getAllKeys();
         }
 
         @Override
         public int getTypeId(String path) {
-            return compound.get(path).getTypeId();
+            return compound.get(path).getId();
         }
     }
 
     @Override
     public void playArmAnimation(Player player) {
-        EntityPlayer p = ((CraftPlayer) player).getHandle();
-        PlayerConnection connection = p.playerConnection;
-        PacketPlayOutAnimation armSwing = new PacketPlayOutAnimation(p, 0);
-        connection.sendPacket(armSwing);
-        connection.a(new PacketPlayInArmAnimation(EnumHand.MAIN_HAND));
+        ServerPlayer p = ((CraftPlayer) player).getHandle();
+        ServerGamePacketListenerImpl connection = p.connection;
+        ClientboundAnimatePacket armSwing = new ClientboundAnimatePacket(p, 0);
+        connection.send(armSwing);
+        connection.handleAnimate(new ServerboundSwingPacket(InteractionHand.MAIN_HAND));
     }
 
     @Override
-    public Sound getBlockPlaceSound(org.bukkit.block.Block block) {
-        try {
-            World nmsWorld = ((CraftWorld) block.getWorld()).getHandle();
+    public Sound getBlockPlaceSound(Block block) {
+        ServerLevel nmsWorld = ((CraftWorld) block.getWorld()).getHandle();
+        BlockState state = nmsWorld.getBlockState(new BlockPos(block.getX(), block.getY(), block.getZ()));
+        SoundEvent event = state.getBlock().getSoundType(state).getPlaceSound();
 
-            net.minecraft.server.v1_16_R3.Block nmsBlock = nmsWorld.getType(new BlockPosition(block.getX(), block.getY(), block.getZ())).getBlock();
-            SoundEffectType soundEffectType = nmsBlock.getStepSound(nmsBlock.getBlockData());
-
-            Field breakSound = SoundEffectType.class.getDeclaredField("Z");
-            breakSound.setAccessible(true);
-            SoundEffect nmsSound = (SoundEffect) breakSound.get(soundEffectType);
-
-            Field keyField = SoundEffect.class.getDeclaredField("b");
-            keyField.setAccessible(true);
-            MinecraftKey nmsString = (MinecraftKey) keyField.get(nmsSound);
-
-            return Sound.valueOf(nmsString.getKey().replace(".", "_").toUpperCase());
-        } catch (IllegalAccessException | NoSuchFieldException ex) {
-            ex.printStackTrace();
-        }
-        return null;
+        return Sound.valueOf(event.getLocation().getPath().replace(".", "_").toUpperCase());
     }
 
     @Override
     public String getSkullValue(Block block) {
-        TileEntitySkull skullTile = (TileEntitySkull) ((CraftWorld) block.getWorld()).getHandle()
-                .getTileEntity(new BlockPosition(block.getX(), block.getY(), block.getZ()));
-        if (skullTile.gameProfile == null)
-            return "";
-        return skullTile.gameProfile.getProperties().get("textures").iterator().next().getValue();
+        SkullBlockEntity skull = (SkullBlockEntity) ((CraftWorld) block.getWorld()).getHandle()
+                .getBlockEntity(new BlockPos(block.getX(), block.getY(), block.getZ()));
+        if (skull.getOwnerProfile() == null) return "";
+        return skull.getOwnerProfile().getProperties().get("textures").iterator().next().getValue();
     }
 
     @Override
     public void setSkullValue(Block block, String value) {
-        TileEntitySkull skullTile = (TileEntitySkull) ((CraftWorld) block.getWorld()).getHandle()
-                .getTileEntity(new BlockPosition(block.getX(), block.getY(), block.getZ()));
+        SkullBlockEntity skull = (SkullBlockEntity) ((CraftWorld) block.getWorld()).getHandle()
+                .getBlockEntity(new BlockPos(block.getX(), block.getY(), block.getZ()));
         GameProfile profile = new GameProfile(UUID.randomUUID(), null);
         profile.getProperties().put("textures", new Property("textures", value));
-        skullTile.setGameProfile(profile);
-        skullTile.update();
+        skull.setOwner(profile);
+        skull.setChanged();
     }
 
     @Override
@@ -439,8 +408,7 @@ public class VersionWrapper_1_16_R3 implements VersionWrapper {
     @Override
     public boolean isUndead(Entity entity) {
         EntityType type = entity.getType();
-        return type == EntityType.SKELETON || type == EntityType.STRAY || type == EntityType.WITHER_SKELETON || type == EntityType.ZOMBIE
-                || type == EntityType.DROWNED || type == EntityType.HUSK || type.name().equals("PIG_ZOMBIE") || type == EntityType.ZOMBIE_VILLAGER
-                || type == EntityType.PHANTOM || type == EntityType.WITHER || type == EntityType.SKELETON_HORSE || type == EntityType.ZOMBIE_HORSE;
+        return type == EntityType.SKELETON || type == EntityType.STRAY || type == EntityType.WITHER_SKELETON || type == EntityType.ZOMBIE || type == EntityType.DROWNED || type == EntityType.HUSK || type.name()
+                .equals("PIG_ZOMBIE") || type == EntityType.ZOMBIE_VILLAGER || type == EntityType.PHANTOM || type == EntityType.WITHER || type == EntityType.SKELETON_HORSE || type == EntityType.ZOMBIE_HORSE;
     }
 }

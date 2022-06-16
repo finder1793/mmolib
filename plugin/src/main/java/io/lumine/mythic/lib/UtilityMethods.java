@@ -95,6 +95,8 @@ public class UtilityMethods {
         return canTarget(source, null, target, interaction);
     }
 
+    private static final double BOUNDING_BOX_EXPANSION = .2;
+
     /**
      * @param source      Player targeting the entity
      * @param loc         If the given location is not null, this method checks if this
@@ -110,7 +112,7 @@ public class UtilityMethods {
             return false;
 
         // Check for bounding box
-        return loc == null || MythicLib.plugin.getVersion().getWrapper().isInBoundingBox(target, loc);
+        return loc == null || target.getBoundingBox().expand(BOUNDING_BOX_EXPANSION).contains(loc.toVector());
     }
 
     /**

@@ -3,7 +3,6 @@ package io.lumine.mythic.lib.version.wrapper;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.MMORayTraceResult;
 import io.lumine.mythic.lib.api.item.ItemTag;
 import io.lumine.mythic.lib.api.item.NBTCompound;
 import io.lumine.mythic.lib.api.item.NBTItem;
@@ -11,16 +10,12 @@ import io.lumine.mythic.lib.api.util.NBTTypeHelper;
 import io.lumine.utils.adventure.text.Component;
 import io.lumine.utils.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.minecraft.server.v1_16_R1.*;
-import net.minecraft.server.v1_16_R1.World;
 import net.minecraft.server.v1_16_R1.IChatBaseComponent.ChatSerializer;
 import org.bukkit.Material;
-import org.bukkit.*;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarFlag;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.boss.BossBar;
 import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.reflect.FieldUtils;
 import org.bukkit.craftbukkit.v1_16_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
@@ -30,18 +25,13 @@ import org.bukkit.craftbukkit.v1_16_R1.util.CraftMagicNumbers.NBT;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.BoundingBox;
-import org.bukkit.util.RayTraceResult;
-import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.function.Predicate;
 
 public class VersionWrapper_1_16_R1 implements VersionWrapper {
     private static final Map<Material, Material> oreDrops = new HashMap<>();
@@ -362,25 +352,6 @@ public class VersionWrapper_1_16_R1 implements VersionWrapper {
     }
 
     @Override
-    public boolean isInBoundingBox(Entity entity, Location loc) {
-        return entity.getBoundingBox().expand(.2, .2, .2, .2, .2, .2).contains(loc.toVector());
-    }
-
-    @Override
-    public double distanceSquaredFromBoundingBox(Entity entity, Location loc) {
-        BoundingBox box = entity.getBoundingBox().expand(.2, .2, .2, .2, .2, .2);
-
-        double dx = loc.getX() > box.getMinX() && loc.getX() < box.getMaxX() ? 0
-                : Math.min(Math.abs(box.getMinX() - loc.getX()), Math.abs(box.getMaxX() - loc.getX()));
-        double dy = loc.getY() > box.getMinY() && loc.getY() < box.getMaxY() ? 0
-                : Math.min(Math.abs(box.getMinY() - loc.getY()), Math.abs(box.getMaxY() - loc.getY()));
-        double dz = loc.getZ() > box.getMinZ() && loc.getZ() < box.getMaxZ() ? 0
-                : Math.min(Math.abs(box.getMinZ() - loc.getZ()), Math.abs(box.getMaxZ() - loc.getZ()));
-
-        return dx * dx + dx * dy + dz * dz;
-    }
-
-    @Override
     public void playArmAnimation(Player player) {
         EntityPlayer p = ((CraftPlayer) player).getHandle();
         PlayerConnection connection = p.playerConnection;
@@ -437,18 +408,6 @@ public class VersionWrapper_1_16_R1 implements VersionWrapper {
     }
 
     @Override
-    public MMORayTraceResult rayTrace(Location loc, Vector direction, double range, Predicate<Entity> option) {
-        RayTraceResult hit = loc.getWorld().rayTrace(loc, direction, range, FluidCollisionMode.NEVER, true, .2, option);
-        return new MMORayTraceResult(hit != null ? (LivingEntity) hit.getHitEntity() : null,
-                hit != null ? hit.getHitPosition().distance(loc.toVector()) : range);
-    }
-
-    @Override
-    public void applyDurabilityData(ItemStack item, ItemStack data) {
-        item.setItemMeta(data.getItemMeta());
-    }
-
-    @Override
     public NBTItem copyTexture(NBTItem item) {
         return getNBTItem(new ItemStack(item.getItem().getType())).addTag(new ItemTag("CustomModelData", item.getInteger("CustomModelData")));
     }
@@ -456,11 +415,6 @@ public class VersionWrapper_1_16_R1 implements VersionWrapper {
     @Override
     public ItemStack textureItem(Material material, int model) {
         return getNBTItem(new ItemStack(material)).addTag(new ItemTag("CustomModelData", model)).toItem();
-    }
-
-    @Override
-    public BossBar createBossBar(NamespacedKey key, String title, BarColor color, BarStyle style, BarFlag... flags) {
-        return Bukkit.createBossBar(key, title, color, style, flags);
     }
 
     @Override

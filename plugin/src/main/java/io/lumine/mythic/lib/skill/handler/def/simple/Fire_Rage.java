@@ -116,7 +116,7 @@ public class Fire_Rage extends SkillHandler<SimpleSkillResult> {
                     loc.getWorld().spawnParticle(Particle.LAVA, loc, 0);
 
                     for (Entity target : UtilityMethods.getNearbyChunkEntities(loc))
-                        if (MythicLib.plugin.getVersion().getWrapper().isInBoundingBox(target, loc) && UtilityMethods.canTarget(caster.getPlayer(), target)) {
+                        if (UtilityMethods.canTarget(caster.getPlayer(), loc, target)) {
                             loc.getWorld().spawnParticle(Particle.LAVA, loc, 8);
                             loc.getWorld().spawnParticle(Particle.FLAME, loc, 32, 0, 0, 0, .1);
                             loc.getWorld().playSound(loc, Sound.ENTITY_BLAZE_HURT, 2, 1);
