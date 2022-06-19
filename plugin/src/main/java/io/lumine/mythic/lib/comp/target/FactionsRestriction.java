@@ -1,35 +1,29 @@
 package io.lumine.mythic.lib.comp.target;
 
-import com.massivecraft.factions.FPlayer;
-import com.massivecraft.factions.FPlayers;
-import com.massivecraft.factions.struct.Relation;
+import cc.javajobs.factionsbridge.FactionsBridge;
+import cc.javajobs.factionsbridge.bridge.infrastructure.struct.Faction;
+import cc.javajobs.factionsbridge.bridge.infrastructure.struct.FactionsAPI;
+import cc.javajobs.factionsbridge.bridge.infrastructure.struct.Relationship;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 /**
- * This class was updated to support SaberFactions. The only
- * change was the Relation import:
- * <p>
- * Old:
- * import com.massivecraft.factions.perms.Relation;
- * <p>
- * New:
- * import com.massivecraft.factions.struct.Relation;
+ * Supports both SaberFactions and FactionsUUID and any other Factions based core
  */
 public class FactionsRestriction implements TargetRestriction {
 
     @Override
     public boolean canTarget(Player source, LivingEntity target, InteractionType interaction) {
 
-        if (interaction.isOffense() && target instanceof Player) {
-            FPlayer fTarget = FPlayers.getInstance().getByPlayer((Player) target);
-            FPlayer fPlayer = FPlayers.getInstance().getByPlayer(source);
+        if (!(target instanceof Player))
+            return true;
 
-            Relation relation = fTarget.getRelationTo(fPlayer);
-            if (relation == Relation.ALLY || relation == Relation.MEMBER)
-                return false;
-        }
+        FactionsAPI api = FactionsBridge.getFactionsAPI();
+        Faction faction = api.getFaction(source);
+        if (faction == null)
+            return true;
 
-        return true;
+        Relationship relation = faction.getRelationshipTo(api.getFPlayer((Player) target));
+        return relation == Relationship.NONE || ((relation == Relationship.ENEMY) == interaction.isOffense());
     }
 }

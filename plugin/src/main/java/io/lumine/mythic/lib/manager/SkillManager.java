@@ -193,6 +193,9 @@ public class SkillManager {
         registerCondition("is_living", config -> new IsLivingCondition(config));
         registerCondition("can_target", config -> new CanTargetCondition(config));
         registerCondition("has_damage_type", config -> new HasDamageTypeCondition(config));
+        registerCondition("world", config -> new WorldCondition(config));
+        registerCondition("permission", config -> new PermissionCondition(config));
+        registerCondition("biome", config -> new BiomeCondition(config));
 
         // Default skill handler types
         registerSkillHandlerType(config -> config.contains("mythiclib-skill-id"), config -> new MythicLibSkillHandler(getSkillOrThrow(config.getString("mythiclib-skill"))));
@@ -237,6 +240,9 @@ public class SkillManager {
         Validate.isTrue(!handlers.containsKey(handler.getId()), "A skill handler with the same name already exists");
 
         handlers.put(handler.getId(), handler);
+
+        if (!registration && handler instanceof Listener)
+            Bukkit.getPluginManager().registerEvents((Listener) handler, MythicLib.plugin);
     }
 
     @NotNull
@@ -382,7 +388,7 @@ public class SkillManager {
                 registerSkillHandlerType(config -> config.contains("mythicmobs-skill-id"), config -> new MythicMobsSkillHandler(config));
 
             // SkillAPI skill handler type
-            if (Bukkit.getPluginManager().getPlugin("SkillAPI") != null)
+            if (Bukkit.getPluginManager().getPlugin("SkillAPI") != null || Bukkit.getPluginManager().getPlugin("ProSkillAPI") != null)
                 registerSkillHandlerType(config -> config.contains("skillapi-skill-id"), config -> new SkillAPISkillHandler(config));
         }
 

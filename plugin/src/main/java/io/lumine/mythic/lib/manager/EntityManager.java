@@ -47,12 +47,9 @@ public class EntityManager {
         if (source.equals(target) || target.isDead() || !(target instanceof LivingEntity) || target instanceof ArmorStand)
             return false;
 
-        // PvP flag
-        if (interaction.isOffense() && target instanceof Player && !MythicLib.plugin.getFlags().isPvpAllowed(target.getLocation()))
-            return false;
-
-        // Player ability damage for PvE servers
-        if (interaction == InteractionType.OFFENSE_SKILL && !MythicLib.plugin.getMMOConfig().playerAbilityDamage)
+        // PvP checks
+        if (interaction.isOffense() && target instanceof Player &&
+                (!target.getWorld().getPVP() || !MythicLib.plugin.getMMOConfig().playerAbilityDamage || !MythicLib.plugin.getFlags().isPvpAllowed(target.getLocation())))
             return false;
 
         // Specific plugin checks (Citizens, Factions..)

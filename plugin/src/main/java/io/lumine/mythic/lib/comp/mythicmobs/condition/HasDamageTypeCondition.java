@@ -42,7 +42,6 @@ public class HasDamageTypeCondition extends SkillCondition implements ISkillMeta
          * produced no attack meta, where at least I personally would use this
          * very condition to check if the skill had no damage meta at all.
          */
-
         Set<DamageType> attackDamageTypes;
 
         // Skill has no damage types
@@ -67,11 +66,11 @@ public class HasDamageTypeCondition extends SkillCondition implements ISkillMeta
         if (exact)
             return attackDamageTypes.equals(this.types);
 
-        // Must contain at least one
-        for (DamageType damageType : attackDamageTypes)
-            if (this.types.contains(damageType))
-                return true;
+        // Must contain ALL specified damage types
+        for (DamageType damageType : this.types)
+            if (!attackDamageTypes.contains(damageType))
+                return false;
 
-        return false;
+        return true;
     }
 }
