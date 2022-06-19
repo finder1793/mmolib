@@ -48,7 +48,8 @@ public class PassiveSkill extends PlayerModifier {
     private final Skill triggered;
 
     /**
-     * Zero when skill does not use
+     * Zero when skill does not use a timer. The user inputs
+     * it in ticks but that field is expressed in milliseconds
      */
     private final long timerPeriod;
 
@@ -70,7 +71,7 @@ public class PassiveSkill extends PlayerModifier {
 
         Validate.isTrue(triggered.getTrigger().isPassive(), "Skill is active");
         this.triggered = Objects.requireNonNull(triggered, "Skill cannot be null");
-        this.timerPeriod = Math.max(1, (long) triggered.getModifier("timer"));
+        this.timerPeriod = Math.max(1, (long) triggered.getModifier("timer")) * 50;
     }
 
     @Deprecated
