@@ -83,10 +83,10 @@ public class AttackEffects implements Listener {
 
         // Skill critical strikes
         if (event.getDamage().hasType(DamageType.SKILL)
-                && RANDOM.nextDouble() <= Math.min(stats.getStat("SPELL_CRITICAL_STRIKE_CHANCE"), maxSkillCritChance) / 100
+                && RANDOM.nextDouble() <= Math.min(stats.getStat("SKILL_CRITICAL_STRIKE_CHANCE"), maxSkillCritChance) / 100
                 && !event.getData().isOnCooldown(CooldownType.SKILL_CRIT)) {
             event.getData().applyCooldown(CooldownType.SKILL_CRIT, skillCritCooldown);
-            event.getDamage().multiplicativeModifier(skillCritCoef + stats.getStat("SPELL_CRITICAL_STRIKE_POWER") / 100, DamageType.SKILL);
+            event.getDamage().multiplicativeModifier(skillCritCoef + stats.getStat("SKILL_CRITICAL_STRIKE_POWER") / 100, DamageType.SKILL);
             event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 2);
             applyCritEffects(event.getEntity(), Particle.TOTEM, 16, .4f);
         }
