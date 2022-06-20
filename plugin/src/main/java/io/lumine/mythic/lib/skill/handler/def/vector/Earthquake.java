@@ -31,7 +31,7 @@ public class Earthquake extends SkillHandler<VectorSkillResult> {
 
     @Override
     public VectorSkillResult getResult(SkillMetadata meta) {
-        return meta.getCaster().getPlayer().isSneaking() ? new VectorSkillResult(meta) : new VectorSkillResult((Vector) null);
+        return meta.getCaster().getPlayer().isOnGround() ? new VectorSkillResult(meta) : new VectorSkillResult((Vector) null);
     }
 
     @Override
