@@ -4,7 +4,6 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.math.EvaluatedFormula;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatMap;
-import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import org.bukkit.OfflinePlayer;
@@ -16,10 +15,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -35,14 +35,17 @@ public class DamageReduction implements Listener {
         if (!(event.getEntity() instanceof Player) || event.getEntity().hasMetadata("NPC"))
             return;
 
-        // Get sweet data
+        // Find the damageMeta. ML doesn't need an attackMeta here.
         MMOPlayerData data = MMOPlayerData.get((OfflinePlayer) event.getEntity());
-        AttackMetadata attackMeta = MythicLib.plugin.getDamage().findInfo(event);
-        DamageMetadata damageMeta = attackMeta == null ? new DamageMetadata(event.getDamage()) : attackMeta.getDamage();
+        DamageMetadata damageMeta = MythicLib.plugin.getDamage().findDamage(event);
 
         // Applies specific damage reduction
-        for (DamageReductionType type : DamageReductionType.values())
+        for (SpecificDamageReductionType type : SpecificDamageReductionType.values())
             type.applyReduction(data.getStatMap(), damageMeta, event);
+
+        // Applies damage reduction for existing damage types
+        for (DamageType damageType : DamageType.values())
+            damageMeta.multiplicativeModifier(1 - data.getStatMap().getStat(damageType + "_DAMAGE_REDUCTION") / 100, damageType);
 
         // Applies the Defense stat
         double defense = data.getStatMap().getStat("DEFENSE");
@@ -84,79 +87,53 @@ public class DamageReduction implements Listener {
         }
     }
 
-    private static final Set<EntityDamageEvent.DamageCause> PHYSICAL_DAMAGE_CAUSES = new HashSet<>(Arrays.asList(
-            EntityDamageEvent.DamageCause.CONTACT, EntityDamageEvent.DamageCause.CRAMMING, EntityDamageEvent.DamageCause.ENTITY_ATTACK,
-            EntityDamageEvent.DamageCause.ENTITY_EXPLOSION, EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK, EntityDamageEvent.DamageCause.BLOCK_EXPLOSION,
-            EntityDamageEvent.DamageCause.FALLING_BLOCK, EntityDamageEvent.DamageCause.PROJECTILE, EntityDamageEvent.DamageCause.SUFFOCATION)),
-
-    FIRE_DAMAGE_CAUSES = new HashSet<>(Arrays.asList(EntityDamageEvent.DamageCause.FIRE, EntityDamageEvent.DamageCause.FIRE_TICK, EntityDamageEvent.DamageCause.LAVA));
+    private static final Set<EntityDamageEvent.DamageCause> FIRE_DAMAGE_CAUSES
+            = new HashSet<>(Arrays.asList(EntityDamageEvent.DamageCause.FIRE, EntityDamageEvent.DamageCause.FIRE_TICK, EntityDamageEvent.DamageCause.LAVA, EntityDamageEvent.DamageCause.MELTING));
 
     /**
-     * All different types of damage reduction.
+     * Damage reduction types which do NOT depend on an
+     * existing MythicLib damage type
      */
-    public enum DamageReductionType {
+    public enum SpecificDamageReductionType {
 
         // Damage reduction, always applies
-        ENVIRONMENTAL("DAMAGE_REDUCTION", null, event -> true),
+        ENVIRONMENTAL("DAMAGE_REDUCTION", event -> true),
 
         // Vanilla damage types
-        PVP(null, event -> event instanceof EntityDamageByEntityEvent && getDamager((EntityDamageByEntityEvent) event) instanceof Player),
-        PVE(null, event -> event instanceof EntityDamageByEntityEvent && !(getDamager((EntityDamageByEntityEvent) event) instanceof Player)),
-        FIRE(null, event -> FIRE_DAMAGE_CAUSES.contains(event.getCause())),
-        FALL(null, event -> event.getCause() == EntityDamageEvent.DamageCause.FALL),
-
-        // Custom damage types
-        MAGIC(DamageType.MAGIC, event -> event.getCause() == EntityDamageEvent.DamageCause.MAGIC),
-        PHYSICAL(DamageType.PHYSICAL, event -> PHYSICAL_DAMAGE_CAUSES.contains(event.getCause())),
-        WEAPON(DamageType.WEAPON, null),
-        SKILL(DamageType.SKILL, null),
-        PROJECTILE(DamageType.PROJECTILE, event -> event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) event).getDamager() instanceof Projectile);
+        PVP(event -> event instanceof EntityDamageByEntityEvent && getDamager((EntityDamageByEntityEvent) event) instanceof Player),
+        PVE(event -> event instanceof EntityDamageByEntityEvent && !(getDamager((EntityDamageByEntityEvent) event) instanceof Player)),
+        FIRE(event -> FIRE_DAMAGE_CAUSES.contains(event.getCause())),
+        FALL(event -> event.getCause() == EntityDamageEvent.DamageCause.FALL);
 
         /**
          * The corresponding item stat that will be used to
          * apply damage reduction. For instance, ENVIRONMENTAL calls
          * DAMAGE_REDUCTION and MAGIC calls MAGIC_DAMAGE_REDUCTION
          */
+        @NotNull
         private final String stat;
-
-        /**
-         * When this field is not null, that means this damage reduction is linked
-         * to a specific damage type. For instance, {@link #MAGIC} should reduce
-         * magic damage, etc.
-         */
-        @Nullable
-        private final DamageType damageType;
 
         /**
          * When this field is not null, if it does return true, it will reduce
          * all the damage from every damage packet. This is used for vanilla
          * damage types, like {@link #FALL} or {@link #FIRE} or even {@link #ENVIRONMENTAL}
          */
-        @Nullable
+        @NotNull
         private final Predicate<EntityDamageEvent> apply;
 
-        DamageReductionType(DamageType damageType, Predicate<EntityDamageEvent> apply) {
-            this.stat = name() + "_DAMAGE_REDUCTION";
-            this.damageType = damageType;
-            this.apply = apply;
+        SpecificDamageReductionType(String stat, Predicate<EntityDamageEvent> apply) {
+            this.stat = stat;
+            this.apply = Objects.requireNonNull(apply);
         }
 
-        DamageReductionType(String stat, DamageType damageType, Predicate<EntityDamageEvent> apply) {
-            this.stat = stat;
-            this.damageType = damageType;
-            this.apply = apply;
+        SpecificDamageReductionType(Predicate<EntityDamageEvent> apply) {
+            this.stat = name() + "_DAMAGE_REDUCTION";
+            this.apply = Objects.requireNonNull(apply);
         }
 
         public void applyReduction(StatMap statMap, DamageMetadata damageMeta, EntityDamageEvent event) {
-
-            // Specific damage type reduction
-            if (damageType != null)
-                damageMeta.multiplicativeModifier(1 - statMap.getStat(stat) / 100, damageType);
-
-                // Environmental damage reduction
-            else if (apply != null && apply.test(event))
+            if (apply.test(event))
                 damageMeta.multiplicativeModifier(1 - statMap.getStat(stat) / 100);
-
         }
     }
 
