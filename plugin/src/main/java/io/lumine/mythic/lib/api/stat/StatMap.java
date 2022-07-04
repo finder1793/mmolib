@@ -39,8 +39,8 @@ public class StatMap implements StatProvider {
      *
      * @param id The string key of the stat
      * @return The corresponding StatInstance, which can be manipulated to add
-     * (temporary?) stat modifiers to a player, remove modifiers or
-     * calculate stat values in various ways.
+     *         (temporary?) stat modifiers to a player, remove modifiers or
+     *         calculate stat values in various ways.
      */
     public StatInstance getInstance(String id) {
         StatInstance ins = stats.get(id);
@@ -54,8 +54,8 @@ public class StatMap implements StatProvider {
 
     /**
      * @return The StatInstances that have been manipulated so far since the
-     * player has logged in. StatInstances are completely flushed when
-     * the server restarts
+     *         player has logged in. StatInstances are completely flushed when
+     *         the server restarts
      */
     public Collection<StatInstance> getInstances() {
         return stats.values();
@@ -91,11 +91,11 @@ public class StatMap implements StatProvider {
      *                 the 'Skill Damage' due to the offhand weapon, when casting a
      *                 skill with mainhand?
      * @return Some actions require the player stats to be temporarily saved.
-     * When a player casts a projectile skill, there's a brief delay
-     * before it hits the target: the stat values taken into account
-     * correspond to the stat values when the player cast the skill (not
-     * when it finally hits the target). This cache technique fixes a
-     * huge game breaking glitch
+     *         When a player casts a projectile skill, there's a brief delay
+     *         before it hits the target: the stat values taken into account
+     *         correspond to the stat values when the player cast the skill (not
+     *         when it finally hits the target). This cache technique fixes a
+     *         huge game breaking glitch
      */
     public PlayerMetadata cache(EquipmentSlot castHand) {
         return new PlayerMetadata(this, castHand);

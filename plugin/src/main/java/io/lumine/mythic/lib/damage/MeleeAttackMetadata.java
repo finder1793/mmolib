@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.damage;
 
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 
 /**
@@ -7,6 +8,14 @@ import io.lumine.mythic.lib.player.PlayerMetadata;
  * or vanilla swords, axes...
  */
 public class MeleeAttackMetadata extends AttackMetadata {
+
+    /**
+     * This is used to support the following plugins which implement
+     * off hand item attacks.
+     * - RealDualWield
+     * - DualWield
+     */
+    private final EquipmentSlot hand;
 
     /**
      * Used by AttackHandler instances to register attacks. AttackResult only
@@ -17,8 +26,15 @@ public class MeleeAttackMetadata extends AttackMetadata {
      *
      * @param damage   The attack result
      * @param attacker The entity who dealt the damage
+     * @param hand Hand used in the melee attack
      */
-    public MeleeAttackMetadata(DamageMetadata damage, PlayerMetadata attacker) {
+    public MeleeAttackMetadata(DamageMetadata damage, PlayerMetadata attacker, EquipmentSlot hand) {
         super(damage, attacker);
+
+        this.hand = hand;
+    }
+
+    public EquipmentSlot getHand() {
+        return hand;
     }
 }

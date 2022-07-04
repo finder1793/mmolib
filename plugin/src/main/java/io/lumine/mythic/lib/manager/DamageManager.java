@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -27,6 +28,7 @@ import java.util.logging.Level;
 
 public class DamageManager implements Listener, AttackHandler {
     private final Map<Integer, AttackMetadata> customDamage = new HashMap<>();
+    private final Map<Integer, Long> offHandAttacks = new HashMap<>();
     private final Set<AttackHandler> handlers = new HashSet<>();
 
     private static final AttributeModifier NO_KNOCKBACK = new AttributeModifier(UUID.randomUUID(), "noKnockback", 100, AttributeModifier.Operation.ADD_NUMBER);
@@ -56,33 +58,23 @@ public class DamageManager implements Listener, AttackHandler {
     }
 
     /**
-     * Forces a player to damage an entity with knockback
+     * This marks the next EntityDamageEvent to be processed as
+     * an offhand melee attack. That way plugins can use player
+     * stats from the offhand instead of the main hand.
+     * <p>
+     * This method has the effect of caching the attack target.
+     * This cache will be emptied as soon as the event is called
+     * on priority MONITOR. See {@link #unregisterCustomDamage(EntityDamageByEntityEvent)}
+     * <p>
+     * Because of RDW we are not guaranteed that an EntityDamageEvent
+     * will be called afterwards. Therefore, there is a simple timeout
+     * system where if the attack is more than 1s old, it is ignored.
      *
-     * @param player The player damaging the entity
-     * @param target The entity being damaged
-     * @param result Info about the attack. Since this attack is registered as
-     *               MythicLib damage, we need more than just a double for the atk
-     *               damage
+     * @param target Entity being damaged.
+     * @see {@link #offHandAttacks}
      */
-    @Deprecated
-    public void damage(Player player, LivingEntity target, DamageMetadata result) {
-        damage(player, target, result, true);
-    }
-
-    /**
-     * Forces a player to damage an entity with or without knockback
-     *
-     * @param player    The player damaging the entity
-     * @param target    The entity being damaged
-     * @param result    Info about the attack. Since this attack is registered as
-     *                  MythicLib damage, we need more than just a double for the atk
-     *                  damage
-     * @param knockback If the attack should inflict knockback
-     */
-    @Deprecated
-    public void damage(@NotNull Player player, @NotNull LivingEntity target, @NotNull DamageMetadata result, boolean knockback) {
-        AttackMetadata metadata = new AttackMetadata(result, MMOPlayerData.get(player).getStatMap().cache(EquipmentSlot.MAIN_HAND));
-        damage(metadata, target, true);
+    public void registerOffHandAttack(Entity target) {
+        offHandAttacks.put(target.getEntityId(), System.currentTimeMillis());
     }
 
     /**
@@ -159,11 +151,19 @@ public class DamageManager implements Listener, AttackHandler {
 
     /**
      * This method is used to unregister MythicLib custom damage after everything
-     * was calculated, hence MONITOR priority
+     * was calculated, hence MONITOR priority. As a safe practice, it does NOT
+     * ignore cancelled damage events.
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void unregisterCustomDamage(EntityDamageByEntityEvent event) {
-        customDamage.remove(event.getEntity().getEntityId());
+
+        // Ignore fake events from RDW/mcMMO/...
+        if (event.getDamage() == 0)
+            return;
+
+        int entityId = event.getEntity().getEntityId();
+        customDamage.remove(entityId);
+        offHandAttacks.remove(entityId);
     }
 
     /**
@@ -250,8 +250,10 @@ public class DamageManager implements Listener, AttackHandler {
          * attack, final attack has no WEAPON damage type. If the player is holding any
          * other item, it is considered a WEAPON attack.
          */
-        if (isRealPlayer(event.getDamager()))
-            return new MeleeAttackMetadata(new DamageMetadata(event.getDamage(), getDamageTypes(event)), MMOPlayerData.get((Player) event.getDamager()).getStatMap().cache(EquipmentSlot.MAIN_HAND));
+        if (isRealPlayer(event.getDamager())) {
+            EquipmentSlot hand = isBeingOffHandAttacked(event.getEntity()) ? EquipmentSlot.OFF_HAND : EquipmentSlot.MAIN_HAND;
+            return new MeleeAttackMetadata(new DamageMetadata(event.getDamage(), getDamageTypes(event, hand)), MMOPlayerData.get((Player) event.getDamager()).getStatMap().cache(hand), hand);
+        }
 
         /*
          * Handles projectile attacks; used everytime when a player shoots a trident,
@@ -287,12 +289,12 @@ public class DamageManager implements Listener, AttackHandler {
      * @param event The attack event
      * @return The damage types of a vanilla melee entity attack
      */
-    private DamageType[] getDamageTypes(EntityDamageByEntityEvent event) {
+    private DamageType[] getDamageTypes(EntityDamageByEntityEvent event, EquipmentSlot hand) {
         Validate.isTrue(event.getDamager() instanceof LivingEntity, "Not an entity attack");
 
         // Physical attack with bare fists.
         LivingEntity damager = (LivingEntity) event.getDamager();
-        if (isAir(damager.getEquipment().getItemInMainHand()))
+        if (isAir(damager.getEquipment().getItem(hand.toBukkit())))
             return new DamageType[]{DamageType.UNARMED, DamageType.PHYSICAL};
 
         // By default a physical attack is a weapon-physical attack
@@ -301,5 +303,15 @@ public class DamageManager implements Listener, AttackHandler {
 
     private boolean isAir(ItemStack item) {
         return item == null || item.getType() == Material.AIR;
+    }
+
+    /**
+     * @see {@link #registerOffHandAttack(Entity)}
+     */
+    private static final long OFFHAND_ATTACK_TIMEOUT = 100;
+
+    private boolean isBeingOffHandAttacked(Entity entity) {
+        Long found = offHandAttacks.get(entity.getEntityId());
+        return found != null && System.currentTimeMillis() - found < OFFHAND_ATTACK_TIMEOUT;
     }
 }

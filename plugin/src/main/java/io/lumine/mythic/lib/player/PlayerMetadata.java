@@ -12,9 +12,11 @@ import io.lumine.mythic.lib.damage.DamageType;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A class containing the information about a player that can
@@ -36,27 +38,20 @@ public class PlayerMetadata implements StatProvider {
         this.playerStats = parent.playerStats;
     }
 
-    public PlayerMetadata(StatMap statMap, EquipmentSlot castSlot) {
+    public PlayerMetadata(StatMap statMap, @NotNull EquipmentSlot handInAction) {
         this.player = statMap.getPlayerData().getPlayer();
         this.playerData = statMap.getPlayerData();
         this.playerStats = new HashMap<>();
+
+        Validate.isTrue(Objects.requireNonNull(handInAction).isHand(), "Equipment slot must be a hand");
 
         /*
          * When casting a skill or an attack with a certain hand, stats
          * from the other hand shouldn't be taken into account
          */
-        if (castSlot.isHand()) {
-            EquipmentSlot ignored = castSlot.getOppositeHand();
-            for (StatInstance ins : statMap.getInstances())
-                this.playerStats.put(ins.getStat(), ins.getFilteredTotal(mod -> !mod.getSource().isWeapon() || mod.getSlot() != ignored));
-
-            /*
-             * Not casting the attack with a specific
-             * hand so take everything into account
-             */
-        } else
-            for (StatInstance ins : statMap.getInstances())
-                this.playerStats.put(ins.getStat(), ins.getTotal());
+        EquipmentSlot ignored = handInAction.getOppositeHand();
+        for (StatInstance ins : statMap.getInstances())
+            this.playerStats.put(ins.getStat(), ins.getFilteredTotal(mod -> !mod.getSource().isWeapon() || mod.getSlot() != ignored));
     }
 
     /**

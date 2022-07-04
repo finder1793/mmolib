@@ -42,12 +42,7 @@ public enum EquipmentSlot {
     /**
      * Apply stats in off hand slot only (off hand catalysts mainly)
      */
-    OFF_HAND,
-
-    /**
-     * Apply stats in both hands, ie shields or catalysts.
-     */
-    BOTH_HANDS;
+    OFF_HAND;
 
     @NotNull
     public org.bukkit.inventory.EquipmentSlot toBukkit() {
@@ -67,7 +62,7 @@ public enum EquipmentSlot {
     }
 
     public boolean isHand() {
-        return this == MAIN_HAND || this == OFF_HAND || this == BOTH_HANDS;
+        return this == MAIN_HAND || this == OFF_HAND;
     }
 
     public static EquipmentSlot fromBukkit(org.bukkit.inventory.EquipmentSlot slot) {
