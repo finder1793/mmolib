@@ -13,6 +13,8 @@ import io.lumine.mythic.lib.command.mythiclib.MythicLibCommand;
 import io.lumine.mythic.lib.comp.McMMOAttackHandler;
 import io.lumine.mythic.lib.comp.anticheat.AntiCheatSupport;
 import io.lumine.mythic.lib.comp.anticheat.SpartanPlugin;
+import io.lumine.mythic.lib.comp.dualwield.DualWieldHook;
+import io.lumine.mythic.lib.comp.dualwield.RealDualWieldHook;
 import io.lumine.mythic.lib.comp.flags.FlagHandler;
 import io.lumine.mythic.lib.comp.flags.FlagPlugin;
 import io.lumine.mythic.lib.comp.flags.ResidenceFlags;
@@ -80,22 +82,6 @@ public class MythicLib extends LuminePlugin {
     @Getter
     private ScoreboardProvider scoreboardProvider;
     private PlaceholderParser placeholderParser;
-
-    /**
-     * MMOItems has a similar public field. If these don't match
-     * then MMOItems cannot run with the installed build of MythicLib
-     * and should not enable on server startup. This smoothly lets the
-     * user know when they have to update their plugin builds.
-     */
-    public static final int MMOITEMS_COMPATIBILITY_INDEX = 8;
-
-    /**
-     * MMOCore has a similar public field. If these don't match
-     * then MMOCore cannot run with the installed build of MythicLib
-     * and should not enable on server startup. This smoothly lets the
-     * user know when they have to update their plugin builds.
-     */
-    public static final int MMOCORE_COMPATIBILITY_INDEX = 7;
 
     @Override
     public void load() {
@@ -210,6 +196,16 @@ public class MythicLib extends LuminePlugin {
             getLogger().log(Level.INFO, "Hooked onto PlaceholderAPI");
         } else
             placeholderParser = new DefaultPlaceholderParser();
+
+        if (Bukkit.getPluginManager().getPlugin("RealDualWield") != null) {
+            Bukkit.getPluginManager().registerEvents(new RealDualWieldHook(), this);
+            getLogger().log(Level.INFO, "Hooked onto RealDualWield");
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("DualWield") != null) {
+            Bukkit.getPluginManager().registerEvents(new DualWieldHook(), this);
+            getLogger().log(Level.INFO, "Hooked onto DualWield");
+        }
 
         // Regen and damage indicators
         if (getConfig().getBoolean("game-indicators.damage.enabled"))
