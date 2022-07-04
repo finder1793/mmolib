@@ -11,6 +11,7 @@ import io.lumine.utils.adventure.text.Component;
 import io.lumine.utils.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -43,20 +44,29 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.logging.Level;
 
 public class VersionWrapper_1_19_R1 implements VersionWrapper {
-    private static final Map<Material, Material> oreDrops = new HashMap<>();
+    private final Map<Material, Material> oreDrops = new HashMap<>();
+    private final Set<Material> generatorOutputs = new HashSet<>();
 
-    static {
+    public VersionWrapper_1_19_R1() {
         oreDrops.put(Material.IRON_ORE, Material.IRON_INGOT);
         oreDrops.put(Material.GOLD_ORE, Material.GOLD_INGOT);
         oreDrops.put(Material.COPPER_ORE, Material.COPPER_INGOT);
-
         oreDrops.put(Material.ANCIENT_DEBRIS, Material.NETHERITE_SCRAP);
-
         oreDrops.put(Material.DEEPSLATE_IRON_ORE, Material.IRON_INGOT);
         oreDrops.put(Material.DEEPSLATE_GOLD_ORE, Material.GOLD_INGOT);
         oreDrops.put(Material.DEEPSLATE_COPPER_ORE, Material.COPPER_INGOT);
+
+        generatorOutputs.add(Material.COBBLESTONE);
+        generatorOutputs.add(Material.OBSIDIAN);
+        generatorOutputs.add(Material.BASALT);
+    }
+
+    @Override
+    public boolean isGeneratorOutput(Material material) {
+        return generatorOutputs.contains(material);
     }
 
     @Override
@@ -74,9 +84,22 @@ public class VersionWrapper_1_19_R1 implements VersionWrapper {
         return CraftItemStack.asNMSCopy(item).getItem().getFoodProperties().getSaturationModifier();
     }
 
+    /**
+     * The {@link ComponentSerializer#parse(String)} will throw out an error if there
+     * are any error with the given message. Since the 'message' parameter can be changed
+     * by the user it's best to catch any exception and add an error message.
+     * <p>
+     * The stack trace is printed out to help the developer locate the issue with the message
+     * format.
+     */
     @Override
     public void sendJson(Player player, String message) {
-        player.spigot().sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(message));
+        try {
+            player.spigot().sendMessage(ChatMessageType.CHAT, ComponentSerializer.parse(message));
+        } catch (RuntimeException exception) {
+            MythicLib.plugin.getLogger().log(Level.WARNING, "Could not parse raw message sent to player. Make sure it has the right syntax");
+            exception.printStackTrace();
+        }
     }
 
     @Override

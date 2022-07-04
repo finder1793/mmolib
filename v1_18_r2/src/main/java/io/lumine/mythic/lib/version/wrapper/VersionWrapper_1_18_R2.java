@@ -39,7 +39,6 @@ import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_18_R2.event.CraftEventFactory;
 import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers;
-import org.bukkit.craftbukkit.v1_18_R2.util.CraftMagicNumbers.NBT;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -51,18 +50,26 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 public class VersionWrapper_1_18_R2 implements VersionWrapper {
-    private static final Map<Material, Material> oreDrops = new HashMap<>();
+    private final Map<Material, Material> oreDrops = new HashMap<>();
+    private final Set<Material> generatorOutputs = new HashSet<>();
 
-    static {
+    public VersionWrapper_1_18_R2() {
         oreDrops.put(Material.IRON_ORE, Material.IRON_INGOT);
         oreDrops.put(Material.GOLD_ORE, Material.GOLD_INGOT);
         oreDrops.put(Material.COPPER_ORE, Material.COPPER_INGOT);
-
         oreDrops.put(Material.ANCIENT_DEBRIS, Material.NETHERITE_SCRAP);
-
         oreDrops.put(Material.DEEPSLATE_IRON_ORE, Material.IRON_INGOT);
         oreDrops.put(Material.DEEPSLATE_GOLD_ORE, Material.GOLD_INGOT);
         oreDrops.put(Material.DEEPSLATE_COPPER_ORE, Material.COPPER_INGOT);
+
+        generatorOutputs.add(Material.COBBLESTONE);
+        generatorOutputs.add(Material.OBSIDIAN);
+        generatorOutputs.add(Material.BASALT);
+    }
+
+    @Override
+    public boolean isGeneratorOutput(Material material) {
+        return generatorOutputs.contains(material);
     }
 
     @Override
@@ -82,8 +89,7 @@ public class VersionWrapper_1_18_R2 implements VersionWrapper {
 
     @Override
     public void sendJson(Player player, String message) {
-        ((CraftPlayer) player).getHandle().connection.send(
-                new ClientboundChatPacket(net.minecraft.network.chat.Component.Serializer.fromJson(message), ChatType.CHAT, UUID.randomUUID()));
+        ((CraftPlayer) player).getHandle().connection.send(new ClientboundChatPacket(net.minecraft.network.chat.Component.Serializer.fromJson(message), ChatType.CHAT, UUID.randomUUID()));
     }
 
     @Override

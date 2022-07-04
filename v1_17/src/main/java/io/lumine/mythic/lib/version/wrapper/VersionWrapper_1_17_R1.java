@@ -50,18 +50,26 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 public class VersionWrapper_1_17_R1 implements VersionWrapper {
-    private static final Map<Material, Material> oreDrops = new HashMap<>();
+    private final Map<Material, Material> oreDrops = new HashMap<>();
+    private final Set<Material> generatorOutputs = new HashSet<>();
 
-    static {
+    public VersionWrapper_1_17_R1() {
         oreDrops.put(Material.IRON_ORE, Material.IRON_INGOT);
         oreDrops.put(Material.GOLD_ORE, Material.GOLD_INGOT);
         oreDrops.put(Material.COPPER_ORE, Material.COPPER_INGOT);
-
         oreDrops.put(Material.ANCIENT_DEBRIS, Material.NETHERITE_SCRAP);
-
         oreDrops.put(Material.DEEPSLATE_IRON_ORE, Material.IRON_INGOT);
         oreDrops.put(Material.DEEPSLATE_GOLD_ORE, Material.GOLD_INGOT);
         oreDrops.put(Material.DEEPSLATE_COPPER_ORE, Material.COPPER_INGOT);
+
+        generatorOutputs.add(Material.COBBLESTONE);
+        generatorOutputs.add(Material.OBSIDIAN);
+        generatorOutputs.add(Material.BASALT);
+    }
+
+    @Override
+    public boolean isGeneratorOutput(Material material) {
+        return generatorOutputs.contains(material);
     }
 
     @Override
