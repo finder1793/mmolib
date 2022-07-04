@@ -49,7 +49,7 @@ public class EntityManager {
 
         // PvP checks
         if (interaction.isOffense() && target instanceof Player &&
-                (!target.getWorld().getPVP() || !MythicLib.plugin.getMMOConfig().playerAbilityDamage || !MythicLib.plugin.getFlags().isPvpAllowed(target.getLocation())))
+                (!target.getWorld().getPVP() || (interaction == InteractionType.OFFENSE_SKILL && !MythicLib.plugin.getMMOConfig().playerAbilityDamage) || !MythicLib.plugin.getFlags().isPvpAllowed(target.getLocation())))
             return false;
 
         // Specific plugin checks (Citizens, Factions..)
