@@ -107,11 +107,6 @@ public class DamageManager implements Listener, AttackHandler {
      * @param ignoreImmunity The attack will not produce immunity frames.
      */
     public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target, boolean knockback, boolean ignoreImmunity) {
-
-        // TODO remove this check which should be useless
-        if (target.hasMetadata("NPC") || metadata.getPlayer().hasMetadata("NPC"))
-            return;
-
         customDamage.put(target.getEntityId(), metadata);
         applyDamage(Math.max(metadata.getDamage().getDamage(), MINIMUM_DAMAGE), target, metadata.getPlayer(), knockback, ignoreImmunity);
     }
@@ -120,7 +115,7 @@ public class DamageManager implements Listener, AttackHandler {
 
         // Should knockback be applied
         if (!knockback) {
-            AttributeInstance instance = target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE);
+            final AttributeInstance instance = target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE);
             try {
                 instance.addModifier(NO_KNOCKBACK);
                 applyDamage(damage, target, damager, true, ignoreImmunity);
@@ -133,7 +128,7 @@ public class DamageManager implements Listener, AttackHandler {
 
             // Should damage immunity be taken into account
         } else if (ignoreImmunity) {
-            int noDamageTicks = target.getNoDamageTicks();
+            final int noDamageTicks = target.getNoDamageTicks();
             try {
                 target.setNoDamageTicks(0);
                 applyDamage(damage, target, damager, true, false);

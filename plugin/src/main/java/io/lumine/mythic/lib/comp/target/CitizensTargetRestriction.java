@@ -7,13 +7,25 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class CitizensTargetRestriction implements TargetRestriction {
-    //public static final boolean sentinels = Bukkit.getPluginManager().getPlugin("Sentinel") != null;
+    private final SentinelTargetRestriction sentinelsRestriction;
 
-    @Override 
+    public CitizensTargetRestriction() {
+        sentinelsRestriction = Bukkit.getPluginManager().getPlugin("Sentinel") == null ? null : new SentinelTargetRestriction();
+    }
+
+    @Override
     public boolean canTarget(Player source, LivingEntity entity, InteractionType interaction) {
-        NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
 
-        // Just fucking cancel everything or it will sent crap ass packet errors
-        return npc == null || !npc.data().get(NPC.DEFAULT_PROTECTED_METADATA, true);
+        // No npc
+        NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
+        if (npc == null)
+            return true;
+
+        // Sentinel
+        if (sentinelsRestriction != null && sentinelsRestriction.isSentinel(npc))
+            return true;
+
+        // Not protected
+        return !npc.data().get(NPC.DEFAULT_PROTECTED_METADATA, true);
     }
 }
