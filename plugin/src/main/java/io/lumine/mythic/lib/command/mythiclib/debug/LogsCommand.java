@@ -12,6 +12,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.Scanner;
+import java.util.logging.Level;
 
 public class LogsCommand extends CommandTreeNode {
     public LogsCommand(CommandTreeNode parent) {
@@ -30,6 +31,13 @@ public class LogsCommand extends CommandTreeNode {
             sender.sendMessage("Reading and uploading logs..");
             StringBuilder builder = new StringBuilder();
 
+            // Append latest log
+            File log = new File(MythicLib.plugin.getDataFolder(), "..\\..\\logs\\latest.log");
+            Scanner scanner = new Scanner(log);
+            while (scanner.hasNextLine())
+                builder.append(scanner.nextLine()).append("\n");
+            scanner.close();
+
             // Append plugin versions
             builder.append("Plugin versions:\n");
             for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
@@ -39,14 +47,6 @@ public class LogsCommand extends CommandTreeNode {
                 builder.append("\n");
             }
 
-            // Append latest log
-            builder.append("\nLatest log:\n");
-            File log = new File(MythicLib.plugin.getDataFolder(), "..\\..\\logs\\latest.log");
-            Scanner scanner = new Scanner(log);
-            while (scanner.hasNextLine())
-                builder.append(scanner.nextLine()).append("\n");
-            scanner.close();
-
             // Upload everything
             final String logsDir = MythicLib.plugin.getDataFolder().getParentFile().getAbsoluteFile().getParentFile().getAbsoluteFile() + "/logs/";
             final String file = "latest.log";
@@ -54,7 +54,7 @@ public class LogsCommand extends CommandTreeNode {
             APIResponse response = MclogsAPI.share(builder.toString());
             Validate.isTrue(response.success, "Custom error (" + response.id + "): " + response.error);
             sender.sendMessage("Uploaded here: " + response.url);
-            System.out.println("Latest logs uploaded at " + response.url);
+            MythicLib.plugin.getLogger().log(Level.INFO, "Latest logs uploaded at " + response.url);
 
         } catch (Exception exception) {
             exception.printStackTrace();

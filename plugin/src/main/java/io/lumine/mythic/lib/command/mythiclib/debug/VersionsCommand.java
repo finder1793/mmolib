@@ -1,9 +1,12 @@
 package io.lumine.mythic.lib.command.mythiclib.debug;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.command.api.CommandTreeNode;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
+
+import java.util.logging.Level;
 
 public class VersionsCommand extends CommandTreeNode {
     public VersionsCommand(CommandTreeNode parent) {
@@ -13,13 +16,11 @@ public class VersionsCommand extends CommandTreeNode {
     @Override
     public CommandResult execute(CommandSender sender, String[] args) {
 
-        System.out.println("Plugin versions:");
-        for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-            System.out.print("> " + plugin.getName() + ": " + plugin.getDescription().getVersion());
-            if (!Bukkit.getPluginManager().isPluginEnabled(plugin))
-                System.out.print(" (Disabled)");
-            System.out.println();
-        }
+        MythicLib.plugin.getLogger().log(Level.INFO, "Plugin versions:");
+        for (Plugin plugin : Bukkit.getPluginManager().getPlugins())
+            MythicLib.plugin.getLogger().log(Level.INFO, "> " + plugin.getName() + " " + plugin.getDescription().getVersion()
+                    + " by " + String.join(",", plugin.getDescription().getAuthors())
+                    + (Bukkit.getPluginManager().isPluginEnabled(plugin) ? "" : " (Disabled)"));
 
         sender.sendMessage("Plugin versions pasted to your server console");
 
