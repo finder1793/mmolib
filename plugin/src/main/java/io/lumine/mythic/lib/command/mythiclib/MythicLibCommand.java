@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.command.mythiclib;
 
 import io.lumine.mythic.lib.command.api.CommandTreeRoot;
+import io.lumine.mythic.lib.command.mythiclib.debug.DebugCommand;
 
 public class MythicLibCommand extends CommandTreeRoot {
     public MythicLibCommand() {
