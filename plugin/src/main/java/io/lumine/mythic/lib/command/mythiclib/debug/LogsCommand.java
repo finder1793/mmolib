@@ -22,11 +22,6 @@ public class LogsCommand extends CommandTreeNode {
     @Override
     public CommandResult execute(CommandSender sender, String[] args) {
 
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("You can only use this command as a player");
-            return CommandResult.FAILURE;
-        }
-
         try {
             sender.sendMessage("Reading and uploading logs..");
             StringBuilder builder = new StringBuilder();
