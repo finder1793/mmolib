@@ -22,13 +22,11 @@ public class MclogsAPI {
     /**
      * share a log to the mclogs API
      *
-     * @param dir  logs directory
-     * @param file log file name
+     * @param uploaded String uploaded
      * @return mclogs response
      * @throws IOException error reading/sharing file
      */
-    public static APIResponse share(String dir, String file) throws IOException {
-        Log log = new Log(dir, file);
+    public static APIResponse share(String uploaded) throws IOException {
 
         //connect to api
         URL url = new URL(protocol + "://" + apiHost + "/1/log");
@@ -38,7 +36,7 @@ public class MclogsAPI {
         http.setDoOutput(true);
 
         //convert log to application/x-www-form-urlencoded
-        String content = "content=" + URLEncoder.encode(log.getContent(), StandardCharsets.UTF_8.toString());
+        String content = "content=" + URLEncoder.encode(uploaded, StandardCharsets.UTF_8.toString());
         byte[] out = content.getBytes(StandardCharsets.UTF_8);
         int length = out.length;
 
