@@ -22,7 +22,7 @@ public class Chicken_Wraith extends SkillHandler<SimpleSkillResult> {
     public Chicken_Wraith() {
         super();
 
-        registerModifiers("duration", "duration", "inaccuracy", "force");
+        registerModifiers("damage", "duration", "inaccuracy", "force");
     }
 
     @Override
