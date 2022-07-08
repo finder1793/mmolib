@@ -26,8 +26,20 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.logging.Level;
 
+/**
+ * TODO
+ * - Centralize DamageMetadata and AttackMetadata
+ * - Have AttackMetadata not extends PlayerMetadata anymore
+ * - AttackMetas can have 1 or 0 attacker. The attacker is a StatProvider and can be null, an entity or a player.
+ * - This paves the way for MMOitems working on mobs like MythicMobs
+ *
+ * @author jules
+ */
 public class DamageManager implements Listener, AttackHandler {
-    private final Map<Integer, AttackMetadata> customDamage = new HashMap<>();
+    private final Map<Integer, AttackMetadata> customAttacks = new HashMap<>();
+
+    @Deprecated
+    private final Map<Integer, DamageMetadata> customDamage = new HashMap<>();
     private final Map<Integer, Long> offHandAttacks = new HashMap<>();
     private final Set<AttackHandler> handlers = new HashSet<>();
 
@@ -54,7 +66,7 @@ public class DamageManager implements Listener, AttackHandler {
     @Override
     @Nullable
     public AttackMetadata getAttack(EntityDamageEvent event) {
-        return customDamage.get(event.getEntity().getEntityId());
+        return customAttacks.get(event.getEntity().getEntityId());
     }
 
     /**
@@ -107,8 +119,20 @@ public class DamageManager implements Listener, AttackHandler {
      * @param ignoreImmunity The attack will not produce immunity frames.
      */
     public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target, boolean knockback, boolean ignoreImmunity) {
-        customDamage.put(target.getEntityId(), metadata);
+        customAttacks.put(target.getEntityId(), metadata);
         applyDamage(Math.max(metadata.getDamage().getDamage(), MINIMUM_DAMAGE), target, metadata.getPlayer(), knockback, ignoreImmunity);
+    }
+
+    /**
+     * Deals damage to an entity with no attacker.
+     *
+     * @param metadata       The class containing all info about the current attack
+     * @param target         The entity being damaged
+     * @deprecated This is a temporary fix, this method will be removed in the future
+     */
+    @Deprecated
+    public void registerCustomDamage(@NotNull DamageMetadata metadata, @NotNull Entity target) {
+        customDamage.put(target.getEntityId(), metadata);
     }
 
     private void applyDamage(double damage, LivingEntity target, Player damager, boolean knockback, boolean ignoreImmunity) {
@@ -157,8 +181,9 @@ public class DamageManager implements Listener, AttackHandler {
             return;
 
         int entityId = event.getEntity().getEntityId();
-        customDamage.remove(entityId);
+        customAttacks.remove(entityId);
         offHandAttacks.remove(entityId);
+        customDamage.remove(entityId);
     }
 
     /**
@@ -182,6 +207,11 @@ public class DamageManager implements Listener, AttackHandler {
             if (attackMeta != null)
                 return attackMeta.getDamage();
         }
+
+        // Check for custom damage
+        DamageMetadata customDamage = this.customDamage.get(event.getEntity().getEntityId());
+        if (customDamage != null)
+            return customDamage;
 
         // Handle vanilla damage
         switch (event.getCause()) {

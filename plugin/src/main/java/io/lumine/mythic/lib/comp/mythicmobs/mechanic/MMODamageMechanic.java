@@ -75,6 +75,7 @@ public class MMODamageMechanic extends DamagingMechanic implements ITargetedEnti
         if (!(data.getCaster().getEntity().getBukkitEntity() instanceof Player)) {
 
             // Deals damage like normal mythicmobs hit each other
+            MythicLib.plugin.getDamage().registerCustomDamage(new DamageMetadata(damage, types), target.getBukkitEntity());
             this.doDamage(data.getCaster(), target, damage);
             return SkillResult.SUCCESS;
         }
