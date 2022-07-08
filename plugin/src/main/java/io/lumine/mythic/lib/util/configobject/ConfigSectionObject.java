@@ -33,12 +33,12 @@ public class ConfigSectionObject implements ConfigObject {
     }
 
     @Override
-    public int getInteger(String key) {
+    public int getInt(String key) {
         return config.getInt(key);
     }
 
     @Override
-    public int getInteger(String key, int defaultValue) {
+    public int getInt(String key, int defaultValue) {
         return config.getInt(key, defaultValue);
     }
 

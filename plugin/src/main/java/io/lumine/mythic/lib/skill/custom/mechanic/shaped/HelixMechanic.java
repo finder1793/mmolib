@@ -40,9 +40,9 @@ public class HelixMechanic extends Mechanic {
         height = config.getDouble("pitch", 3);
         radius = config.contains("radius") ? new DoubleFormula(config.getString("radius")) : new DoubleFormula(3);
 
-        points = config.getInteger("points", 40);
-        timeInterval = config.getInteger("time_interval", 1);
-        pointsPerTick = config.getInteger("points_per_tick", 3);
+        points = config.getInt("points", 40);
+        timeInterval = config.getInt("time_interval", 1);
+        pointsPerTick = config.getInt("points_per_tick", 3);
 
         Validate.isTrue(yawSpread > 0, "Yaw spread must be strictly positive");
         Validate.isTrue(height > 0, "Height must be strictly positive");

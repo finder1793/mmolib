@@ -18,7 +18,7 @@ public class GalaxyParticleEffect extends ParticleEffect {
         height = obj.getDouble("height");
         r_speed = obj.getDouble("rotation-speed");
         y_coord = obj.getDouble("y-coord");
-        amount = obj.getInteger("amount");
+        amount = obj.getInt("amount");
     }
 
     @Override

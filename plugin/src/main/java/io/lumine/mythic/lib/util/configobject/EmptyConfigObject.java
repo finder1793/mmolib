@@ -27,12 +27,12 @@ public class EmptyConfigObject implements ConfigObject {
     }
 
     @Override
-    public int getInteger(String key) {
+    public int getInt(String key) {
         throw new NullPointerException("Could not find int with key '" + key + "'");
     }
 
     @Override
-    public int getInteger(String key, int defaultValue) {
+    public int getInt(String key, int defaultValue) {
         return defaultValue;
     }
 

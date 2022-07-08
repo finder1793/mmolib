@@ -38,9 +38,9 @@ public class SlashMechanic extends Mechanic {
         length = config.getDouble("length", 4);
         angle = config.getDouble("angle", -30);
 
-        points = config.getInteger("points", 20);
-        timeInterval = config.getInteger("time_interval", 1);
-        pointsPerTick = config.getInteger("points_per_tick", 1);
+        points = config.getInt("points", 20);
+        timeInterval = config.getInt("time_interval", 1);
+        pointsPerTick = config.getInt("points_per_tick", 1);
 
         Validate.isTrue(length > 0, "Length must be strictly positive");
         Validate.isTrue(points > 0, "Points must be strictly positive");

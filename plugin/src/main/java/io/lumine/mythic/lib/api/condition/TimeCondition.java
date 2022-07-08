@@ -10,8 +10,7 @@ public class TimeCondition extends MMOCondition implements io.lumine.mythic.lib.
     public TimeCondition(MMOLineConfig config) {
         super(config);
 
-        config.validate("min");
-        config.validate("max");
+        config.validateKeys("min", "max");
 
         minTime = convertTime(config.getString("min"));
         maxTime = convertTime(config.getString("max"));

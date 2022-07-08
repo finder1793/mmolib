@@ -43,7 +43,7 @@ public class SkillMechanic extends Mechanic {
 
         // Multiple skill casts
         counterVarName = config.getString("counter", "counter");
-        iterations = config.getInteger("iterations", 1);
+        iterations = config.getInt("iterations", 1);
 
         // Targeters
         sourceLocation = config.contains("source") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("source")) : null;

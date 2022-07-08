@@ -19,7 +19,7 @@ public class HelixParticleEffect extends ParticleEffect {
         radius = obj.getDouble("radius");
         r_speed = obj.getDouble("rotation-speed");
         y_speed = obj.getDouble("y-speed");
-        amount = obj.getInteger("amount");
+        amount = obj.getInt("amount");
     }
 
     @Override

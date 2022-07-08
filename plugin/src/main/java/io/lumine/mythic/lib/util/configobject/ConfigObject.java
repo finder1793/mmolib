@@ -21,7 +21,8 @@ import java.util.Set;
  * <p>
  * There are always two methods to get a primitive with some key,
  * one method with a default value and another method which throws
- * a NPE if the returned object is null
+ * a NPE if the returned object is null. The ..OrDefault method always
+ * takes one extra map checkup so it's best to use it on startup only.
  *
  * @author jules
  */
@@ -34,9 +35,9 @@ public interface ConfigObject {
 
     double getDouble(String key, double defaultValue);
 
-    int getInteger(String key);
+    int getInt(String key);
 
-    int getInteger(String key, int defaultValue);
+    int getInt(String key, int defaultValue);
 
     boolean getBoolean(String key);
 
@@ -63,5 +64,14 @@ public interface ConfigObject {
     default void validateKeys(String... keys) {
         for (String key : keys)
             Validate.isTrue(contains(key), "Could not find key '" + key + "' in config");
+    }
+
+    /**
+     * Throws IAE if the config has less than X parameters
+     *
+     * @param count The amount of arguments
+     */
+    default void validateArgs(int count) {
+        Validate.isTrue(getKeys().size() >= count, "Config must have at least " + count + " parameters");
     }
 }

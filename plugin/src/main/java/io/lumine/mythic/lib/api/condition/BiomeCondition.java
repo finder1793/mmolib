@@ -11,7 +11,7 @@ public class BiomeCondition extends MMOCondition implements LocationCondition {
     public BiomeCondition(MMOLineConfig config) {
         super(config);
 
-        config.validate("biome");
+        config.validateKeys("biome");
         this.biome = config.getString("biome");
     }
 

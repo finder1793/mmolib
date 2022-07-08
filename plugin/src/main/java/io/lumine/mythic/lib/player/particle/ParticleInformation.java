@@ -107,6 +107,6 @@ public class ParticleInformation {
     }
 
     private Color readColor(ConfigObject obj) {
-        return Color.fromRGB(obj.getInteger("red"), obj.getInteger("green"), obj.getInteger("blue"));
+        return Color.fromRGB(obj.getInt("red"), obj.getInt("green"), obj.getInt("blue"));
     }
 }

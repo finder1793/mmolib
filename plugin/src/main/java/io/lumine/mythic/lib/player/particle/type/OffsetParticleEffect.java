@@ -15,7 +15,7 @@ public class OffsetParticleEffect extends ParticleEffect {
         height = obj.getDouble("height");
         h_offset = obj.getDouble("horizontal-offset");
         v_offset = obj.getDouble("vertical-offset");
-        amount = obj.getInteger("amount");
+        amount = obj.getInt("amount");
     }
 
     @Override

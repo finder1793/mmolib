@@ -25,7 +25,7 @@ public class PermanentPotionEffect extends PlayerModifier {
         super(obj.getString("key"), EquipmentSlot.OTHER, ModifierSource.OTHER);
 
         this.effect = PotionEffectType.getByName(obj.getString("effect"));
-        this.amplifier = obj.getInteger("level") - 1;
+        this.amplifier = obj.getInt("level") - 1;
     }
 
     public PotionEffectType getEffect() {

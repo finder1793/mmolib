@@ -19,7 +19,7 @@ public class RegionCondition extends MMOCondition implements LocationCondition {
     public RegionCondition(MMOLineConfig config) {
         super(config);
 
-        config.validate("name");
+        config.validateKeys("name");
         this.region = config.getString("name");
     }
 

@@ -31,7 +31,7 @@ public class ParticleMechanic extends LocationMechanic {
         config.validateKeys("name");
 
         particle = Particle.valueOf(UtilityMethods.enumName(config.getString("name")));
-        amount = config.getInteger("amount", 1);
+        amount = config.getInt("amount", 1);
         speed = config.getDouble("speed", 0);
         xoffset = config.getDouble("x", 0);
         yoffset = config.getDouble("y", 0);
@@ -60,6 +60,6 @@ public class ParticleMechanic extends LocationMechanic {
 
     private Color loadColor(ConfigObject obj) {
         Validate.isTrue(obj.contains("red") && obj.contains("green") && obj.contains("blue"), "Color must have red, green and blue");
-        return Color.fromRGB(obj.getInteger("red"), obj.getInteger("green"), obj.getInteger("blue"));
+        return Color.fromRGB(obj.getInt("red"), obj.getInt("green"), obj.getInt("blue"));
     }
 }

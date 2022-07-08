@@ -20,7 +20,7 @@ public class AuraParticleEffect extends ParticleEffect {
         r_speed = obj.getDouble("rotation-speed");
         y_speed = obj.getDouble("y-speed");
         y_offset = obj.getDouble("y-offset");
-        amount = obj.getInteger("amount");
+        amount = obj.getInt("amount");
     }
 
     @Override

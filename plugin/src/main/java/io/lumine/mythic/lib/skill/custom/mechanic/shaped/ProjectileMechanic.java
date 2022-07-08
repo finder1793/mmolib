@@ -46,7 +46,7 @@ public class ProjectileMechanic extends DirectionMechanic {
         onHitBlock = config.contains("hit_block") ? MythicLib.plugin.getSkills().getSkillOrThrow(config.getString("hit_block")) : null;
         ignorePassable = config.getBoolean("ignore_passable", false);
         offense = config.getBoolean("offense", true);
-        hitLimit = config.getInteger("hits", 1);
+        hitLimit = config.getInt("hits", 1);
         stopOnBlock = config.getBoolean("stop_on_block", true);
 
         speed = config.contains("speed") ? new DoubleFormula(config.getString("speed")) : new DoubleFormula(1);

@@ -18,7 +18,7 @@ public class FirefliesParticleEffect extends ParticleEffect {
         height = obj.getDouble("height");
         radius = obj.getDouble("radius");
         r_speed = obj.getDouble("rotation-speed");
-        amount = obj.getInteger("amount");
+        amount = obj.getInt("amount");
     }
 
     @Override

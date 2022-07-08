@@ -19,7 +19,7 @@ public class VortexParticleEffect extends ParticleEffect {
         radius = obj.getDouble("radius");
         y_speed = obj.getDouble("y-speed");
         r_speed = obj.getDouble("rotation-speed");
-        amount = obj.getInteger("amount");
+        amount = obj.getInt("amount");
     }
 
     @Override
