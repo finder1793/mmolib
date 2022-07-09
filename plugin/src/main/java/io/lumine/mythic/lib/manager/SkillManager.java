@@ -30,6 +30,7 @@ import io.lumine.mythic.lib.skill.custom.mechanic.raytrace.RayTraceAnyMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.raytrace.RayTraceBlocksMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.raytrace.RayTraceEntitiesMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.shaped.HelixMechanic;
+import io.lumine.mythic.lib.skill.custom.mechanic.shaped.ParabolaMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.shaped.ProjectileMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.shaped.SlashMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.variable.SetDoubleMechanic;
@@ -115,87 +116,92 @@ public class SkillManager {
     public SkillManager() {
 
         // Default mechanics
-        registerMechanic("skill", config -> new SkillMechanic(config));
-        registerMechanic("delay", config -> new DelayMechanic(config));
-        registerMechanic("lightning", config -> new LightningStrikeMechanic(config));
+        registerMechanic("addstat", config -> new AddStatModifierMechanic(config));
+        registerMechanic("removestat", config -> new RemoveStatModifierMechanic(config));
+
+        registerMechanic("feed", config -> new FeedMechanic(config));
+        registerMechanic("heal", config -> new HealMechanic(config));
         registerMechanic("reduce_cooldown", config -> new ReduceCooldownMechanic(config));
+        registerMechanic("saturate", config -> new SaturateMechanic(config));
+
+        registerMechanic("delay", DelayMechanic::new);
         registerMechanic("dispatch_command", DispatchCommandMechanic::new);
+        registerMechanic("give_item", GiveItemMechanic::new);
+        registerMechanic("lightning", config -> new LightningStrikeMechanic(config));
+        registerMechanic("skill", config -> new SkillMechanic(config));
 
-        registerMechanic("velocity", config -> new VelocityMechanic(config));
         registerMechanic("teleport", config -> new TeleportMechanic(config));
-
-        registerMechanic("tell", config -> new TellMechanic(config));
-        registerMechanic("particle", config -> new ParticleMechanic(config));
-        registerMechanic("sound", config -> new SoundMechanic(config));
-
-        registerMechanic("raytrace", config -> new RayTraceAnyMechanic(config));
-        registerMechanic("raytrace_entities", config -> new RayTraceEntitiesMechanic(config));
-        registerMechanic("raytrace_blocks", config -> new RayTraceBlocksMechanic(config));
-
-        registerMechanic("projectile", config -> new ProjectileMechanic(config));
-        registerMechanic("slash", config -> new SlashMechanic(config));
-        registerMechanic("helix", config -> new HelixMechanic(config));
+        registerMechanic("velocity", config -> new VelocityMechanic(config));
 
         registerMechanic("damage", config -> new DamageMechanic(config));
         registerMechanic("multiply_damage", config -> new MultiplyDamageMechanic(config));
         registerMechanic("potion", config -> new PotionMechanic(config));
 
-        registerMechanic("sudo", config -> new SudoMechanic(config));
         registerMechanic("give_item", config -> new GiveItemMechanic(config));
+        registerMechanic("sudo", config -> new SudoMechanic(config));
 
-        registerMechanic("heal", config -> new HealMechanic(config));
-        registerMechanic("feed", config -> new FeedMechanic(config));
-        registerMechanic("saturate", config -> new SaturateMechanic(config));
-        registerMechanic("addstat", config -> new AddStatModifierMechanic(config));
-        registerMechanic("removestat", config -> new RemoveStatModifierMechanic(config));
+        registerMechanic("raytrace", config -> new RayTraceAnyMechanic(config));
+        registerMechanic("raytrace_blocks", config -> new RayTraceBlocksMechanic(config));
+        registerMechanic("raytrace_entities", config -> new RayTraceEntitiesMechanic(config));
+
+        registerMechanic("helix", config -> new HelixMechanic(config));
+        registerMechanic("parabola", ParabolaMechanic::new);
+        registerMechanic("projectile", config -> new ProjectileMechanic(config));
+        registerMechanic("slash", config -> new SlashMechanic(config));
+
+        registerMechanic("add_vector", config -> new AddVectorMechanic(config));
+        registerMechanic("cross_product", config -> new CrossProductMechanic(config));
+        registerMechanic("dot_product", config -> new DotProductMechanic(config));
+        registerMechanic("hadamard_product", config -> new HadamardProductMechanic(config));
+        registerMechanic("multiply_vector", config -> new MultiplyVectorMechanic(config));
+        registerMechanic("normalize_vector", config -> new NormalizeVectorMechanic(config));
+        registerMechanic("save_vector", config -> new SaveVectorMechanic(config));
+        registerMechanic("subtract_vector", config -> new SubtractVectorMechanic(config));
 
         registerMechanic("set_double", config -> new SetDoubleMechanic(config));
         registerMechanic("set_integer", config -> new SetIntegerMechanic(config));
         registerMechanic("set_string", config -> new SetStringMechanic(config));
         registerMechanic("set_vector", config -> new SetVectorMechanic(config));
 
-        registerMechanic("save_vector", config -> new SaveVectorMechanic(config));
-        registerMechanic("add_vector", config -> new AddVectorMechanic(config));
-        registerMechanic("subtract_vector", config -> new SubtractVectorMechanic(config));
-        registerMechanic("dot_product", config -> new DotProductMechanic(config));
-        registerMechanic("cross_product", config -> new CrossProductMechanic(config));
-        registerMechanic("hadamard_product", config -> new HadamardProductMechanic(config));
-        registerMechanic("multiply_vector", config -> new MultiplyVectorMechanic(config));
-        registerMechanic("normalize_vector", config -> new NormalizeVectorMechanic(config));
+        registerMechanic("particle", config -> new ParticleMechanic(config));
+        registerMechanic("sound", config -> new SoundMechanic(config));
+        registerMechanic("tell", config -> new TellMechanic(config));
 
         // Default targeters
-        registerEntityTargeter("target", config -> new TargetTargeter());
         registerEntityTargeter("caster", config -> new CasterTargeter());
+        registerEntityTargeter("cone", config -> new ConeTargeter(config));
         registerEntityTargeter("nearby_entities", config -> new NearbyEntitiesTargeter(config));
         registerEntityTargeter("nearest_entity", config -> new NearestEntityTargeter(config));
+        registerEntityTargeter("target", config -> new TargetTargeter());
         registerEntityTargeter("variable", config -> new VariableEntityTargeter(config));
-        registerEntityTargeter("cone", config -> new ConeTargeter(config));
 
-        registerLocationTargeter("target", config -> new TargetEntityLocationTargeter(config));
         registerLocationTargeter("caster", config -> new CasterLocationTargeter(config));
-        registerLocationTargeter("target_location", config -> new TargetLocationTargeter());
-        registerLocationTargeter("source_location", config -> new SourceLocationTargeter());
-        registerLocationTargeter("looking_at", config -> new LookingAtTargeter(config));
         registerLocationTargeter("circle", config -> new CircleLocationTargeter(config));
-        registerLocationTargeter("variable", config -> new VariableLocationTargeter(config));
         registerLocationTargeter("custom", config -> new CustomLocationTargeter(config));
+        registerLocationTargeter("looking_at", config -> new LookingAtTargeter(config));
+        registerLocationTargeter("source_location", config -> new SourceLocationTargeter());
+        registerLocationTargeter("target", config -> new TargetEntityLocationTargeter(config));
+        registerLocationTargeter("target_location", config -> new TargetLocationTargeter());
+        registerLocationTargeter("variable", config -> new VariableLocationTargeter(config));
 
         // Default conditions
         registerCondition("boolean", config -> new BooleanCondition(config));
-        registerCondition("string_equals", config -> new StringEqualsCondition(config));
         registerCondition("compare", config -> new CompareCondition(config));
         registerCondition("in_between", config -> new InBetweenCondition(config));
+        registerCondition("string_equals", config -> new StringEqualsCondition(config));
 
+        registerCondition("biome", config -> new BiomeCondition(config));
+        registerCondition("can_target", config -> new CanTargetCondition(config));
+        registerCondition("cooldown", config -> new CooldownCondition(config));
         registerCondition("time", config -> new TimeCondition(config));
         registerCondition("cuboid", config -> new CuboidCondition(config));
-        registerCondition("cooldown", config -> new CooldownCondition(config));
-        registerCondition("on_fire", config -> new OnFireCondition(config));
-        registerCondition("is_living", config -> new IsLivingCondition(config));
-        registerCondition("can_target", config -> new CanTargetCondition(config));
+        registerCondition("distance", config -> new DistanceCondition(config));
         registerCondition("has_damage_type", config -> new HasDamageTypeCondition(config));
-        registerCondition("world", config -> new WorldCondition(config));
+        registerCondition("is_living", config -> new IsLivingCondition(config));
+        registerCondition("on_fire", config -> new OnFireCondition(config));
         registerCondition("permission", config -> new PermissionCondition(config));
-        registerCondition("biome", config -> new BiomeCondition(config));
+        registerCondition("time", config -> new TimeCondition(config));
+        registerCondition("world", config -> new WorldCondition(config));
 
         // Default skill handler types
         registerSkillHandlerType(config -> config.contains("mythiclib-skill-id"), config -> new MythicLibSkillHandler(getSkillOrThrow(config.getString("mythiclib-skill"))));
