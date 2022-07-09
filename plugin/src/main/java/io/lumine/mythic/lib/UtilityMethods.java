@@ -1,18 +1,9 @@
 package io.lumine.mythic.lib;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import io.lumine.mythic.lib.api.MMOLineConfig;
 import io.lumine.mythic.lib.api.condition.RegionCondition;
 import io.lumine.mythic.lib.api.condition.type.MMOCondition;
 import io.lumine.mythic.lib.comp.target.InteractionType;
-import io.lumine.mythic.lib.util.Log;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
@@ -24,25 +15,10 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class UtilityMethods {
     /**
@@ -236,7 +212,7 @@ public class UtilityMethods {
 
     public static Vector rotate(Vector rotated, Vector axis) {
         double[] pitchYaw = getYawPitch(axis);
-        return rotate(rotated, pitchYaw[0], pitchYaw[1]);
+        return rotate(rotated, Math.toRadians(pitchYaw[0]), Math.toRadians(pitchYaw[1]));
     }
 
     public static Vector rotate(Vector rotated, double yaw, double pitch) {
