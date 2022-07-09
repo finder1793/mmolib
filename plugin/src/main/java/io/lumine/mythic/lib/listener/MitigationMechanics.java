@@ -51,9 +51,9 @@ public class MitigationMechanics implements Listener {
         maxBlockPower = MythicLib.plugin.getConfig().getDouble("mitigation.block.power.max");
         defaultBlockPower = MythicLib.plugin.getConfig().getDouble("mitigation.block.power.default");
 
-        parryDefaultCooldown = MythicLib.plugin.getConfig().getDouble("mitigation.parry.cooldown.default");
-        blockDefaultCooldown = MythicLib.plugin.getConfig().getDouble("mitigation.block.cooldown.default");
-        dodgeDefaultCooldown = MythicLib.plugin.getConfig().getDouble("mitigation.dodge.cooldown.default");
+        parryDefaultCooldown = MythicLib.plugin.getConfig().getDouble("mitigation.parry.cooldown.base");
+        blockDefaultCooldown = MythicLib.plugin.getConfig().getDouble("mitigation.block.cooldown.base");
+        dodgeDefaultCooldown = MythicLib.plugin.getConfig().getDouble("mitigation.dodge.cooldown.base");
         parryMinCooldown = MythicLib.plugin.getConfig().getDouble("mitigation.parry.cooldown.min");
         blockMinCooldown = MythicLib.plugin.getConfig().getDouble("mitigation.block.cooldown.min");
         dodgeMinCooldown = MythicLib.plugin.getConfig().getDouble("mitigation.dodge.cooldown.min");
