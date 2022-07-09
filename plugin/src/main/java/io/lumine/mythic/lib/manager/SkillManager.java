@@ -3,15 +3,15 @@ package io.lumine.mythic.lib.manager;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.skill.custom.CustomSkill;
 import io.lumine.mythic.lib.skill.custom.condition.Condition;
+import io.lumine.mythic.lib.skill.custom.condition.generic.BooleanCondition;
+import io.lumine.mythic.lib.skill.custom.condition.generic.CompareCondition;
+import io.lumine.mythic.lib.skill.custom.condition.generic.InBetweenCondition;
+import io.lumine.mythic.lib.skill.custom.condition.generic.StringEqualsCondition;
 import io.lumine.mythic.lib.skill.custom.condition.location.BiomeCondition;
 import io.lumine.mythic.lib.skill.custom.condition.location.CuboidCondition;
 import io.lumine.mythic.lib.skill.custom.condition.location.DistanceCondition;
 import io.lumine.mythic.lib.skill.custom.condition.location.WorldCondition;
 import io.lumine.mythic.lib.skill.custom.condition.misc.*;
-import io.lumine.mythic.lib.skill.custom.condition.generic.BooleanCondition;
-import io.lumine.mythic.lib.skill.custom.condition.generic.CompareCondition;
-import io.lumine.mythic.lib.skill.custom.condition.generic.InBetweenCondition;
-import io.lumine.mythic.lib.skill.custom.condition.generic.StringEqualsCondition;
 import io.lumine.mythic.lib.skill.custom.mechanic.Mechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.buff.FeedMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.buff.HealMechanic;
@@ -83,7 +83,7 @@ import java.util.logging.Level;
  * The second thing is to make MythicLib a database combining:
  * - default MMOItems/MMOCore skills
  * - custom skills made using MythicMobs
- * - custom skills made using SkillAPI
+ * - custom skills made using SkillAPI-ProSkillAPI
  * - custom skills made using MythicLib (still under development)
  * <p>
  * Then users can "register" any of these base skills inside MMOItems
@@ -383,13 +383,13 @@ public class SkillManager {
         } else {
             registration = false;
 
-            // mkdir skill folders
+            // mkdir skill folder
             File skillsFolder = new File(MythicLib.plugin.getDataFolder() + "/skill");
             if (!skillsFolder.exists())
                 skillsFolder.mkdir();
 
-            // mkdir skill folders
-            File customSkillsFolder = new File(MythicLib.plugin.getDataFolder() + "/skill/custom");
+            // mkdir customskill folder
+            File customSkillsFolder = new File(MythicLib.plugin.getDataFolder() + "/customskill");
             if (!customSkillsFolder.exists())
                 customSkillsFolder.mkdir();
 
@@ -430,7 +430,7 @@ public class SkillManager {
                     MythicLib.plugin.getLogger().log(Level.WARNING, "Could not initialize custom skill '" + key + "' from '" + file.getName() + "': " + exception.getMessage());
                 }
 
-        }, MythicLib.plugin, "Could not load custom skills").explore(new File(MythicLib.plugin.getDataFolder() + "/skill/custom"));
+        }, MythicLib.plugin, "Could not load custom skills").explore(new File(MythicLib.plugin.getDataFolder() + "/customskill"));
 
         // Post load custom skills and register a skill handler
         for (CustomSkill skill : customSkills.values())
@@ -442,45 +442,26 @@ public class SkillManager {
                 MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill '" + skill.getId() + "': " + exception.getMessage());
             }
 
-        // Load skills
-        RecursiveFolderExplorer explorer = new RecursiveFolderExplorer(file -> {
-            try {
+        // Load skill handlers
+        new RecursiveFolderExplorer(file -> {
+            final FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
-                registerSkillHandler(loadSkillHandler(YamlConfiguration.loadConfiguration(file)));
-
-            } catch (RuntimeException exception) {
-
-
-                boolean oneSuccess = false;
-
-                // Attempt to parse every key I guess
-                ConfigurationSection config = YamlConfiguration.loadConfiguration(file);
-                for (String key : config.getKeys(false)) {
-
-                    // Get as configuration section
-                    ConfigurationSection section = config.getConfigurationSection(key);
-                    if (section == null) { continue; }
-
-                    try {
-
-                        // Attempt to load as normal section
-                        registerSkillHandler(loadSkillHandler(section));
-                        oneSuccess = true;
-
-                    } catch (Throwable ignored) { }
+            // Read as unique skill
+            if (config.contains("modifiers"))
+                try {
+                    registerSkillHandler(loadSkillHandler(YamlConfiguration.loadConfiguration(file)));
+                } catch (RuntimeException exception) {
+                    MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill handler '" + file.getName() + "': " + exception.getMessage());
                 }
+            else
 
-                /*
-                 * Apparently users were not getting the correct 'messages' so this
-                 * should tell the correct message if no skill was loaded right.
-                 */
-                if (!oneSuccess) { MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill from '" + file.getName() + "': " + exception.getMessage()); }
-            }
-
-        }, MythicLib.plugin, "Could not load skills");
-
-        for (File file : new File(MythicLib.plugin.getDataFolder() + "/skill").listFiles())
-            if (!file.isDirectory() || !file.getName().equals("custom"))
-                explorer.explore(file);
+                // Read multiple skills in the same configuration file
+                for (String key : config.getKeys(false))
+                    try {
+                        registerSkillHandler(loadSkillHandler(config.getConfigurationSection(key)));
+                    } catch (RuntimeException exception) {
+                        MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill handler '" + config.getName() + "' from file '" + file.getName() + "': " + exception.getMessage());
+                    }
+        }, MythicLib.plugin, "Could not load skills").explore(new File(MythicLib.plugin.getDataFolder() + "/skill"));
     }
 }
