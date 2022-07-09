@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.skill.custom.condition.def;
+package io.lumine.mythic.lib.skill.custom.condition.misc;
 
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.custom.condition.Condition;

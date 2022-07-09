@@ -3,11 +3,15 @@ package io.lumine.mythic.lib.manager;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.skill.custom.CustomSkill;
 import io.lumine.mythic.lib.skill.custom.condition.Condition;
-import io.lumine.mythic.lib.skill.custom.condition.def.*;
-import io.lumine.mythic.lib.skill.custom.condition.def.generic.BooleanCondition;
-import io.lumine.mythic.lib.skill.custom.condition.def.generic.CompareCondition;
-import io.lumine.mythic.lib.skill.custom.condition.def.generic.InBetweenCondition;
-import io.lumine.mythic.lib.skill.custom.condition.def.generic.StringEqualsCondition;
+import io.lumine.mythic.lib.skill.custom.condition.location.BiomeCondition;
+import io.lumine.mythic.lib.skill.custom.condition.location.CuboidCondition;
+import io.lumine.mythic.lib.skill.custom.condition.location.DistanceCondition;
+import io.lumine.mythic.lib.skill.custom.condition.location.WorldCondition;
+import io.lumine.mythic.lib.skill.custom.condition.misc.*;
+import io.lumine.mythic.lib.skill.custom.condition.generic.BooleanCondition;
+import io.lumine.mythic.lib.skill.custom.condition.generic.CompareCondition;
+import io.lumine.mythic.lib.skill.custom.condition.generic.InBetweenCondition;
+import io.lumine.mythic.lib.skill.custom.condition.generic.StringEqualsCondition;
 import io.lumine.mythic.lib.skill.custom.mechanic.Mechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.buff.FeedMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.buff.HealMechanic;
@@ -126,7 +130,6 @@ public class SkillManager {
 
         registerMechanic("delay", DelayMechanic::new);
         registerMechanic("dispatch_command", DispatchCommandMechanic::new);
-        registerMechanic("give_item", GiveItemMechanic::new);
         registerMechanic("lightning", config -> new LightningStrikeMechanic(config));
         registerMechanic("skill", config -> new SkillMechanic(config));
 
@@ -191,17 +194,18 @@ public class SkillManager {
         registerCondition("string_equals", config -> new StringEqualsCondition(config));
 
         registerCondition("biome", config -> new BiomeCondition(config));
-        registerCondition("can_target", config -> new CanTargetCondition(config));
-        registerCondition("cooldown", config -> new CooldownCondition(config));
-        registerCondition("time", config -> new TimeCondition(config));
         registerCondition("cuboid", config -> new CuboidCondition(config));
         registerCondition("distance", config -> new DistanceCondition(config));
+        registerCondition("world", config -> new WorldCondition(config));
+
+        registerCondition("can_target", config -> new CanTargetCondition(config));
+        registerCondition("cooldown", config -> new CooldownCondition(config));
+        registerCondition("food", config -> new FoodCondition(config));
         registerCondition("has_damage_type", config -> new HasDamageTypeCondition(config));
         registerCondition("is_living", config -> new IsLivingCondition(config));
         registerCondition("on_fire", config -> new OnFireCondition(config));
         registerCondition("permission", config -> new PermissionCondition(config));
         registerCondition("time", config -> new TimeCondition(config));
-        registerCondition("world", config -> new WorldCondition(config));
 
         // Default skill handler types
         registerSkillHandlerType(config -> config.contains("mythiclib-skill-id"), config -> new MythicLibSkillHandler(getSkillOrThrow(config.getString("mythiclib-skill"))));
