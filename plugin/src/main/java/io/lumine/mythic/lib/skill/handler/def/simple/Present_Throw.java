@@ -21,7 +21,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.lang.reflect.Field;
 import java.util.UUID;
@@ -35,20 +34,19 @@ public class Present_Throw extends SkillHandler<SimpleSkillResult> {
 
         registerModifiers("damage", "radius", "force");
 
-        ItemMeta presentMeta = present.getItemMeta();
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-        byte[] encodedData = Base64Coder.encodeLines(String.format("{textures:{SKIN:{url:\"%s\"}}}", "http://textures.minecraft.net/texture/47e55fcc809a2ac1861da2a67f7f31bd7237887d162eca1eda526a7512a64910").getBytes()).getBytes();
-        profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
-
         try {
+            ItemMeta presentMeta = present.getItemMeta();
+            GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+            profile.getProperties().put("textures", new Property("textures", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTcyNmQ5ZDA2MzJlNDBiZGE1YmNmNjU4MzliYTJjYzk4YTg3YmQ2MTljNTNhZGYwMDMxMGQ2ZmM3MWYwNDJiNSJ9fX0="));
+
             Field profileField = presentMeta.getClass().getDeclaredField("profile");
             profileField.setAccessible(true);
             profileField.set(presentMeta, profile);
-        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException exception) {
-            MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load the skull texture for the 'Present Throw' skill: " + exception.getMessage());
-        }
 
-        present.setItemMeta(presentMeta);
+            present.setItemMeta(presentMeta);
+        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException exception) {
+            MythicLib.plugin.getLogger().log(Level.WARNING, "Could not apply 'Present Throw' head texture");
+        }
     }
 
     @Override
@@ -76,7 +74,7 @@ public class Present_Throw extends SkillHandler<SimpleSkillResult> {
         final double trajRatio = item.getEntity().getVelocity().getX() / item.getEntity().getVelocity().getZ();
         caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_SNOWBALL_THROW, 1, 0);
         new BukkitRunnable() {
-            double ti = 0;
+            int ti = 0;
 
             public void run() {
                 if (ti++ > 70 || item.getEntity().isDead()) {
