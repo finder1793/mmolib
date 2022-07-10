@@ -1,7 +1,10 @@
 package io.lumine.mythic.lib.skill.handler;
 
+import io.lumine.mythic.api.config.MythicConfig;
 import io.lumine.mythic.api.skills.Skill;
 import io.lumine.mythic.bukkit.MythicBukkit;
+import io.lumine.mythic.core.skills.MetaSkill;
+import io.lumine.mythic.core.skills.SkillExecutor;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.comp.anticheat.CheatType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
@@ -12,6 +15,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
 
 public class MythicMobsSkillHandler extends SkillHandler<MythicMobsSkillResult> {
     private final Skill skill;
@@ -25,9 +29,31 @@ public class MythicMobsSkillHandler extends SkillHandler<MythicMobsSkillResult> 
     public MythicMobsSkillHandler(ConfigurationSection config) {
         super(config, config.getName().isEmpty() ? config.getString("mythicmobs-skill-id") : config.getName());
 
-        String skillName = config.getString("mythicmobs-skill-id");
+        SkillExecutor skillManager = MythicBukkit.inst().getSkillManager();
 
-        Optional<Skill> opt = MythicBukkit.inst().getSkillManager().getSkill(skillName);
+        // Register extra skills first
+        if (config.contains("extra-skills")) {
+
+           /* // Find FileConfiguration again
+            final long steps = config.getCurrentPath().chars().filter(ch -> ch == 'e').count();
+            ConfigurationSection explored = config;
+            for (int i = 0; i < steps + 1; i++)
+                explored = explored.getParent();
+            Validate.isTrue(explored instanceof FileConfiguration, "An error occured when attempting to roll back to config file");
+            final FileConfiguration configFile = (FileConfiguration) explored;*/
+
+            for (String key : config.getConfigurationSection("extra-skills").getKeys(false))
+                try {
+                    MythicConfig mythicConfig = new MythicConfigImpl("extra-skills." + key, config);
+                    MetaSkill metaSkill = new MetaSkill(skillManager, "mythiclib", key, mythicConfig);
+                    skillManager.registerSkill(key, metaSkill);
+                } catch (RuntimeException exception) {
+                    MythicLib.plugin.getLogger().log(Level.WARNING, "Could not register MythicMob extra skill '" + key + "' for custom skill handler '" + getId() + "': " + exception.getMessage());
+                }
+        }
+
+        String skillName = config.getString("mythicmobs-skill-id");
+        Optional<Skill> opt = skillManager.getSkill(skillName);
         Validate.isTrue(opt.isPresent(), "Could not find MM skill with name '" + skillName + "'");
         skill = opt.get();
 
