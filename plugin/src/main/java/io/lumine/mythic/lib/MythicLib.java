@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib;
 
+import com.jeff_media.armorequipevent.ArmorEquipEvent;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.MegaWorkbenchMapping;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.SuperWorkbenchMapping;
@@ -22,7 +23,8 @@ import io.lumine.mythic.lib.comp.flags.WorldGuardFlags;
 import io.lumine.mythic.lib.comp.hexcolor.ColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.HexColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.SimpleColorParser;
-import io.lumine.mythic.lib.comp.hologram.CustomHologramFactoryList;
+import io.lumine.mythic.lib.hologram.HologramFactory;
+import io.lumine.mythic.lib.hologram.HologramFactoryList;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
 import io.lumine.mythic.lib.comp.placeholder.DefaultPlaceholderParser;
@@ -33,6 +35,7 @@ import io.lumine.mythic.lib.comp.protocollib.DamageParticleCap;
 import io.lumine.mythic.lib.comp.target.CitizensTargetRestriction;
 import io.lumine.mythic.lib.comp.target.FactionsRestriction;
 import io.lumine.mythic.lib.gui.PluginInventory;
+import io.lumine.mythic.lib.hologram.factory.BukkitHologramFactory;
 import io.lumine.mythic.lib.listener.*;
 import io.lumine.mythic.lib.listener.event.PlayerAttackEventListener;
 import io.lumine.mythic.lib.listener.option.DamageIndicators;
@@ -45,8 +48,6 @@ import io.lumine.mythic.lib.player.TemporaryPlayerData;
 import io.lumine.mythic.lib.version.ServerVersion;
 import io.lumine.mythic.lib.version.SpigotPlugin;
 import io.lumine.utils.events.extra.ArmorEquipEventListener;
-import io.lumine.utils.holograms.BukkitHologramFactory;
-import io.lumine.utils.holograms.HologramFactory;
 import io.lumine.utils.plugin.LuminePlugin;
 import io.lumine.utils.scoreboard.PacketScoreboardProvider;
 import io.lumine.utils.scoreboard.ScoreboardProvider;
@@ -73,12 +74,12 @@ public class MythicLib extends LuminePlugin {
     private final ModifierManager modifierManager = new ModifierManager();
     private final FlagHandler flagHandler = new FlagHandler();
 
-
     private AntiCheatSupport antiCheatSupport;
     private ServerVersion version;
     private AttackEffects attackEffects;
     private MitigationMechanics mitigationMechanics;
     private ColorParser colorParser;
+    @Deprecated
     @Getter
     private ScoreboardProvider scoreboardProvider;
     private PlaceholderParser placeholderParser;
@@ -135,6 +136,7 @@ public class MythicLib extends LuminePlugin {
         Bukkit.getPluginManager().registerEvents(new ArmorEquipEventListener(), this);
         Bukkit.getPluginManager().registerEvents(new MythicCraftingManager(), this);
         Bukkit.getPluginManager().registerEvents(new SkillTriggers(), this);
+        ArmorEquipEvent.registerListener(this);
 
         if (getConfig().getBoolean("health-scale.enabled"))
             Bukkit.getPluginManager().registerEvents(new HealthScale(getConfig().getDouble("health-scale.scale"), getConfig().getInt("health-scale.delay", 0)), this);
@@ -143,7 +145,7 @@ public class MythicLib extends LuminePlugin {
             Bukkit.getPluginManager().registerEvents(new FixMovementSpeed(), this);
 
         // Custom hologram providers
-        for (CustomHologramFactoryList custom : CustomHologramFactoryList.values())
+        for (HologramFactoryList custom : HologramFactoryList.values())
             if (custom.isInstalled(getServer().getPluginManager()))
                 try {
                     provideService(HologramFactory.class, custom.generateFactory(), custom.getServicePriority());
