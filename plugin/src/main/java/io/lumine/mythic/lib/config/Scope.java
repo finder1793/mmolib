@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.config;
 
 import io.lumine.utils.config.properties.PropertyScope;
 
+@Deprecated
 public enum Scope implements PropertyScope {
     
     CONFIG("config"),

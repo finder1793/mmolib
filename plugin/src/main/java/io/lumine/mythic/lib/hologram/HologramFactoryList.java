@@ -1,16 +1,15 @@
-package io.lumine.mythic.lib.comp.hologram;
+package io.lumine.mythic.lib.hologram;
 
-import io.lumine.mythic.lib.comp.hologram.factory.CMIHologramFactory;
-import io.lumine.mythic.lib.comp.hologram.factory.HDHologramFactory;
-import io.lumine.mythic.lib.comp.hologram.factory.HologramsHologramFactory;
-import io.lumine.mythic.lib.comp.hologram.factory.TrHologramFactory;
-import io.lumine.utils.holograms.HologramFactory;
+import io.lumine.mythic.lib.hologram.factory.CMIHologramFactory;
+import io.lumine.mythic.lib.hologram.factory.HDHologramFactory;
+import io.lumine.mythic.lib.hologram.factory.HologramsHologramFactory;
+import io.lumine.mythic.lib.hologram.factory.TrHologramFactory;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.ServicePriority;
 
 import java.lang.reflect.InvocationTargetException;
 
-public enum CustomHologramFactoryList {
+public enum HologramFactoryList {
     HOLOGRAPHIC_DISPLAYS("HolographicDisplays", HDHologramFactory.class, ServicePriority.Highest),
     HOLOGRAMS("Holograms", HologramsHologramFactory.class, ServicePriority.High),
     CMI("CMI", CMIHologramFactory.class, ServicePriority.Normal),
@@ -20,7 +19,7 @@ public enum CustomHologramFactoryList {
     private final Class<? extends HologramFactory> factoryClass;
     private final ServicePriority priority;
 
-    private CustomHologramFactoryList(String pluginName, Class<? extends HologramFactory> factoryClass, ServicePriority priority) {
+    private HologramFactoryList(String pluginName, Class<? extends HologramFactory> factoryClass, ServicePriority priority) {
         this.pluginName = pluginName;
         this.factoryClass = factoryClass;
         this.priority = priority;

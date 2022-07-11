@@ -6,6 +6,7 @@ import io.lumine.utils.config.properties.PropertyHolder;
 import io.lumine.utils.config.properties.types.IntProp;
 import io.lumine.utils.plugin.ReloadableModule;
 
+@Deprecated
 public class Configuration extends ReloadableModule<MythicLib> implements PropertyHolder {
 	
     private final static IntProp CLOCK_INTERVAL = Property.Int(Scope.CONFIG, "Clock.Interval", 1);

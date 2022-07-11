@@ -1,12 +1,11 @@
-package io.lumine.mythic.lib.comp.hologram.factory;
+package io.lumine.mythic.lib.hologram.factory;
 
 import com.Zrips.CMI.CMI;
-import io.lumine.mythic.lib.comp.hologram.MMOHologram;
-import io.lumine.utils.holograms.Hologram;
-import io.lumine.utils.holograms.HologramFactory;
-import io.lumine.utils.serialize.Position;
+import io.lumine.mythic.lib.hologram.Hologram;
+import io.lumine.mythic.lib.hologram.HologramFactory;
 import net.Zrips.CMILib.Container.CMILocation;
-import org.jetbrains.annotations.NotNull;
+import org.apache.commons.lang.Validate;
+import org.bukkit.Location;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,47 +32,49 @@ public class CMIHologramFactory implements HologramFactory {
         Bukkit.getScheduler().scheduleSyncDelayedTask(MythicLib.plugin, () -> CMI.getInstance().getHologramManager().removeHolo(hologram), 20);
     }*/
 
-    @NotNull
     @Override
-    public Hologram newHologram(@NotNull Position position, @NotNull List<String> list) {
-        return new CMIHologram(position, list);
+    public Hologram newHologram(Location loc, List<String> lines) {
+        return new CMIHologram(loc, lines);
     }
 
-    public class CMIHologram extends MMOHologram {
+    public class CMIHologram implements Hologram {
         private final com.Zrips.CMI.Modules.Holograms.CMIHologram holo;
+        private boolean spawned = true;
 
-        public CMIHologram(Position position, List<String> list) {
-            holo = new com.Zrips.CMI.Modules.Holograms.CMIHologram("MythicLib-" + UUID.randomUUID().toString(), new CMILocation(position.toLocation()));
+        public CMIHologram(Location loc, List<String> list) {
+            holo = new com.Zrips.CMI.Modules.Holograms.CMIHologram("MythicLib-" + UUID.randomUUID().toString(), new CMILocation(loc));
             holo.setLines(list);
-        }
 
-        @Override
-        public void spawn() {
             CMI.getInstance().getHologramManager().addHologram(holo);
             holo.update();
         }
 
         @Override
-        public void updateLines(@NotNull List<String> list) {
+        public void updateLines(List<String> list) {
             holo.setLines(list);
             holo.update();
         }
 
         @Override
-        public Position getPosition() {
-            return Position.of(holo.getLocation());
+        public Location getLocation() {
+            return holo.getLocation();
         }
 
         @Override
         public void despawn() {
-            super.despawn();
-
+            Validate.isTrue(spawned, "Hologram is already despawned");
             CMI.getInstance().getHologramManager().removeHolo(holo);
+            spawned = false;
         }
 
         @Override
-        public void updatePosition(@NotNull Position position) {
-            holo.setLoc(position.toLocation());
+        public boolean isSpawned() {
+            return spawned;
+        }
+
+        @Override
+        public void updateLocation(Location loc) {
+            holo.setLoc(loc);
         }
 
         @Override

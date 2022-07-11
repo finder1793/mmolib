@@ -1,12 +1,12 @@
-package io.lumine.mythic.lib.comp.hologram.factory;
+package io.lumine.mythic.lib.hologram.factory;
 
 import com.sainttx.holograms.HologramPlugin;
 import com.sainttx.holograms.api.HologramManager;
 import com.sainttx.holograms.api.line.TextLine;
-import io.lumine.mythic.lib.comp.hologram.MMOHologram;
-import io.lumine.utils.holograms.Hologram;
-import io.lumine.utils.holograms.HologramFactory;
-import io.lumine.utils.serialize.Position;
+import io.lumine.mythic.lib.hologram.Hologram;
+import io.lumine.mythic.lib.hologram.HologramFactory;
+import org.apache.commons.lang.Validate;
+import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,24 +29,19 @@ public class HologramsHologramFactory implements HologramFactory {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(MMOItems.plugin, () -> hologramManager.deleteHologram(hologram), 20);
 	} */
 
-    @NotNull
     @Override
-    public Hologram newHologram(@NotNull Position position, @NotNull List<String> list) {
-        return new CustomHologram(position, list);
+    public Hologram newHologram(Location loc, List<String> lines) {
+        return new CustomHologram(loc, lines);
     }
 
-    public class CustomHologram extends MMOHologram {
+    public class CustomHologram implements Hologram {
         private final com.sainttx.holograms.api.Hologram holo;
+        private boolean spawned = true;
 
-        public CustomHologram(Position position, List<String> list) {
-            holo = new com.sainttx.holograms.api.Hologram("MythicLib-" + UUID.randomUUID().toString(), position.toLocation());
+        public CustomHologram(Location loc, List<String> list) {
+            holo = new com.sainttx.holograms.api.Hologram("MythicLib-" + UUID.randomUUID(), loc);
             for (String str : list)
                 holo.addLine(new TextLine(holo, str));
-        }
-
-        @Override
-        public void spawn() {
-            // Spawns on instanciation
         }
 
         @Override
@@ -55,25 +50,30 @@ public class HologramsHologramFactory implements HologramFactory {
         }
 
         @Override
+        public Location getLocation() {
+            return holo.getLocation();
+        }
+
+        @Override
         public void updateLines(@NotNull List<String> list) {
             throw new RuntimeException("Adding lines is not supported");
         }
 
         @Override
-        public Position getPosition() {
-            return Position.of(holo.getLocation());
-        }
-
-        @Override
-        public void updatePosition(@NotNull Position position) {
-            holo.teleport(position.toLocation());
-        }
-
-        @Override
         public void despawn() {
-            super.despawn();
-
+            Validate.isTrue(spawned, "Hologram is already despawned");
             hologramManager.deleteHologram(holo);
+            spawned = false;
+        }
+
+        @Override
+        public boolean isSpawned() {
+            return spawned;
+        }
+
+        @Override
+        public void updateLocation(Location loc) {
+            holo.teleport(loc);
         }
     }
 }
