@@ -1,4 +1,4 @@
-package gs.mclo.java;
+package io.lumine.mythic.lib.comp.mclogs;
 import com.google.gson.Gson;
 
 public class APIResponse {

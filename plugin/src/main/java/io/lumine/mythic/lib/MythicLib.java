@@ -1,10 +1,10 @@
 package io.lumine.mythic.lib;
 
-import com.jeff_media.armorequipevent.ArmorEquipEvent;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.MegaWorkbenchMapping;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.SuperWorkbenchMapping;
 import io.lumine.mythic.lib.api.crafting.uifilters.MythicItemUIFilter;
+import io.lumine.mythic.lib.api.event.armorequip.ArmorEquipEvent;
 import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.command.ExploreAttributesCommand;
@@ -23,8 +23,6 @@ import io.lumine.mythic.lib.comp.flags.WorldGuardFlags;
 import io.lumine.mythic.lib.comp.hexcolor.ColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.HexColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.SimpleColorParser;
-import io.lumine.mythic.lib.hologram.HologramFactory;
-import io.lumine.mythic.lib.hologram.HologramFactoryList;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
 import io.lumine.mythic.lib.comp.placeholder.DefaultPlaceholderParser;
@@ -35,6 +33,8 @@ import io.lumine.mythic.lib.comp.protocollib.DamageParticleCap;
 import io.lumine.mythic.lib.comp.target.CitizensTargetRestriction;
 import io.lumine.mythic.lib.comp.target.FactionsRestriction;
 import io.lumine.mythic.lib.gui.PluginInventory;
+import io.lumine.mythic.lib.hologram.HologramFactory;
+import io.lumine.mythic.lib.hologram.HologramFactoryList;
 import io.lumine.mythic.lib.hologram.factory.BukkitHologramFactory;
 import io.lumine.mythic.lib.listener.*;
 import io.lumine.mythic.lib.listener.event.PlayerAttackEventListener;
@@ -43,23 +43,20 @@ import io.lumine.mythic.lib.listener.option.FixMovementSpeed;
 import io.lumine.mythic.lib.listener.option.HealthScale;
 import io.lumine.mythic.lib.listener.option.RegenIndicators;
 import io.lumine.mythic.lib.manager.*;
-import io.lumine.mythic.lib.metrics.bStats;
 import io.lumine.mythic.lib.player.TemporaryPlayerData;
 import io.lumine.mythic.lib.version.ServerVersion;
 import io.lumine.mythic.lib.version.SpigotPlugin;
-import io.lumine.utils.events.extra.ArmorEquipEventListener;
-import io.lumine.utils.plugin.LuminePlugin;
-import io.lumine.utils.scoreboard.PacketScoreboardProvider;
-import io.lumine.utils.scoreboard.ScoreboardProvider;
 import lombok.Getter;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.ServicePriority;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.logging.Level;
 
-public class MythicLib extends LuminePlugin {
+public class MythicLib extends JavaPlugin {
     public static MythicLib plugin;
 
     //@Getter private ProfileManager profileManager;
@@ -81,11 +78,10 @@ public class MythicLib extends LuminePlugin {
     private ColorParser colorParser;
     @Deprecated
     @Getter
-    private ScoreboardProvider scoreboardProvider;
     private PlaceholderParser placeholderParser;
 
     @Override
-    public void load() {
+    public void onLoad() {
         plugin = this;
 
         try {
@@ -107,8 +103,8 @@ public class MythicLib extends LuminePlugin {
     }
 
     @Override
-    public void enable() {
-        new bStats(this);
+    public void onEnable() {
+        new Metrics(this);
 
         new SpigotPlugin(90306, this).checkForUpdate();
         saveDefaultConfig();
@@ -120,11 +116,8 @@ public class MythicLib extends LuminePlugin {
             getLogger().warning("(Your config version: '" + configVersion + "' | Expected config version: '" + defConfigVersion + "')");
         }
 
-        this.scoreboardProvider = new PacketScoreboardProvider(this);
-        this.provideService(ScoreboardProvider.class, this.scoreboardProvider);
-
         // Hologram provider
-        this.provideService(HologramFactory.class, new BukkitHologramFactory(), ServicePriority.Low);
+        Bukkit.getServicesManager().register(HologramFactory.class, new BukkitHologramFactory(), this, ServicePriority.Low);
 
         // Register listeners
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
@@ -133,7 +126,6 @@ public class MythicLib extends LuminePlugin {
         Bukkit.getPluginManager().registerEvents(attackEffects = new AttackEffects(), this);
         Bukkit.getPluginManager().registerEvents(mitigationMechanics = new MitigationMechanics(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerAttackEventListener(), this);
-        Bukkit.getPluginManager().registerEvents(new ArmorEquipEventListener(), this);
         Bukkit.getPluginManager().registerEvents(new MythicCraftingManager(), this);
         Bukkit.getPluginManager().registerEvents(new SkillTriggers(), this);
         ArmorEquipEvent.registerListener(this);
@@ -148,7 +140,7 @@ public class MythicLib extends LuminePlugin {
         for (HologramFactoryList custom : HologramFactoryList.values())
             if (custom.isInstalled(getServer().getPluginManager()))
                 try {
-                    provideService(HologramFactory.class, custom.generateFactory(), custom.getServicePriority());
+                    Bukkit.getServicesManager().register(HologramFactory.class, custom.generateFactory(), this, custom.getServicePriority());
                     getLogger().log(Level.INFO, "Hooked onto " + custom.getPluginName());
                 } catch (Exception exception) {
                     getLogger().log(Level.WARNING, "Could not hook onto " + custom.getPluginName() + ": " + exception.getMessage());
@@ -251,7 +243,7 @@ public class MythicLib extends LuminePlugin {
     }
 
     @Override
-    public void disable() {
+    public void onDisable() {
         //this.configuration.unload();
         for (Player player : Bukkit.getOnlinePlayers())
             if (player.getOpenInventory() != null && player.getOpenInventory().getTopInventory().getHolder() != null && player.getOpenInventory().getTopInventory().getHolder() instanceof PluginInventory)

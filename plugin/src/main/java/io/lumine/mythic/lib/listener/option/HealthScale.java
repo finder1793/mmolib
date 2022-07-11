@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.listener.option;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.utils.Schedulers;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,7 +26,7 @@ public class HealthScale implements Listener {
     @EventHandler
     private void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        Schedulers.bukkit().runTaskLater(MythicLib.plugin, () -> {
+        Bukkit.getScheduler().runTaskLater(MythicLib.plugin, () -> {
             player.setHealthScaled(true);
             player.setHealthScale(scale);
         }, delay);

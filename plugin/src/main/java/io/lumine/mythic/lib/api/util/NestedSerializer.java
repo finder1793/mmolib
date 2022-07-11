@@ -1,41 +1,57 @@
 package io.lumine.mythic.lib.api.util;
 
-import io.lumine.utils.adventure.key.Key;
-import io.lumine.utils.adventure.text.Component;
-import io.lumine.utils.adventure.text.KeybindComponent;
-import io.lumine.utils.adventure.text.TextComponent;
-import io.lumine.utils.adventure.text.TranslatableComponent;
-import io.lumine.utils.adventure.text.event.ClickEvent;
-import io.lumine.utils.adventure.text.event.HoverEvent;
-import io.lumine.utils.adventure.text.format.NamedTextColor;
-import io.lumine.utils.adventure.text.format.Style;
-import io.lumine.utils.adventure.text.format.TextColor;
-import io.lumine.utils.adventure.text.format.TextDecoration;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.KeybindComponent;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TranslatableComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import lombok.NonNull;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import static io.lumine.utils.adventure.text.minimessage.Tokens.BOLD;
-import static io.lumine.utils.adventure.text.minimessage.Tokens.CLICK;
-import static io.lumine.utils.adventure.text.minimessage.Tokens.CLOSE_TAG;
-import static io.lumine.utils.adventure.text.minimessage.Tokens.COLOR;
-import static io.lumine.utils.adventure.text.minimessage.Tokens.FONT;
-import static io.lumine.utils.adventure.text.minimessage.Tokens.HOVER;
-import static io.lumine.utils.adventure.text.minimessage.Tokens.INSERTION;
-import static io.lumine.utils.adventure.text.minimessage.Tokens.ITALIC;
-import static io.lumine.utils.adventure.text.minimessage.Tokens.KEYBIND;
-import static io.lumine.utils.adventure.text.minimessage.Tokens.OBFUSCATED;
-import static io.lumine.utils.adventure.text.minimessage.Tokens.SEPARATOR;
-import static io.lumine.utils.adventure.text.minimessage.Tokens.STRIKETHROUGH;
-import static io.lumine.utils.adventure.text.minimessage.Tokens.TAG_END;
-import static io.lumine.utils.adventure.text.minimessage.Tokens.TAG_START;
-import static io.lumine.utils.adventure.text.minimessage.Tokens.TRANSLATABLE;
-import static io.lumine.utils.adventure.text.minimessage.Tokens.UNDERLINED;
-
 public class NestedSerializer {
     private NestedSerializer() {}
+
+    public static final String CLICK = "click";
+    public static final String HOVER = "hover";
+    public static final String KEYBIND = "key";
+    public static final String TRANSLATABLE = "lang";
+    public static final String TRANSLATABLE_2 = "translate";
+    public static final String TRANSLATABLE_3 = "tr";
+    public static final String INSERTION = "insert";
+    public static final String COLOR = "color";
+    public static final String COLOR_2 = "colour";
+    public static final String COLOR_3 = "c";
+    public static final String HEX = "#";
+    public static final String FONT = "font";
+    public static final String UNDERLINED = "underlined";
+    public static final String UNDERLINED_2 = "u";
+    public static final String STRIKETHROUGH = "strikethrough";
+    public static final String STRIKETHROUGH_2 = "st";
+    public static final String OBFUSCATED = "obfuscated";
+    public static final String OBFUSCATED_2 = "obf";
+    public static final String ITALIC = "italic";
+    public static final String ITALIC_2 = "em";
+    public static final String ITALIC_3 = "i";
+    public static final String BOLD = "bold";
+    public static final String BOLD_2 = "b";
+    public static final String RESET = "reset";
+    public static final String RESET_2 = "r";
+    public static final String PRE = "pre";
+    public static final String RAINBOW = "rainbow";
+    public static final String GRADIENT = "gradient";
+    public static final String TAG_START = "<";
+    public static final String TAG_END = ">";
+    public static final String CLOSE_TAG = "/";
+    public static final String SEPARATOR = ":";
 
     public static @NonNull String serialize(final @NonNull Component component) {
         List<ComponentNode> list = recursiveTraversal(new ComponentNode(component));

@@ -1,6 +1,6 @@
 package io.lumine.mythic.lib.api.util.ui;
 
-import io.lumine.utils.version.ServerVersion;
+import io.lumine.mythic.lib.MythicLib;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -118,7 +118,7 @@ public class FriendlyFeedbackMessage implements Cloneable {
     @NotNull public String forPlayer(@NotNull FriendlyFeedbackPalette pal) {
 
         // If below 1.16, parse as console (which is guaranteed to have no HEX colors)
-        if (ServerVersion.get().getMinor() < 16) { return forConsole(pal); }
+        if (MythicLib.plugin.getVersion().isBelowOrEqual(1, 15)) { return forConsole(pal); }
         StringBuilder actualMessage = new StringBuilder();
 
         // Add appropriate prefix

@@ -1,10 +1,10 @@
 package io.lumine.mythic.lib.api.crafting.uifilters;
 
 import io.lumine.mythic.lib.api.crafting.uimanager.UIFilterManager;
+import io.lumine.mythic.lib.api.util.ItemFactory;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackCategory;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackProvider;
 import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
-import io.lumine.utils.items.ItemFactory;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;

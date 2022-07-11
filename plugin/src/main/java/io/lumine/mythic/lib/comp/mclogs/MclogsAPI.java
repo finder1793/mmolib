@@ -1,4 +1,4 @@
-package gs.mclo.java;
+package io.lumine.mythic.lib.comp.mclogs;
 
 import io.lumine.mythic.lib.MythicLib;
 

@@ -1,4 +1,4 @@
-package gs.mclo.java;
+package io.lumine.mythic.lib.comp.mclogs;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

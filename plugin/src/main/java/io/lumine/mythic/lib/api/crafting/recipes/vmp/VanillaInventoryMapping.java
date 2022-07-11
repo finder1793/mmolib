@@ -1,11 +1,10 @@
 package io.lumine.mythic.lib.api.crafting.recipes.vmp;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.crafting.ingredients.MythicBlueprintInventory;
 import io.lumine.mythic.lib.api.crafting.ingredients.MythicRecipeInventory;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicRecipeStation;
-import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
-import io.lumine.utils.version.ServerVersion;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
@@ -690,7 +689,7 @@ public abstract class VanillaInventoryMapping {
         vanillaMappings.put(InventoryType.FURNACE, new FurnaceMapping());
         registerCustomMapping(SuperWorkbenchMapping.SWB);
         registerCustomMapping(MegaWorkbenchMapping.MWB);
-        if (ServerVersion.get().getMinor() >= 16) { vanillaMappings.put(InventoryType.valueOf("SMITHING"), new SmithingStationMapping()); }
+        if (MythicLib.plugin.getVersion().isStrictlyHigher(1, 15)) { vanillaMappings.put(InventoryType.valueOf("SMITHING"), new SmithingStationMapping()); }
     }
 
     /**

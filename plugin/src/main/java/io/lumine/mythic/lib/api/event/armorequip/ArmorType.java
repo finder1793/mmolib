@@ -1,4 +1,4 @@
-package com.jeff_media.armorequipevent;
+package io.lumine.mythic.lib.api.event.armorequip;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

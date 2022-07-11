@@ -1,6 +1,6 @@
 package io.lumine.mythic.lib.api.util.ui;
 
-import io.lumine.utils.version.ServerVersion;
+import io.lumine.mythic.lib.MythicLib;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -190,13 +190,13 @@ public abstract class FriendlyFeedbackPalette {
      *   in previous minecraft versions because it is assumed
      *   that the console colors have no HEX
      */
-    @NotNull public String parseForPlayer(@NotNull String messaeg) {
+    @NotNull public String parseForPlayer(@NotNull String message) {
 
         // If below 1.16, parse as console (which is guaranteed to have no HEX colors)
-        if (ServerVersion.get().getMinor() < 16) { return parseForConsole(messaeg); }
+        if (MythicLib.plugin.getVersion().isBelowOrEqual(1, 16)) { return parseForConsole(message); }
 
         // Ay
-        return messaeg
+        return message
                 .replace("$b", getBodyFormat())
                 .replace("$e", getExampleFormat())
                 .replace("$i", getInputFormat())

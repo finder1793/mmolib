@@ -2,8 +2,7 @@ package io.lumine.mythic.lib.listener.option;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.IndicatorDisplayEvent;
-import io.lumine.utils.holograms.Hologram;
-import io.lumine.utils.serialize.Position;
+import io.lumine.mythic.lib.hologram.Hologram;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -68,7 +67,7 @@ public abstract class GameIndicators implements Listener {
     private void displayIndicator(Location loc, String message, @NotNull Vector dir) {
 
         // Use individual holo to hide the temporary armor stand
-        Hologram holo = Hologram.create(Position.of(loc), Arrays.asList(MythicLib.plugin.parseColors(message)));
+        Hologram holo = Hologram.create(loc, Arrays.asList(MythicLib.plugin.parseColors(message)));
 
         // Parabola trajectory
         new BukkitRunnable() {
@@ -93,7 +92,7 @@ public abstract class GameIndicators implements Listener {
 
                 v += acc * dt;
                 loc.add(dir.getX() * dt, v * dt, dir.getZ() * dt);
-                holo.updatePosition(Position.of(loc));
+                holo.updateLocation(loc);
             }
         }.runTaskTimer(MythicLib.plugin, 0, 3);
     }

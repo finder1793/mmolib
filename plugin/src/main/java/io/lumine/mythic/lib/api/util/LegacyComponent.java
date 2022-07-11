@@ -1,11 +1,11 @@
 package io.lumine.mythic.lib.api.util;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.utils.adventure.text.Component;
-import io.lumine.utils.adventure.text.format.NamedTextColor;
-import io.lumine.utils.adventure.text.format.TextDecoration;
-import io.lumine.utils.adventure.text.minimessage.MiniMessage;
-import io.lumine.utils.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
 public class LegacyComponent {
@@ -26,7 +26,7 @@ public class LegacyComponent {
      */
     @NotNull
     public static Component simpleParse(String text) {
-        Component component = MiniMessage.get().parse(NestedSerializer.serialize(unusualSectionRGB.deserialize(MythicLib.inst().parseColors(text))));
+        Component component = MiniMessage.miniMessage().deserialize(NestedSerializer.serialize(unusualSectionRGB.deserialize(MythicLib.inst().parseColors(text))));
 
         if (component.decorations().get(TextDecoration.ITALIC) == TextDecoration.State.NOT_SET)
             component = component.decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE);

@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.sql;
 
-import io.lumine.utils.storage.sql.hikari.HikariConfig;
-import io.lumine.utils.storage.sql.hikari.HikariDataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 

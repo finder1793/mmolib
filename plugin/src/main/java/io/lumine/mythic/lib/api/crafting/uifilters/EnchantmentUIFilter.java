@@ -1,8 +1,8 @@
 package io.lumine.mythic.lib.api.crafting.uifilters;
 
 import io.lumine.mythic.lib.api.crafting.uimanager.UIFilterManager;
+import io.lumine.mythic.lib.api.util.ItemFactory;
 import io.lumine.mythic.lib.api.util.ui.*;
-import io.lumine.utils.items.ItemFactory;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;

@@ -38,12 +38,20 @@
                         <configuration>
                             <relocations>
                                 <relocation>
-                                    <pattern>org.bstats</pattern>
-                                    <shadedPattern>io.lumine.mythic.metrics</shadedPattern>
+                                    <pattern>net.kyori</pattern>
+                                    <shadedPattern>io.lumine.mythic.lib</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>io.lumine.utils</pattern>
-                                    <shadedPattern>io.lumine.mythic.utils</shadedPattern>
+                                    <pattern>com.google.gson</pattern>
+                                    <shadedPattern>io.lumine.mythic.lib.gson</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.zaxxer.hikari</pattern>
+                                    <shadedPattern>io.lumine.mythic.lib.sql.hikari</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.bstats</pattern>
+                                    <shadedPattern>io.lumine.mythic.lib.metrics</shadedPattern>
                                 </relocation>
                             </relocations>
                             <minimizeJar>false</minimizeJar>

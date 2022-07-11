@@ -3,9 +3,6 @@ package io.lumine.mythic.lib.hologram.factory;
 import com.google.common.base.Preconditions;
 import io.lumine.mythic.lib.hologram.Hologram;
 import io.lumine.mythic.lib.hologram.HologramFactory;
-import io.lumine.utils.text.Text;
-import io.lumine.utils.version.MinecraftVersion;
-import io.lumine.utils.version.MinecraftVersions;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
@@ -94,16 +91,14 @@ public class BukkitHologramFactory implements HologramFactory {
                     as.setVisible(false);
                     as.setCustomName(line);
                     as.setCustomNameVisible(true);
-                    if (MinecraftVersion.getRuntimeVersion().isAfterOrEq(MinecraftVersions.v1_9)) {
-                        as.setAI(false);
-                        as.setCollidable(false);
-                        as.setInvulnerable(true);
-                        if (SET_CAN_TICK != null) {
-                            try {
-                                SET_CAN_TICK.invoke(as, false);
-                            } catch (Exception var9) {
-                                var9.printStackTrace();
-                            }
+                    as.setAI(false);
+                    as.setCollidable(false);
+                    as.setInvulnerable(true);
+                    if (SET_CAN_TICK != null) {
+                        try {
+                            SET_CAN_TICK.invoke(as, false);
+                        } catch (Exception var9) {
+                            var9.printStackTrace();
                         }
                     }
 
@@ -176,7 +171,7 @@ public class BukkitHologramFactory implements HologramFactory {
                 Preconditions.checkArgument(line != null, "null line");
             }
 
-            List<String> ret = (List) lines.stream().map(Text::colorize).collect(Collectors.toList());
+            List<String> ret = lines.stream().collect(Collectors.toList());
             if (!this.lines.equals(ret)) {
                 this.lines.clear();
                 this.lines.addAll(ret);

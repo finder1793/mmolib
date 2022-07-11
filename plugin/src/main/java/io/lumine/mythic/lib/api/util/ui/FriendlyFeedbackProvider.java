@@ -1,7 +1,6 @@
 package io.lumine.mythic.lib.api.util.ui;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.utils.version.ServerVersion;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -356,7 +355,7 @@ public class FriendlyFeedbackProvider {
     @NotNull public static String quickForPlayer(@NotNull FriendlyFeedbackPalette palette, @NotNull String message, String... replaces) {
 
         // Choose
-        if (ServerVersion.get().getMinor() < 16) { return quickForConsole(palette, message, replaces); }
+        if (MythicLib.plugin.getVersion().isBelowOrEqual(1, 15)) { return quickForConsole(palette, message, replaces); }
 
         // Generate
         FriendlyFeedbackMessage msg = generateMessage(null, message, replaces);

@@ -1,13 +1,12 @@
 package io.lumine.mythic.lib.command.mythiclib.debug;
 
-import gs.mclo.java.APIResponse;
-import gs.mclo.java.MclogsAPI;
+import io.lumine.mythic.lib.comp.mclogs.APIResponse;
+import io.lumine.mythic.lib.comp.mclogs.MclogsAPI;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.command.api.CommandTreeNode;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
