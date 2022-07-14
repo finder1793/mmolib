@@ -15,9 +15,9 @@ public class VelocityMechanic extends TargetMechanic {
     public VelocityMechanic(ConfigObject config) {
         super(config);
 
-        config.validateKeys("velocity");
+        config.validateKeys("vector");
 
-        this.varName = config.getString("velocity");
+        this.varName = config.getString("vector");
     }
 
     @Override

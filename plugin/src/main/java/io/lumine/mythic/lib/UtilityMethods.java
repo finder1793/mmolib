@@ -15,6 +15,9 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -172,11 +175,11 @@ public class UtilityMethods {
      * @param loc Target location
      * @return Players in chunks around the location
      */
+    @Deprecated
     public static List<Player> getNearbyPlayers(Location loc) {
-        List<Player> players = new ArrayList<>();
+        final List<Player> players = new ArrayList<>();
 
-        int cx = loc.getChunk().getX();
-        int cz = loc.getChunk().getZ();
+        final int cx = loc.getChunk().getX(), cz = loc.getChunk().getZ();
 
         for (int x = -1; x < 2; x++)
             for (int z = -1; z < 2; z++)
@@ -185,6 +188,19 @@ public class UtilityMethods {
                         players.add((Player) target);
 
         return players;
+    }
+
+    public static void loadDefaultFile(String path, String name) {
+        final String newPath = path.isEmpty() ? "" : "/" + path;
+        final File folder = new File(MythicLib.plugin.getDataFolder() + newPath);
+        if (!folder.exists()) folder.mkdir();
+
+        final File file = new File(MythicLib.plugin.getDataFolder() + newPath, name);
+        if (!file.exists()) try {
+            Files.copy(MythicLib.plugin.getResource((path.isEmpty() ? "" : path + "/") + name), file.getAbsoluteFile().toPath());
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
     }
 
     /**

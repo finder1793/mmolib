@@ -10,10 +10,7 @@ import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.skill.custom.variable.Variable;
 import io.lumine.mythic.lib.skill.custom.variable.VariableList;
 import io.lumine.mythic.lib.skill.custom.variable.VariableScope;
-import io.lumine.mythic.lib.skill.custom.variable.def.EntityVariable;
-import io.lumine.mythic.lib.skill.custom.variable.def.PlayerVariable;
-import io.lumine.mythic.lib.skill.custom.variable.def.PositionVariable;
-import io.lumine.mythic.lib.skill.custom.variable.def.StatsVariable;
+import io.lumine.mythic.lib.skill.custom.variable.def.*;
 import io.lumine.mythic.lib.util.EntityLocationType;
 import io.lumine.mythic.lib.util.SkillOrientation;
 import org.apache.commons.lang.Validate;
@@ -265,6 +262,11 @@ public class SkillMetadata {
                 var = new PlayerVariable("temp", getCaster().getPlayer());
                 break;
 
+            // Skill caster
+            case "attack":
+                var = new AttackMetadataVariable("temp", getAttack());
+                break;
+
             // Cached stat map
             case "stat":
                 var = new StatsVariable("temp", caster);
@@ -293,13 +295,15 @@ public class SkillMetadata {
         return var;
     }
 
+    public static final VariableList SERVER_VARIABLE_LIST = new VariableList(VariableScope.SERVER);
+
     /**
      * Finds a CUSTOM variable with a certain name.
      * <p>
      * Scope priority (from most to least restrictive):
      * - SKILL
      * - PLAYER
-     * - SERVER (not implemented yet)
+     * - SERVER
      *
      * @param name Variable name
      * @return Variable found
@@ -314,7 +318,11 @@ public class SkillMetadata {
 
         // Check for PLAYER scope
         var = getCaster().getData().getVariableList().getVariable(name);
-        return Objects.requireNonNull(var, "Could not find custom variable with name '" + name + "'");
+        if (var != null)
+            return var;
+
+        // Check for SERVER scope
+        return Objects.requireNonNull(SERVER_VARIABLE_LIST.getVariable(name), "Could not find custom variable with name '" + name + "'");
     }
 
     private static final Pattern INTERNAL_PLACEHOLDER_PATTERN = Pattern.compile("<.*?>");

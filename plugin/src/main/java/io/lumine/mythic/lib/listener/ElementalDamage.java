@@ -24,7 +24,7 @@ import java.util.Random;
  * @author indyuce
  */
 public class ElementalDamage implements Listener {
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random();
 
     @EventHandler
     public void applyElementalDamage(PlayerAttackEvent event) {
@@ -33,7 +33,7 @@ public class ElementalDamage implements Listener {
         if (!event.getDamage().hasType(DamageType.WEAPON))
             return;
 
-        double critChance = Math.min(event.getAttack().getStat("CRITICAL_STRIKE_CHANCE"), MythicLib.plugin.getAttackEffects().getMaxWeaponCritChance());
+        final double critChance = Math.min(event.getAttack().getStat("CRITICAL_STRIKE_CHANCE"), MythicLib.plugin.getAttackEffects().getMaxWeaponCritChance());
         for (Element element : MythicLib.plugin.getElements().getAll()) {
 
             // If the flat damage is 0; cancel everything asap
@@ -43,14 +43,14 @@ public class ElementalDamage implements Listener {
                 continue;
 
             // Multiply flat damage by the percent based stat
-            double percentDamage = attackerStats.getStat(element.getUpperCaseId() + "_DAMAGE_PERCENT");
+            final double percentDamage = attackerStats.getStat(element.getUpperCaseId() + "_DAMAGE_PERCENT");
             damage *= 1 + Math.max(-1, percentDamage / 100);
             if (damage == 0)
                 continue;
 
             // Apply elemental weakness
             StatProvider opponentStats = StatProvider.get(event.getEntity());
-            double weakness = opponentStats.getStat(element.getUpperCaseId() + "_WEAKNESS");
+            final double weakness = opponentStats.getStat(element.getUpperCaseId() + "_WEAKNESS");
             damage *= 1 + Math.max(-1, weakness / 100);
             if (damage == 0)
                 continue;
@@ -61,10 +61,10 @@ public class ElementalDamage implements Listener {
             damage = MythicLib.plugin.getMMOConfig().getAppliedElementalDamage(damage, defense);
 
             // Register the damage packet
-            event.getDamage().add(damage, element, DamageType.WEAPON);
+            event.getDamage().add(damage, element);
 
             // Apply critical strikes
-            Skill skill = element.getSkill(random.nextDouble() < critChance / 100);
+            Skill skill = element.getSkill(RANDOM.nextDouble() < critChance / 100);
             if (skill != null)
                 skill.cast(new TriggerMetadata(event.getAttack(), event.getEntity()));
         }

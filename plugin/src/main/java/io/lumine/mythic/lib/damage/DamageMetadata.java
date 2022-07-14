@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.damage;
 
 import io.lumine.mythic.lib.element.Element;
+import io.lumine.mythic.lib.element.ElementalDamagePacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -23,6 +24,17 @@ public class DamageMetadata implements Cloneable {
      */
     public DamageMetadata(double damage, DamageType... types) {
         packets.add(new DamagePacket(damage, types));
+    }
+
+    /**
+     * Used to register a attack
+     *
+     * @param damage  The attack damage
+     * @param element If this is an elemental attack
+     * @param types   The attack damage types
+     */
+    public DamageMetadata(double damage, @NotNull Element element, DamageType... types) {
+        packets.add(new ElementalDamagePacket(damage, element, types));
     }
 
     @Override
@@ -70,7 +82,7 @@ public class DamageMetadata implements Cloneable {
 
     /**
      * @return Set containing all damage types found
-     * in all the different damage packets.
+     *         in all the different damage packets.
      */
     public Set<DamageType> collectTypes() {
         Set<DamageType> collected = new HashSet<>();
@@ -84,7 +96,7 @@ public class DamageMetadata implements Cloneable {
 
     /**
      * @return Iterates through all registered damage packets and
-     * see if any has this damage type.
+     *         see if any has this damage type.
      */
     public boolean hasType(DamageType type) {
 
@@ -158,9 +170,9 @@ public class DamageMetadata implements Cloneable {
      * <p>
      * This is not being used in MMOCore nor MMOItems
      *
-     * @param coefficient      Multiplicative coefficient. 1.5 will
-     *                  increase final damage by 50%
-     * @param concerned Concerned damage type
+     * @param coefficient Multiplicative coefficient. 1.5 will
+     *                    increase final damage by 50%
+     * @param concerned   Concerned damage type
      * @return The same damage metadata
      */
     public DamageMetadata multiplicativeModifier(double coefficient, @NotNull DamageType concerned) {

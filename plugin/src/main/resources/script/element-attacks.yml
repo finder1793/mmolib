@@ -1,0 +1,31 @@
+
+empty_skill:
+    mechanics: {}
+
+ice_elemental_attack:
+    mechanics:
+
+fire_elemental_attack:
+    mechanics:
+        fireparticles:
+            type: particle
+            name: FLAME
+            amount: 8
+            speed: .05
+        lavaparticles:
+            type: particle
+            name: LAVA
+            amount: 14
+            speed: 0
+
+fire_critical_strike:
+    mechanics:
+        add_some_damage:
+            type: multiply_damage
+            amount: 1.05
+        ignite:
+            type: set_on_fire
+            ticks: '<stat.fire_damage> * 2'
+        play_sound:
+            type: sound
+            sound: ENTITY_BLAZE_HURT

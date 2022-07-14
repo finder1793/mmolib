@@ -21,7 +21,6 @@ MECHANICS
 
 CONDITIONS
 ** caster can target skill target?
--
 
 TARGETERS
 - fix circle targeter using rotating matrixes (location)

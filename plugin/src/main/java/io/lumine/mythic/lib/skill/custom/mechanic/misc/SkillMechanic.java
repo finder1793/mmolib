@@ -1,8 +1,8 @@
 package io.lumine.mythic.lib.skill.custom.mechanic.misc;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.skill.custom.CustomSkill;
 import io.lumine.mythic.lib.skill.SkillMetadata;
+import io.lumine.mythic.lib.skill.custom.CustomSkill;
 import io.lumine.mythic.lib.skill.custom.mechanic.Mechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.MechanicMetadata;
 import io.lumine.mythic.lib.skill.custom.targeter.EntityTargeter;
@@ -84,11 +84,11 @@ public class SkillMechanic extends Mechanic {
             skill.cast(old);
 
         // Find new source location
-        Location sourceLocation = this.sourceLocation == null ? old.getSourceLocation() : this.sourceLocation.findTargets(old).get(0);
+        final Location sourceLocation = this.sourceLocation == null ? old.getSourceLocation() : this.sourceLocation.findTargets(old).get(0);
 
         // Find new target entities & locations
-        List<Entity> newTargetEntities = targetEntity == null ? Arrays.asList(old.getTargetEntityOrNull()) : this.targetEntity.findTargets(old);
-        List<Location> newTargetLocations = targetLocation == null ? Arrays.asList(old.getTargetLocationOrNull()) : this.targetLocation.findTargets(old);
+        final List<Entity> newTargetEntities = targetEntity == null ? Arrays.asList(old.getTargetEntityOrNull()) : this.targetEntity.findTargets(old);
+        final List<Location> newTargetLocations = targetLocation == null ? Arrays.asList(old.getTargetLocationOrNull()) : this.targetLocation.findTargets(old);
 
         // Cast with every mathematically possible skill metadata
         for (Location targetLocation : newTargetLocations)

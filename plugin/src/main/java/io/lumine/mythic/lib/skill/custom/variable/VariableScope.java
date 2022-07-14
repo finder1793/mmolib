@@ -5,6 +5,8 @@ package io.lumine.mythic.lib.skill.custom.variable;
  */
 public enum VariableScope {
 
+    SERVER,
+
     /**
      * Player variables are common to ALL skills which
      * means a skill can modify a player's variable, and

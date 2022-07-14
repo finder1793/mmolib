@@ -23,6 +23,7 @@
                     <include>plugin.yml</include>
                     <include>config.yml</include>
                     <include>readme.txt</include>
+                    <include>elements.yml</include>
                     <include>armorequipevent-blocked.txt</include>
                 </includes>
             </resource>

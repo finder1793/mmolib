@@ -1,5 +1,7 @@
-package io.lumine.mythic.lib.damage;
+package io.lumine.mythic.lib.element;
 
+import io.lumine.mythic.lib.damage.DamagePacket;
+import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.element.Element;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +14,7 @@ public class ElementalDamagePacket extends DamagePacket {
     public ElementalDamagePacket(double value, @NotNull Element element, @NotNull DamageType... types) {
         super(value, types);
 
-        this.element = element;
+        this.element = Objects.requireNonNull(element, "Element cannot be null");
     }
 
     @NotNull

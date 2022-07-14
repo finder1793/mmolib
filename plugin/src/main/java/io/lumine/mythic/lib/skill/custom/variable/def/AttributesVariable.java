@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.skill.custom.variable.def;
 
+import io.lumine.mythic.lib.skill.custom.variable.SimpleVariableRegistry;
 import io.lumine.mythic.lib.skill.custom.variable.Variable;
 import io.lumine.mythic.lib.skill.custom.variable.VariableMetadata;
 import io.lumine.mythic.lib.skill.custom.variable.VariableRegistry;
@@ -8,7 +9,7 @@ import org.bukkit.attribute.Attribute;
 
 @VariableMetadata(name = "attributes")
 public class AttributesVariable extends Variable<Attributable> {
-    public static final VariableRegistry<AttributesVariable> VARIABLE_REGISTRY = new VariableRegistry();
+    public static final SimpleVariableRegistry<AttributesVariable> VARIABLE_REGISTRY = new SimpleVariableRegistry();
 
     static {
         for (Attribute attribute : Attribute.values())

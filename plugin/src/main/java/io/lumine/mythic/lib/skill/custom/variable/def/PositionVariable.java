@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.skill.custom.variable.def;
 
 import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.skill.custom.variable.SimpleVariableRegistry;
 import io.lumine.mythic.lib.skill.custom.variable.Variable;
 import io.lumine.mythic.lib.skill.custom.variable.VariableMetadata;
 import io.lumine.mythic.lib.skill.custom.variable.VariableRegistry;
@@ -21,7 +22,7 @@ import org.bukkit.util.Vector;
  */
 @VariableMetadata(name = "vector")
 public class PositionVariable extends Variable<Position> {
-    public static final VariableRegistry<PositionVariable> VARIABLE_REGISTRY = new VariableRegistry();
+    public static final SimpleVariableRegistry<PositionVariable> VARIABLE_REGISTRY = new SimpleVariableRegistry();
 
     static {
         VARIABLE_REGISTRY.registerVariable("x", var -> new DoubleVariable("temp", var.getStored().getX()));

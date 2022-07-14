@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.skill.custom.variable.def;
 
+import io.lumine.mythic.lib.skill.custom.variable.SimpleVariableRegistry;
 import io.lumine.mythic.lib.skill.custom.variable.Variable;
 import io.lumine.mythic.lib.skill.custom.variable.VariableMetadata;
 import io.lumine.mythic.lib.skill.custom.variable.VariableRegistry;
@@ -10,7 +11,7 @@ import org.bukkit.entity.LivingEntity;
 
 @VariableMetadata(name = "entity")
 public class EntityVariable extends Variable<Entity> {
-    public static final VariableRegistry<EntityVariable> VARIABLE_REGISTRY = new VariableRegistry();
+    public static final SimpleVariableRegistry<EntityVariable> VARIABLE_REGISTRY = new SimpleVariableRegistry();
 
     static {
         VARIABLE_REGISTRY.registerVariable("id", var -> new IntegerVariable("temp", var.getStored().getEntityId()));

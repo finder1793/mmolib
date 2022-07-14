@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.skill.custom.variable.def;
 
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.skill.custom.variable.SimpleVariableRegistry;
 import io.lumine.mythic.lib.skill.custom.variable.Variable;
 import io.lumine.mythic.lib.skill.custom.variable.VariableMetadata;
 import io.lumine.mythic.lib.skill.custom.variable.VariableRegistry;
@@ -8,7 +9,7 @@ import org.bukkit.entity.Player;
 
 @VariableMetadata(name = "player")
 public class PlayerVariable extends Variable<Player> {
-    public static final VariableRegistry<PlayerVariable> VARIABLE_REGISTRY = new VariableRegistry();
+    public static final SimpleVariableRegistry<PlayerVariable> VARIABLE_REGISTRY = new SimpleVariableRegistry();
 
     static {
 

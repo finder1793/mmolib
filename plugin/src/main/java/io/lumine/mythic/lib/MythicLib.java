@@ -128,6 +128,7 @@ public class MythicLib extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerAttackEventListener(), this);
         Bukkit.getPluginManager().registerEvents(new MythicCraftingManager(), this);
         Bukkit.getPluginManager().registerEvents(new SkillTriggers(), this);
+        Bukkit.getPluginManager().registerEvents(new ElementalDamage(), this);
         ArmorEquipEvent.registerListener(this);
 
         if (getConfig().getBoolean("health-scale.enabled"))
@@ -225,6 +226,9 @@ public class MythicLib extends JavaPlugin {
         // Load local skills
         skillManager.initialize(false);
 
+        // Load elements
+        elementManager.reload(false);
+
         // Load player data of online players
         Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.setup(player));
 
@@ -240,6 +244,7 @@ public class MythicLib extends JavaPlugin {
         attackEffects.reload();
         mitigationMechanics.reload();
         skillManager.initialize(true);
+        elementManager.reload(true);
     }
 
     @Override
@@ -278,10 +283,6 @@ public class MythicLib extends JavaPlugin {
         return modifierManager;
     }
 
-    /**
-     * @deprecated Not implemented yet
-     */
-    @Deprecated
     public ElementManager getElements() {
         return elementManager;
     }

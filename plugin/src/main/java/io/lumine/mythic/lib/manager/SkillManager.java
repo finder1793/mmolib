@@ -19,15 +19,10 @@ import io.lumine.mythic.lib.skill.custom.mechanic.buff.ReduceCooldownMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.buff.SaturateMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.buff.stat.AddStatModifierMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.buff.stat.RemoveStatModifierMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.misc.DelayMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.misc.DispatchCommandMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.misc.LightningStrikeMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.misc.SkillMechanic;
+import io.lumine.mythic.lib.skill.custom.mechanic.misc.*;
 import io.lumine.mythic.lib.skill.custom.mechanic.movement.TeleportMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.movement.VelocityMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.offense.DamageMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.offense.MultiplyDamageMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.offense.PotionMechanic;
+import io.lumine.mythic.lib.skill.custom.mechanic.offense.*;
 import io.lumine.mythic.lib.skill.custom.mechanic.player.GiveItemMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.player.SudoMechanic;
 import io.lumine.mythic.lib.skill.custom.mechanic.raytrace.RayTraceAnyMechanic;
@@ -130,15 +125,18 @@ public class SkillManager {
 
         registerMechanic("delay", DelayMechanic::new);
         registerMechanic("dispatch_command", DispatchCommandMechanic::new);
+        registerMechanic("entity_effect", EntityEffectMechanic::new);
         registerMechanic("lightning", config -> new LightningStrikeMechanic(config));
         registerMechanic("skill", config -> new SkillMechanic(config));
 
         registerMechanic("teleport", config -> new TeleportMechanic(config));
-        registerMechanic("velocity", config -> new VelocityMechanic(config));
+        registerMechanic("set_velocity", config -> new VelocityMechanic(config));
 
+        registerMechanic("additive_damage_buff", config -> new AdditiveDamageBuffMechanic(config));
         registerMechanic("damage", config -> new DamageMechanic(config));
         registerMechanic("multiply_damage", config -> new MultiplyDamageMechanic(config));
         registerMechanic("potion", config -> new PotionMechanic(config));
+        registerMechanic("set_on_fire", config -> new SetOnFireMechanic(config));
 
         registerMechanic("give_item", config -> new GiveItemMechanic(config));
         registerMechanic("sudo", config -> new SudoMechanic(config));
@@ -159,6 +157,9 @@ public class SkillManager {
         registerMechanic("multiply_vector", config -> new MultiplyVectorMechanic(config));
         registerMechanic("normalize_vector", config -> new NormalizeVectorMechanic(config));
         registerMechanic("save_vector", config -> new SaveVectorMechanic(config));
+        registerMechanic("set_x", config -> new SetXMechanic(config));
+        registerMechanic("set_y", config -> new SetYMechanic(config));
+        registerMechanic("set_z", config -> new SetZMechanic(config));
         registerMechanic("subtract_vector", config -> new SubtractVectorMechanic(config));
 
         registerMechanic("set_double", config -> new SetDoubleMechanic(config));
@@ -208,7 +209,7 @@ public class SkillManager {
         registerCondition("time", config -> new TimeCondition(config));
 
         // Default skill handler types
-        registerSkillHandlerType(config -> config.contains("mythiclib-skill-id"), config -> new MythicLibSkillHandler(getSkillOrThrow(config.getString("mythiclib-skill"))));
+        registerSkillHandlerType(config -> config.contains("mythiclib-skill-id"), config -> new MythicLibSkillHandler(getSkillOrThrow(config.getString("mythiclib-skill-id"))));
     }
 
     /**
@@ -389,7 +390,7 @@ public class SkillManager {
                 skillsFolder.mkdir();
 
             // mkdir customskill folder
-            File customSkillsFolder = new File(MythicLib.plugin.getDataFolder() + "/customskill");
+            File customSkillsFolder = new File(MythicLib.plugin.getDataFolder() + "/script");
             if (!customSkillsFolder.exists())
                 customSkillsFolder.mkdir();
 
@@ -427,10 +428,10 @@ public class SkillManager {
                 try {
                     registerCustomSkill(new CustomSkill(Objects.requireNonNull(config.getConfigurationSection(key), "Config is null")));
                 } catch (RuntimeException exception) {
-                    MythicLib.plugin.getLogger().log(Level.WARNING, "Could not initialize custom skill '" + key + "' from '" + file.getName() + "': " + exception.getMessage());
+                    MythicLib.plugin.getLogger().log(Level.WARNING, "Could not initialize script '" + key + "' from '" + file.getName() + "': " + exception.getMessage());
                 }
 
-        }, MythicLib.plugin, "Could not load custom skills").explore(new File(MythicLib.plugin.getDataFolder() + "/customskill"));
+        }, MythicLib.plugin, "Could not load scripts").explore(new File(MythicLib.plugin.getDataFolder() + "/script"));
 
         // Post load custom skills and register a skill handler
         for (CustomSkill skill : customSkills.values())
@@ -439,7 +440,7 @@ public class SkillManager {
                 if (skill.isPublic())
                     registerSkillHandler(new MythicLibSkillHandler(skill));
             } catch (RuntimeException exception) {
-                MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill '" + skill.getId() + "': " + exception.getMessage());
+                MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load script '" + skill.getId() + "': " + exception.getMessage());
             }
 
         // Load skill handlers
