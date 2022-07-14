@@ -1,15 +1,16 @@
 name: MythicLib
-author: Lumine Studios
+author: Indyuce
 main: io.lumine.mythic.lib.MythicLib
 api-version: 1.13
 version: ${project.version}
 loadbefore: [ MMOCore,MMOItems ]
 softdepend: [ WorldGuard,Residence,Factions,MythicMobs ]
-description: Kind of like mythiclib, but without the generic disorders
+description: 'A hard dependency for MMOItems and MMOCore'
 commands:
   mythiclib:
     description: Reload mythiclib
     permission: mythiclib.reload
+    aliases: [ml]
   healthscale:
     description: Scales the player's health
     permission: mythiclib.command.healthscale

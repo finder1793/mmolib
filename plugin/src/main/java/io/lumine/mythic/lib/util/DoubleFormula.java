@@ -1,12 +1,12 @@
 package io.lumine.mythic.lib.util;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.exception.CalculatorException;
 import io.lumine.mythic.lib.skill.SkillMetadata;
-import io.lumine.mythic.lib.util.parser.numeric.FunctionX;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.matheclipse.commons.parser.client.eval.DoubleEvaluator;
+import org.matheclipse.commons.parser.client.math.ArithmeticMathException;
 
 import java.util.logging.Level;
 
@@ -54,8 +54,8 @@ public class DoubleFormula {
     @SneakyThrows
     public double evaluate(SkillMetadata meta) {
         try {
-            return trivial ? trivialValue : Double.valueOf(new FunctionX(meta.parseString(value)).getF_xo(0));
-        } catch (CalculatorException exception) {
+            return trivial ? trivialValue : Double.valueOf(new DoubleEvaluator().evaluate(meta.parseString(value)));
+        } catch (ArithmeticMathException exception) {
             MythicLib.plugin.getLogger().log(Level.WARNING, "Could not evaluate '" + value + "' while casting skill '" + meta.getCast().getHandler().getId() + "': " + exception.getMessage());
             return 0;
         }

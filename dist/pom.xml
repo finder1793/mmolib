@@ -42,6 +42,10 @@
                                     <shadedPattern>io.lumine.mythic.lib</shadedPattern>
                                 </relocation>
                                 <relocation>
+                                    <pattern>org.matheclipse.commons.parser</pattern>
+                                    <shadedPattern>io.lumine.mythic.lib.parser</shadedPattern>
+                                </relocation>
+                                <relocation>
                                     <pattern>com.google.gson</pattern>
                                     <shadedPattern>io.lumine.mythic.lib.gson</shadedPattern>
                                 </relocation>

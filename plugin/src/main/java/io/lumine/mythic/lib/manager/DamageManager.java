@@ -126,8 +126,8 @@ public class DamageManager implements Listener, AttackHandler {
     /**
      * Deals damage to an entity with no attacker.
      *
-     * @param metadata       The class containing all info about the current attack
-     * @param target         The entity being damaged
+     * @param metadata The class containing all info about the current attack
+     * @param target   The entity being damaged
      * @deprecated This is a temporary fix, this method will be removed in the future
      */
     @Deprecated
@@ -318,12 +318,21 @@ public class DamageManager implements Listener, AttackHandler {
         Validate.isTrue(event.getDamager() instanceof LivingEntity, "Not an entity attack");
 
         // Physical attack with bare fists.
-        LivingEntity damager = (LivingEntity) event.getDamager();
+        final LivingEntity damager = (LivingEntity) event.getDamager();
         if (isAir(damager.getEquipment().getItem(hand.toBukkit())))
             return new DamageType[]{DamageType.UNARMED, DamageType.PHYSICAL};
 
-        // By default a physical attack is a weapon-physical attack
-        return new DamageType[]{DamageType.WEAPON, DamageType.PHYSICAL};
+        // Weapon attack
+        if (isWeapon(damager.getEquipment().getItem(hand.toBukkit()).getType()))
+            return new DamageType[]{DamageType.WEAPON, DamageType.PHYSICAL};
+
+        // Hitting with a random item
+        return new DamageType[]{DamageType.PHYSICAL};
+    }
+
+    // Purely arbitrary but works decently
+    private boolean isWeapon(Material mat) {
+        return mat.getMaxDurability() > 0;
     }
 
     private boolean isAir(ItemStack item) {

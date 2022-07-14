@@ -25,6 +25,6 @@ public class AttackMetadataVariable extends Variable<AttackMetadata> {
 
     @Override
     public String toString() {
-        return getStored() == null ? "None" : "DamageMeta";
+        return getStored() == null ? "None" : "AttackMeta";
     }
 }

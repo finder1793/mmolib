@@ -3,7 +3,6 @@ package io.lumine.mythic.lib.skill.custom.condition.location;
 import io.lumine.mythic.lib.skill.custom.condition.type.LocationCondition;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import io.lumine.mythic.lib.skill.SkillMetadata;
-import io.lumine.mythic.lib.skill.custom.condition.Condition;
 import io.lumine.mythic.lib.skill.custom.variable.Variable;
 import io.lumine.mythic.lib.skill.custom.variable.def.PositionVariable;
 import io.lumine.mythic.lib.util.Position;
@@ -29,11 +28,11 @@ public class CuboidCondition extends LocationCondition {
 
     @Override
     public boolean isMet(SkillMetadata meta, Location loc) {
-        Variable var1 = meta.getVariable(varName1);
+        Variable var1 = meta.getReference(varName1);
         Validate.isTrue(var1 instanceof PositionVariable, "Variable '" + varName1 + "' is not a vector");
         Vector vec1 = ((Position) var1.getStored()).toVector();
 
-        Variable var2 = meta.getVariable(varName1);
+        Variable var2 = meta.getReference(varName1);
         Validate.isTrue(var2 instanceof PositionVariable, "Variable '" + varName2 + "' is not a vector");
         Vector vec2 = ((Position) var2.getStored()).toVector();
 

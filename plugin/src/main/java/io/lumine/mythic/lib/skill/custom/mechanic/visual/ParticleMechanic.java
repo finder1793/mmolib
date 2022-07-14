@@ -28,9 +28,9 @@ public class ParticleMechanic extends LocationMechanic {
     public ParticleMechanic(ConfigObject config) {
         super(config);
 
-        config.validateKeys("name");
+        config.validateKeys("particle");
 
-        particle = Particle.valueOf(UtilityMethods.enumName(config.getString("name")));
+        particle = Particle.valueOf(UtilityMethods.enumName(config.getString("particle")));
         amount = config.getInt("amount", 1);
         speed = config.getDouble("speed", 0);
         xoffset = config.getDouble("x", 0);

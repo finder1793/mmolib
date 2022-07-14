@@ -16,9 +16,9 @@ public class SoundMechanic extends LocationMechanic {
     public SoundMechanic(ConfigObject config) {
         super(config);
 
-        config.validateKeys("name");
+        config.validateKeys("sound");
 
-        sound = Sound.valueOf(UtilityMethods.enumName(config.getString("name")));
+        sound = Sound.valueOf(UtilityMethods.enumName(config.getString("sound")));
         vol = (float) config.getDouble("volume", 1);
         pitch = (float) config.getDouble("pitch", 1);
     }

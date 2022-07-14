@@ -23,7 +23,7 @@ public class MultiplyVectorMechanic extends VariableMechanic {
 
     @Override
     public void cast(SkillMetadata meta) {
-        Variable var = meta.getVariable(getVariableName());
+        Variable var = meta.getCustomVariable(getVariableName());
         Validate.isTrue(var instanceof PositionVariable, "Variable '" + getVariableName() + "' is not a vector");
         ((PositionVariable) var).getStored().multiply(coef.evaluate(meta));
     }

@@ -30,13 +30,13 @@ public class SubtractVectorMechanic extends VariableMechanic {
     @Override
     public void cast(SkillMetadata meta) {
 
-        Variable targetVar = meta.getVariable(getVariableName());
+        Variable targetVar = meta.getCustomVariable(getVariableName());
         Validate.isTrue(targetVar instanceof PositionVariable, "Variable '" + getVariableName() + "' is not a vector");
         Position target = (Position) targetVar.getStored();
 
         // Vector addition
         if (varToSubstract != null) {
-            Variable var = meta.getVariable(varToSubstract);
+            Variable var = meta.getCustomVariable(varToSubstract);
             Validate.isTrue(var instanceof PositionVariable, "Variable '" + varToSubstract + "' is not a vector");
             target.add(((PositionVariable) var).getStored().clone().multiply(-1));
         }

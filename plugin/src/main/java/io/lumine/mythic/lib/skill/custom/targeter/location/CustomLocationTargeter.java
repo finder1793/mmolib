@@ -2,8 +2,8 @@ package io.lumine.mythic.lib.skill.custom.targeter.location;
 
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.custom.targeter.LocationTargeter;
-import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import io.lumine.mythic.lib.util.DoubleFormula;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.bukkit.Location;
 
 import java.util.Arrays;
@@ -14,7 +14,8 @@ import java.util.List;
  */
 @Orientable
 public class CustomLocationTargeter extends LocationTargeter {
-    private final DoubleFormula x, y,z;
+    private final DoubleFormula x, y, z;
+    private final boolean relative, source;
 
     public CustomLocationTargeter(ConfigObject config) {
         super(config);
@@ -24,10 +25,15 @@ public class CustomLocationTargeter extends LocationTargeter {
         this.x = new DoubleFormula(config.getString("x"));
         this.y = new DoubleFormula(config.getString("y"));
         this.z = new DoubleFormula(config.getString("z"));
+
+        relative = config.getBoolean("relative", true);
+        source = config.getBoolean("source", false);
     }
 
     @Override
     public List<Location> findTargets(SkillMetadata meta) {
-        return Arrays.asList(new Location(meta.getSourceLocation().getWorld(), x.evaluate(meta), y.evaluate(meta), z.evaluate(meta)));
+        final Location loc = relative ? meta.getSkillLocation(source) : new Location(meta.getSourceLocation().getWorld(), 0, 0, 0);
+        loc.add(x.evaluate(meta), y.evaluate(meta), z.evaluate(meta));
+        return Arrays.asList(loc);
     }
 }

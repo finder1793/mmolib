@@ -27,11 +27,11 @@ public class RotateVectorMechanic extends VariableMechanic {
     @Override
     public void cast(SkillMetadata meta) {
 
-        Variable targetVar = meta.getVariable(getVariableName());
+        Variable targetVar = meta.getCustomVariable(getVariableName());
         Validate.isTrue(targetVar instanceof PositionVariable, "Variable '" + getVariableName() + "' is not a vector");
         Vector target = ((PositionVariable) targetVar).getStored().toVector();
 
-        Variable axisVar = meta.getVariable(axisVarName);
+        Variable axisVar = meta.getCustomVariable(axisVarName);
         Validate.isTrue(axisVar instanceof PositionVariable, "Variable '" + axisVarName + "' is not a vector");
         Vector axis = ((PositionVariable) axisVar).getStored().toVector();
 

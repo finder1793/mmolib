@@ -26,7 +26,7 @@ public class SaveVectorMechanic extends VariableMechanic {
 
     @Override
     public void cast(SkillMetadata meta) {
-        Variable var = meta.getVariable(varName);
+        Variable var = meta.getCustomVariable(varName);
         Validate.isTrue(var instanceof PositionVariable, "Variable '" + var.getName() + "' is not a vector");
         getTargetVariableList(meta).registerVariable(new PositionVariable(getVariableName(), ((PositionVariable) var).getStored().clone()));
     }

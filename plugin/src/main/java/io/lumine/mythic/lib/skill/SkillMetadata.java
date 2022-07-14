@@ -238,7 +238,7 @@ public class SkillMetadata {
      * @param name Something like "var.custom_variable.subvariable1.subvariable2"
      * @return The (sub) variable found
      */
-    public Variable getVariable(String name) {
+    public Variable getReference(String name) {
 
         // Find initial variable
         String[] args = name.split("\\.");
@@ -285,7 +285,7 @@ public class SkillMetadata {
                 break;
 
             default:
-                throw new IllegalArgumentException("Could not match variable type to '" + args[0] + "', perhaps you meant 'var." + args[0] + "'?");
+                throw new IllegalArgumentException("Could not match variable type to '" + args[0] + "', did you mean 'var." + args[0] + "'?");
         }
 
         // Dives into the variable tree to find the subvariable
@@ -336,7 +336,7 @@ public class SkillMetadata {
         Matcher match = INTERNAL_PLACEHOLDER_PATTERN.matcher(format);
         while (match.find()) {
             String placeholder = format.substring(match.start() + 1, match.end() - 1);
-            format = format.replace("<" + placeholder + ">", getVariable(placeholder).toString());
+            format = format.replace("<" + placeholder + ">", getReference(placeholder).toString());
             match = INTERNAL_PLACEHOLDER_PATTERN.matcher(format);
         }
 

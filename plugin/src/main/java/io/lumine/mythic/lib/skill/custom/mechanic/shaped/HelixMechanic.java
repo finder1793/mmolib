@@ -2,27 +2,26 @@ package io.lumine.mythic.lib.skill.custom.mechanic.shaped;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.skill.custom.CustomSkill;
 import io.lumine.mythic.lib.skill.SkillMetadata;
+import io.lumine.mythic.lib.skill.custom.CustomSkill;
 import io.lumine.mythic.lib.skill.custom.mechanic.Mechanic;
 import io.lumine.mythic.lib.skill.custom.targeter.LocationTargeter;
 import io.lumine.mythic.lib.skill.custom.targeter.location.ConstantLocationTargeter;
 import io.lumine.mythic.lib.skill.custom.targeter.location.DefaultLocationTargeter;
-import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import io.lumine.mythic.lib.util.DoubleFormula;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 /**
- * Performs what looks like a sword slash in
- * front of the caster/target entity/target location.
+ * Draws a helix of particles around the target
  */
 public class HelixMechanic extends Mechanic {
     private final DoubleFormula radius;
     private final double yawSpread, height;
-    private final long points, timeInterval, pointsPerTick;
+    private final long points, timeInterval, pointsPerTick, helixes;
     private final LocationTargeter direction, targetLocation;
 
     private final CustomSkill onTick, onEnd;
@@ -37,12 +36,13 @@ public class HelixMechanic extends Mechanic {
         onEnd = config.contains("end") ? MythicLib.plugin.getSkills().getSkillOrThrow(config.getString("end")) : null;
 
         yawSpread = config.getDouble("yaw", 360);
-        height = config.getDouble("pitch", 3);
-        radius = config.contains("radius") ? new DoubleFormula(config.getString("radius")) : new DoubleFormula(3);
+        height = config.getDouble("height", 3);
+        radius = config.contains("radius") ? new DoubleFormula(config.getString("radius")) : new DoubleFormula(2);
 
         points = config.getInt("points", 40);
         timeInterval = config.getInt("time_interval", 1);
         pointsPerTick = config.getInt("points_per_tick", 3);
+        helixes = config.getInt("helixes", 3);
 
         Validate.isTrue(yawSpread > 0, "Yaw spread must be strictly positive");
         Validate.isTrue(height > 0, "Height must be strictly positive");
@@ -64,9 +64,7 @@ public class HelixMechanic extends Mechanic {
     public void cast(SkillMetadata meta, Location source, Vector dir) {
         Validate.isTrue(dir.lengthSquared() > 0, "Direction cannot be zero");
 
-        double[] yawPitch = UtilityMethods.getYawPitch(dir);
-        double yaw_i = yawPitch[0] - yawSpread / 2;
-
+        final double yaw_i = UtilityMethods.getYawPitch(dir)[0] - yawSpread / 2;
         new BukkitRunnable() {
 
             // Tick counter
@@ -81,15 +79,14 @@ public class HelixMechanic extends Mechanic {
                         return;
                     }
 
-                    Location loc = source.clone();
-                    double yaw = Math.toRadians(yaw_i + ((double) counter / points) * yawSpread);
-                    double y = ((double) counter / points) * height;
-                    double r = radius.evaluate(meta);
-                    loc.add(r * Math.cos(yaw),
-                            y,
-                            r * Math.sin(yaw));
+                    final double yaw = Math.toRadians(yaw_i + ((double) counter / points) * yawSpread);
+                    final double y = ((double) counter / points) * height, r = radius.evaluate(meta);
 
-                    onTick.cast(meta.clone(source, loc, null, null));
+                    for (int j = 0; j < helixes; j++) {
+                        final double angle = yaw + Math.PI * 2 / helixes * j;
+                        Location loc = source.clone().add(r * Math.cos(angle), y, r * Math.sin(angle));
+                        onTick.cast(meta.clone(source, loc, null, null));
+                    }
                 }
             }
         }.runTaskTimer(MythicLib.plugin, 0, timeInterval);

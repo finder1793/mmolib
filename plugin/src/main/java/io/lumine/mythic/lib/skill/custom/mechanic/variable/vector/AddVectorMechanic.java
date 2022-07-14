@@ -30,13 +30,13 @@ public class AddVectorMechanic extends VariableMechanic {
     @Override
     public void cast(SkillMetadata meta) {
 
-        Variable targetVar = meta.getVariable(getVariableName());
+        Variable targetVar = meta.getCustomVariable(getVariableName());
         Validate.isTrue(targetVar instanceof PositionVariable, "Variable '" + getVariableName() + "' is not a vector");
         Position target = (Position) targetVar.getStored();
 
         // Vector addition
         if (varToAdd != null) {
-            Variable var = meta.getVariable(varToAdd);
+            Variable var = meta.getCustomVariable(varToAdd);
             Validate.isTrue(var instanceof PositionVariable, "Variable '" + varToAdd + "' is not a vector");
             target.add(((PositionVariable) var).getStored());
         }
