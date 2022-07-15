@@ -121,7 +121,7 @@ public class Fire_Rage extends SkillHandler<SimpleSkillResult> {
                             loc.getWorld().spawnParticle(Particle.FLAME, loc, 32, 0, 0, 0, .1);
                             loc.getWorld().playSound(loc, Sound.ENTITY_BLAZE_HURT, 2, 1);
                             target.setFireTicks(target.getFireTicks() + ignite);
-                            new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.PROJECTILE, DamageType.MAGIC), caster).damage((LivingEntity) target);
+                            caster.attack((LivingEntity) target, damage, DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE);
                             cancel();
                         }
                 }

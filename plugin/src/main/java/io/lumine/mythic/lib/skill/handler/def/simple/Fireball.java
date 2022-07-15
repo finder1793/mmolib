@@ -63,7 +63,7 @@ public class Fireball extends SkillHandler<SimpleSkillResult> {
                         loc.getWorld().playSound(loc, Sound.ENTITY_BLAZE_HURT, 2, 1);
                         target.setFireTicks((int) (target.getFireTicks() + skillMeta.getModifier("ignite") * 20));
                         double damage = skillMeta.getModifier("damage");
-                        new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.PROJECTILE, DamageType.MAGIC), skillMeta.getCaster()).damage((LivingEntity) target);
+                        skillMeta.getCaster().attack((LivingEntity) target, damage, DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE);
 
                         new BukkitRunnable() {
                             int i = 0;
@@ -81,7 +81,7 @@ public class Fireball extends SkillHandler<SimpleSkillResult> {
 
                                 RayTrace result = new RayTrace(loc, dir, range, entity -> UtilityMethods.canTarget(caster, entity));
                                 if (result.hasHit())
-                                    new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.PROJECTILE, DamageType.MAGIC), skillMeta.getCaster()).damage(result.getHit());
+                                    skillMeta.getCaster().attack(result.getHit(), damage, DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE);
                                 result.draw(.13, tick -> tick.getWorld().spawnParticle(Particle.FLAME, tick, 0));
 
                             }

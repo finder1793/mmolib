@@ -80,7 +80,7 @@ public class Void_Zapper extends SkillHandler<SimpleSkillResult> {
 
         void hit(LivingEntity target, Vector dir) {
             double damage = skillMeta.getModifier("damage") * (1 + skillMeta.getModifier("extra") * bounces / 100d);
-            new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE), caster).damage(target);
+            skillMeta.getCaster().attack(target, damage, DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE);
             target.setVelocity(dir.multiply(skillMeta.getModifier("knockback")));
         }
 

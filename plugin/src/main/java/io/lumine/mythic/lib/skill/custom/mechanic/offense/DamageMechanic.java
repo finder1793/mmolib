@@ -51,7 +51,7 @@ public class DamageMechanic extends TargetMechanic {
         Validate.isTrue(target instanceof LivingEntity, "Cannot damage a non living entity");
 
         // This ignores the 'knockback' and 'ignore-immunity' options
-        if (meta.hasAttackBound()) {
+        if (meta.hasAttackBound() && meta.getAttack().getTarget().equals(target)) {
             if (element == null)
                 meta.getAttack().getDamage().add(amount.evaluate(meta), types);
             else
@@ -59,7 +59,7 @@ public class DamageMechanic extends TargetMechanic {
             return;
         }
 
-        AttackMetadata result = new AttackMetadata(new DamageMetadata(amount.evaluate(meta), types), meta.getCaster());
-        MythicLib.plugin.getDamage().damage(result, (LivingEntity) target, knockback, ignoreImmunity);
+        AttackMetadata result = new AttackMetadata(new DamageMetadata(amount.evaluate(meta), types), (LivingEntity) target, meta.getCaster());
+        MythicLib.plugin.getDamage().registerAttack(result, knockback, ignoreImmunity);
     }
 }

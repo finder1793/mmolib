@@ -2,8 +2,6 @@ package io.lumine.mythic.lib.skill.handler.def.simple;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.damage.AttackMetadata;
-import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
@@ -50,7 +48,7 @@ public class Throw_Up extends SkillHandler<SimpleSkillResult> {
                 if (j % 5 == 0)
                     for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
                         if (entity.getLocation().distanceSquared(loc) < 40 && caster.getEyeLocation().getDirection().angle(entity.getLocation().toVector().subtract(caster.getLocation().toVector())) < Math.PI / 6 && UtilityMethods.canTarget(caster, entity))
-                            new AttackMetadata(new DamageMetadata(dps, DamageType.SKILL, DamageType.PHYSICAL, DamageType.PROJECTILE), skillMeta.getCaster()).damage((LivingEntity) entity);
+                            skillMeta.getCaster().attack((LivingEntity) entity, dps, DamageType.SKILL, DamageType.PHYSICAL, DamageType.PROJECTILE);
 
                 loc.getWorld().playSound(loc, Sound.ENTITY_ZOMBIE_HURT, 1, 1);
 

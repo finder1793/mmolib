@@ -49,7 +49,7 @@ public class PlayerAttackEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void registerEvents(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Damageable) || event.getDamage() == 0)
+        if (!(event.getEntity() instanceof LivingEntity) || event.getDamage() == 0)
             return;
 
         /*

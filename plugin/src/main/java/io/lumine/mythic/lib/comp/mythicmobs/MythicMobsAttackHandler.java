@@ -39,6 +39,6 @@ public class MythicMobsAttackHandler implements AttackHandler {
             return null;
 
         DamageMetadata result = new DamageMetadata(metadata.getAmount(), DamageType.MAGIC, DamageType.SKILL);
-        return new AttackMetadata(result, MMOPlayerData.get(metadata.getDamager().getEntity().getUniqueId()).getStatMap().cache(EquipmentSlot.MAIN_HAND));
+        return new AttackMetadata(result, event.getEntity(), MMOPlayerData.get(metadata.getDamager().getEntity().getUniqueId()).getStatMap().cache(EquipmentSlot.MAIN_HAND));
     }
 }

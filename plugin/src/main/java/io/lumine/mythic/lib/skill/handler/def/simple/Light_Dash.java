@@ -53,7 +53,7 @@ public class Light_Dash extends SkillHandler<SimpleSkillResult> {
                 for (Entity entity : caster.getNearbyEntities(1, 1, 1))
                     if (!hit.contains(entity.getEntityId()) && UtilityMethods.canTarget(caster, entity)) {
                         hit.add(entity.getEntityId());
-                        new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.PHYSICAL), skillMeta.getCaster()).damage((LivingEntity) entity);
+                        skillMeta.getCaster().attack((LivingEntity) entity, damage, DamageType.SKILL, DamageType.PHYSICAL);
                     }
             }
         }.runTaskTimer(MythicLib.plugin, 0, 2);

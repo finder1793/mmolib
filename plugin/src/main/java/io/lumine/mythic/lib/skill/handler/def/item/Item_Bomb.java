@@ -53,7 +53,7 @@ public class Item_Bomb extends SkillHandler<ItemSkillResult> {
 
                     for (Entity entity : item.getEntity().getNearbyEntities(radius, radius, radius))
                         if (UtilityMethods.canTarget(caster, entity)) {
-                            new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.PHYSICAL), skillMeta.getCaster()).damage((LivingEntity) entity);
+                            skillMeta.getCaster().attack((LivingEntity) entity, damage, DamageType.SKILL, DamageType.PHYSICAL);
                             ((LivingEntity) entity).removePotionEffect(PotionEffectType.SLOW);
                             ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (slowDuration * 20), (int) slowAmplifier));
                         }

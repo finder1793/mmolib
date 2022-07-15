@@ -5,6 +5,8 @@ import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Instanced every time MythicLib detects and monitors one attack from one player.
@@ -12,7 +14,12 @@ import org.bukkit.entity.LivingEntity;
  * @author Indyuce
  */
 public class AttackMetadata extends PlayerMetadata {
+
+    @NotNull
     private final DamageMetadata damage;
+
+    @Nullable
+    private final LivingEntity target;
 
     /**
      * Attacks expire as soon as the corresponding {@link PlayerAttackEvent}
@@ -21,6 +28,14 @@ public class AttackMetadata extends PlayerMetadata {
      * to modify the outcome of the Bukkit damage event.
      */
     private boolean expired;
+
+    /**
+     * @deprecated It is now required to provide a target
+     */
+    @Deprecated
+    public AttackMetadata(DamageMetadata damage, PlayerMetadata attacker) {
+        this(damage, null, attacker);
+    }
 
     /**
      * Used by AttackHandler instances to register attacks. AttackResult only
@@ -32,11 +47,12 @@ public class AttackMetadata extends PlayerMetadata {
      * @param damage   The attack result
      * @param attacker The entity who dealt the damage
      */
-    public AttackMetadata(DamageMetadata damage, PlayerMetadata attacker) {
+    public AttackMetadata(DamageMetadata damage, LivingEntity target, PlayerMetadata attacker) {
         super(attacker);
 
         Validate.notNull(damage, "Attack cannot be null");
 
+        this.target = target;
         this.damage = damage;
     }
 
@@ -45,6 +61,10 @@ public class AttackMetadata extends PlayerMetadata {
      */
     public DamageMetadata getDamage() {
         return damage;
+    }
+
+    public LivingEntity getTarget() {
+        return target;
     }
 
     /**
@@ -59,14 +79,31 @@ public class AttackMetadata extends PlayerMetadata {
         expired = true;
     }
 
+    /**
+     * @deprecated Cloning is now ambiguous because no target entity is specified. Please use the
+     *         new constructor instead of cloning
+     */
+    @Deprecated
     public AttackMetadata clone() {
-        return new AttackMetadata(damage.clone(), this);
+        return new AttackMetadata(damage.clone(), target, this);
     }
 
+    /**
+     * @deprecated There is no longer such a method in the AttackMetadata class.
+     *         Use {@link PlayerMetadata#attack(LivingEntity, double, DamageType...)} instead to have a player
+     *         deal damage.
+     */
+    @Deprecated
     public void damage(LivingEntity target) {
         damage(target, true);
     }
 
+    /**
+     * @deprecated There is no longer such a method in the AttackMetadata class.
+     *         Use {@link PlayerMetadata#attack(LivingEntity, double, DamageType...)} instead to have a player
+     *         deal damage.
+     */
+    @Deprecated
     public void damage(LivingEntity target, boolean knockback) {
         MythicLib.plugin.getDamage().damage(this, target, knockback);
     }

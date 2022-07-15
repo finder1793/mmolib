@@ -1,10 +1,10 @@
 package io.lumine.mythic.lib.skill.custom.targeter.location;
 
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.skill.custom.targeter.LocationTargeter;
-import io.lumine.mythic.lib.util.configobject.ConfigObject;
-import io.lumine.mythic.lib.util.DoubleFormula;
 import io.lumine.mythic.lib.skill.SkillMetadata;
+import io.lumine.mythic.lib.skill.custom.targeter.LocationTargeter;
+import io.lumine.mythic.lib.util.DoubleFormula;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
@@ -18,7 +18,7 @@ import java.util.List;
  */
 @Orientable
 public class CircleLocationTargeter extends LocationTargeter {
-    private final boolean orient, source;
+    private final boolean source;
     private final DoubleFormula radius, amount;
 
     public CircleLocationTargeter(ConfigObject config) {
@@ -26,7 +26,6 @@ public class CircleLocationTargeter extends LocationTargeter {
 
         config.validateKeys("radius", "amount");
 
-        orient = config.getBoolean("orient", false);
         source = config.getBoolean("source", false);
         radius = new DoubleFormula(config.getString("radius"));
         amount = new DoubleFormula(config.getString("amount"));
@@ -43,12 +42,12 @@ public class CircleLocationTargeter extends LocationTargeter {
 
         List<Location> targets = new ArrayList<>();
 
-        Vector axis = orient ? meta.getTargetLocation().clone().subtract(meta.getSourceLocation()).toVector() : null;
+        Vector axis = isOriented() ? meta.getTargetLocation().clone().subtract(meta.getSourceLocation()).toVector() : new Vector(0, 1, 0);
         double[] coords = UtilityMethods.getYawPitch(axis);
 
         for (int i = 0; i < amount; i++) {
             Vector vec = new Vector(rad * Math.cos(i * step), 0, rad * Math.sin(i * step));
-            if (orient)
+            if (isOriented())
                 vec = UtilityMethods.rotate(vec, coords[0], coords[1]);
             targets.add(source.clone().add(vec));
         }

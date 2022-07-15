@@ -100,7 +100,7 @@ public class Empowered_Attack extends SkillHandler<SimpleSkillResult> {
                 for (Entity entity : target.getNearbyEntities(rad, rad, rad))
                     if (UtilityMethods.canTarget(caster.getPlayer(), entity)) {
                         drawVector(src, entity.getLocation().add(0, entity.getHeight() / 2, 0).subtract(src).toVector());
-                        new AttackMetadata(new DamageMetadata(sweep, DamageType.PHYSICAL, DamageType.SKILL), caster).damage((LivingEntity) target);
+                        event.getAttack().attack((LivingEntity) entity, sweep, DamageType.SKILL, DamageType.PHYSICAL);
                     }
 
                 /*

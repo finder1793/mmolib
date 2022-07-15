@@ -89,38 +89,53 @@ public class DamageManager implements Listener, AttackHandler {
         offHandAttacks.put(target.getEntityId(), System.currentTimeMillis());
     }
 
+    @Deprecated
+    public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target) {
+        damage(metadata, target, true);
+    }
+
+
     /**
      * Forces a player to damage an entity with knockback
      *
      * @param metadata The class containing all info about the current attack
-     * @param target   The entity being damaged
      */
-    public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target) {
-        damage(metadata, target, true);
+    public void registerAttack(@NotNull AttackMetadata metadata) {
+        registerAttack(metadata, true, false);
+    }
+
+    @Deprecated
+    public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target, boolean knockback) {
+        damage(metadata, target, knockback, false);
     }
 
     /**
      * Forces a player to damage an entity with (no) knockback
      *
      * @param metadata  The class containing all info about the current attack
-     * @param target    The entity being damaged
      * @param knockback If the attack should deal knockback
      */
-    public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target, boolean knockback) {
-        damage(metadata, target, knockback, false);
+    public void registerAttack(@NotNull AttackMetadata metadata, boolean knockback) {
+        registerAttack(metadata, knockback, false);
+    }
+
+    @Deprecated
+    public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target, boolean knockback, boolean ignoreImmunity) {
+        customAttacks.put(target.getEntityId(), metadata);
+        applyDamage(Math.max(metadata.getDamage().getDamage(), MINIMUM_DAMAGE), target, metadata.getPlayer(), knockback, ignoreImmunity);
     }
 
     /**
      * Forces a player to damage an entity.
      *
      * @param metadata       The class containing all info about the current attack
-     * @param target         The entity being damaged
      * @param knockback      If the attack should deal knockback
      * @param ignoreImmunity The attack will not produce immunity frames.
      */
-    public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target, boolean knockback, boolean ignoreImmunity) {
-        customAttacks.put(target.getEntityId(), metadata);
-        applyDamage(Math.max(metadata.getDamage().getDamage(), MINIMUM_DAMAGE), target, metadata.getPlayer(), knockback, ignoreImmunity);
+    public void registerAttack(@NotNull AttackMetadata metadata, boolean knockback, boolean ignoreImmunity) {
+        Validate.notNull(metadata.getTarget(), "Target cannot be null"); // BW compatibility check
+        customAttacks.put(metadata.getTarget().getEntityId(), metadata);
+        applyDamage(Math.max(metadata.getDamage().getDamage(), MINIMUM_DAMAGE), metadata.getTarget(), metadata.getPlayer(), knockback, ignoreImmunity);
     }
 
     /**
@@ -277,7 +292,7 @@ public class DamageManager implements Listener, AttackHandler {
          */
         if (isRealPlayer(event.getDamager())) {
             EquipmentSlot hand = isBeingOffHandAttacked(event.getEntity()) ? EquipmentSlot.OFF_HAND : EquipmentSlot.MAIN_HAND;
-            return new MeleeAttackMetadata(new DamageMetadata(event.getDamage(), getDamageTypes(event, hand)), MMOPlayerData.get((Player) event.getDamager()).getStatMap().cache(hand), hand);
+            return new MeleeAttackMetadata(new DamageMetadata(event.getDamage(), getDamageTypes(event, hand)), (LivingEntity) event.getEntity(), MMOPlayerData.get((Player) event.getDamager()).getStatMap().cache(hand), hand);
         }
 
         /*

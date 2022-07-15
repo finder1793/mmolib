@@ -41,7 +41,7 @@ public class Circular_Slash extends SkillHandler<SimpleSkillResult> {
         caster.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 2, 254));
         for (Entity entity : caster.getNearbyEntities(radius, radius, radius)) {
             if (UtilityMethods.canTarget(caster, entity)) {
-                new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.PHYSICAL), skillMeta.getCaster()).damage((LivingEntity) entity);
+                skillMeta.getCaster().attack((LivingEntity) entity, damage, DamageType.SKILL, DamageType.PHYSICAL);
                 Vector v1 = entity.getLocation().toVector();
                 Vector v2 = caster.getLocation().toVector();
                 double y = .5;

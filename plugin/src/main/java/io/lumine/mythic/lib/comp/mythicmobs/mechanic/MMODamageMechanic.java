@@ -82,7 +82,7 @@ public class MMODamageMechanic extends DamagingMechanic implements ITargetedEnti
 
         if (!ignoreMMOAttack && data.getVariables().has(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK)) {
             AttackMetadata currentAttack = (AttackMetadata) data.getVariables().get(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK).get();
-            if (!currentAttack.hasExpired()) {
+            if (!currentAttack.hasExpired() && currentAttack.getTarget().equals(target.getBukkitEntity())) {
                 currentAttack.getDamage().add(damage, types);
                 return SkillResult.SUCCESS;
             }

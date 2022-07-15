@@ -20,5 +20,9 @@ public abstract class LocationTargeter {
         Validate.isTrue(!oriented || getClass().isAnnotationPresent(Orientable.class), "Tried creating an oriented location targeter with a non orientable type");
     }
 
+    protected boolean isOriented() {
+        return oriented;
+    }
+
     public abstract List<Location> findTargets(SkillMetadata meta);
 }

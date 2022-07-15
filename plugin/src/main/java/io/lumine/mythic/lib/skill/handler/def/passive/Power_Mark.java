@@ -116,7 +116,7 @@ public class Power_Mark extends SkillHandler<SimpleSkillResult> implements Liste
                 for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
                     if (entity.getLocation().distanceSquared(loc) < 25 && UtilityMethods.canTarget(caster.getPlayer(), entity)) {
                         ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (stun * 20), 10, false, false));
-                        new AttackMetadata(new DamageMetadata(accumulate, DamageType.SKILL, DamageType.MAGIC), caster).damage((LivingEntity) entity);
+                        caster.attack((LivingEntity) entity, accumulate, DamageType.SKILL, DamageType.MAGIC);
                         entity.setVelocity(format(entity.getLocation().subtract(loc).toVector().setY(0)).setY(.3));
                     }
                 return;

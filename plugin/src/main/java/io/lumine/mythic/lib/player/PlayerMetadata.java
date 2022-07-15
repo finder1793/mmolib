@@ -98,8 +98,24 @@ public class PlayerMetadata implements StatProvider {
      * @return The (modified) attack metadata
      */
     public AttackMetadata attack(LivingEntity target, double damage, DamageType... types) {
-        AttackMetadata attackMeta = new AttackMetadata(new DamageMetadata(damage, types), this);
-        MythicLib.plugin.getDamage().damage(attackMeta, target);
+        return attack(target, damage, true, types);
+    }
+
+    /**
+     * Utility method that makes a player deal damage to a specific
+     * entity. This creates the attackMetadata based on the data
+     * stored by the CasterMetadata, and calls it using MythicLib
+     * damage manager
+     *
+     * @param target    Target entity
+     * @param damage    Damage dealt
+     * @param knockback Should this attack apply knockback
+     * @param types     Type of target
+     * @return The (modified) attack metadata
+     */
+    public AttackMetadata attack(LivingEntity target, double damage, boolean knockback, DamageType... types) {
+        AttackMetadata attackMeta = new AttackMetadata(new DamageMetadata(damage, types), target, this);
+        MythicLib.plugin.getDamage().registerAttack(attackMeta, knockback, false);
         return attackMeta;
     }
 }

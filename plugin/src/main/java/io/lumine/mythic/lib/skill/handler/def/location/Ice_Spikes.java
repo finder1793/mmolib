@@ -63,7 +63,7 @@ public class Ice_Spikes extends SkillHandler<LocationSkillResult> {
                 Line3D line = new Line3D(loc, new Vector(0, 1, 0));
                 for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc1))
                     if (line.distanceSquared(entity.getLocation().toVector()) < radius && Math.abs(entity.getLocation().getY() - loc1.getY()) < 10 && UtilityMethods.canTarget(caster, entity)) {
-                        new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC), skillMeta.getCaster()).damage((LivingEntity) entity);
+                        skillMeta.getCaster().attack((LivingEntity) entity, damage, DamageType.SKILL, DamageType.MAGIC);
                         ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, slow, 0));
                     }
             }

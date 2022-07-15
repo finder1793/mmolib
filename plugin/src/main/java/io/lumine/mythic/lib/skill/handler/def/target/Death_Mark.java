@@ -30,7 +30,6 @@ public class Death_Mark extends SkillHandler<TargetSkillResult> {
     @Override
     public void whenCast(TargetSkillResult result, SkillMetadata skillMeta) {
         LivingEntity target = result.getTarget();
-        Player caster = skillMeta.getCaster().getPlayer();
 
         double duration = skillMeta.getModifier("duration") * 20;
         double dps = skillMeta.getModifier("damage") / duration * 20;
@@ -48,7 +47,7 @@ public class Death_Mark extends SkillHandler<TargetSkillResult> {
                 target.getWorld().spawnParticle(Particle.SPELL_MOB, target.getLocation(), 4, .2, 0, .2, 0);
 
                 if (ti % 20 == 0)
-                    new AttackMetadata(new DamageMetadata(dps, DamageType.SKILL, DamageType.MAGIC), skillMeta.getCaster()).damage(target);
+                    skillMeta.getCaster().attack(target, dps, false, DamageType.SKILL, DamageType.MAGIC);
             }
         }.runTaskTimer(MythicLib.plugin, 0, 1);
         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_BLAZE_HURT, 1, 2);
