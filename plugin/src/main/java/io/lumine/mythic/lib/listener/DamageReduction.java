@@ -1,7 +1,6 @@
 package io.lumine.mythic.lib.listener;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.math.EvaluatedFormula;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.damage.DamageMetadata;
@@ -16,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.NotNull;
+import org.matheclipse.commons.parser.client.eval.DoubleEvaluator;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -73,7 +73,7 @@ public class DamageReduction implements Listener {
             formula = formula.replace("#damage#", String.valueOf(damage));
 
             try {
-                return Math.max(0, new EvaluatedFormula(formula).evaluate());
+                return Math.max(0, new DoubleEvaluator().evaluate(formula));
             } catch (RuntimeException exception) {
 
                 /**
