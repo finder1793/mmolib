@@ -1,0 +1,84 @@
+
+FIRE:
+
+  # Main translation MMOCore and MMOItems will use
+  name: Fire
+
+  icon: BLAZE_POWDER # Purely cosmetic, used in the MMOItems item editor
+  lore-icon: '🔥' # Used in the MMOItems item lore
+  color: '&c' # Used in the MMOItems item lore
+
+  # What gets executed when a normal elemental is performed
+  regular-attack:
+    mythiclib-skill-id: fire_elemental_attack
+
+  # What gets executed when a elemental critical strike is performed
+  # This one is optional. If not specified, no crits can occur
+  crit-strike:
+    mythiclib-skill-id: fire_critical_strike
+
+ICE:
+  name: Ice
+  icon: SNOWBALL
+  lore-icon: '❄'
+  color: '&b'
+  regular-attack:
+    mythiclib-skill-id: ice_elemental_attack
+  crit-strike:
+    mythiclib-skill-id: ice_critical_strike
+
+EARTH:
+  name: Earth
+  icon: OAK_SAPLING
+  lore-icon: '₪'
+  color: '&2'
+  regular-attack:
+    mythiclib-skill-id: earth_elemental_attack
+  crit-strike:
+    mythiclib-skill-id: earth_critical_strike
+
+WIND:
+  name: Wind
+  icon: FEATHER
+  lore-icon: '🌊'
+  color: '&7'
+  regular-attack:
+    mythiclib-skill-id: wind_elemental_attack
+  crit-strike:
+    mythiclib-skill-id: wind_critical_strike
+
+THUNDER:
+  name: Thunder
+  icon: GUNPOWDER
+  lore-icon: '★'
+  color: '&e'
+  regular-attack:
+    mythiclib-skill-id: thunder_elemental_attack
+  crit-strike:
+    mythiclib-skill-id: thunder_critical_strike
+
+WATER:
+  name: Water
+  icon: LILY_PAD
+  lore-icon: '🌊'
+  color: '&3'
+  regular-attack:
+    mythiclib-skill-id: water_elemental_attack
+  crit-strike:
+    mythiclib-skill-id: water_critical_strike
+
+DARKNESS:
+  name: Darkness
+  icon: COAL
+  lore-icon: '☽'
+  color: '&8'
+  regular-attack:
+    mythiclib-skill-id: empty_skill
+
+LIGHTNESS:
+  name: Light
+  icon: GLOWSTONE_DUST
+  lore-icon: '☀'
+  color: '&f'
+  regular-attack:
+    mythiclib-skill-id: empty_skill
