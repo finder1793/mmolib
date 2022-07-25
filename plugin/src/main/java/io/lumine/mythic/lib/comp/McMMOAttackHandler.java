@@ -5,7 +5,6 @@ import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.damage.AttackHandler;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -16,8 +15,8 @@ public class McMMOAttackHandler implements AttackHandler {
 
     @Override
     public AttackMetadata getAttack(EntityDamageEvent event) {
-        Entity entity = event.getEntity();
-        if (!entity.hasMetadata(METADATA_KEY) || !(event instanceof EntityDamageByEntityEvent))
+        LivingEntity entity = (LivingEntity) event.getEntity();
+        if (!(event instanceof EntityDamageByEntityEvent) || !entity.hasMetadata(METADATA_KEY))
             return null;
 
         EntityDamageByEntityEvent event1 = (EntityDamageByEntityEvent) event;

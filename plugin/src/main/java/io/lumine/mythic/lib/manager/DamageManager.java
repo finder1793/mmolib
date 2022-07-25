@@ -268,6 +268,7 @@ public class DamageManager implements Listener, AttackHandler {
      */
     @Nullable
     public AttackMetadata findAttack(EntityDamageByEntityEvent event) {
+        Validate.isTrue(event.getEntity() instanceof LivingEntity, "Target entity is not living");
 
         /*
          * Checks in the MythicLib registered attack. This is used by MMOItems skills,
@@ -280,6 +281,7 @@ public class DamageManager implements Listener, AttackHandler {
         }
 
         // Players damaging Citizens NPCs are not registered
+        // TODO Useless check? Could be removed
         if (event.getEntity().hasMetadata("NPC"))
             return null;
 

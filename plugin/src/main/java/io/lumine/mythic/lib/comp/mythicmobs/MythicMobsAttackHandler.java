@@ -8,6 +8,7 @@ import io.lumine.mythic.lib.damage.AttackHandler;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,6 +40,6 @@ public class MythicMobsAttackHandler implements AttackHandler {
             return null;
 
         DamageMetadata result = new DamageMetadata(metadata.getAmount(), DamageType.MAGIC, DamageType.SKILL);
-        return new AttackMetadata(result, event.getEntity(), MMOPlayerData.get(metadata.getDamager().getEntity().getUniqueId()).getStatMap().cache(EquipmentSlot.MAIN_HAND));
+        return new AttackMetadata(result, (LivingEntity) event.getEntity(), MMOPlayerData.get(metadata.getDamager().getEntity().getUniqueId()).getStatMap().cache(EquipmentSlot.MAIN_HAND));
     }
 }
