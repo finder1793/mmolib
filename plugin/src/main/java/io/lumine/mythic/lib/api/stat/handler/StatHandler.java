@@ -32,6 +32,15 @@ public interface StatHandler {
     public double getBaseValue(StatMap map);
 
     /**
+     * Used for attribute-based statistics. These stats already in Minecraft therefore
+     * the final value doesn't match the value returned by {@link StatMap#getStat(String)}
+     *
+     * @param map Player to get total stat value from
+     * @return The player's total stat value
+     */
+    public double getTotalValue(StatMap map);
+
+    /**
      * Used by attribute based stats like Max Healh or Attack Damage. Clears
      * attribute modifiers due to MythicLib ie modifiers which names start
      * with "mmolib." or "mythiclib." or "mmoitems."

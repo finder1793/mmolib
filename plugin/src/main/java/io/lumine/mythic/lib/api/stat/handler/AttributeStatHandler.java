@@ -64,6 +64,11 @@ public class AttributeStatHandler implements StatHandler {
     }
 
     @Override
+    public double getTotalValue(StatMap map) {
+        return map.getPlayerData().getPlayer().getAttribute(attribute).getValue();
+    }
+
+    @Override
     public double getBaseValue(StatMap map) {
         return map.getPlayerData().getPlayer().getAttribute(attribute).getBaseValue();
     }

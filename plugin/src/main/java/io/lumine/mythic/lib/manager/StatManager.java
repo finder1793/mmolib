@@ -7,6 +7,7 @@ import io.lumine.mythic.lib.api.stat.handler.MovementSpeedStatHandler;
 import io.lumine.mythic.lib.api.stat.handler.StatHandler;
 import org.apache.commons.lang.Validate;
 import org.bukkit.attribute.Attribute;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,9 +27,8 @@ public class StatManager {
         handlers.put(SharedStat.KNOCKBACK_RESISTANCE, new AttributeStatHandler(Attribute.GENERIC_KNOCKBACK_RESISTANCE, SharedStat.KNOCKBACK_RESISTANCE));
         handlers.put(SharedStat.MAX_HEALTH, new AttributeStatHandler(Attribute.GENERIC_MAX_HEALTH, SharedStat.MAX_HEALTH));
 
-        StatHandler moveSpeed = new MovementSpeedStatHandler();
-        handlers.put(SharedStat.MOVEMENT_SPEED, moveSpeed);
-        handlers.put(SharedStat.SPEED_MALUS_REDUCTION, moveSpeed);
+        handlers.put(SharedStat.MOVEMENT_SPEED, new MovementSpeedStatHandler(true));
+        handlers.put(SharedStat.SPEED_MALUS_REDUCTION, new MovementSpeedStatHandler(false));
     }
 
     /**
@@ -66,6 +66,15 @@ public class StatManager {
     }
 
     /**
+     * @param stat The string key of the stat
+     * @return The total value of this stat
+     */
+    public double getTotalValue(String stat, StatMap map) {
+        StatHandler handler = handlers.get(stat);
+        return handler == null ? map.getStat(stat) : handler.getBaseValue(map);
+    }
+
+    /**
      * Lets MMOCore knows that a specific stat needs an update whenever the
      * value of the player stat changes (due to a MythicLib stat modifier being
      * added/being removed/expiring).
@@ -78,6 +87,11 @@ public class StatManager {
         Validate.notNull(handler, "StatHandler cannot be null");
 
         handlers.put(stat, handler);
+    }
+
+    @Nullable
+    public StatHandler getStatHandler(String id) {
+        return handlers.get(id);
     }
 
     public boolean isRegistered(String stat) {
