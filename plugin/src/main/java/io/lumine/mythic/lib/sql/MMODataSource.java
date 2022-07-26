@@ -9,18 +9,19 @@ import java.sql.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-@Deprecated
 public abstract class MMODataSource {
     protected final HikariConfig config = new HikariConfig();
     private HikariDataSource dataSource;
+    /**
+     * Used to know if SQL is enabled in the config. But connections can be made even
+     * if it not enabled. (e.g /mmocore transferdata).
+     */
     private boolean enabled;
 
     public void setup(FileConfiguration fileConfig) {
         if (fileConfig.isConfigurationSection("mysql")) {
             ConfigurationSection cfg = fileConfig.getConfigurationSection("mysql");
-            if (!cfg.getBoolean("enabled"))
-                return;
-            enabled = true;
+            enabled = cfg.getBoolean("enabled");
 
             config.setPoolName("MMO-hikari");
 
@@ -44,12 +45,14 @@ public abstract class MMODataSource {
         }
     }
 
+
+
     protected abstract void load();
 
     public void getResult(String sql, Consumer<ResultSet> supplier) {
         execute(connection -> {
             try {
-                try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                     try (ResultSet resultSet = preparedStatement.executeQuery()) {
                         supplier.accept(resultSet);
                     }
@@ -67,7 +70,7 @@ public abstract class MMODataSource {
     public void executeUpdate(String sql) {
         execute(connection -> {
             try {
-                try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                     preparedStatement.executeUpdate();
                 }
             } catch (SQLException throwables) {
@@ -82,23 +85,21 @@ public abstract class MMODataSource {
 
     /**
      * Retrieve a connection from pool and prepare it for use and even closes it when it's finished using it.
+     *
      * @param execute Consumer.
      */
     public void execute(Consumer<Connection> execute) {
-        if (!enabled)
-            throw new IllegalStateException("Can't get SQL Connection while it's disabled!");
 
         try (Connection connection = dataSource.getConnection()) {
             execute.accept(connection);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-
     }
 
+
     public Connection getConnection() throws SQLException {
-        if (!enabled)
-            throw new IllegalStateException("Can't get SQL Connection while it's disabled!");
+
         return dataSource.getConnection();
     }
 

@@ -1,6 +1,6 @@
 package io.lumine.mythic.lib.comp.dualwield;
 
-import com.ranull.dualwield.event.OffHandAttackEvent;
+import com.ranull.dualwield.event .OffHandAttackEvent;
 import io.lumine.mythic.lib.MythicLib;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

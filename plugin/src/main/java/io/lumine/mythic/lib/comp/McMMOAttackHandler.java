@@ -24,6 +24,6 @@ public class McMMOAttackHandler implements AttackHandler {
         if (!(event1.getDamager() instanceof Player) || !MMOPlayerData.has(event1.getDamager().getUniqueId()))
             return null;
 
-        return new AttackMetadata(new DamageMetadata(), entity, MMOPlayerData.get(event1.getDamager().getUniqueId()).getStatMap().cache(EquipmentSlot.MAIN_HAND));
+        return new AttackMetadata(new DamageMetadata(), (LivingEntity) entity, MMOPlayerData.get(event1.getDamager().getUniqueId()).getStatMap().cache(EquipmentSlot.MAIN_HAND));
     }
 }
