@@ -71,7 +71,7 @@ public class StatManager {
      */
     public double getTotalValue(String stat, StatMap map) {
         StatHandler handler = handlers.get(stat);
-        return handler == null ? map.getStat(stat) : handler.getBaseValue(map);
+        return handler == null ? map.getStat(stat) : handler.getTotalValue(map);
     }
 
     /**

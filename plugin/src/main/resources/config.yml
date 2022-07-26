@@ -92,14 +92,58 @@ mitigation:
 # - Holograms
 # - TrHologram
 game-indicators:
+
+  # When an entity is being damaged
   damage:
-    enabled: false
+    enabled: true
     decimal-format: '0.#'
-    format: '&c-#'
+    format: '{icon} {value}'
+    custom-font:
+      enabled: false
+      normal:
+        '0': 'ᜀ'
+        '1': 'ᜁ'
+        '2': 'ᜂ'
+        '3': 'ᜃ'
+        '4': 'ᜄ'
+        '5': 'ᜅ'
+        '6': 'ᜆ'
+        '7': 'ᜇ'
+        '8': 'ᜈ'
+        '9': 'ᜉ'
+        'dot': 'ᜊ'
+      crit:
+        '0': 'ᜀ'
+        '1': 'ᜁ'
+        '2': 'ᜂ'
+        '3': 'ᜃ'
+        '4': 'ᜄ'
+        '5': 'ᜅ'
+        '6': 'ᜆ'
+        '7': 'ᜇ'
+        '8': 'ᜈ'
+        '9': 'ᜉ'
+        'dot': 'ᜋ'
+    icon:
+      weapon:
+        normal: '&c🗡'
+        crit: '&c&l🗡'
+      skill:
+        normal: '&6★'
+        crit: '&6&l★'
+    split-holograms: true
+    radial-velocity: 1
+    gravity: 1
+    initial-upward-velocity: 1
+
+  # When an entity regens some health
   regen:
     enabled: false
     decimal-format: '0.#'
     format: '&a+#'
+    radial-velocity: 1
+    gravity: 1
+    initial-upward-velocity: 1
 
 # Due to a change made in 1.1.6 related to the movement speed
 # attribute, players see their movement speed reset to .1 when logging in

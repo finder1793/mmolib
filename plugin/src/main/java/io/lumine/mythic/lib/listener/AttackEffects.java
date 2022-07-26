@@ -51,7 +51,7 @@ public class AttackEffects implements Listener {
      *
      * @see {@link PlayerAttackEventListener}
      */
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onHitAttackEffects(PlayerAttackEvent event) {
         StatProvider stats = event.getAttack();
 
@@ -73,9 +73,10 @@ public class AttackEffects implements Listener {
             event.getData().applyCooldown(CooldownType.WEAPON_CRIT, weaponCritCooldown);
 
             // Works for both weapon and unarmed damage
-            double damageMultiplicator = weaponCritCoef + stats.getStat("CRITICAL_STRIKE_POWER") / 100;
+            final double damageMultiplicator = weaponCritCoef + stats.getStat("CRITICAL_STRIKE_POWER") / 100;
             event.getDamage().multiplicativeModifier(damageMultiplicator, DamageType.WEAPON);
             event.getDamage().multiplicativeModifier(damageMultiplicator, DamageType.UNARMED);
+            event.getDamage().registerWeaponCriticalStrike();
 
             event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 1);
             applyCritEffects(event.getEntity(), Particle.CRIT, 32, .4f);
@@ -87,6 +88,7 @@ public class AttackEffects implements Listener {
                 && !event.getData().isOnCooldown(CooldownType.SKILL_CRIT)) {
             event.getData().applyCooldown(CooldownType.SKILL_CRIT, skillCritCooldown);
             event.getDamage().multiplicativeModifier(skillCritCoef + stats.getStat("SKILL_CRITICAL_STRIKE_POWER") / 100, DamageType.SKILL);
+            event.getDamage().registerSkillCriticalStrike();
             event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 2);
             applyCritEffects(event.getEntity(), Particle.TOTEM, 16, .4f);
         }

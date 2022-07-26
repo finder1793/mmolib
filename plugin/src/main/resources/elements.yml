@@ -1,12 +1,16 @@
-
 FIRE:
 
-  # Main translation MMOCore and MMOItems will use
+  # Public translation MMOCore and MMOItems will use
   name: Fire
 
-  icon: BLAZE_POWDER # Purely cosmetic, used in the MMOItems item editor
-  lore-icon: '🔥' # Used in the MMOItems item lore
-  color: '&c' # Used in the MMOItems item lore
+  # An item associated to your element. Used in the MI item editor
+  icon: BLAZE_POWDER
+
+  # Some nice looking icon, used in damage indicators and MI item lore
+  lore-icon: '🔥'
+
+  # A color associated to your element. Used in damage indicators as well as MI item lore
+  color: '&c'
 
   # What gets executed when a normal elemental is performed
   regular-attack:
@@ -74,6 +78,7 @@ DARKNESS:
   color: '&8'
   regular-attack:
     mythiclib-skill-id: empty_skill
+  # No crits possible
 
 LIGHTNESS:
   name: Light
@@ -82,3 +87,4 @@ LIGHTNESS:
   color: '&f'
   regular-attack:
     mythiclib-skill-id: empty_skill
+  # No crits possible

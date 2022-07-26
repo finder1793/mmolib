@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.listener.option;
 
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.IndicatorDisplayEvent;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
@@ -25,10 +26,10 @@ public class RegenIndicators extends GameIndicators {
             return;
 
         // Display no indicator around vanished player
-        if (entity instanceof Player && isVanished((Player) entity))
+        if (entity instanceof Player && UtilityMethods.isVanished((Player) entity))
             return;
 
-        displayIndicator(entity, getFormat().replace("#", formatNumber(event.getAmount())), getIndicatorDirection(entity), IndicatorDisplayEvent.IndicatorType.REGENERATION);
+        displayIndicator(entity, getRaw().replace("#", formatNumber(event.getAmount())), getIndicatorDirection(entity), IndicatorDisplayEvent.IndicatorType.REGENERATION);
     }
 
     /**

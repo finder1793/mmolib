@@ -7,6 +7,15 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+/**
+ * This is a wrapper for bukkit damage events used
+ * to provide more information on the current attack:
+ * - the player attacking
+ * - the player stats snapshot
+ * - full info on the damage
+ *
+ * @author jules
+ */
 public class PlayerAttackEvent extends MMOPlayerDataEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
 

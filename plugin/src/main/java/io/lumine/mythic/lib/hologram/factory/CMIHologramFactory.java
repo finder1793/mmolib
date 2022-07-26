@@ -75,6 +75,7 @@ public class CMIHologramFactory implements HologramFactory {
         @Override
         public void updateLocation(Location loc) {
             holo.setLoc(loc);
+            holo.update();
         }
 
         @Override

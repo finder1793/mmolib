@@ -261,7 +261,8 @@ public class DamageManager implements Listener, AttackHandler {
      * by other plugins ie MMOItems abilities, or MMOCore skills, or any other plugin.
      * <p>
      * If it can't find any plugin that has registered an attack, it checks if it is simply
-     * not just a vanilla attack: projectile or melee attacks.
+     * not just a vanilla attack: projectile or melee attacks. If SO it registers this new
+     * attack meta within MythicLib to make sure the same attackMeta is provided later on.
      *
      * @param event The attack event
      * @return Null if MythicLib cannot find the attack source, some attack meta otherwise.
@@ -293,8 +294,10 @@ public class DamageManager implements Listener, AttackHandler {
          * other item, it is considered a WEAPON attack.
          */
         if (isRealPlayer(event.getDamager())) {
-            EquipmentSlot hand = isBeingOffHandAttacked(event.getEntity()) ? EquipmentSlot.OFF_HAND : EquipmentSlot.MAIN_HAND;
-            return new MeleeAttackMetadata(new DamageMetadata(event.getDamage(), getDamageTypes(event, hand)), (LivingEntity) event.getEntity(), MMOPlayerData.get((Player) event.getDamager()).getStatMap().cache(hand), hand);
+            final EquipmentSlot hand = isBeingOffHandAttacked(event.getEntity()) ? EquipmentSlot.OFF_HAND : EquipmentSlot.MAIN_HAND;
+            final AttackMetadata attackMeta = new MeleeAttackMetadata(new DamageMetadata(event.getDamage(), getDamageTypes(event, hand)), (LivingEntity) event.getEntity(), MMOPlayerData.get((Player) event.getDamager()).getStatMap().cache(hand), hand);
+            customAttacks.put(event.getEntity().getEntityId(), attackMeta);
+            return attackMeta;
         }
 
         /*
@@ -312,9 +315,12 @@ public class DamageManager implements Listener, AttackHandler {
         if (event.getDamager() instanceof Projectile) {
             Projectile projectile = (Projectile) event.getDamager();
             ProjectileSource source = projectile.getShooter();
-            if (source != null && !source.equals(event.getEntity()) && isRealPlayer(source))
-                return new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
+            if (source != null && !source.equals(event.getEntity()) && isRealPlayer(source)) {
+                final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
                         MMOPlayerData.get((Player) source).getStatMap().cache(EquipmentSlot.MAIN_HAND), projectile);
+                customAttacks.put(event.getEntity().getEntityId(), attackMeta);
+                return attackMeta;
+            }
         }
 
         return null;

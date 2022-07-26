@@ -11,6 +11,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -201,6 +202,19 @@ public class UtilityMethods {
         } catch (IOException exception) {
             exception.printStackTrace();
         }
+    }
+
+    /**
+     * The 'vanished' meta data should be supported by vanish plugins
+     * to let all the plugins knows when a player is vanished.
+     *
+     * @return If a given player is vanished or not
+     */
+    public static boolean isVanished(Player player) {
+        for (MetadataValue meta : player.getMetadata("vanished"))
+            if (meta.asBoolean())
+                return true;
+        return false;
     }
 
     /**

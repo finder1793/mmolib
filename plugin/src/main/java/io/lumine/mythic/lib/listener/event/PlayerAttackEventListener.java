@@ -44,8 +44,8 @@ import org.bukkit.projectiles.ProjectileSource;
 public class PlayerAttackEventListener implements Listener {
 
     /**
-     * Calls a PlayerAttackEvent whenever an entity is attacked, only if
-     * MythicLib manages to find an attacker.
+     * Calls a PlayerAttackEvent whenever an entity is attacked,
+     * only if MythicLib manages to find an attacker.
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void registerEvents(EntityDamageByEntityEvent event) {

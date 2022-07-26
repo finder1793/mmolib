@@ -7,7 +7,8 @@ import java.text.DecimalFormatSymbols;
 
 public class ConfigManager {
     public final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
-    public final DecimalFormat decimal = new DecimalFormat("0.#"), decimals = new DecimalFormat("0.#");
+
+    public DecimalFormat decimal, decimals;
     public boolean playerAbilityDamage;
 
     public void reload() {
@@ -15,8 +16,8 @@ public class ConfigManager {
 
         // Decimal separator
         formatSymbols.setDecimalSeparator(getFirstChar(MythicLib.plugin.getConfig().getString("number-format.decimal-separator")));
-        decimal.setDecimalFormatSymbols(formatSymbols);
-        decimals.setDecimalFormatSymbols(formatSymbols);
+        decimal = newDecimalFormat("0.#");
+        decimals = newDecimalFormat("0.##");
     }
 
     /**
@@ -46,6 +47,6 @@ public class ConfigManager {
     }
 
     private char getFirstChar(String str) {
-        return str == null || str.isEmpty() ? ',' : str.charAt(0);
+        return str == null || str.isEmpty() ? '.' : str.charAt(0);
     }
 }

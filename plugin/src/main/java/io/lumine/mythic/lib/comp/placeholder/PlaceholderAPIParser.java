@@ -8,6 +8,6 @@ public class PlaceholderAPIParser implements PlaceholderParser {
 
 	@Override
 	public String parse(OfflinePlayer player, String string) {
-		return MythicLib.plugin.parseColors(PlaceholderAPI.setPlaceholders(player, string.replace("%player%", player.getName())));
+		return MythicLib.plugin.parseColors(PlaceholderAPI.setPlaceholders(player, string));
 	}
 }

@@ -4,11 +4,19 @@ import io.lumine.mythic.lib.element.Element;
 import io.lumine.mythic.lib.element.ElementalDamagePacket;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class DamageMetadata implements Cloneable {
     private final Set<DamagePacket> packets = new HashSet<>();
+
+    @Deprecated
+    private boolean weaponCrit, skillCrit;
+
+    @Deprecated
+    private final Set<Element> elementalCrit = new HashSet<>();
 
     /**
      * Used to register an attack with NO initial packet!
@@ -37,24 +45,28 @@ public class DamageMetadata implements Cloneable {
         packets.add(new ElementalDamagePacket(damage, element, types));
     }
 
-    @Override
-    public String toString() {
+    public boolean isWeaponCriticalStrike() {
+        return weaponCrit;
+    }
 
-        StringBuilder damageTypes = new StringBuilder("\u00a73Damage Meta{");
+    public void registerWeaponCriticalStrike() {
+        this.weaponCrit = true;
+    }
 
-        boolean packetAppended = false;
-        for (DamagePacket packet : packets) {
-            if (packetAppended) {
-                damageTypes.append("\u00a73;");
-            }
-            packetAppended = true;
+    public boolean isSkillCriticalStrike() {
+        return weaponCrit;
+    }
 
-            // Damage
-            damageTypes.append(packet);
-        }
+    public void registerSkillCriticalStrike() {
+        this.skillCrit = true;
+    }
 
-        // Yeah
-        return damageTypes.append("\u00a73}").toString();
+    public boolean isElementalCriticalStrike(Element el) {
+        return elementalCrit.contains(el);
+    }
+
+    public void registerElementalCriticalStrike(Element el) {
+        elementalCrit.add(el);
     }
 
     public double getDamage() {
@@ -74,6 +86,18 @@ public class DamageMetadata implements Cloneable {
                 d += packet.getFinalValue();
 
         return d;
+    }
+
+    public Map<Element, Double> mapElementalDamage() {
+        Map<Element, Double> mapped = new HashMap<>();
+
+        for (DamagePacket packet : packets)
+            if (packet instanceof ElementalDamagePacket) {
+                final Element el = ((ElementalDamagePacket) packet).getElement();
+                mapped.put(el, mapped.getOrDefault(el, 0d) + packet.getFinalValue());
+            }
+
+        return mapped;
     }
 
     public Set<DamagePacket> getPackets() {
@@ -206,5 +230,25 @@ public class DamageMetadata implements Cloneable {
             clone.packets.add(packet.clone());
 
         return clone;
+    }
+
+    @Override
+    public String toString() {
+
+        StringBuilder damageTypes = new StringBuilder("\u00a73Damage Meta{");
+
+        boolean packetAppended = false;
+        for (DamagePacket packet : packets) {
+            if (packetAppended) {
+                damageTypes.append("\u00a73;");
+            }
+            packetAppended = true;
+
+            // Damage
+            damageTypes.append(packet);
+        }
+
+        // Yeah
+        return damageTypes.append("\u00a73}").toString();
     }
 }

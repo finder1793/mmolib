@@ -204,7 +204,11 @@ public class MythicLib extends JavaPlugin {
 
         // Regen and damage indicators
         if (getConfig().getBoolean("game-indicators.damage.enabled"))
-            Bukkit.getPluginManager().registerEvents(new DamageIndicators(getConfig().getConfigurationSection("game-indicators.damage")), this);
+            try {
+                Bukkit.getPluginManager().registerEvents(new DamageIndicators(getConfig().getConfigurationSection("game-indicators.damage")), this);
+            } catch (RuntimeException exception) {
+                getLogger().log(Level.WARNING, "Could not load damage indicators: " + exception.getMessage());
+            }
         if (getConfig().getBoolean("game-indicators.regen.enabled"))
             Bukkit.getPluginManager().registerEvents(new RegenIndicators(getConfig().getConfigurationSection("game-indicators.regen")), this);
 
