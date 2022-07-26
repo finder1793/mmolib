@@ -81,7 +81,7 @@ public class AttackMetadata extends PlayerMetadata {
 
     /**
      * @deprecated Cloning is now ambiguous because no target entity is specified. Please use the
-     *         new constructor instead of cloning
+     *         new constructor/{@link PlayerMetadata#attack(LivingEntity, double, DamageType...)} instead of cloning
      */
     @Deprecated
     public AttackMetadata clone() {

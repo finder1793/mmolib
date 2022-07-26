@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.manager;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.skill.custom.CustomSkill;
 import io.lumine.mythic.lib.skill.custom.condition.Condition;
 import io.lumine.mythic.lib.skill.custom.condition.generic.BooleanCondition;
@@ -389,10 +390,12 @@ public class SkillManager {
             if (!skillsFolder.exists())
                 skillsFolder.mkdir();
 
-            // mkdir customskill folder
-            File customSkillsFolder = new File(MythicLib.plugin.getDataFolder() + "/script");
-            if (!customSkillsFolder.exists())
-                customSkillsFolder.mkdir();
+            // mkdir script folder
+            File scriptFolder = new File(MythicLib.plugin.getDataFolder() + "/script");
+            if (!scriptFolder.exists()) {
+                UtilityMethods.loadDefaultFile("script", "element-attacks.yml");
+                UtilityMethods.loadDefaultFile("script", "showcase-skills.yml");
+            }
 
             // MythicMobs skill handler type
             if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null)

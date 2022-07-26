@@ -6,11 +6,14 @@ config-version: 4
 number-format:
   decimal-separator: .
 
-# This is the formula for how defense works. It does
-# NOT apply operators precedence. Placeholders:
-# #damage# - Damage Dealt
-# #defense# - Player Defense
-defense-application: '#damage# * (1 - (#defense# / (#defense# + 100)))'
+# Defines how defense behaves. The formula should return the
+# final amount of damage dealt, given the following inputs:
+# - damage dealt #damage#
+# - player defense #defense#
+#
+# The default formula is inspired from Path of Exile, you can
+# learn more about it on their wiki: https://pathofexile.fandom.com/wiki/Armour
+defense-application: '#damage# * (1 - (#defense# / (5 * #damage# + #defense#)))'
 
 # Allows to scale health up/down to a specific
 # amount so extra health does not fill up the screen.

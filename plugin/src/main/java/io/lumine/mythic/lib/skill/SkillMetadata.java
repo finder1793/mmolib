@@ -356,14 +356,12 @@ public class SkillMetadata {
      * @return The (modified) attack metadata
      */
     @NotNull
-    public AttackMetadata attack(LivingEntity target, double damage, DamageType... types) {
-        if (attackMeta != null && !attackMeta.hasExpired() && attackMeta.getTarget().equals(target)) {
+    public AttackMetadata attack(@NotNull LivingEntity target, double damage, DamageType... types) {
+        if (attackMeta != null && !attackMeta.hasExpired() && target.equals(attackMeta.getTarget())) {
             attackMeta.getDamage().add(damage, types);
             return attackMeta;
         }
 
-        AttackMetadata attackMeta = new AttackMetadata(new DamageMetadata(damage, types), target, caster);
-        MythicLib.plugin.getDamage().damage(attackMeta, target);
-        return attackMeta;
+        return caster.attack(target, damage, types);
     }
 }

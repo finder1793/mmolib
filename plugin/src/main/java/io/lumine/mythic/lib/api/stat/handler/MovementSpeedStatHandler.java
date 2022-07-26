@@ -8,6 +8,11 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 
 public class MovementSpeedStatHandler implements StatHandler {
+    private final boolean moveSpeed;
+
+    public MovementSpeedStatHandler(boolean moveSpeed) {
+        this.moveSpeed = moveSpeed;
+    }
 
     @SuppressWarnings("deprecation")
     @Override
@@ -42,7 +47,12 @@ public class MovementSpeedStatHandler implements StatHandler {
     }
 
     @Override
+    public double getTotalValue(StatMap map) {
+        return moveSpeed ? map.getPlayerData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getValue() : map.getStat("SPEED_MALUS_REDUCTION");
+    }
+
+    @Override
     public double getBaseValue(StatMap map) {
-        return map.getPlayerData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue();
+        return moveSpeed ? map.getPlayerData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue() : 0;
     }
 }
