@@ -464,7 +464,7 @@ public class SkillManager {
                     try {
                         registerSkillHandler(loadSkillHandler(config.getConfigurationSection(key)));
                     } catch (RuntimeException exception) {
-                        MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill handler '" + config.getName() + "' from file '" + file.getName() + "': " + exception.getMessage());
+                        MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill handler '" + key + "' from file '" + file.getName() + "': " + exception.getMessage());
                     }
         }, MythicLib.plugin, "Could not load skills").explore(new File(MythicLib.plugin.getDataFolder() + "/skill"));
     }
