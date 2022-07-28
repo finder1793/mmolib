@@ -359,6 +359,13 @@
         </dependency>
 
         <dependency>
+            <groupId>eu.decentsoftware</groupId>
+            <artifactId>DecentHolograms</artifactId>
+            <version>2.5.2</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>com.bekvon.bukkit.residence</groupId>
             <artifactId>Residence</artifactId>
             <version>5.0.1.7</version>
