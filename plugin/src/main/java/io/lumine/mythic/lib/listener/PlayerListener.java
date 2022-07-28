@@ -44,7 +44,7 @@ public class PlayerListener implements Listener {
         TemporaryPlayerData.unload(event.getPlayer());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void registerOfflinePlayers(PlayerQuitEvent event) {
 
         /**
