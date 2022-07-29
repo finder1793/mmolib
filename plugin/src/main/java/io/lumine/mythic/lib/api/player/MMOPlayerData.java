@@ -75,6 +75,23 @@ public class MMOPlayerData {
         this.passiveSkillMap = tempData.getPassiveSkills();
     }
 
+    /**
+     * MMOPlayerData for offline players
+     *
+     * @param uuid Player UUID
+     */
+    public MMOPlayerData(UUID uuid) {
+        this.uuid = uuid;
+        this.player = null;
+
+        this.cooldownMap = new CooldownMap();
+        this.statMap = new StatMap(this);
+        this.variableList = new VariableList(VariableScope.PLAYER);
+        this.permEffectMap = new PermanentPotionEffectMap(this);
+        this.particleEffectMap = new ParticleEffectMap(this);
+        this.passiveSkillMap = new PassiveSkillMap(this);
+    }
+
     public UUID getUniqueId() {
         return uuid;
     }
