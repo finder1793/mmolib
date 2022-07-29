@@ -80,7 +80,7 @@
                                     <shadedPattern>io.lumine.mythic.lib.sql.hikari</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>org.bstats.bukkit</pattern>
+                                    <pattern>org.bstats</pattern>
                                     <shadedPattern>io.lumine.mythic.lib.metrics</shadedPattern>
                                 </relocation>
                             </relocations>

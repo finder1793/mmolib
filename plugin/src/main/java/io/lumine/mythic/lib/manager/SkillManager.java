@@ -391,7 +391,7 @@ public class SkillManager {
                 skillsFolder.mkdir();
 
             // mkdir script folder
-            File scriptFolder = new File(MythicLib.plugin.getDataFolder() + "/default/script");
+            File scriptFolder = new File(MythicLib.plugin.getDataFolder() + "/script");
             if (!scriptFolder.exists()) {
                 UtilityMethods.loadDefaultFile("script", "element-attacks.yml");
                 UtilityMethods.loadDefaultFile("script", "showcase-skills.yml");
@@ -434,7 +434,7 @@ public class SkillManager {
                     MythicLib.plugin.getLogger().log(Level.WARNING, "Could not initialize script '" + key + "' from '" + file.getName() + "': " + exception.getMessage());
                 }
 
-        }, MythicLib.plugin, "Could not load scripts").explore(new File(MythicLib.plugin.getDataFolder() + "/default/script"));
+        }, MythicLib.plugin, "Could not load scripts").explore(new File(MythicLib.plugin.getDataFolder() + "/script"));
 
         // Post load custom skills and register a skill handler
         for (CustomSkill skill : customSkills.values())
