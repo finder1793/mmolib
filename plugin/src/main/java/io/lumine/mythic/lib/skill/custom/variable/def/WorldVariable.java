@@ -12,6 +12,7 @@ public class WorldVariable extends Variable<World> {
 
     static {
         VARIABLE_REGISTRY.registerVariable("time", var -> new IntegerVariable("temp", (int) var.getStored().getTime()));
+        VARIABLE_REGISTRY.registerVariable("name", var -> new StringVariable("temp", var.getStored().getName()));
     }
 
     public WorldVariable(String name, World world) {
