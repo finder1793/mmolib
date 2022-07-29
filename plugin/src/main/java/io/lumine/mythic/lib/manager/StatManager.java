@@ -1,20 +1,31 @@
 package io.lumine.mythic.lib.manager;
 
+import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.stat.SharedStat;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.api.stat.handler.AttributeStatHandler;
 import io.lumine.mythic.lib.api.stat.handler.MovementSpeedStatHandler;
 import io.lumine.mythic.lib.api.stat.handler.StatHandler;
+import io.lumine.mythic.lib.util.ConfigFile;
 import org.apache.commons.lang.Validate;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.logging.Level;
 
 public class StatManager {
     private final Map<String, StatHandler> handlers = new HashMap<>();
+    private final Map<String, DecimalFormat> decimalFormats = new HashMap<>();
+
+    private DecimalFormat defaultDecimalFormat;
 
     public StatManager() {
 
@@ -29,6 +40,30 @@ public class StatManager {
 
         handlers.put(SharedStat.MOVEMENT_SPEED, new MovementSpeedStatHandler(true));
         handlers.put(SharedStat.SPEED_MALUS_REDUCTION, new MovementSpeedStatHandler(false));
+    }
+
+    public void initialize(boolean clearBefore) {
+        if (clearBefore)
+            decimalFormats.clear();
+
+        UtilityMethods.loadDefaultFile("", "stats.yml");
+
+        // Load decimal formats
+        defaultDecimalFormat = MythicLib.plugin.getMMOConfig().newDecimalFormat("0.#");
+        FileConfiguration config = new ConfigFile("stats").getConfig();
+        for (String key : config.getConfigurationSection("decimal-format").getKeys(false))
+            try {
+                final String stat = UtilityMethods.enumName(key);
+                decimalFormats.put(stat, MythicLib.plugin.getMMOConfig().newDecimalFormat("decimal-format." + key));
+            } catch (RuntimeException exception) {
+                MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load decimal format of '" + key + "': " + exception.getMessage());
+            }
+    }
+
+    @NotNull
+    public static String format(String stat, double value) {
+        final StatManager manager = MythicLib.plugin.getStats();
+        return Objects.requireNonNullElse(manager.decimalFormats.get(stat), manager.defaultDecimalFormat).format(value);
     }
 
     /**
