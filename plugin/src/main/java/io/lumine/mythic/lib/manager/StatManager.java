@@ -54,7 +54,7 @@ public class StatManager {
         for (String key : config.getConfigurationSection("decimal-format").getKeys(false))
             try {
                 final String stat = UtilityMethods.enumName(key);
-                decimalFormats.put(stat, MythicLib.plugin.getMMOConfig().newDecimalFormat("decimal-format." + key));
+                decimalFormats.put(stat, MythicLib.plugin.getMMOConfig().newDecimalFormat(config.getString("decimal-format." + key)));
             } catch (RuntimeException exception) {
                 MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load decimal format of '" + key + "': " + exception.getMessage());
             }
