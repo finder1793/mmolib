@@ -14,20 +14,6 @@
         <finalName>${project.name}-${project.version}</finalName>
         <sourceDirectory>src/main/java</sourceDirectory>
         <defaultGoal>clean package install</defaultGoal>
-        <resources>
-            <resource>
-                <targetPath>.</targetPath>
-                <filtering>true</filtering>
-                <directory>${basedir}/src/main/resources</directory>
-                <includes>
-                    <include>plugin.yml</include>
-                    <include>config.yml</include>
-                    <include>readme.txt</include>
-                    <include>elements.yml</include>
-                    <include>armorequipevent-blocked.txt</include>
-                </includes>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -153,7 +139,6 @@
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>1.5</version>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -201,6 +186,7 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -224,6 +210,7 @@
             <artifactId>lombok</artifactId>
             <version>1.18.20</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -231,6 +218,7 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.6</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <!-- Spigot API -->
@@ -239,6 +227,7 @@
             <artifactId>spigot-api</artifactId>
             <version>1.18-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <!-- Spigot NMS versions -->
@@ -287,6 +276,7 @@
             <artifactId>spigot-1.13.2</artifactId>
             <version>dev</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -303,6 +293,7 @@
             <artifactId>ProtocolLib</artifactId>
             <version>4.7.0</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -318,6 +309,7 @@
             <artifactId>Holograms</artifactId>
             <version>2.13</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -349,6 +341,7 @@
             <artifactId>mcMMO</artifactId>
             <version>2.1.209</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -356,6 +349,7 @@
             <artifactId>CMILib</artifactId>
             <version>1.2.2.0</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -363,6 +357,7 @@
             <artifactId>DecentHolograms</artifactId>
             <version>2.5.2</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -403,6 +398,7 @@
             <artifactId>RealDualWield</artifactId>
             <version>1.1.36</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
@@ -410,6 +406,7 @@
             <artifactId>DualWield</artifactId>
             <version>2.9</version>
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
     </dependencies>

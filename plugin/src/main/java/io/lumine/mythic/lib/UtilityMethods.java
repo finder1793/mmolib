@@ -198,7 +198,7 @@ public class UtilityMethods {
 
         final File file = new File(MythicLib.plugin.getDataFolder() + newPath, name);
         if (!file.exists()) try {
-            Files.copy(MythicLib.plugin.getResource((path.isEmpty() ? "" : path + "/") + name), file.getAbsoluteFile().toPath());
+            Files.copy(MythicLib.plugin.getResource("default/" + (path.isEmpty() ? "" : path + "/") + name), file.getAbsoluteFile().toPath());
         } catch (IOException exception) {
             exception.printStackTrace();
         }
