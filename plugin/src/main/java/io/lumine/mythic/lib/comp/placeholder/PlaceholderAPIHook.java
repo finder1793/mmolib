@@ -1,10 +1,11 @@
 package io.lumine.mythic.lib.comp.placeholder;
 
-import io.lumine.mythic.lib.api.placeholders.MythicPlaceholder;
-//todo import me.clip.placeholderapi.PlaceholderAPI;
-import org.bukkit.OfflinePlayer;
+import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A mythic placeholder that just passes on to PAPI
@@ -12,15 +13,40 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Gunging
  */
-public class PlaceholderAPIHook implements MythicPlaceholder {
-    @NotNull
+public class PlaceholderAPIHook extends PlaceholderExpansion {
+
     @Override
-    public String getAuthorName() { return "gunging"; }
+    public @NotNull String getIdentifier() {
+        return "mythiclib";
+    }
 
-    @NotNull @Override public String getMythicIdentifier() { return ""; }
+    @Override
+    public @NotNull String getAuthor() {
+        return "Indyuce";
+    }
 
-    @Nullable @Override public String parse(@NotNull String text, @NotNull Object thing) { return ""; }
-    //@Nullable @Override public String parse(@NotNull String text, @NotNull Object thing) { return PlaceholderAPI.setPlaceholders((OfflinePlayer) thing, text); }
+    @Override
+    public @NotNull String getVersion() {
+        return MythicLib.plugin.getDescription().getVersion();
+    }
 
-    @Override public boolean forUseWith(@NotNull Object obj) { return (obj instanceof OfflinePlayer); }
+    @Override
+    public String onPlaceholderRequest(Player player, @NotNull String params) {
+
+        // All placeholders are related to players
+        if (player == null)
+            return null;
+
+        if (params.startsWith("stat_")) {
+            final String stat = UtilityMethods.enumName(params.substring(5));
+            return MythicLib.plugin.getStats().format(stat, MMOPlayerData.get(player).getStatMap().getStat(stat));
+        }
+
+        if (params.startsWith("cooldown_")) {
+            final String key = UtilityMethods.enumName(params.substring(9));
+            return MythicLib.plugin.getMMOConfig().decimal.format(MMOPlayerData.get(player).getCooldownMap().getCooldown(key));
+        }
+
+        return null;
+    }
 }

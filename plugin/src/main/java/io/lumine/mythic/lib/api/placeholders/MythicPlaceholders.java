@@ -1,6 +1,6 @@
 package io.lumine.mythic.lib.api.placeholders;
 
-import io.lumine.mythic.lib.comp.placeholder.PlaceholderAPIHook;
+import io.lumine.mythic.lib.comp.placeholder.MythicPlaceholderAPIHook;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -78,7 +78,7 @@ public class MythicPlaceholders {
         if (!parser.forUseWith(o)) { return null; }
 
         // Special case
-        if (parser instanceof PlaceholderAPIHook && ((o instanceof OfflinePlayer))) {
+        if (parser instanceof MythicPlaceholderAPIHook && ((o instanceof OfflinePlayer))) {
 
             // Just parse through that one
             return parser.parse(str, o); }

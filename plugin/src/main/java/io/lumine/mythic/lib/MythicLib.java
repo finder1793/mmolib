@@ -25,10 +25,7 @@ import io.lumine.mythic.lib.comp.hexcolor.HexColorParser;
 import io.lumine.mythic.lib.comp.hexcolor.SimpleColorParser;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
-import io.lumine.mythic.lib.comp.placeholder.DefaultPlaceholderParser;
-import io.lumine.mythic.lib.comp.placeholder.PlaceholderAPIHook;
-import io.lumine.mythic.lib.comp.placeholder.PlaceholderAPIParser;
-import io.lumine.mythic.lib.comp.placeholder.PlaceholderParser;
+import io.lumine.mythic.lib.comp.placeholder.*;
 import io.lumine.mythic.lib.comp.protocollib.DamageParticleCap;
 import io.lumine.mythic.lib.comp.target.CitizensTargetRestriction;
 import io.lumine.mythic.lib.comp.target.FactionsRestriction;
@@ -186,7 +183,8 @@ public class MythicLib extends JavaPlugin {
         }
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            MythicPlaceholders.registerPlaceholder(new PlaceholderAPIHook());
+            MythicPlaceholders.registerPlaceholder(new MythicPlaceholderAPIHook());
+            new PlaceholderAPIHook().register();
             placeholderParser = new PlaceholderAPIParser();
             getLogger().log(Level.INFO, "Hooked onto PlaceholderAPI");
         } else
@@ -240,11 +238,13 @@ public class MythicLib extends JavaPlugin {
         Bukkit.getScheduler().runTaskTimer(this, TemporaryPlayerData::flush, 20 * 60 * 60, 20 * 60 * 60);
 
         configManager.reload();
+        statManager.initialize(false);
     }
 
     public void reload() {
         reloadConfig();
         configManager.reload();
+        statManager.initialize(true);
         attackEffects.reload();
         mitigationMechanics.reload();
         skillManager.initialize(true);
