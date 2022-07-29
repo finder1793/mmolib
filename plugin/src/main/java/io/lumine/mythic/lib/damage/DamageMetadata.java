@@ -54,7 +54,7 @@ public class DamageMetadata implements Cloneable {
     }
 
     public boolean isSkillCriticalStrike() {
-        return weaponCrit;
+        return skillCrit;
     }
 
     public void registerSkillCriticalStrike() {
