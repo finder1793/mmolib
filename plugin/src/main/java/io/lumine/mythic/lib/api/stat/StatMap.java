@@ -5,14 +5,17 @@ import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.player.PlayerMetadata;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 public class StatMap implements StatProvider {
     private final MMOPlayerData data;
     private final Map<String, StatInstance> stats = new ConcurrentHashMap<>();
+    private final Function<String, StatInstance> instanceFunction = stat -> new StatInstance(this, stat);
 
     public StatMap(MMOPlayerData player) {
         this.data = player;
@@ -42,14 +45,9 @@ public class StatMap implements StatProvider {
      *         (temporary?) stat modifiers to a player, remove modifiers or
      *         calculate stat values in various ways.
      */
+    @NotNull
     public StatInstance getInstance(String id) {
-        StatInstance ins = stats.get(id);
-        if (ins != null)
-            return ins;
-
-        ins = new StatInstance(this, id);
-        stats.put(id, ins);
-        return ins;
+        return stats.computeIfAbsent(id, instanceFunction);
     }
 
     /**
