@@ -1,8 +1,8 @@
 package io.lumine.mythic.lib.command.mythiclib.debug;
 
-import com.google.gson.JsonObject;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatInstance;
+import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.api.stat.modifier.StatModifier;
 import io.lumine.mythic.lib.command.api.CommandTreeNode;
 import org.bukkit.command.CommandSender;
@@ -15,31 +15,19 @@ public class StatsCommand extends CommandTreeNode {
 
     @Override
     public CommandResult execute(CommandSender sender, String[] args) {
-
         if (!(sender instanceof Player)) {
             sender.sendMessage("You can only use this command as a player");
             return CommandResult.FAILURE;
         }
 
-        Player player = (Player) sender;
-        MMOPlayerData mmo = MMOPlayerData.get(player);
-        JsonObject stats = new JsonObject();
-        for (StatInstance stat : mmo.getStatMap().getInstances()) {
-            JsonObject instance = new JsonObject();
-            instance.addProperty("base", stat.getBase());
-            instance.addProperty("total", stat.getTotal());
-            JsonObject modifiers = new JsonObject();
-            for (String key : stat.getKeys()) {
-                JsonObject mod = new JsonObject();
-                StatModifier modifier = stat.getModifier(key);
-                mod.addProperty("value", modifier.getValue());
-                mod.addProperty("type", modifier.getType().name());
-                modifiers.add(key, mod);
-            }
-            instance.add("modifiers", modifiers);
-            stats.add(stat.getStat(), instance);
+        final StatMap stats = MMOPlayerData.get((Player) sender).getStatMap();
+        for (StatInstance ins : stats.getInstances()) {
+            StringBuilder str = new StringBuilder(ins.getStat());
+            str.append(" | Stat: ").append(ins.getTotal()).append(" | Base: ").append(ins.getBase()).append(" | ");
+            for (StatModifier mod : ins.getModifiers())
+                str.append(mod.toString()).append(" (").append(mod.getKey()).append(") + ");
+            sender.sendMessage(str.toString());
         }
-        sender.sendMessage(stats.toString());
 
         return CommandResult.SUCCESS;
     }

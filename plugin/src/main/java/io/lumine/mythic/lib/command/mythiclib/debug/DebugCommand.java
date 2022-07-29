@@ -11,6 +11,7 @@ public class DebugCommand extends CommandTreeNode {
         addChild(new NBTCommand(this));
         addChild(new StatsCommand(this));
         addChild(new VersionsCommand(this));
+        addChild(new TestCommand(this));
     }
 
     @Override
