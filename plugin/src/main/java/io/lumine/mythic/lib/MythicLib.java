@@ -58,6 +58,7 @@ public class MythicLib extends JavaPlugin {
 
     //@Getter private ProfileManager profileManager;
 
+
     private final DamageManager damageManager = new DamageManager();
     private final EntityManager entityManager = new EntityManager();
     private final StatManager statManager = new StatManager();
