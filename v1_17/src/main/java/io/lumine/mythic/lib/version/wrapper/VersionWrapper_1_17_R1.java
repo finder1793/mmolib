@@ -17,14 +17,12 @@ import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
 import net.minecraft.network.protocol.game.ClientboundChatPacket;
-import net.minecraft.network.protocol.game.ClientboundContainerClosePacket;
 import net.minecraft.network.protocol.game.ServerboundSwingPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
@@ -36,7 +34,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_17_R1.event.CraftEventFactory;
 import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_17_R1.util.CraftMagicNumbers.NBT;
 import org.bukkit.enchantments.Enchantment;
@@ -103,66 +100,52 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 
     @Override
     public int getNextContainerId(Player player) {
-        return toNMS(player).nextContainerCounter();
+        throw new RuntimeException("Not implemented");
     }
 
     @Override
     public void handleInventoryCloseEvent(Player player) {
-        CraftEventFactory.handleInventoryCloseEvent(toNMS(player));
+        throw new RuntimeException("Not implemented");
     }
 
     @Override
     public void sendPacketOpenWindow(Player player, int containerId) {
-        /*toNMS(player).playerConnection.sendPacket(new PacketPlayOutOpenWindow(containerId, Container.b, new ChatMessage("Repair & Name")));**/
+        throw new RuntimeException("Not implemented");
     }
 
     @Override
     public void sendPacketCloseWindow(Player player, int containerId) {
-        toNMS(player).connection.send(new ClientboundContainerClosePacket(containerId));
+        throw new RuntimeException("Not implemented");
     }
 
     @Override
     public void setActiveContainerDefault(Player player) {
-        /*toNMS(player).activeContainer = toNMS(player).defaultContainer;**/
+        throw new RuntimeException("Not implemented");
     }
 
     @Override
     public void setActiveContainer(Player player, Object container) {
-        /*toNMS(player).activeContainer = (Container) container;*/
+        throw new RuntimeException("Not implemented");
     }
 
     @Override
     public void setActiveContainerId(Object container, int containerId) {
-		/*Field field = null;
-
-		try {
-			field = Container.class.getField("windowId");
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-		}
-
-		FieldUtils.removeFinalModifier(field);
-
-		try {
-			FieldUtils.writeField(field, container, containerId);
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}*/
+        throw new RuntimeException("Not implemented");
     }
 
     @Override
     public void addActiveContainerSlotListener(Object container, Player player) {
-        /*((Container) container).addSlotListener(toNMS(player));*/
+        throw new RuntimeException("Not implemented");
     }
 
     @Override
     public Inventory toBukkitInventory(Object container) {
-        return ((AbstractContainerMenu) container).getBukkitView().getTopInventory();
+        throw new RuntimeException("Not implemented");
     }
 
     @Override
     public Object newContainerAnvil(Player player) {
-        return new AnvilContainer(player);
+        throw new RuntimeException("Not implemented");
     }
 
     private ServerPlayer toNMS(Player player) {

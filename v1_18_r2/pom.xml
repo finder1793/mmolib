@@ -10,63 +10,14 @@
         <version>${revision}</version>
     </parent>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>net.md-5</groupId>
-                <artifactId>specialsource-maven-plugin</artifactId>
-                <version>1.2.2</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>remap</goal>
-                        </goals>
-                        <id>remap-obf</id>
-                        <configuration>
-                            <srgIn>org.spigotmc:minecraft-server:1.18.2-R0.1-SNAPSHOT:txt:maps-mojang</srgIn>
-                            <reverse>true</reverse>
-                            <remappedDependencies>org.spigotmc:spigot:1.18.2-R0.1-SNAPSHOT:jar:remapped-mojang</remappedDependencies>
-                            <remappedArtifactAttached>true</remappedArtifactAttached>
-                            <remappedClassifierName>remapped-obf</remappedClassifierName>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>remap</goal>
-                        </goals>
-                        <id>remap-spigot</id>
-                        <configuration>
-                            <inputFile>${project.build.directory}/${project.artifactId}-${project.version}-remapped-obf.jar</inputFile>
-                            <srgIn>org.spigotmc:minecraft-server:1.18.2-R0.1-SNAPSHOT:csrg:maps-spigot</srgIn>
-                            <remappedDependencies>org.spigotmc:spigot:1.18.2-R0.1-SNAPSHOT:jar:remapped-obf</remappedDependencies>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
     <repositories>
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <id>phoenix</id>
+            <url>https://la-grange-evasion.pro.dns-orange.fr/repository/maven-public/</url>
         </repository>
+
         <repository>
-            <id>lumine</id>
-            <url>https://mvn.lumine.io/repository/maven/</url>
-        </repository>
-        <repository>
-            <id>lumine-snapshots</id>
-            <url>https://mvn.lumine.io/repository/maven-snapshots/</url>
-        </repository>
-        <repository>
-            <id>lumine-test</id>
-            <url>https://mvn.lumine.io/repository/maven-test/</url>
-        </repository>
-        <repository>
-            <id>minecraft-repo</id>
+            <id>mojang</id>
             <url>https://libraries.minecraft.net/</url>
         </repository>
     </repositories>
@@ -78,19 +29,14 @@
             <version>${revision}</version>
             <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
+            <artifactId>spigot-remapped</artifactId>
             <version>1.18.2-R0.1-SNAPSHOT</version>
-            <classifier>remapped-mojang</classifier>
             <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
+
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
@@ -98,6 +44,7 @@
             <classifier>shaded</classifier>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>com.mojang</groupId>
             <artifactId>authlib</artifactId>
