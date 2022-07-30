@@ -54,6 +54,7 @@
                                         <exclude>org/jetbrains/**</exclude>
                                         <exclude>org/slf4j/**</exclude>
                                         <exclude>org/sonatype/**</exclude>
+                                        <exclude>META-INF/**</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
