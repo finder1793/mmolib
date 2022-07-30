@@ -54,7 +54,7 @@
     <repositories>
         <repository>
             <id>phoenix</id>
-            <url>http://la-grange-evasion.pro.dns-orange.fr:8081/repository/maven-public/</url>
+            <url>https://la-grange-evasion.pro.dns-orange.fr/repository/maven-public/</url>
         </repository>
         <repository>
             <id>nexus</id>
