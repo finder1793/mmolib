@@ -7,12 +7,14 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
+import io.lumine.mythic.lib.MythicLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class WorldGuardFlags implements FlagPlugin {
     private final WorldGuard worldguard;
@@ -24,15 +26,15 @@ public class WorldGuardFlags implements FlagPlugin {
         this.worldguardPlugin = (WorldGuardPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
 
         FlagRegistry registry = worldguard.getFlagRegistry();
-        for (CustomFlag customFlag : CustomFlag.values()) {
-            StateFlag flag = new StateFlag(customFlag.getPath(), true);
+        for (CustomFlag customFlag : CustomFlag.values())
             try {
+                final StateFlag flag = new StateFlag(customFlag.getPath(), true);
                 registry.register(flag);
                 flags.put(customFlag.getPath(), flag);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception exception) {
+                MythicLib.plugin.getLogger().log(Level.WARNING, "Could not register flag '" + customFlag.getPath() + "': " + exception.getMessage());
+                exception.printStackTrace();
             }
-        }
     }
 
     @Override
