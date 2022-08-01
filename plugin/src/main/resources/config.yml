@@ -87,8 +87,9 @@ mitigation:
 # Displays in-game damage or heal indicators.
 # Requires /reload when changed.
 # Supported Plugins:
-# - CMI
 # - HolographicDisplays
+# - DecentHolograms
+# - CMI
 # - Holograms
 # - TrHologram
 game-indicators:
