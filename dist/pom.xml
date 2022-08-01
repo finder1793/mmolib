@@ -37,24 +37,17 @@
                         </goals>
                         <configuration>
 
-                            <!-- Removed unused libraries -->
+                            <!-- Removed useless folders -->
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>
                                     <excludes>
                                         <exclude>assets/**</exclude>
-                                        <exclude>licenses/**</exclude>
-                                        <exclude>com/google/inject/**</exclude>
-                                        <exclude>javax/**</exclude>
-                                        <exclude>org/aopalliance/**</exclude>
-                                        <exclude>org/apache/maven/**</exclude>
-                                        <exclude>org/apache/commons/io/**</exclude>
-                                        <exclude>org/codehaus/**</exclude>
+                                        <exclude>META-INF/**</exclude>
+
                                         <exclude>org/intellij/**</exclude>
                                         <exclude>org/jetbrains/**</exclude>
                                         <exclude>org/slf4j/**</exclude>
-                                        <exclude>org/sonatype/**</exclude>
-                                        <exclude>META-INF/**</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
