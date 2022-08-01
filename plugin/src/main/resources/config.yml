@@ -98,7 +98,7 @@ game-indicators:
   damage:
     enabled: true
     decimal-format: '0.#'
-    format: '{icon} {value}'
+    format: '{icon} &f{value}'
     custom-font:
       enabled: false
       normal:
