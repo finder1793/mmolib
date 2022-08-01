@@ -126,8 +126,7 @@ public class DamageIndicators extends GameIndicators {
             if (dir.lengthSquared() > 0) {
 
                 // Calculate angle of attack
-                double x = dir.getX(), z = dir.getZ();
-                double a = z == 0 ? (x < 0 ? Math.PI / 2 : -Math.PI / 2) : (z < 0 ? Math.PI : 0) - Math.atan(x / z);
+                double a = Math.atan2(dir.getZ(), dir.getX());
 
                 // Random angle offset
                 a += Math.PI / 2 * (random.nextDouble() - .5);
