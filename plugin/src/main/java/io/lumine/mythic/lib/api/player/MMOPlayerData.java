@@ -6,7 +6,6 @@ import io.lumine.mythic.lib.comp.flags.CustomFlag;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.listener.PlayerListener;
 import io.lumine.mythic.lib.player.PlayerMetadata;
-import io.lumine.mythic.lib.player.TemporaryPlayerData;
 import io.lumine.mythic.lib.player.cooldown.CooldownMap;
 import io.lumine.mythic.lib.player.cooldown.CooldownType;
 import io.lumine.mythic.lib.player.particle.ParticleEffectMap;
@@ -42,37 +41,35 @@ public class MMOPlayerData {
     private long lastLogActivity;
 
     // Temporary player data
-    private final CooldownMap cooldownMap;
-    private final StatMap statMap;
-    private final PermanentPotionEffectMap permEffectMap;
-    private final ParticleEffectMap particleEffectMap;
-    private final PassiveSkillMap passiveSkillMap;
-    private final VariableList variableList;
+    private final CooldownMap cooldownMap = new CooldownMap();
+    private final StatMap statMap = new StatMap(this);
+    private final PermanentPotionEffectMap permEffectMap = new PermanentPotionEffectMap(this);
+    private final ParticleEffectMap particleEffectMap = new ParticleEffectMap(this);
+    private final PassiveSkillMap passiveSkillMap = new PassiveSkillMap(this);
+    private final VariableList variableList = new VariableList(VariableScope.PLAYER);
+
+    /**
+     * Map used by other plugins to save any type of data. This
+     * is typically used by MMOCore and MMOItems to store the player
+     * resources when the player logs off.
+     */
+    private final Map<String, Object> externalData = new HashMap<>();
+
+    /**
+     * When a player logs off, the MythicLib player data is cached for
+     * an extra delay which is set to 24 hours before it is finally removed
+     * from the memory.
+     * <p>
+     * Cache time out is set to one full day. If the player does NOT reconnect
+     * after one day, the temporary player data will be completely lost.
+     */
+    private static final long CACHE_TIME_OUT = 1000 * 60 * 60 * 24;
 
     private static final Map<UUID, MMOPlayerData> data = new HashMap<>();
 
     private MMOPlayerData(Player player) {
         this.uuid = player.getUniqueId();
         this.player = player;
-
-        this.cooldownMap = new CooldownMap();
-        this.statMap = new StatMap(this);
-        this.variableList = new VariableList(VariableScope.PLAYER);
-        this.permEffectMap = new PermanentPotionEffectMap(this);
-        this.particleEffectMap = new ParticleEffectMap(this);
-        this.passiveSkillMap = new PassiveSkillMap(this);
-    }
-
-    private MMOPlayerData(Player player, TemporaryPlayerData tempData) {
-        this.uuid = player.getUniqueId();
-        this.player = player;
-
-        this.cooldownMap = tempData.getCooldownMap();
-        this.statMap = tempData.getStatMap();
-        this.permEffectMap = tempData.getPermanentEffectMap();
-        this.particleEffectMap = tempData.getParticleEffectMap();
-        this.variableList = tempData.getSkillVariableList();
-        this.passiveSkillMap = tempData.getPassiveSkills();
     }
 
     /**
@@ -83,13 +80,6 @@ public class MMOPlayerData {
     public MMOPlayerData(UUID uuid) {
         this.uuid = uuid;
         this.player = null;
-
-        this.cooldownMap = new CooldownMap();
-        this.statMap = new StatMap(this);
-        this.variableList = new VariableList(VariableScope.PLAYER);
-        this.permEffectMap = new PermanentPotionEffectMap(this);
-        this.particleEffectMap = new ParticleEffectMap(this);
-        this.passiveSkillMap = new PassiveSkillMap(this);
     }
 
     public UUID getUniqueId() {
@@ -187,6 +177,10 @@ public class MMOPlayerData {
         return lastLogActivity;
     }
 
+    public boolean isTimedOut() {
+        return !isOnline() && lastLogActivity + CACHE_TIME_OUT < System.currentTimeMillis();
+    }
+
     /**
      * This method simply checks if the cached Player instance is null
      * because MythicLib uncaches it when the player leaves for memory purposes.
@@ -251,6 +245,20 @@ public class MMOPlayerData {
         return cooldownMap;
     }
 
+    @Nullable
+    public <T> T getExternalData(String key, Class<T> objectType) {
+        final @Nullable Object found = externalData.get(key);
+        return found == null ? null : (T) found;
+    }
+
+    public void setExternalData(String key, Object obj) {
+        externalData.put(key, obj);
+    }
+
+    public boolean hasExternalData(String key) {
+        return externalData.containsKey(key);
+    }
+
     /**
      * Called everytime a player enters the server. If the
      * resource data is not initialized yet, initializes it.
@@ -262,11 +270,11 @@ public class MMOPlayerData {
      * @param player Player whose data should be initialized
      */
     public static MMOPlayerData setup(Player player) {
-        MMOPlayerData found = data.get(player.getUniqueId());
+        final @Nullable MMOPlayerData found = data.get(player.getUniqueId());
 
         // Not loaded yet, checks for temporary data
         if (found == null) {
-            MMOPlayerData playerData = TemporaryPlayerData.has(player) ? new MMOPlayerData(player, TemporaryPlayerData.get(player)) : new MMOPlayerData(player);
+            final MMOPlayerData playerData = new MMOPlayerData(player);
             data.put(player.getUniqueId(), playerData);
             return playerData;
         }
@@ -285,15 +293,25 @@ public class MMOPlayerData {
      */
     @Deprecated
     public static boolean isLoaded(UUID uuid) {
-        return data.containsKey(uuid);
+        return has(uuid);
     }
 
+    @NotNull
     public static MMOPlayerData get(@NotNull OfflinePlayer player) {
-        return data.get(player.getUniqueId());
+        return get(player.getUniqueId());
     }
 
+    @NotNull
     public static MMOPlayerData get(UUID uuid) {
         return Objects.requireNonNull(data.get(uuid), "Player data not loaded");
+    }
+
+    /**
+     * Use it at your own risk! Player data might not be loaded
+     */
+    @Nullable
+    public static MMOPlayerData getOrNull(UUID uuid) {
+        return data.get(uuid);
     }
 
     /**
@@ -340,6 +358,19 @@ public class MMOPlayerData {
         for (MMOPlayerData registered : data.values())
             if (registered.isOnline())
                 action.accept(registered);
+    }
+
+    /**
+     * Unloads all timed-out temporary player data. This should be
+     * checked once an hour to make sure not to cause memory leaks.
+     */
+    public static void flushOfflinePlayerData() {
+        Iterator<MMOPlayerData> iterator = data.values().iterator();
+        while (iterator.hasNext()) {
+            MMOPlayerData tempData = iterator.next();
+            if (tempData.isTimedOut())
+                iterator.remove();
+        }
     }
 
     @Override

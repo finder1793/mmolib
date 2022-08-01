@@ -100,10 +100,7 @@ public class PassiveSkillMap implements ModifierMap<PassiveSkill> {
      * map checkups
      *
      * @author jules
-     * @deprecated Pretty terrible implementation but without reworking
-     *         the player inventory there is no other option available.
      */
-    @Deprecated
     public void tickTimerSkills() {
 
         // Do not initialize triggerMeta unless absolutely necessary
@@ -112,7 +109,7 @@ public class PassiveSkillMap implements ModifierMap<PassiveSkill> {
         for (PassiveSkill passive : skills.values())
             if (passive.getType().equals(TriggerType.TIMER)) {
                 String key = passive.getTriggeredSkill().getHandler().getId();
-                long lastCast = Objects.requireNonNullElse(this.lastCast.get(key), 0l); // Avoids one map checkup taking advantage of non null values
+                final long lastCast = Objects.requireNonNullElse(this.lastCast.get(key), 0l); // Avoids one map checkup taking advantage of non null values
                 if (lastCast + passive.getTimerPeriod() > System.currentTimeMillis())
                     continue;
 

@@ -25,15 +25,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 public class SkillTriggers implements Listener {
-
     public SkillTriggers() {
         Bukkit.getScheduler().runTaskTimer(MythicLib.plugin, () -> MMOPlayerData.forEachOnline(online -> online.getPassiveSkillMap().tickTimerSkills()), 0, 1);
     }
 
     @EventHandler
     public void killEntity(PlayerKillEntityEvent event) {
-        MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
-        caster.triggerSkills(TriggerType.KILL_ENTITY, event.getTarget());
+        event.getAttack().getData().triggerSkills(TriggerType.KILL_ENTITY, event.getTarget());
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -43,39 +41,36 @@ public class SkillTriggers implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void damagedByEntity(EntityDamageByEntityEvent event) {
-        if (event.getEntity() instanceof Player && MMOPlayerData.has(event.getEntity().getUniqueId())
-                && MythicLib.plugin.getEntities().canTarget((Player) event.getEntity(), event.getDamager(), InteractionType.OFFENSE_SKILL)) {
-            MMOPlayerData caster = MMOPlayerData.get(event.getEntity().getUniqueId());
+        final MMOPlayerData caster;
+        if (event.getEntity() instanceof Player && (caster = MMOPlayerData.getOrNull(event.getEntity().getUniqueId())) != null
+                && MythicLib.plugin.getEntities().canTarget((Player) event.getEntity(), event.getDamager(), InteractionType.OFFENSE_SKILL))
             caster.triggerSkills(TriggerType.DAMAGED_BY_ENTITY, event.getDamager());
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void damaged(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player && MMOPlayerData.has(event.getEntity().getUniqueId())) {
-            MMOPlayerData caster = MMOPlayerData.get(event.getEntity().getUniqueId());
+        final MMOPlayerData caster;
+        if (event.getEntity() instanceof Player && (caster = MMOPlayerData.getOrNull(event.getEntity().getUniqueId())) != null)
             caster.triggerSkills(TriggerType.DAMAGED, null);
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void death(PlayerDeathEvent event) {
-        if (MMOPlayerData.has(event.getEntity())) {
-            MMOPlayerData caster = MMOPlayerData.get(event.getEntity().getUniqueId());
+        final MMOPlayerData caster;
+        if ((caster = MMOPlayerData.getOrNull(event.getEntity().getUniqueId())) != null && caster.isOnline())
+            // Check if caster is online as DeluxeCombat calls this event while the player has already logged off
             caster.triggerSkills(TriggerType.DEATH, null);
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void login(PlayerJoinEvent event) {
-        MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
-        caster.triggerSkills(TriggerType.LOGIN, null);
+        MMOPlayerData.get(event.getPlayer()).triggerSkills(TriggerType.LOGIN, null);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void shootBow(EntityShootBowEvent event) {
-        if (event.getEntity() instanceof Player && MMOPlayerData.has(event.getEntity().getUniqueId())) {
-            MMOPlayerData caster = MMOPlayerData.get(event.getEntity().getUniqueId());
+        final MMOPlayerData caster;
+        if (event.getEntity() instanceof Player && (caster = MMOPlayerData.getOrNull(event.getEntity().getUniqueId())) != null) {
             caster.triggerSkills(TriggerType.SHOOT_BOW, event.getProjectile());
 
             // Register a runnable to trigger projectile skills
@@ -86,9 +81,9 @@ public class SkillTriggers implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void shootTrident(ProjectileLaunchEvent event) {
-        if (event.getEntity() instanceof Trident && event.getEntity().getShooter() instanceof Player && MMOPlayerData.has((Player) event.getEntity().getShooter())) {
+        final MMOPlayerData caster;
+        if (event.getEntity() instanceof Trident && event.getEntity().getShooter() instanceof Player && (caster = MMOPlayerData.getOrNull(event.getEntity().getUniqueId())) != null) {
             Player shooter = (Player) event.getEntity().getShooter();
-            MMOPlayerData caster = MMOPlayerData.get(shooter);
             caster.triggerSkills(TriggerType.SHOOT_TRIDENT, event.getEntity());
 
             // Register a runnable to trigger projectile skills
@@ -99,10 +94,8 @@ public class SkillTriggers implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void sneak(PlayerToggleSneakEvent event) {
-        if (event.isSneaking()) {
-            MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
-            caster.triggerSkills(TriggerType.SNEAK, null);
-        }
+        if (event.isSneaking())
+            MMOPlayerData.get(event.getPlayer()).triggerSkills(TriggerType.SNEAK, null);
     }
 
     /**
@@ -123,9 +116,9 @@ public class SkillTriggers implements Listener {
         if (event.getAction() == Action.PHYSICAL)
             return;
 
-        MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
-        boolean left = event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK, sneaking = event.getPlayer().isSneaking();
-        TriggerType type = sneaking ? (left ? TriggerType.SHIFT_LEFT_CLICK : TriggerType.SHIFT_RIGHT_CLICK) : (left ? TriggerType.LEFT_CLICK : TriggerType.RIGHT_CLICK);
+        final MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
+        final boolean left = event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK, sneaking = event.getPlayer().isSneaking();
+        final TriggerType type = sneaking ? (left ? TriggerType.SHIFT_LEFT_CLICK : TriggerType.SHIFT_RIGHT_CLICK) : (left ? TriggerType.LEFT_CLICK : TriggerType.RIGHT_CLICK);
         caster.triggerSkills(type, null);
     }
 
@@ -134,7 +127,7 @@ public class SkillTriggers implements Listener {
      *         what items the player is holding in his two hands
      */
     private EquipmentSlot getShootHand(PlayerInventory inv) {
-        ItemStack main = inv.getItemInMainHand();
+        final ItemStack main = inv.getItemInMainHand();
         return main != null && isShootable(main.getType()) ? EquipmentSlot.MAIN_HAND : EquipmentSlot.OFF_HAND;
     }
 

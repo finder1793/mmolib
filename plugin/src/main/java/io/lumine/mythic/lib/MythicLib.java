@@ -40,7 +40,6 @@ import io.lumine.mythic.lib.listener.option.FixMovementSpeed;
 import io.lumine.mythic.lib.listener.option.HealthScale;
 import io.lumine.mythic.lib.listener.option.RegenIndicators;
 import io.lumine.mythic.lib.manager.*;
-import io.lumine.mythic.lib.player.TemporaryPlayerData;
 import io.lumine.mythic.lib.version.ServerVersion;
 import io.lumine.mythic.lib.version.SpigotPlugin;
 import lombok.Getter;
@@ -236,7 +235,7 @@ public class MythicLib extends JavaPlugin {
         Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.setup(player));
 
         // Loop for temporary player data
-        Bukkit.getScheduler().runTaskTimer(this, TemporaryPlayerData::flush, 20 * 60 * 60, 20 * 60 * 60);
+        Bukkit.getScheduler().runTaskTimer(this, MMOPlayerData::flushOfflinePlayerData, 20 * 60 * 60, 20 * 60 * 60);
 
         configManager.reload();
         statManager.initialize(false);
