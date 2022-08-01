@@ -77,8 +77,8 @@ public class DamageIndicators extends GameIndicators {
         // Calculate holograms
         final List<String> holos = new ArrayList<>();
 
-        // Physical damage
-        final double weapon = damage.getDamage(DamageType.WEAPON);
+        // Physical/Unarmed damage
+        final double weapon = damage.getDamage(DamageType.WEAPON) + damage.getDamage(DamageType.UNARMED);
         if (weapon > 0)
             holos.add(computeFormat(damage.isWeaponCriticalStrike() ? weaponIconCrit : weaponIcon, weapon, damage.isWeaponCriticalStrike()));
 

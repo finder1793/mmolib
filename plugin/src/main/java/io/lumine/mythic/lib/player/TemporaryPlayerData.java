@@ -7,7 +7,7 @@ import io.lumine.mythic.lib.player.cooldown.CooldownMap;
 import io.lumine.mythic.lib.player.particle.ParticleEffectMap;
 import io.lumine.mythic.lib.player.potion.PermanentPotionEffectMap;
 import io.lumine.mythic.lib.player.skill.PassiveSkillMap;
-import io.lumine.mythic.lib.skill.custom.variable.VariableList;
+import io.lumine.mythic.lib.script.variable.VariableList;
 import org.bukkit.entity.Player;
 
 import java.util.*;

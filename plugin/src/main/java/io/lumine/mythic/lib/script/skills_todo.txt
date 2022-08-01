@@ -1,0 +1,28 @@
+
+-  = still to implement
+** = implemented
+
+GENERAL
+-  support for scoreboards
+-  support for metadata and variables on entities
+-  support for bossbars
+** support for scopes in variable mechanics
+-  skill arguments: skills can cache source/target location/entity OR more info like projectiles
+      - this would allow for mechanics to change the current direction of a projectile or thrown item
+      - oop friendly generalisation of skill metadata
+
+MECHANICS
+** comets (OK with projectiles)
+** helixes (circular geometry)
+** forward, up, down, circular slashes (spherical geometry)
+-  projectiles with gravity or bounces with some math normal calculations
+-  throwable items
+** 'skill' mechanic able to cast using a different skill metadata
+
+CONDITIONS
+** caster can target skill target?
+
+TARGETERS
+-  fix circle targeter using rotation matrixes (location)
+-  sphere targeter (location)
+** cone targeter (location)

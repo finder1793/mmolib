@@ -1,13 +1,13 @@
 package io.lumine.mythic.lib.skill.result;
 
 import io.lumine.mythic.lib.skill.SkillMetadata;
-import io.lumine.mythic.lib.skill.custom.CustomSkill;
-import io.lumine.mythic.lib.skill.custom.condition.Condition;
+import io.lumine.mythic.lib.script.Script;
+import io.lumine.mythic.lib.script.condition.Condition;
 
 public class MythicLibSkillResult implements SkillResult {
-    private final CustomSkill skill;
+    private final Script skill;
 
-    public MythicLibSkillResult(CustomSkill skill) {
+    public MythicLibSkillResult(Script skill) {
         this.skill = skill;
     }
 

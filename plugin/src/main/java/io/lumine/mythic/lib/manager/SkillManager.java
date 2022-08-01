@@ -2,49 +2,49 @@ package io.lumine.mythic.lib.manager;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.skill.custom.CustomSkill;
-import io.lumine.mythic.lib.skill.custom.condition.Condition;
-import io.lumine.mythic.lib.skill.custom.condition.generic.BooleanCondition;
-import io.lumine.mythic.lib.skill.custom.condition.generic.CompareCondition;
-import io.lumine.mythic.lib.skill.custom.condition.generic.InBetweenCondition;
-import io.lumine.mythic.lib.skill.custom.condition.generic.StringEqualsCondition;
-import io.lumine.mythic.lib.skill.custom.condition.location.BiomeCondition;
-import io.lumine.mythic.lib.skill.custom.condition.location.CuboidCondition;
-import io.lumine.mythic.lib.skill.custom.condition.location.DistanceCondition;
-import io.lumine.mythic.lib.skill.custom.condition.location.WorldCondition;
-import io.lumine.mythic.lib.skill.custom.condition.misc.*;
-import io.lumine.mythic.lib.skill.custom.mechanic.Mechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.buff.FeedMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.buff.HealMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.buff.ReduceCooldownMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.buff.SaturateMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.buff.stat.AddStatModifierMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.buff.stat.RemoveStatModifierMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.misc.*;
-import io.lumine.mythic.lib.skill.custom.mechanic.movement.TeleportMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.movement.VelocityMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.offense.*;
-import io.lumine.mythic.lib.skill.custom.mechanic.player.GiveItemMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.player.SudoMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.raytrace.RayTraceAnyMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.raytrace.RayTraceBlocksMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.raytrace.RayTraceEntitiesMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.shaped.HelixMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.shaped.ParabolaMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.shaped.ProjectileMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.shaped.SlashMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.variable.SetDoubleMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.variable.SetIntegerMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.variable.SetStringMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.variable.SetVectorMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.variable.vector.*;
-import io.lumine.mythic.lib.skill.custom.mechanic.visual.ParticleMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.visual.SoundMechanic;
-import io.lumine.mythic.lib.skill.custom.mechanic.visual.TellMechanic;
-import io.lumine.mythic.lib.skill.custom.targeter.EntityTargeter;
-import io.lumine.mythic.lib.skill.custom.targeter.LocationTargeter;
-import io.lumine.mythic.lib.skill.custom.targeter.entity.*;
-import io.lumine.mythic.lib.skill.custom.targeter.location.*;
+import io.lumine.mythic.lib.script.Script;
+import io.lumine.mythic.lib.script.condition.Condition;
+import io.lumine.mythic.lib.script.condition.generic.BooleanCondition;
+import io.lumine.mythic.lib.script.condition.generic.CompareCondition;
+import io.lumine.mythic.lib.script.condition.generic.InBetweenCondition;
+import io.lumine.mythic.lib.script.condition.generic.StringEqualsCondition;
+import io.lumine.mythic.lib.script.condition.location.BiomeCondition;
+import io.lumine.mythic.lib.script.condition.location.CuboidCondition;
+import io.lumine.mythic.lib.script.condition.location.DistanceCondition;
+import io.lumine.mythic.lib.script.condition.location.WorldCondition;
+import io.lumine.mythic.lib.script.condition.misc.*;
+import io.lumine.mythic.lib.script.mechanic.Mechanic;
+import io.lumine.mythic.lib.script.mechanic.buff.FeedMechanic;
+import io.lumine.mythic.lib.script.mechanic.buff.HealMechanic;
+import io.lumine.mythic.lib.script.mechanic.buff.ReduceCooldownMechanic;
+import io.lumine.mythic.lib.script.mechanic.buff.SaturateMechanic;
+import io.lumine.mythic.lib.script.mechanic.buff.stat.AddStatModifierMechanic;
+import io.lumine.mythic.lib.script.mechanic.buff.stat.RemoveStatModifierMechanic;
+import io.lumine.mythic.lib.script.mechanic.misc.*;
+import io.lumine.mythic.lib.script.mechanic.movement.TeleportMechanic;
+import io.lumine.mythic.lib.script.mechanic.movement.VelocityMechanic;
+import io.lumine.mythic.lib.script.mechanic.offense.*;
+import io.lumine.mythic.lib.script.mechanic.player.GiveItemMechanic;
+import io.lumine.mythic.lib.script.mechanic.player.SudoMechanic;
+import io.lumine.mythic.lib.script.mechanic.raytrace.RayTraceAnyMechanic;
+import io.lumine.mythic.lib.script.mechanic.raytrace.RayTraceBlocksMechanic;
+import io.lumine.mythic.lib.script.mechanic.raytrace.RayTraceEntitiesMechanic;
+import io.lumine.mythic.lib.script.mechanic.shaped.HelixMechanic;
+import io.lumine.mythic.lib.script.mechanic.shaped.ParabolaMechanic;
+import io.lumine.mythic.lib.script.mechanic.shaped.ProjectileMechanic;
+import io.lumine.mythic.lib.script.mechanic.shaped.SlashMechanic;
+import io.lumine.mythic.lib.script.mechanic.variable.SetDoubleMechanic;
+import io.lumine.mythic.lib.script.mechanic.variable.SetIntegerMechanic;
+import io.lumine.mythic.lib.script.mechanic.variable.SetStringMechanic;
+import io.lumine.mythic.lib.script.mechanic.variable.SetVectorMechanic;
+import io.lumine.mythic.lib.script.mechanic.variable.vector.*;
+import io.lumine.mythic.lib.script.mechanic.visual.ParticleMechanic;
+import io.lumine.mythic.lib.script.mechanic.visual.SoundMechanic;
+import io.lumine.mythic.lib.script.mechanic.visual.TellMechanic;
+import io.lumine.mythic.lib.script.targeter.EntityTargeter;
+import io.lumine.mythic.lib.script.targeter.LocationTargeter;
+import io.lumine.mythic.lib.script.targeter.entity.*;
+import io.lumine.mythic.lib.script.targeter.location.*;
 import io.lumine.mythic.lib.skill.handler.MythicLibSkillHandler;
 import io.lumine.mythic.lib.skill.handler.MythicMobsSkillHandler;
 import io.lumine.mythic.lib.skill.handler.SkillAPISkillHandler;
@@ -79,8 +79,8 @@ import java.util.logging.Level;
  * The second thing is to make MythicLib a database combining:
  * - default MMOItems/MMOCore skills
  * - custom skills made using MythicMobs
- * - custom skills made using SkillAPI-ProSkillAPI
- * - custom skills made using MythicLib (still under development)
+ * - custom skills made using SkillAPI/ProSkillAPI
+ * - custom skills made using MythicLib
  * <p>
  * Then users can "register" any of these base skills inside MMOItems
  * or MMOCore by adding one specific YAML to the "/skill" folder.
@@ -94,18 +94,17 @@ public class SkillManager {
     private final Map<String, Function<ConfigObject, LocationTargeter>> locationTargets = new HashMap<>();
 
     /**
-     * Registered custom skills. In fact they have as much
-     * information as a skill handler but it is not yet a
-     * skill handler.
+     * Registered custom scripts. In fact they have as much information
+     * as a skill handler but they are not yet a skill handler
      */
-    private final Map<String, CustomSkill> customSkills = new HashMap<>();
+    private final Map<String, Script> scripts = new HashMap<>();
 
     /**
      * All registered skill handlers accessible by any external plugins. This uncludes:
+     * - default skill handlers from both MI and MMOCore (found in /skill/handler/def)
      * - custom MM skill handlers
      * - custom SkillAPI skill handlers
      * - custom ML skill handlers
-     * - default skill handlers from both MI and MMOCore (found in /skill/handler/def)
      */
     private final Map<String, SkillHandler> handlers = new HashMap<>();
 
@@ -210,7 +209,7 @@ public class SkillManager {
         registerCondition("time", config -> new TimeCondition(config));
 
         // Default skill handler types
-        registerSkillHandlerType(config -> config.contains("mythiclib-skill-id"), config -> new MythicLibSkillHandler(getSkillOrThrow(config.getString("mythiclib-skill-id"))));
+        registerSkillHandlerType(config -> config.contains("mythiclib-skill-id"), config -> new MythicLibSkillHandler(getScriptOrThrow(config.getString("mythiclib-skill-id"))));
     }
 
     /**
@@ -262,24 +261,24 @@ public class SkillManager {
         return Objects.requireNonNull(handlers.get(id), "Could not find handler with ID '" + id + "'");
     }
 
-    public void registerCustomSkill(@NotNull CustomSkill skill) {
-        Validate.isTrue(!customSkills.containsKey(skill.getId()), "A skill with the same name already exists");
+    public void registerScript(@NotNull Script script) {
+        Validate.isTrue(!scripts.containsKey(script.getId()), "A script with the same name already exists");
 
-        customSkills.put(skill.getId(), skill);
+        scripts.put(script.getId(), script);
     }
 
     @NotNull
-    public CustomSkill getSkillOrThrow(String name) {
-        return Objects.requireNonNull(customSkills.get(name), "Could not find skill with name '" + name + "'");
+    public Script getScriptOrThrow(String name) {
+        return Objects.requireNonNull(scripts.get(name), "Could not find script with name '" + name + "'");
     }
 
-    public CustomSkill loadCustomSkill(Object obj) {
+    public Script loadScript(Object obj) {
 
         if (obj instanceof String)
-            return getSkillOrThrow(obj.toString());
+            return getScriptOrThrow(obj.toString());
 
         if (obj instanceof ConfigurationSection) {
-            CustomSkill skill = new CustomSkill((ConfigurationSection) obj);
+            Script skill = new Script((ConfigurationSection) obj);
             skill.postLoad();
             return skill;
         }
@@ -287,8 +286,8 @@ public class SkillManager {
         throw new IllegalArgumentException("Provide either a string or configuration section");
     }
 
-    public Collection<CustomSkill> getCustomSkills() {
-        return customSkills.values();
+    public Collection<Script> getScripts() {
+        return scripts.values();
     }
 
     /**
@@ -381,7 +380,7 @@ public class SkillManager {
                     HandlerList.unregisterAll((Listener) handler);
 
             handlers.clear();
-            customSkills.clear();
+            scripts.clear();
         } else {
             registration = false;
 
@@ -429,21 +428,21 @@ public class SkillManager {
             FileConfiguration config = YamlConfiguration.loadConfiguration(file);
             for (String key : config.getKeys(false))
                 try {
-                    registerCustomSkill(new CustomSkill(Objects.requireNonNull(config.getConfigurationSection(key), "Config is null")));
+                    registerScript(new Script(Objects.requireNonNull(config.getConfigurationSection(key), "Config is null")));
                 } catch (RuntimeException exception) {
                     MythicLib.plugin.getLogger().log(Level.WARNING, "Could not initialize script '" + key + "' from '" + file.getName() + "': " + exception.getMessage());
                 }
 
         }, MythicLib.plugin, "Could not load scripts").explore(new File(MythicLib.plugin.getDataFolder() + "/script"));
 
-        // Post load custom skills and register a skill handler
-        for (CustomSkill skill : customSkills.values())
+        // Post load custom scripts and register a skill handler
+        for (Script script : scripts.values())
             try {
-                skill.postLoad();
-                if (skill.isPublic())
-                    registerSkillHandler(new MythicLibSkillHandler(skill));
+                script.postLoad();
+                if (script.isPublic())
+                    registerSkillHandler(new MythicLibSkillHandler(script));
             } catch (RuntimeException exception) {
-                MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load script '" + skill.getId() + "': " + exception.getMessage());
+                MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load script '" + script.getId() + "': " + exception.getMessage());
             }
 
         // Load skill handlers
