@@ -31,8 +31,8 @@
                 <version>3.8.1</version>
                 <configuration>
                     <compilerArgument>-proc:none</compilerArgument>
-                    <source>9</source>
-                    <target>9</target>
+                    <source>15</source>
+                    <target>15</target>
                 </configuration>
             </plugin>
 

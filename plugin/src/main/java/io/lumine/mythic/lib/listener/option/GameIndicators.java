@@ -19,7 +19,7 @@ import java.util.Random;
 public abstract class GameIndicators implements Listener {
     private final String format;
     private final DecimalFormat decFormat;
-    private final double radialVelocity, gravity, initialUpwardVelocity;
+    private final double radialVelocity, gravity, initialUpwardVelocity, entityHeightPercentage, yOffset;
 
     protected static final Random random = new Random();
 
@@ -34,6 +34,8 @@ public abstract class GameIndicators implements Listener {
         radialVelocity = config.getDouble("radial-velocity", 1);
         gravity = config.getDouble("gravity", 1);
         initialUpwardVelocity = config.getDouble("initial-upward-velocity", 1);
+        entityHeightPercentage = config.getDouble("entity-height-percent", .75);
+        yOffset = config.getDouble("y-offset", .1);
     }
 
     public String formatNumber(double d) {
@@ -63,7 +65,7 @@ public abstract class GameIndicators implements Listener {
         if (called.isCancelled())
             return;
 
-        Location loc = entity.getLocation().add((random.nextDouble() - .5) * 1.2, entity.getHeight() * .75, (random.nextDouble() - .5) * 1.2);
+        Location loc = entity.getLocation().add((random.nextDouble() - .5) * 1.2, yOffset + entity.getHeight() * entityHeightPercentage, (random.nextDouble() - .5) * 1.2);
         displayIndicator(loc, called.getMessage(), dir);
     }
 

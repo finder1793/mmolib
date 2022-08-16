@@ -95,6 +95,8 @@ mitigation:
 game-indicators:
 
   # When an entity is being damaged
+  # Use format: 'ᜌ{icon} &f{value}ᜌ' along with the resource pack
+  # provided in the wiki in order to remove the gray background
   damage:
     enabled: true
     decimal-format: '0.#'
@@ -113,18 +115,20 @@ game-indicators:
         '8': 'ᜈ'
         '9': 'ᜉ'
         'dot': 'ᜊ'
+        'inter': 'ᜍ'
       crit:
-        '0': 'ᜀ'
-        '1': 'ᜁ'
-        '2': 'ᜂ'
-        '3': 'ᜃ'
-        '4': 'ᜄ'
-        '5': 'ᜅ'
-        '6': 'ᜆ'
-        '7': 'ᜇ'
-        '8': 'ᜈ'
-        '9': 'ᜉ'
+        '0': 'ᜐ'
+        '1': 'ᜑ'
+        '2': 'ᜒ'
+        '3': 'ᜓ'
+        '4': '᜔'
+        '5': '᜕'
+        '6': '᜖'
+        '7': '᜗'
+        '8': '᜘'
+        '9': '᜙'
         'dot': 'ᜋ'
+        'inter': 'ᜍ'
     icon:
       weapon:
         normal: '&c🗡'
@@ -136,6 +140,8 @@ game-indicators:
     radial-velocity: 1
     gravity: 1
     initial-upward-velocity: 1
+    entity-height-percent: 0.75
+    y-offset: 0.1
 
   # When an entity regens some health
   regen:
@@ -145,6 +151,8 @@ game-indicators:
     radial-velocity: 1
     gravity: 1
     initial-upward-velocity: 1
+    entity-height-percent: 0.75
+    y-offset: 0.1
 
 # Due to a change made in 1.1.6 related to the movement speed
 # attribute, players see their movement speed reset to .1 when logging in
