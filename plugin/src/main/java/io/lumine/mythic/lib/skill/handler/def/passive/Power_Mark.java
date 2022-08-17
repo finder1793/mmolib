@@ -4,14 +4,12 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.damage.AttackMetadata;
-import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.player.PlayerMetadata;
+import io.lumine.mythic.lib.player.skill.PassiveSkill;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
-import io.lumine.mythic.lib.player.skill.PassiveSkill;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.util.ParabolicProjectile;
 import io.lumine.mythic.lib.version.VersionSound;
@@ -43,7 +41,7 @@ public class Power_Mark extends SkillHandler<SimpleSkillResult> implements Liste
         new PowerMark(skillMeta.getCaster(), skillMeta, skillMeta.getTargetEntity().getLocation());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void a(PlayerAttackEvent event) {
         MMOPlayerData data = MMOPlayerData.get(event.getData().getUniqueId());
         if (!event.getAttack().getDamage().hasType(DamageType.WEAPON))
@@ -54,7 +52,6 @@ public class Power_Mark extends SkillHandler<SimpleSkillResult> implements Liste
             return;
 
         skill.getTriggeredSkill().cast(new TriggerMetadata(event.getAttack(), event.getEntity()));
-
     }
 
     public class PowerMark extends BukkitRunnable implements Listener {

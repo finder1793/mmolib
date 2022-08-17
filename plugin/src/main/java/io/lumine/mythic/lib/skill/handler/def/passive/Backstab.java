@@ -12,6 +12,7 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 public class Backstab extends SkillHandler<SimpleSkillResult> implements Listener {
@@ -34,7 +35,7 @@ public class Backstab extends SkillHandler<SimpleSkillResult> implements Listene
         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDERMAN_HURT, 1, 1.5f);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void a(PlayerAttackEvent event) {
         MMOPlayerData data = event.getData();
         LivingEntity target = event.getEntity();
