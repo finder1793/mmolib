@@ -26,7 +26,7 @@ public class LogsCommand extends CommandTreeNode {
             StringBuilder builder = new StringBuilder();
 
             // Append latest log
-            File log = new File(MythicLib.plugin.getDataFolder(), "..\\..\\logs\\latest.log");
+            File log = new File(MythicLib.plugin.getDataFolder(), "../../logs/latest.log");
             Scanner scanner = new Scanner(log);
             while (scanner.hasNextLine())
                 builder.append(scanner.nextLine()).append("\n");
@@ -40,10 +40,6 @@ public class LogsCommand extends CommandTreeNode {
                     builder.append(" (Disabled)");
                 builder.append("\n");
             }
-
-            // Upload everything
-            final String logsDir = MythicLib.plugin.getDataFolder().getParentFile().getAbsoluteFile().getParentFile().getAbsoluteFile() + "/logs/";
-            final String file = "latest.log";
 
             APIResponse response = MclogsAPI.share(builder.toString());
             Validate.isTrue(response.success, "Custom error (" + response.id + "): " + response.error);
