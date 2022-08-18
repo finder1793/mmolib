@@ -38,20 +38,16 @@ public class PlayerMetadata implements StatProvider {
         this.playerStats = parent.playerStats;
     }
 
-    public PlayerMetadata(StatMap statMap, @NotNull EquipmentSlot handInAction) {
+    public PlayerMetadata(StatMap statMap, @NotNull EquipmentSlot actionHand) {
         this.player = statMap.getPlayerData().getPlayer();
         this.playerData = statMap.getPlayerData();
         this.playerStats = new HashMap<>();
 
-        Validate.isTrue(Objects.requireNonNull(handInAction).isHand(), "Equipment slot must be a hand");
+        Validate.isTrue(Objects.requireNonNull(actionHand).isHand(), "Equipment slot must be a hand");
 
-        /*
-         * When casting a skill or an attack with a certain hand, stats
-         * from the other hand shouldn't be taken into account
-         */
-        EquipmentSlot ignored = handInAction.getOppositeHand();
+        // Isolate stat modifiers
         for (StatInstance ins : statMap.getInstances())
-            this.playerStats.put(ins.getStat(), ins.getFilteredTotal(mod -> !mod.getSource().isWeapon() || mod.getSlot() != ignored));
+            this.playerStats.put(ins.getStat(), ins.getFilteredTotal(actionHand::isCompatible));
     }
 
     /**

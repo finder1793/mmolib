@@ -11,26 +11,10 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-/**
- * There are two important rules for player modifier application.
- * <p>
- * Every action has a player HAND associated to it, the hand the player is using
- * to perform this action. This is given using the {@link EquipmentSlot} enumeration.
- * By default, MythicLib uses the Main hand if none is specified.
- * <p>
- * Modifiers from both hands are registered in modifier maps YET filtered out when
- * calculating stat values/filtering out abilities/... Modifiers from the other hand
- * are ignored IF AND ONLY IF the other hand item is a weapon. As long as the item
- * placement is valid, non-weapon items all apply their modifiers.
- *
- * @author jules
- */
 public class StatInstance {
     private final StatMap map;
     private final String stat;
     private final Map<String, StatModifier> modifiers = new HashMap<>();
-
-    private static final Predicate<StatModifier> DEFAULT_MODIFIER_FILTER = mod -> !mod.getSource().isWeapon() || mod.getSlot() != EquipmentSlot.OFF_HAND;
 
     public StatInstance(StatMap map, String stat) {
         this.map = map;
@@ -56,7 +40,7 @@ public class StatInstance {
      *         modifiers.
      */
     public double getTotal() {
-        return getFilteredTotal(DEFAULT_MODIFIER_FILTER);
+        return getFilteredTotal(EquipmentSlot.MAIN_HAND::isCompatible);
     }
 
     /**
@@ -81,7 +65,7 @@ public class StatInstance {
      *         modifiers.
      */
     public double getTotal(Function<StatModifier, StatModifier> modification) {
-        return getFilteredTotal(DEFAULT_MODIFIER_FILTER, modification);
+        return getFilteredTotal(EquipmentSlot.MAIN_HAND::isCompatible, modification);
     }
 
     /**

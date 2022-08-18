@@ -28,10 +28,9 @@ public abstract class ModifierMap<T extends PlayerModifier> {
     @NotNull
     public Iterable<T> isolateModifiers(EquipmentSlot hand) {
         final ArrayList<T> isolated = new ArrayList<>();
-        final EquipmentSlot oppositeHand = hand.getOppositeHand();
 
         for (T modifier : getModifiers())
-            if (!modifier.getSource().isWeapon() || modifier.getSlot() != oppositeHand)
+            if (hand.isCompatible(modifier))
                 isolated.add(modifier);
 
         return isolated;
