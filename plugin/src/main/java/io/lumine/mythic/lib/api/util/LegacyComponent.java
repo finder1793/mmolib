@@ -1,20 +1,22 @@
 package io.lumine.mythic.lib.api.util;
 
-import io.lumine.mythic.lib.MythicLib;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class LegacyComponent {
-    private static final LegacyComponentSerializer unusualSectionRGB = LegacyComponentSerializer.builder().character("§".toCharArray()[0]).hexCharacter('#').hexColors()
-            .useUnusualXRepeatedCharacterHexFormat().build();
 
     /**
-     * Used to parse text for display names by adding a white color
-     * code by default if no color is added
+     * Used to parse text for display names by adding a
+     * white color code by default if no color is added
      */
     @NotNull
     public static Component parse(String text) {
@@ -26,11 +28,56 @@ public class LegacyComponent {
      */
     @NotNull
     public static Component simpleParse(String text) {
-        Component component = MiniMessage.miniMessage().deserialize(NestedSerializer.serialize(unusualSectionRGB.deserialize(MythicLib.inst().parseColors(text))));
+        Component component = MiniMessage.miniMessage().deserialize(translateLegacyColorCodes(text));
 
         if (component.decorations().get(TextDecoration.ITALIC) == TextDecoration.State.NOT_SET)
             component = component.decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE);
 
         return component;
+    }
+
+    private static final Pattern LEGACY_COLOR_CODES = Pattern.compile("(&|§)[a-fA-F0-9kKlLmMnNoOrR]");
+    private static final Map<Character, String> NEW_COLORS = new HashMap<>();
+
+    static {
+
+        // Colors
+        NEW_COLORS.put('0', "black");
+        NEW_COLORS.put('1', "dark_blue");
+        NEW_COLORS.put('2', "dark_green");
+        NEW_COLORS.put('3', "dark_aqua");
+        NEW_COLORS.put('4', "dark_red");
+        NEW_COLORS.put('5', "dark_purple");
+        NEW_COLORS.put('6', "gold");
+        NEW_COLORS.put('7', "gray");
+        NEW_COLORS.put('8', "dark_gray");
+        NEW_COLORS.put('9', "blue");
+        NEW_COLORS.put('a', "green");
+        NEW_COLORS.put('b', "aqua");
+        NEW_COLORS.put('c', "red");
+        NEW_COLORS.put('d', "light_purple");
+        NEW_COLORS.put('e', "yellow");
+        NEW_COLORS.put('f', "white");
+
+        // Decorations
+        NEW_COLORS.put('k', "obfuscated");
+        NEW_COLORS.put('l', "bold");
+        NEW_COLORS.put('m', "strikethrough");
+        NEW_COLORS.put('n', "underlined");
+        NEW_COLORS.put('o', "italic");
+        NEW_COLORS.put('r', "reset");
+    }
+
+    /**
+     * @return String with & and § color codes translated into MiniMessage format.
+     * @deprecated It is now preferred to use the MiniMessage format.
+     */
+    @Deprecated
+    private static String translateLegacyColorCodes(String text) {
+        final Matcher matcher = LEGACY_COLOR_CODES.matcher(text);
+        return matcher.replaceAll(result -> {
+            final char legacyColorCode = Character.toLowerCase(result.group().charAt(1));
+            return new StringBuilder("<").append(Objects.requireNonNullElse(NEW_COLORS.get(legacyColorCode), "cc_err")).append(">").toString();
+        });
     }
 }

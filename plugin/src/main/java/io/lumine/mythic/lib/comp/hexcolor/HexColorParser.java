@@ -12,7 +12,8 @@ public class HexColorParser implements ColorParser {
 
     @Override
     @Contract("null -> null")
-    @Nullable public String parseColorCodes(@Nullable String format) {
+    @Nullable
+    public String parseColorCodes(@Nullable String format) {
         if (format == null) { return null; }
 
         Matcher match = PATTERN.matcher(format);
