@@ -4,7 +4,9 @@ import com.google.gson.JsonObject;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.block.data.BlockData;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -20,7 +22,7 @@ import java.util.Objects;
  */
 public class ParticleInformation {
 
-    // Unspecific particle data
+    // Generic particle data
     private final Particle particle;
     private final int amount;
     private final double rOffset, speed;
@@ -30,12 +32,20 @@ public class ParticleInformation {
     private final Color color;
     private final float size;
 
-    // TODO block particle data
+    // Block particle data
+    @Nullable
+    private final BlockData blockData;
 
+    /**
+     * Generic particle
+     */
     public ParticleInformation(Particle particle) {
         this(particle, 1, 0, 0, null, 1);
     }
 
+    /**
+     * Colored particle
+     */
     public ParticleInformation(Particle particle, int amount, float speed, double rOffset, Color color, float size) {
         this.particle = particle;
         this.amount = amount;
@@ -44,6 +54,21 @@ public class ParticleInformation {
 
         this.color = color;
         this.size = size;
+        this.blockData = null;
+    }
+
+    /**
+     * Block particle
+     */
+    public ParticleInformation(Particle particle, int amount, float speed, double rOffset, Material mat) {
+        this.particle = particle;
+        this.amount = amount;
+        this.rOffset = rOffset;
+        this.speed = speed;
+
+        this.color = null;
+        this.size = 1;
+        this.blockData = mat.createBlockData();
     }
 
     /**
@@ -61,6 +86,7 @@ public class ParticleInformation {
         // Not being used
         rOffset = speed = 0;
         amount = 1;
+        blockData = null;
     }
 
     /**
@@ -80,6 +106,8 @@ public class ParticleInformation {
 
         // Not being used
         size = 1;
+
+        blockData = !colored && object.has("Material") ? Material.valueOf(object.get("Material").getAsString()).createBlockData() : null;
     }
 
     /**
@@ -100,8 +128,11 @@ public class ParticleInformation {
      * Displays particle at target location by overriding amount, offset and particle speed
      */
     public void display(Location loc, int amount, double x, double y, double z, double speed) {
-        if (particle.getDataType() == Particle.DustOptions.class)
+        final @Nullable Class<?> dataType = particle.getDataType();
+        if (dataType == Particle.DustOptions.class)
             loc.getWorld().spawnParticle(particle, loc, amount, x, y, z, speed, new Particle.DustOptions(Objects.requireNonNull(color, "No color provided"), size));
+        else if (dataType == BlockData.class)
+            loc.getWorld().spawnParticle(particle, loc, amount, x, y, z, speed, Objects.requireNonNull(blockData, "No material provided"));
         else
             loc.getWorld().spawnParticle(particle, loc, amount, x, y, z, speed);
     }

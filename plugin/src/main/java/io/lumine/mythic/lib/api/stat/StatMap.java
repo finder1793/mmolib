@@ -10,12 +10,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
 public class StatMap implements StatProvider {
     private final MMOPlayerData data;
     private final Map<String, StatInstance> stats = new ConcurrentHashMap<>();
-    private final Function<String, StatInstance> instanceFunction = stat -> new StatInstance(this, stat);
 
     public StatMap(MMOPlayerData player) {
         this.data = player;
@@ -47,7 +45,7 @@ public class StatMap implements StatProvider {
      */
     @NotNull
     public StatInstance getInstance(String id) {
-        return stats.computeIfAbsent(id, instanceFunction);
+        return stats.computeIfAbsent(id, stat -> new StatInstance(this, stat));
     }
 
     /**

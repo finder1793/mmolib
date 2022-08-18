@@ -11,14 +11,17 @@ package io.lumine.mythic.lib.player.modifier;
 public enum ModifierSource {
 
     /**
-     * Modifier given by a melee weapon. These modifiers should only
-     * be taken into account when the player wears the item in the main hand.
+     * Modifier given by a melee weapon. These modifiers should only be
+     * taken into account when the player wears the item in the main hand.
      */
     MELEE_WEAPON,
 
     /**
-     * Modifier given by a ranged weapon. Ranged weapons are handled separately
-     * in MMOItems so MythicLib must not add the corresponding attribute modifiers.
+     * Modifier given by a ranged weapon. These modifiers should only be
+     * taken into account when the player wears the item in the main hand.
+     * <p>
+     * Ranged weapons are handled separately in MMOItems as MythicLib must
+     * not add specific attribute modifiers, including Atk Damage and Speed.
      */
     RANGED_WEAPON,
 

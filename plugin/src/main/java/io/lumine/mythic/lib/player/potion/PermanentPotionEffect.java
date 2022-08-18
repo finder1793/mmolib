@@ -8,6 +8,10 @@ import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
 import org.bukkit.potion.PotionEffectType;
 
+/**
+ * @deprecated Not implemented yet
+ */
+@Deprecated
 public class PermanentPotionEffect extends PlayerModifier {
     private final PotionEffectType effect;
     private final int amplifier;

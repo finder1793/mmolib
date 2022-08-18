@@ -7,7 +7,7 @@ import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.comp.target.InteractionType;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
-import io.lumine.mythic.lib.util.ProjectileTrigger;
+import io.lumine.mythic.lib.util.CustomProjectile;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -74,8 +74,8 @@ public class SkillTriggers implements Listener {
             caster.triggerSkills(TriggerType.SHOOT_BOW, event.getProjectile());
 
             // Register a runnable to trigger projectile skills
-            EquipmentSlot hand = getShootHand(((Player) event.getEntity()).getInventory());
-            new ProjectileTrigger(caster, ProjectileTrigger.ProjectileType.ARROW, event.getProjectile(), hand);
+            final EquipmentSlot hand = getShootHand(((Player) event.getEntity()).getInventory());
+            new CustomProjectile(caster, CustomProjectile.ProjectileType.ARROW, event.getProjectile(), hand);
         }
     }
 
@@ -87,8 +87,8 @@ public class SkillTriggers implements Listener {
             caster.triggerSkills(TriggerType.SHOOT_TRIDENT, event.getEntity());
 
             // Register a runnable to trigger projectile skills
-            EquipmentSlot hand = getShootHand(shooter.getInventory());
-            new ProjectileTrigger(caster, ProjectileTrigger.ProjectileType.TRIDENT, event.getEntity(), hand);
+            final EquipmentSlot hand = getShootHand(shooter.getInventory());
+            new CustomProjectile(caster, CustomProjectile.ProjectileType.TRIDENT, event.getEntity(), hand);
         }
     }
 

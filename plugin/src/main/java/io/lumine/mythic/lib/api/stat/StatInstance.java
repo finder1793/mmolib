@@ -11,6 +11,20 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+/**
+ * There are two important rules for player modifier application.
+ * <p>
+ * Every action has a player HAND associated to it, the hand the player is using
+ * to perform this action. This is given using the {@link EquipmentSlot} enumeration.
+ * By default, MythicLib uses the Main hand if none is specified.
+ * <p>
+ * Modifiers from both hands are registered in modifier maps YET filtered out when
+ * calculating stat values/filtering out abilities/... Modifiers from the other hand
+ * are ignored IF AND ONLY IF the other hand item is a weapon. As long as the item
+ * placement is valid, non-weapon items all apply their modifiers.
+ *
+ * @author jules
+ */
 public class StatInstance {
     private final StatMap map;
     private final String stat;

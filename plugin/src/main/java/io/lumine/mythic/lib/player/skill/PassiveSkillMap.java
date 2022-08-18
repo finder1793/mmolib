@@ -10,11 +10,11 @@ import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
-public class PassiveSkillMap implements ModifierMap<PassiveSkill> {
-    private final MMOPlayerData playerData;
-    private final Map<UUID, PassiveSkill> skills = new HashMap<>();
+public class PassiveSkillMap extends ModifierMap<PassiveSkill> {
 
     /**
      * Key: skill handler identifier
@@ -23,52 +23,7 @@ public class PassiveSkillMap implements ModifierMap<PassiveSkill> {
     private final Map<String, Long> lastCast = new HashMap<>();
 
     public PassiveSkillMap(MMOPlayerData playerData) {
-        this.playerData = playerData;
-    }
-
-    public MMOPlayerData getPlayerData() {
-        return playerData;
-    }
-
-    /**
-     * Registers as active a skill trigger. It can be unregistered
-     * later if necessary using {@link #removeModifiers(String)}.
-     * From the time where that method is called, performing an action will
-     * cause the saved PassiveSkill to be executed.
-     *
-     * @param skill Skill to register
-     */
-    @Override
-    public void addModifier(PassiveSkill skill) {
-        skills.put(skill.getUniqueId(), skill);
-    }
-
-    /**
-     * Unregisters a skill with a specific identifier
-     */
-    @Override
-    public void removeModifier(UUID uuid) {
-        skills.remove(uuid);
-    }
-
-    /**
-     * Unregisters active skill triggers with a specific key
-     *
-     * @param key Modifier key
-     */
-    @Override
-    public void removeModifiers(String key) {
-        Iterator<PassiveSkill> iter = skills.values().iterator();
-        while (iter.hasNext()) {
-            PassiveSkill skill = iter.next();
-            if (skill.getKey().equals(key))
-                iter.remove();
-        }
-    }
-
-    @Override
-    public Collection<PassiveSkill> getModifiers() {
-        return skills.values();
+        super(playerData);
     }
 
     /**
@@ -87,7 +42,7 @@ public class PassiveSkillMap implements ModifierMap<PassiveSkill> {
      */
     @Nullable
     public PassiveSkill getSkill(@NotNull SkillHandler handler) {
-        for (PassiveSkill passive : skills.values())
+        for (PassiveSkill passive : getModifiers())
             if (handler.equals(passive.getTriggeredSkill().getHandler()))
                 return passive;
         return null;
@@ -106,7 +61,7 @@ public class PassiveSkillMap implements ModifierMap<PassiveSkill> {
         // Do not initialize triggerMeta unless absolutely necessary
         TriggerMetadata triggerMeta = null;
 
-        for (PassiveSkill passive : skills.values())
+        for (PassiveSkill passive : getModifiers())
             if (passive.getType().equals(TriggerType.TIMER)) {
                 String key = passive.getTriggeredSkill().getHandler().getId();
                 final long lastCast = Objects.requireNonNullElse(this.lastCast.get(key), 0l); // Avoids one map checkup taking advantage of non null values

@@ -1,18 +1,65 @@
 package io.lumine.mythic.lib.player.modifier;
 
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.UUID;
+import javax.annotation.Nullable;
+import java.util.*;
 
-public interface ModifierMap<T extends PlayerModifier> {
-    MMOPlayerData getPlayerData();
+public abstract class ModifierMap<T extends PlayerModifier> {
+    private final MMOPlayerData playerData;
+    private final Map<UUID, T> modifiers = new HashMap<>();
 
-    Collection<T> getModifiers();
+    public ModifierMap(MMOPlayerData playerData) {
+        this.playerData = playerData;
+    }
 
-    void addModifier(T modifier);
+    @NotNull
+    public MMOPlayerData getPlayerData() {
+        return playerData;
+    }
 
-    void removeModifier(UUID uuid);
+    @NotNull
+    public Collection<T> getModifiers() {
+        return modifiers.values();
+    }
 
-    void removeModifiers(String key);
+    @NotNull
+    public Iterable<T> isolateModifiers(EquipmentSlot hand) {
+        final ArrayList<T> isolated = new ArrayList<>();
+        final EquipmentSlot oppositeHand = hand.getOppositeHand();
+
+        for (T modifier : getModifiers())
+            if (!modifier.getSource().isWeapon() || modifier.getSlot() != oppositeHand)
+                isolated.add(modifier);
+
+        return isolated;
+    }
+
+    @Nullable
+    public T addModifier(T modifier) {
+        return modifiers.put(modifier.getUniqueId(), modifier);
+    }
+
+    @Nullable
+    public T removeModifier(UUID uuid) {
+        final @Nullable T removed = modifiers.remove(uuid);
+        if (removed != null && removed instanceof Closeable)
+            ((Closeable) removed).close();
+        return removed;
+    }
+
+    public void removeModifiers(String key) {
+        final Iterator<T> iterator = modifiers.values().iterator();
+        T skill;
+        while (iterator.hasNext()) {
+            skill = iterator.next();
+            if (skill.getKey().equals(key)) {
+                iterator.remove();
+                if (skill instanceof Closeable)
+                    ((Closeable) skill).close();
+            }
+        }
+    }
 }

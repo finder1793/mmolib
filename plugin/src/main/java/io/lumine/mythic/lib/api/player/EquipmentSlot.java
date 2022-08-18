@@ -25,22 +25,25 @@ public enum EquipmentSlot {
     ACCESSORY,
 
     /**
-     * Cannot apply its stats anywhere
+     * Apply its stats anywhere
      */
     OTHER,
 
     /**
-     * Always apply its stats
+     * Apply its stats anywhere
+     *
+     * @deprecated Use {@link #OTHER} instead
      */
+    @Deprecated
     ANY,
 
     /**
-     * Apply stats in main hands only
+     * Apply stats in main hand only
      */
     MAIN_HAND,
 
     /**
-     * Apply stats in off hand slot only (off hand catalysts mainly)
+     * Apply stats in off hand only
      */
     OFF_HAND;
 
