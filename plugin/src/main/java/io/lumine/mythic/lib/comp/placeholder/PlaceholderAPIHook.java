@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.comp.placeholder;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.util.DefenseFormula;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +37,12 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
         // All placeholders are related to players
         if (player == null)
             return null;
+
+        if (params.startsWith("defense_damage_reduction")) {
+            final double defenseStat = MMOPlayerData.get(player).getStatMap().getStat("DEFENSE");
+            final double damageReduction = 100 - new DefenseFormula().getAppliedDamage(defenseStat, 100);
+            return MythicLib.plugin.getMMOConfig().decimal.format(damageReduction);
+        }
 
         if (params.startsWith("stat_")) {
             final String stat = UtilityMethods.enumName(params.substring(5));
