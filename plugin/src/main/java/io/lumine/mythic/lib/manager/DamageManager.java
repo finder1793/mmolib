@@ -208,7 +208,7 @@ public class DamageManager implements Listener, AttackHandler {
         if (event.getDamage() == 0)
             return;
 
-        int entityId = event.getEntity().getEntityId();
+        final int entityId = event.getEntity().getEntityId();
         customAttacks.remove(entityId);
         offHandAttacks.remove(entityId);
         customDamage.remove(entityId);
@@ -289,8 +289,8 @@ public class DamageManager implements Listener, AttackHandler {
          * MMOCore skills, or any other plugin that implement MythicLib compatibility.
          */
         for (AttackHandler handler : handlers) {
-            AttackMetadata found = handler.getAttack(event);
-            if (found != null)
+            final AttackMetadata found = handler.getAttack(event);
+            if (found != null && !found.hasExpired())
                 return found;
         }
 
