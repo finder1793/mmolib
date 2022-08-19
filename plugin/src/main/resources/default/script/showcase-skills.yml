@@ -18,7 +18,6 @@ staff_attack_hit_entity:
             type: damage
             amount: 10
             ignore_immunity: true
-
         showparticles:
             type: particle
             particle: LAVA
