@@ -29,6 +29,8 @@ import io.lumine.mythic.lib.comp.placeholder.*;
 import io.lumine.mythic.lib.comp.protocollib.DamageParticleCap;
 import io.lumine.mythic.lib.comp.target.CitizensTargetRestriction;
 import io.lumine.mythic.lib.comp.target.FactionsRestriction;
+import io.lumine.mythic.lib.glow.GlowModule;
+import io.lumine.mythic.lib.glow.provided.MythicGlowModule;
 import io.lumine.mythic.lib.gui.PluginInventory;
 import io.lumine.mythic.lib.hologram.HologramFactory;
 import io.lumine.mythic.lib.hologram.HologramFactoryList;
@@ -48,6 +50,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.logging.Level;
@@ -75,6 +78,7 @@ public class MythicLib extends JavaPlugin {
     @Deprecated
     @Getter
     private PlaceholderParser placeholderParser;
+    private GlowModule glowModule;
 
     @Override
     public void onLoad() {
@@ -213,6 +217,12 @@ public class MythicLib extends JavaPlugin {
 //		if (Bukkit.getPluginManager().getPlugin("ShopKeepers") != null)
 //			entityManager.registerHandler(new ShopKeepersEntityHandler());
 
+        // Glowing module
+        if (glowModule == null) {
+            glowModule = new MythicGlowModule();
+            glowModule.enable();
+        }
+
         // Command executors
         getCommand("exploreattributes").setExecutor(new ExploreAttributesCommand());
         getCommand("mythiclib").setExecutor(new MythicLibCommand());
@@ -257,6 +267,8 @@ public class MythicLib extends JavaPlugin {
         for (Player player : Bukkit.getOnlinePlayers())
             if (player.getOpenInventory() != null && player.getOpenInventory().getTopInventory().getHolder() != null && player.getOpenInventory().getTopInventory().getHolder() instanceof PluginInventory)
                 player.closeInventory();
+
+            glowModule.disable();
     }
 
     public static MythicLib inst() {
@@ -313,6 +325,11 @@ public class MythicLib extends JavaPlugin {
 
     public AntiCheatSupport getAntiCheat() {
         return antiCheatSupport;
+    }
+
+    @Nullable
+    public GlowModule getGlowing() {
+        return glowModule;
     }
 
     @Deprecated
