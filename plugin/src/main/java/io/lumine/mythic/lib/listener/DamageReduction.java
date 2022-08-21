@@ -5,6 +5,7 @@ import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
+import io.lumine.mythic.lib.util.DefenseFormula;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -15,14 +16,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.NotNull;
-import org.matheclipse.commons.parser.client.eval.DoubleEvaluator;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.logging.Level;
 
 public class DamageReduction implements Listener {
 
@@ -48,43 +47,11 @@ public class DamageReduction implements Listener {
             damageMeta.multiplicativeModifier(1 - data.getStatMap().getStat(damageType + "_DAMAGE_REDUCTION") / 100, damageType);
 
         // Applies the Defense stat
-        double defense = data.getStatMap().getStat("DEFENSE");
-        double damage = damageMeta.getDamage();
-        if (defense > 0)
-            damage = new DefenseFormula(defense).getAppliedDamage(damage);
+        final double defense = data.getStatMap().getStat("DEFENSE");
+        final double damage = defense > 0 ? new DefenseFormula().getAppliedDamage(defense, damageMeta.getDamage()) : damageMeta.getDamage();
 
-        // Finally apply damage
+        // Finally update damage
         event.setDamage(damage);
-    }
-
-    /**
-     * Used for calculating damage mitigation due to the defense stat.
-     */
-    public class DefenseFormula {
-        private final double defense;
-
-        public DefenseFormula(double defense) {
-            this.defense = defense;
-        }
-
-        public double getAppliedDamage(double damage) {
-            String formula = MythicLib.plugin.getConfig().getString("defense-application", "#damage# * (1 - (#defense# / (#defense# + 100)))");
-            formula = formula.replace("#defense#", String.valueOf(defense));
-            formula = formula.replace("#damage#", String.valueOf(damage));
-
-            try {
-                return Math.max(0, new DoubleEvaluator().evaluate(formula));
-            } catch (RuntimeException exception) {
-
-                /**
-                 * Formula won't evaluate if hanging #'s or unparsed placeholders. Send a
-                 * friendly warning to console and just return the default damage.
-                 */
-                MythicLib.inst().getLogger()
-                        .log(Level.WARNING, "Could not evaluate defense formula, please check config.");
-                return damage;
-            }
-        }
     }
 
     private static final Set<EntityDamageEvent.DamageCause> FIRE_DAMAGE_CAUSES

@@ -7,6 +7,7 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.element.Element;
 import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
+import io.lumine.mythic.lib.util.DefenseFormula;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -33,7 +34,7 @@ public class ElementalDamage implements Listener {
         for (Element element : MythicLib.plugin.getElements().getAll()) {
 
             // If the flat damage is 0; cancel everything asap
-            StatProvider attackerStats = event.getAttack();
+            final StatProvider attackerStats = event.getAttack();
             double damage = attackerStats.getStat(element.getId() + "_DAMAGE");
             if (damage == 0)
                 continue;
@@ -45,7 +46,7 @@ public class ElementalDamage implements Listener {
                 continue;
 
             // Apply elemental weakness
-            StatProvider opponentStats = StatProvider.get(event.getEntity());
+            final StatProvider opponentStats = StatProvider.get(event.getEntity());
             final double weakness = opponentStats.getStat(element.getId() + "_WEAKNESS");
             damage *= 1 + Math.max(-1, weakness / 100);
             if (damage == 0)
@@ -54,7 +55,7 @@ public class ElementalDamage implements Listener {
             // Apply elemental defense
             double defense = opponentStats.getStat(element.getId() + "_DEFENSE");
             defense *= 1 + Math.max(-1, opponentStats.getStat(element.getId() + "_DEFENSE_PERCENT") / 100);
-            damage = MythicLib.plugin.getMMOConfig().getAppliedElementalDamage(damage, defense);
+            damage = new DefenseFormula().getAppliedDamage(defense, damage);
 
             // Register the damage packet
             event.getDamage().add(damage, element);

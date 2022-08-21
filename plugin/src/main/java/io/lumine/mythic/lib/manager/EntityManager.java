@@ -3,17 +3,19 @@ package io.lumine.mythic.lib.manager;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.comp.target.InteractionType;
 import io.lumine.mythic.lib.comp.target.TargetRestriction;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import io.lumine.mythic.lib.util.CustomProjectile;
+import org.bukkit.entity.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class EntityManager {
     private final Set<TargetRestriction> restrictions = new HashSet<>();
+    private final Map<Integer, CustomProjectile> projectiles = new HashMap<>();
 
     /**
      * See {@link TargetRestriction} for more information. This should be
@@ -27,6 +29,18 @@ public class EntityManager {
      */
     public void registerRestriction(TargetRestriction restriction) {
         restrictions.add(restriction);
+    }
+
+    @Nullable
+    public CustomProjectile getCustomProjectile(Entity entity) {
+        return projectiles.get(entity.getEntityId());
+    }
+
+    /**
+     * Registers a custom projectile. This is used for bows, crossbows and tridents.
+     */
+    public void registerCustomProjectile(Entity entity, CustomProjectile projectileData) {
+        projectiles.put(entity.getEntityId(), projectileData);
     }
 
     /**
@@ -59,5 +73,9 @@ public class EntityManager {
                 return false;
 
         return true;
+    }
+
+    public void unregisterCustomProjectile(Projectile projectile) {
+        projectiles.remove(projectile.getEntityId());
     }
 }

@@ -1,0 +1,67 @@
+package io.lumine.mythic.lib.glow.provided;
+
+import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.glow.GlowModule;
+import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Entity;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+public class MythicGlowModule implements GlowModule {
+
+    /**
+     * One team per color
+     */
+    private final Map<ChatColor, Team> scoreboardTeams = new HashMap<>();
+
+    /**
+     * Glow color is saved at this location in the entity NBT tag
+     */
+    private final NamespacedKey colorTagPath = new NamespacedKey(MythicLib.plugin, "GlowColor");
+
+    @Override
+    public void enable() {
+        Scoreboard scoreboard = Bukkit.getServer().getScoreboardManager().getMainScoreboard();
+
+        // Register teams
+        for (ChatColor color : ChatColor.values())
+            if (color.isColor()) {
+                final String teamName = getTeamName(color);
+                final Team team = Objects.requireNonNullElseGet(scoreboard.getTeam(teamName), () -> scoreboard.registerNewTeam(teamName));
+                team.setColor(color);
+                scoreboardTeams.put(color, team);
+            }
+    }
+
+    private String getTeamName(ChatColor color) {
+        Validate.isTrue(color.isColor(), "Not a color");
+        return "mythiclib_glow_" + color.name().toLowerCase();
+    }
+
+    @Override
+    public void disable() {
+        scoreboardTeams.forEach((color, team) -> team.unregister());
+    }
+
+    @Override
+    public void setGlowing(Entity entity, ChatColor color) {
+        Validate.isTrue(color.isColor(), "Not a color");
+        scoreboardTeams.get(color).addEntry(entity.getUniqueId().toString());
+        entity.getPersistentDataContainer().set(colorTagPath, PersistentDataType.STRING, color.name());
+        entity.setGlowing(true);
+    }
+
+    @Override
+    public void disableGlowing(Entity entity) {
+        entity.getPersistentDataContainer().remove(colorTagPath);
+        entity.setGlowing(false);
+    }
+}

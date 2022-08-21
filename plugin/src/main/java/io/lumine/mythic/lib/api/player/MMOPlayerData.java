@@ -95,10 +95,18 @@ public class MMOPlayerData {
         return statMap;
     }
 
+    /**
+     * @deprecated Not implemented yet
+     */
+    @Deprecated
     public PermanentPotionEffectMap getPermanentEffectMap() {
         return permEffectMap;
     }
 
+    /**
+     * @deprecated Not implemented yet
+     */
+    @Deprecated
     public ParticleEffectMap getParticleEffectMap() {
         return particleEffectMap;
     }
@@ -144,7 +152,7 @@ public class MMOPlayerData {
      * @param attackMetadata The attack being performed
      * @param skills         The list of skills currently active for the player
      */
-    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable AttackMetadata attackMetadata, @Nullable Entity target, @NotNull Collection<PassiveSkill> skills) {
+    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable AttackMetadata attackMetadata, @Nullable Entity target, @NotNull Iterable<PassiveSkill> skills) {
         if (!MythicLib.plugin.getFlags().isFlagAllowed(getPlayer(), CustomFlag.MMO_ABILITIES))
             return;
 

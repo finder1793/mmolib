@@ -1,80 +1,51 @@
 package io.lumine.mythic.lib.player.potion;
 
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.player.modifier.Closeable;
 import io.lumine.mythic.lib.player.modifier.ModifierMap;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.*;
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
-public class PermanentPotionEffectMap implements ModifierMap<PermanentPotionEffect> {
-    private final MMOPlayerData playerData;
-    private final Map<UUID, PermanentPotionEffect> effects = new HashMap<>();
-
-    private final Map<PotionEffectType, Integer> maxLevels = new HashMap<>();
+@Deprecated
+public class PermanentPotionEffectMap extends ModifierMap<PermanentPotionEffect> {
+    private final Map<PotionEffectType, Integer> maxAmplifier = new HashMap<>();
 
     public PermanentPotionEffectMap(MMOPlayerData playerData) {
-        this.playerData = playerData;
+        super(playerData);
     }
 
     @Override
-    public MMOPlayerData getPlayerData() {
-        return playerData;
-    }
-
-    @Override
-    public Collection<PermanentPotionEffect> getModifiers() {
-        return effects.values();
-    }
-
-    @Override
-    public void addModifier(PermanentPotionEffect effect) {
-        effects.put(effect.getUniqueId(), effect);
+    public PermanentPotionEffect addModifier(PermanentPotionEffect effect) {
+        final @Nullable PermanentPotionEffect prev = super.addModifier(effect);
 
         // Update cached map
         PotionEffectType key = effect.getEffect();
-        maxLevels.put(key, Math.max(maxLevels.getOrDefault(key, -1), effect.getAmplifier()));
+        maxAmplifier.put(key, Math.max(maxAmplifier.getOrDefault(key, -1), effect.getAmplifier()));
+
+        return prev;
     }
 
     @Override
-    public void removeModifier(UUID uniqueId) {
-        PermanentPotionEffect effect = effects.remove(uniqueId);
+    public PermanentPotionEffect removeModifier(UUID uniqueId) {
+        final @Nullable PermanentPotionEffect removed = super.removeModifier(uniqueId);
 
         // Recalculate max
-        if (effect != null) {
-            if (effect instanceof Closeable)
-                ((Closeable) effect).close();
-            updateHighestLevel(effect.getEffect());
-        }
-    }
-
-    /**
-     * Iterates through registered modifiers and unregister
-     * those with a specific modifier key.
-     *
-     * @param key Modifier key to unregister
-     */
-    @Override
-    public void removeModifiers(String key) {
-        for (Iterator<PermanentPotionEffect> iterator = effects.values().iterator(); iterator.hasNext(); ) {
-            PermanentPotionEffect entry = iterator.next();
-            if (entry.getKey().equals(key)) {
-                iterator.remove();
-                if (entry instanceof Closeable)
-                    ((Closeable) entry).close();
-                updateHighestLevel(entry.getEffect());
-            }
-        }
+        if (removed != null)
+            updateHighestLevel(removed.getEffect());
+        return removed;
     }
 
     public void applyPermanentEffects() {
-        Validate.isTrue(playerData.isOnline(), "Player is offline");
+        Validate.isTrue(getPlayerData().isOnline(), "Player is offline");
 
-        Player player = playerData.getPlayer();
-        maxLevels.forEach((type, level) -> {
+        final Player player = getPlayerData().getPlayer();
+        maxAmplifier.forEach((type, level) -> {
             int currentAmplifier = player.hasPotionEffect(type) ? player.getPotionEffect(type).getAmplifier() : -1;
             if (level >= currentAmplifier)
                 player.addPotionEffect(new PotionEffect(type, getEffectDuration(type), level, false, false));
@@ -91,7 +62,7 @@ public class PermanentPotionEffectMap implements ModifierMap<PermanentPotionEffe
     public int getHighestLevel(PotionEffectType type) {
         int amplifier = -1;
 
-        for (PermanentPotionEffect perm : effects.values())
+        for (PermanentPotionEffect perm : getModifiers())
             if (perm.getEffect() == type)
                 amplifier = Math.max(amplifier, perm.getAmplifier());
 
@@ -101,9 +72,9 @@ public class PermanentPotionEffectMap implements ModifierMap<PermanentPotionEffe
     private void updateHighestLevel(PotionEffectType type) {
         int max = getHighestLevel(type);
         if (max == -1)
-            maxLevels.remove(type);
+            maxAmplifier.remove(type);
         else
-            maxLevels.put(type, max);
+            maxAmplifier.put(type, max);
     }
 
     /**

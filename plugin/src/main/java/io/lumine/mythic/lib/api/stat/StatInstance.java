@@ -16,8 +16,6 @@ public class StatInstance {
     private final String stat;
     private final Map<String, StatModifier> modifiers = new HashMap<>();
 
-    private static final Predicate<StatModifier> DEFAULT_MODIFIER_FILTER = mod -> !mod.getSource().isWeapon() || mod.getSlot() != EquipmentSlot.OFF_HAND;
-
     public StatInstance(StatMap map, String stat) {
         this.map = map;
         this.stat = stat;
@@ -42,7 +40,7 @@ public class StatInstance {
      *         modifiers.
      */
     public double getTotal() {
-        return getFilteredTotal(DEFAULT_MODIFIER_FILTER);
+        return getFilteredTotal(EquipmentSlot.MAIN_HAND::isCompatible);
     }
 
     /**
@@ -67,7 +65,7 @@ public class StatInstance {
      *         modifiers.
      */
     public double getTotal(Function<StatModifier, StatModifier> modification) {
-        return getFilteredTotal(DEFAULT_MODIFIER_FILTER, modification);
+        return getFilteredTotal(EquipmentSlot.MAIN_HAND::isCompatible, modification);
     }
 
     /**

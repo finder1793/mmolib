@@ -15,6 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * @deprecated Not implemented yet
+ */
 @Deprecated
 public abstract class ParticleEffect extends PlayerModifier implements Closeable {
     private final ParticleInformation particleUsed;

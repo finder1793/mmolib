@@ -17,9 +17,10 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class is used to trigger the right skills when a projectile
@@ -31,9 +32,8 @@ import java.util.Set;
  *
  * @author indyuce
  */
-public class ProjectileTrigger extends TemporaryListener {
+public class CustomProjectile extends TemporaryListener {
     private final int entityId;
-    private final MMOPlayerData caster;
     private final BukkitRunnable runnable;
     private final ProjectileType projectileType;
 
@@ -43,8 +43,8 @@ public class ProjectileTrigger extends TemporaryListener {
      * is still in midair which will change the projectile behaviour. The very same
      * glitch is being fixed by {@link PlayerMetadata}
      */
-    private final Set<PassiveSkill> cachedSkills;
-    private final PlayerMetadata attacker;
+    private final Iterable<PassiveSkill> cachedSkills;
+    private final PlayerMetadata caster;
 
     /**
      * Used to trigger skills related to projectiles (either arrows or tridents). This
@@ -56,45 +56,31 @@ public class ProjectileTrigger extends TemporaryListener {
      * @param projectile     Type of projectile being shot
      * @param hand           Hand being used to shoot the projectile
      */
-    public ProjectileTrigger(MMOPlayerData caster, ProjectileType projectileType, Entity projectile, EquipmentSlot hand) {
+    public CustomProjectile(MMOPlayerData caster, ProjectileType projectileType, Entity projectile, EquipmentSlot hand) {
         super(ProjectileHitEvent.getHandlerList(), EntityDeathEvent.getHandlerList(), PlayerQuitEvent.getHandlerList(), PlayerAttackEvent.getHandlerList());
 
-        this.caster = caster;
         this.entityId = projectile.getEntityId();
         this.projectileType = projectileType;
 
         // Cache important stuff
-        this.cachedSkills = isolateSkills(hand);
-        this.attacker = caster.getStatMap().cache(hand);
+        this.caster = caster.getStatMap().cache(hand);
+        this.cachedSkills = caster.getPassiveSkillMap().isolateModifiers(hand);
 
+        // Trigger skills
         runnable = new BukkitRunnable() {
             @Override
             public void run() {
-                caster.triggerSkills(projectileType.getTickTrigger(), attacker, null, projectile, cachedSkills);
+                caster.triggerSkills(projectileType.getTickTrigger(), CustomProjectile.this.caster, null, projectile, cachedSkills);
             }
         };
         runnable.runTaskTimer(MythicLib.plugin, 0, 1);
+
+        // Register in MythicLib
+        MythicLib.plugin.getEntities().registerCustomProjectile(projectile, this);
     }
 
-    /**
-     * This fixes an issue where skills from the RIGHT hand are being
-     * applied when firing arrows using a bow held in LEFT hand which
-     * doesn't make any sense.
-     * <p>
-     * However it makes sense to apply skills given by armor pieces or
-     * accessories. This methods only bans skills from the opposite hand.
-     *
-     * @param hand Hand used to shoot the projectile
-     * @return Skills that will potentially be triggered
-     */
-    private Set<PassiveSkill> isolateSkills(EquipmentSlot hand) {
-        Set<PassiveSkill> skills = new HashSet<>();
-
-        for (PassiveSkill skill : caster.getPassiveSkillMap().getModifiers())
-            if (skill.getSlot() != hand.getOppositeHand())
-                skills.add(skill);
-
-        return skills;
+    public PlayerMetadata getCaster() {
+        return caster;
     }
 
     @EventHandler
@@ -107,7 +93,7 @@ public class ProjectileTrigger extends TemporaryListener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void triggerHit(PlayerAttackEvent event) {
         if (event.getAttack() instanceof ProjectileAttackMetadata && ((ProjectileAttackMetadata) event.getAttack()).getProjectile().getEntityId() == entityId)
-            caster.triggerSkills(projectileType.getHitTrigger(), attacker, event.getAttack(), event.getEntity(), cachedSkills);
+            caster.getData().triggerSkills(projectileType.getHitTrigger(), caster, event.getAttack(), event.getEntity(), cachedSkills);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -115,7 +101,7 @@ public class ProjectileTrigger extends TemporaryListener {
 
         // Make sure the projectile landed on a block
         if (event.getHitBlock() != null && event.getEntity().getEntityId() == entityId)
-            caster.triggerSkills(projectileType.getLandTrigger(), attacker, null, event.getEntity(), cachedSkills);
+            caster.getData().triggerSkills(projectileType.getLandTrigger(), caster, null, event.getEntity(), cachedSkills);
     }
 
     @EventHandler
@@ -126,7 +112,7 @@ public class ProjectileTrigger extends TemporaryListener {
 
     @EventHandler
     public void unregisterOnLogout(PlayerQuitEvent event) {
-        if (event.getPlayer().getUniqueId().equals(caster.getUniqueId()))
+        if (event.getPlayer().getUniqueId().equals(caster.getData().getUniqueId()))
             close();
     }
 

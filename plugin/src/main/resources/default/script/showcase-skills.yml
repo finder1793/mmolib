@@ -5,15 +5,19 @@ staff_attack:
     mechanics:
         raycast:
             type: raytrace
-            hit_entity: teststaff_hit_entity
-            tick: teststaff_tick
+            hit_entity: staff_attack_hit_entity
+            tick: staff_attack_tick
             size: 1
 
 staff_attack_hit_entity:
+    conditions:
+        cantarget:
+            type: can_target
     mechanics:
         dealdamage:
             type: damage
             amount: 10
+            ignore_immunity: true
         showparticles:
             type: particle
             particle: LAVA

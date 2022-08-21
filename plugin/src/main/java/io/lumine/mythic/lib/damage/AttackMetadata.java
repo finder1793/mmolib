@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Instanced every time MythicLib detects and monitors one attack from one player.
+ * Instanced every time MythicLib detects and monitors an attack from any player.
  *
  * @author Indyuce
  */
@@ -57,12 +57,13 @@ public class AttackMetadata extends PlayerMetadata {
     }
 
     /**
-     * @return Information about the attack
+     * @return Information about the attack damage
      */
     public DamageMetadata getDamage() {
         return damage;
     }
 
+    @Nullable
     public LivingEntity getTarget() {
         return target;
     }
