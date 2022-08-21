@@ -13,17 +13,16 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 public class PassiveSkillMap extends ModifierMap<PassiveSkill> {
-
-    /**
-     * Key: skill handler identifier
-     * Value: last time that skill was cast due to a timer
-     */
-    private final Map<String, Long> lastCast = new HashMap<>();
+    private final MMOPlayerData playerData;
+    private final Map<UUID, PassiveSkill> skills = new HashMap();
+    private final Map<String, Long> lastCast = new HashMap();
 
     public PassiveSkillMap(MMOPlayerData playerData) {
         super(playerData);
+        this.playerData = playerData;
     }
 
     /**
@@ -46,6 +45,11 @@ public class PassiveSkillMap extends ModifierMap<PassiveSkill> {
             if (handler.equals(passive.getTriggeredSkill().getHandler()))
                 return passive;
         return null;
+    }
+
+    @Override
+    public PassiveSkill addModifier(PassiveSkill modifier) {
+        return this.skills.put(playerData.getUniqueId(),modifier);
     }
 
     /**
