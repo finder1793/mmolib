@@ -210,6 +210,7 @@ public class SkillManager {
 
         // Default skill handler types
         registerSkillHandlerType(config -> config.contains("mythiclib-skill-id"), config -> new MythicLibSkillHandler(getScriptOrThrow(config.getString("mythiclib-skill-id"))));
+        registerSkillHandlerType(config -> config.contains("mechanics"), config -> new MythicLibSkillHandler(new Script(config)));
     }
 
     /**
@@ -261,6 +262,13 @@ public class SkillManager {
         return Objects.requireNonNull(handlers.get(id), "Could not find handler with ID '" + id + "'");
     }
 
+    /**
+     * @return Currently registered skill handlers.
+     */
+    public Collection<SkillHandler> getHandlers() {
+        return handlers.values();
+    }
+
     public void registerScript(@NotNull Script script) {
         Validate.isTrue(!scripts.containsKey(script.getId()), "A script with the same name already exists");
 
@@ -288,13 +296,6 @@ public class SkillManager {
 
     public Collection<Script> getScripts() {
         return scripts.values();
-    }
-
-    /**
-     * @return Currently registered skill handlers.
-     */
-    public Collection<SkillHandler> getHandlers() {
-        return handlers.values();
     }
 
     public void registerCondition(String name, Function<ConfigObject, Condition> condition) {
