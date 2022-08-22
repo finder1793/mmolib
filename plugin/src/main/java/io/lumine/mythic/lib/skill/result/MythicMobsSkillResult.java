@@ -10,6 +10,7 @@ import io.lumine.mythic.core.skills.SkillTriggers;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.MythicMobsSkillHandler;
 import io.lumine.mythic.lib.util.RayTrace;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,7 +42,7 @@ public class MythicMobsSkillResult implements SkillResult {
              */
         else {
             final Player player = skillMeta.getCaster().getPlayer();
-            final RayTrace res = new RayTrace(player, 32, entity -> !entity.equals(player));
+            final RayTrace res = new RayTrace(player, 32, entity -> !entity.equals(player) && entity instanceof LivingEntity);
             if (res.hasHit())
                 targetEntities.add(BukkitAdapter.adapt(res.getHit()));
         }
