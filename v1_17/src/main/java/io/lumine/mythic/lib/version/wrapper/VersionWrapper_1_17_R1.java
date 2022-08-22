@@ -75,6 +75,11 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
     }
 
     @Override
+    public float getAttackCooldown(Player player) {
+        return player.getAttackCooldown();
+    }
+
+    @Override
     public int getFoodRestored(ItemStack item) {
         return CraftItemStack.asNMSCopy(item).getItem().getFoodProperties().getNutrition();
     }

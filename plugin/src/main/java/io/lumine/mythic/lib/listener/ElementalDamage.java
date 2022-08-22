@@ -31,11 +31,12 @@ public class ElementalDamage implements Listener {
             return;
 
         final double critChance = Math.min(event.getAttack().getStat("CRITICAL_STRIKE_CHANCE"), MythicLib.plugin.getAttackEffects().getMaxWeaponCritChance());
+        final double attackCharge = MythicLib.plugin.getVersion().getWrapper().getAttackCooldown(event.getPlayer());
         for (Element element : MythicLib.plugin.getElements().getAll()) {
 
             // If the flat damage is 0; cancel everything asap
             final StatProvider attackerStats = event.getAttack();
-            double damage = attackerStats.getStat(element.getId() + "_DAMAGE");
+            double damage = attackerStats.getStat(element.getId() + "_DAMAGE") * attackCharge;
             if (damage == 0)
                 continue;
 
