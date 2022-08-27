@@ -45,10 +45,10 @@ public class UtilityMethods {
     /**
      * @param loc Where we are looking for nearby entities
      * @return List of all entities surrounding a location. This method loops
-     *         through the 9 surrounding chunks and collect all entities from
-     *         them. This list can be cached and used multiple times in the same
-     *         tick for projectile based spells which need to run entity
-     *         checkups
+     * through the 9 surrounding chunks and collect all entities from
+     * them. This list can be cached and used multiple times in the same
+     * tick for projectile based spells which need to run entity
+     * checkups
      */
     public static List<Entity> getNearbyChunkEntities(Location loc) {
         List<Entity> entities = new ArrayList<>();
@@ -223,6 +223,11 @@ public class UtilityMethods {
     public static String enumName(String str) {
         return str.toUpperCase().replace("-", "_").replace(" ", "_");
     }
+
+    public static String ymlName(String str) {
+        return str.toLowerCase().replace("_", "-").replace(" ", "-");
+    }
+
 
     public static double[] getYawPitch(Vector axis) {
         double _2PI = 6.283185307179586D;
