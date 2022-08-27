@@ -27,6 +27,8 @@ public class MythicGlowModule implements GlowModule {
      */
     private final NamespacedKey colorTagPath = new NamespacedKey(MythicLib.plugin, "GlowColor");
 
+    private int counter;
+
     @Override
     public void enable() {
         Scoreboard scoreboard = Bukkit.getServer().getScoreboardManager().getMainScoreboard();
@@ -43,7 +45,7 @@ public class MythicGlowModule implements GlowModule {
 
     private String getTeamName(ChatColor color) {
         Validate.isTrue(color.isColor(), "Not a color");
-        return "mythiclib_glow_" + color.name().toLowerCase();
+        return "ml_glow_" + counter++;
     }
 
     @Override

@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LegacyComponent {
@@ -68,16 +67,22 @@ public class LegacyComponent {
         NEW_COLORS.put('r', "reset");
     }
 
+    private static final Pattern LEGACY_HEX_COLOR = Pattern.compile("<HEX([a-fA-F0-9]{6})>");
+
     /**
      * @return String with & and § color codes translated into MiniMessage format.
      * @deprecated It is now preferred to use the MiniMessage format.
      */
     @Deprecated
     private static String translateLegacyColorCodes(String text) {
-        final Matcher matcher = LEGACY_COLOR_CODES.matcher(text);
-        return matcher.replaceAll(result -> {
+
+        // Replace legacy color codes
+        text = LEGACY_COLOR_CODES.matcher(text).replaceAll(result -> {
             final char legacyColorCode = Character.toLowerCase(result.group().charAt(1));
             return new StringBuilder("<").append(Objects.requireNonNullElse(NEW_COLORS.get(legacyColorCode), "cc_err")).append(">").toString();
         });
+
+        // Replace <HEX112233> color codes
+        return LEGACY_HEX_COLOR.matcher(text).replaceAll(result -> "<#" + result.group().substring(4));
     }
 }

@@ -53,12 +53,12 @@ public class RayTrace {
 
         // Calculate initial location
         Validate.isTrue(hand.isHand(), "Not a hand equipment slot");
-        double a = Math.toRadians(player.getEyeLocation().getYaw() + 90 + 45 * (hand == EquipmentSlot.MAIN_HAND ? 1 : -1));
+        final double a = Math.toRadians(player.getEyeLocation().getYaw() + 90 + 45 * (hand == EquipmentSlot.MAIN_HAND ? 1 : -1));
         initialLocation = player.getLocation().add(Math.cos(a) * .5, 1.5, Math.sin(a) * .5);
 
         // Ray trace
         initialDirection = player.getEyeLocation().getDirection();
-        @Nullable RayTraceResult result = initialLocation.getWorld().rayTrace(initialLocation, initialDirection, range, FLUID_COLLISION_MODE, IGNORE_PASSABLE_BLOCKS, RAY_SIZE, filter);
+        @Nullable final RayTraceResult result = initialLocation.getWorld().rayTrace(initialLocation, initialDirection, range, FLUID_COLLISION_MODE, IGNORE_PASSABLE_BLOCKS, RAY_SIZE, filter);
         hitEntity = result == null || result.getHitEntity() == null ? null : (LivingEntity) result.getHitEntity();
         distanceTraveled = result == null ? range : result.getHitPosition().distance(initialLocation.toVector());
     }
@@ -74,7 +74,7 @@ public class RayTrace {
      * @param filter    Filters entities selected by the ray cast
      */
     public RayTrace(Location loc, Vector direction, double range, Predicate<Entity> filter) {
-        @Nullable RayTraceResult result = loc.getWorld().rayTrace(loc, direction, range, FLUID_COLLISION_MODE, IGNORE_PASSABLE_BLOCKS, RAY_SIZE, filter);
+        @Nullable final RayTraceResult result = loc.getWorld().rayTrace(loc, direction, range, FLUID_COLLISION_MODE, IGNORE_PASSABLE_BLOCKS, RAY_SIZE, filter);
         hitEntity = result == null || result.getHitEntity() == null ? null : (LivingEntity) result.getHitEntity();
         distanceTraveled = result == null ? range : result.getHitPosition().distance(loc.toVector());
         initialDirection = direction;

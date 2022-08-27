@@ -62,7 +62,6 @@ public class PlayerAttackEventListener implements Listener {
             return;
 
         // Call the Bukkit event with the attack meta found
-        Validate.isTrue(!attack.hasExpired(), "Attack has already expired");
         PlayerAttackEvent attackEvent = new PlayerAttackEvent(event, attack);
         Bukkit.getPluginManager().callEvent(attackEvent);
         attack.expire();

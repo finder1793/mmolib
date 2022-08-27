@@ -32,6 +32,7 @@ import org.bukkit.inventory.ItemStack;
 import java.lang.reflect.Field;
 import java.util.*;
 
+@Deprecated
 public class VersionWrapper_1_13_R2 implements VersionWrapper {
     private final Map<Material, Material> oreDrops = new HashMap<>();
     private final Set<Material> generatorOutputs = new HashSet<>();
@@ -47,6 +48,11 @@ public class VersionWrapper_1_13_R2 implements VersionWrapper {
     @Override
     public boolean isGeneratorOutput(Material material) {
         return generatorOutputs.contains(material);
+    }
+
+    @Override
+    public float getAttackCooldown(Player player) {
+        return ((CraftPlayer) player).getHandle().r(0);
     }
 
     @Override
