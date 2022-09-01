@@ -115,8 +115,8 @@ public class SkillManager {
     public SkillManager() {
 
         // Default mechanics
-        registerMechanic("addstat", config -> new AddStatModifierMechanic(config));
-        registerMechanic("removestat", config -> new RemoveStatModifierMechanic(config));
+        registerMechanic("add_stat", config -> new AddStatModifierMechanic(config));
+        registerMechanic("remove_stat", config -> new RemoveStatModifierMechanic(config));
 
         registerMechanic("feed", config -> new FeedMechanic(config));
         registerMechanic("heal", config -> new HealMechanic(config));
