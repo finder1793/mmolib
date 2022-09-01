@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.script.mechanic.offense;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
@@ -35,7 +36,7 @@ public class DamageMechanic extends TargetMechanic {
             final String[] split = config.getString("damage_type").split("\\,");
             types = new DamageType[split.length];
             for (int i = 0; i < split.length; i++)
-                types[i] = DamageType.valueOf(split[i].toLowerCase());
+                types[i] = DamageType.valueOf(UtilityMethods.enumName(split[i]));
         }
 
         // By default, magical-skill damage
