@@ -6,6 +6,7 @@ import io.lumine.mythic.lib.element.Element;
 import io.lumine.mythic.lib.util.ConfigFile;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ public class ElementManager {
             }
     }
 
+    @Nullable
     public Element get(String id) {
         return mapped.get(id);
     }
