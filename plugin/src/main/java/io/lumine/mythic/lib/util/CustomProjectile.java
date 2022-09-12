@@ -17,18 +17,18 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * This class is used to trigger the right skills when a projectile
- * flies into the air as well as when it hits the ground or an entity.
- * skill trigger every tick when the projectile is
- * still flying in the air.
+ * The one thing about projectiles is that they create some type of
+ * delay between the attack action (when shooting the trident or
+ * the arrow) and the actual damage. This means the player stats
+ * and abilities need to be cached on item use.
  * <p>
- * This is used for both tridents and arrows
+ * This class triggers the right skills when a projectile flies into
+ * the air/hits the ground or an entity.
+ * <p>
+ * This is used for any type of projectile: arrows, tridents, eggs,
+ * snowballs.
  *
  * @author indyuce
  */

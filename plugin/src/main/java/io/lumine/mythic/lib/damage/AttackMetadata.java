@@ -2,24 +2,36 @@ package io.lumine.mythic.lib.damage;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 /**
  * Instanced every time MythicLib detects and monitors an attack from any player.
  *
  * @author Indyuce
  */
-public class AttackMetadata extends PlayerMetadata {
+public class AttackMetadata {
 
     @NotNull
     private final DamageMetadata damage;
 
-    @Nullable
+    /**
+     * This field can actually be null but this is only for
+     * backwards compatibility and will be modified in a distant future.
+     */
+    @NotNull
     private final LivingEntity target;
+
+    @Nullable
+    private final StatProvider attacker;
 
     /**
      * Attacks expire as soon as the corresponding {@link PlayerAttackEvent}
@@ -30,10 +42,10 @@ public class AttackMetadata extends PlayerMetadata {
     private boolean expired;
 
     /**
-     * @deprecated It is now required to provide a target
+     * @deprecated Attack metas with no targets are deprecated
      */
     @Deprecated
-    public AttackMetadata(DamageMetadata damage, PlayerMetadata attacker) {
+    public AttackMetadata(@NotNull DamageMetadata damage, @Nullable StatProvider attacker) {
         this(damage, null, attacker);
     }
 
@@ -47,25 +59,39 @@ public class AttackMetadata extends PlayerMetadata {
      * @param damage   The attack result
      * @param attacker The entity who dealt the damage
      */
-    public AttackMetadata(DamageMetadata damage, LivingEntity target, PlayerMetadata attacker) {
-        super(attacker);
-
-        Validate.notNull(damage, "Attack cannot be null");
-
+    public AttackMetadata(@NotNull DamageMetadata damage, @NotNull LivingEntity target, @Nullable StatProvider attacker) {
+        this.attacker = attacker;
         this.target = target;
-        this.damage = damage;
+        this.damage = Objects.requireNonNull(damage, "Damage cannot be null");
     }
 
     /**
      * @return Information about the attack damage
      */
+    @NotNull
     public DamageMetadata getDamage() {
         return damage;
     }
 
-    @Nullable
+    @NotNull
     public LivingEntity getTarget() {
         return target;
+    }
+
+    /**
+     * @return The corresponding PlayerMetadata if the attacker is
+     *         a player, null otherwise
+     */
+    @Nullable
+    public StatProvider getAttacker() {
+        return attacker;
+    }
+
+    /**
+     * @return If this is a player attack
+     */
+    public boolean isPlayer() {
+        return attacker != null && attacker instanceof PlayerMetadata;
     }
 
     /**
@@ -86,7 +112,7 @@ public class AttackMetadata extends PlayerMetadata {
      */
     @Deprecated
     public AttackMetadata clone() {
-        return new AttackMetadata(damage.clone(), target, this);
+        return new AttackMetadata(damage.clone(), target, attacker);
     }
 
     /**
@@ -107,5 +133,64 @@ public class AttackMetadata extends PlayerMetadata {
     @Deprecated
     public void damage(LivingEntity target, boolean knockback) {
         MythicLib.plugin.getDamage().damage(this, target, knockback);
+    }
+
+    /**
+     * @deprecated AttackMetadata no longer extends PlayerMetadata
+     */
+    @Deprecated
+    public Player getPlayer() {
+        Validate.notNull(attacker, "No attacker was found");
+        Validate.isTrue(attacker instanceof PlayerMetadata, "Attacker is not a player");
+        return ((PlayerMetadata) attacker).getPlayer();
+    }
+
+    /**
+     * @deprecated AttackMetadata no longer extends PlayerMetadata
+     */
+    @Deprecated
+    public MMOPlayerData getData() {
+        Validate.notNull(attacker, "No attacker was found");
+        Validate.isTrue(attacker instanceof PlayerMetadata, "Attacker is not a player");
+        return ((PlayerMetadata) attacker).getData();
+    }
+
+    /**
+     * @deprecated AttackMetadata no longer extends PlayerMetadata
+     */
+    @Deprecated
+    public double getStat(String stat) {
+        Validate.notNull(attacker, "No attacker was found");
+        return attacker.getStat(stat);
+    }
+
+    /**
+     * @deprecated AttackMetadata no longer extends PlayerMetadata
+     */
+    @Deprecated
+    public void setStat(String stat, double value) {
+        Validate.notNull(attacker, "No attacker was found");
+        Validate.isTrue(attacker instanceof PlayerMetadata, "Attacker is not a player");
+        ((PlayerMetadata) attacker).setStat(stat, value);
+    }
+
+    /**
+     * @deprecated AttackMetadata no longer extends PlayerMetadata
+     */
+    @Deprecated
+    public AttackMetadata attack(LivingEntity target, double damage, DamageType... types) {
+        Validate.notNull(attacker, "No attacker was found");
+        Validate.isTrue(attacker instanceof PlayerMetadata, "Attacker is not a player");
+        return ((PlayerMetadata) attacker).attack(target, damage, types);
+    }
+
+    /**
+     * @deprecated AttackMetadata no longer extends PlayerMetadata
+     */
+    @Deprecated
+    public AttackMetadata attack(LivingEntity target, double damage, boolean knockback, DamageType... types) {
+        Validate.notNull(attacker, "No attacker was found");
+        Validate.isTrue(attacker instanceof PlayerMetadata, "Attacker is not a player");
+        return ((PlayerMetadata) attacker).attack(target, damage, knockback, types);
     }
 }

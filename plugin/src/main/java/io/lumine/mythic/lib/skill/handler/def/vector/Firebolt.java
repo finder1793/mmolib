@@ -2,8 +2,6 @@ package io.lumine.mythic.lib.skill.handler.def.vector;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.damage.AttackMetadata;
-import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
@@ -63,7 +61,7 @@ public class Firebolt extends SkillHandler<VectorSkillResult> {
                             loc.getWorld().spawnParticle(Particle.LAVA, loc, 8, 0, 0, 0, 0);
                             loc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, loc, 0);
                             loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 3, 1);
-                            new AttackMetadata(new DamageMetadata(skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE), skillMeta.getCaster()).damage((LivingEntity) target);
+                            skillMeta.getCaster().attack((LivingEntity) target, skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE);
                             target.setFireTicks((int) skillMeta.getModifier("ignite") * 20);
                             cancel();
                             return;

@@ -4,9 +4,9 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.stat.SharedStat;
-import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.damage.DamageType;
-import io.lumine.mythic.lib.listener.event.PlayerAttackEventListener;
+import io.lumine.mythic.lib.listener.event.AttackEventListener;
+import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.player.cooldown.CooldownType;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -49,11 +49,11 @@ public class AttackEffects implements Listener {
      * See how easy it is to just listen to any player
      * attack and apply on-hit attack effects now??
      *
-     * @see {@link PlayerAttackEventListener}
+     * @see {@link AttackEventListener}
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onHitAttackEffects(PlayerAttackEvent event) {
-        StatProvider stats = event.getAttack();
+        PlayerMetadata stats = event.getAttacker();
 
         // Apply specific damage increase
         for (DamageType type : DamageType.values())
@@ -69,8 +69,8 @@ public class AttackEffects implements Listener {
         // Weapon critical strikes
         if ((event.getDamage().hasType(DamageType.WEAPON) || event.getDamage().hasType(DamageType.UNARMED))
                 && RANDOM.nextDouble() <= Math.min(stats.getStat("CRITICAL_STRIKE_CHANCE"), maxWeaponCritChance) / 100
-                && !event.getData().isOnCooldown(CooldownType.WEAPON_CRIT)) {
-            event.getData().applyCooldown(CooldownType.WEAPON_CRIT, weaponCritCooldown);
+                && !event.getAttacker().getData().isOnCooldown(CooldownType.WEAPON_CRIT)) {
+            event.getAttacker().getData().applyCooldown(CooldownType.WEAPON_CRIT, weaponCritCooldown);
 
             // Works for both weapon and unarmed damage
             final double damageMultiplicator = weaponCritCoef + stats.getStat("CRITICAL_STRIKE_POWER") / 100;
@@ -85,8 +85,8 @@ public class AttackEffects implements Listener {
         // Skill critical strikes
         if (event.getDamage().hasType(DamageType.SKILL)
                 && RANDOM.nextDouble() <= Math.min(stats.getStat("SKILL_CRITICAL_STRIKE_CHANCE"), maxSkillCritChance) / 100
-                && !event.getData().isOnCooldown(CooldownType.SKILL_CRIT)) {
-            event.getData().applyCooldown(CooldownType.SKILL_CRIT, skillCritCooldown);
+                && !event.getAttacker().getData().isOnCooldown(CooldownType.SKILL_CRIT)) {
+            event.getAttacker().getData().applyCooldown(CooldownType.SKILL_CRIT, skillCritCooldown);
             event.getDamage().multiplicativeModifier(skillCritCoef + stats.getStat("SKILL_CRITICAL_STRIKE_POWER") / 100, DamageType.SKILL);
             event.getDamage().registerSkillCriticalStrike();
             event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 2);
@@ -94,10 +94,10 @@ public class AttackEffects implements Listener {
         }
 
         // Apply spell vamp and lifesteal
-        double heal = (event.getAttack().getDamage().getDamage(DamageType.WEAPON) * event.getAttack().getStat(SharedStat.LIFESTEAL)
-                + event.getAttack().getDamage().getDamage(DamageType.SKILL) * event.getAttack().getStat(SharedStat.SPELL_VAMPIRISM)) / 100;
+        double heal = (event.getAttack().getDamage().getDamage(DamageType.WEAPON) * event.getAttacker().getStat(SharedStat.LIFESTEAL)
+                + event.getAttack().getDamage().getDamage(DamageType.SKILL) * event.getAttacker().getStat(SharedStat.SPELL_VAMPIRISM)) / 100;
         if (heal > 0)
-            UtilityMethods.heal(event.getPlayer(), heal);
+            UtilityMethods.heal(stats.getPlayer(), heal);
     }
 
     private void applyCritEffects(Entity entity, Particle particle, int amount, double speed) {

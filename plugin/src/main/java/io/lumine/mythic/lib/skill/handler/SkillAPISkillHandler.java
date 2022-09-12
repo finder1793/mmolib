@@ -47,8 +47,8 @@ public class SkillAPISkillHandler extends SkillHandler<SkillAPISkillResult> {
             // Target Skills
         else if (skill instanceof TargetSkill)
             try {
-                final boolean isAlly = !SkillAPI.getSettings().canAttack(skillMeta.getAttack().getPlayer(), result.getTarget());
-                ((TargetSkill) skill).cast(skillMeta.getAttack().getPlayer(), result.getTarget(), result.getLevel(), isAlly);
+                final boolean isAlly = !SkillAPI.getSettings().canAttack(skillMeta.getCaster().getPlayer(), result.getTarget());
+                ((TargetSkill) skill).cast(skillMeta.getCaster().getPlayer(), result.getTarget(), result.getLevel(), isAlly);
             } catch (Exception exception) {
                 Logger.bug("Failed to cast skill - " + skill.getName() + ": Internal skill error");
                 exception.printStackTrace();

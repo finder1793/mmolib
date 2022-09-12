@@ -3,8 +3,6 @@ package io.lumine.mythic.lib.skill.handler.def.vector;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.util.TemporaryListener;
-import io.lumine.mythic.lib.damage.AttackMetadata;
-import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.skill.SkillMetadata;
@@ -75,17 +73,13 @@ public class Corrupted_Fangs extends SkillHandler<VectorSkillResult> {
             this.skillDamage = skillDamage;
         }
 
-        private AttackMetadata newAttackMeta() {
-            return new AttackMetadata(new DamageMetadata(skillDamage, DamageType.MAGIC, DamageType.SKILL), caster);
-        }
-
         @EventHandler(priority = EventPriority.LOWEST)
         public void a(EntityDamageByEntityEvent event) {
             if (event.getDamager() instanceof EvokerFangs && entities.contains(event.getDamager().getEntityId())) {
                 event.setCancelled(true);
 
                 if (UtilityMethods.canTarget(caster.getPlayer(), event.getEntity()))
-                    newAttackMeta().damage((LivingEntity) event.getEntity());
+                    caster.attack((LivingEntity) event.getEntity(), skillDamage, DamageType.MAGIC, DamageType.SKILL);
             }
         }
 

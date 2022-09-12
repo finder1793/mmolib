@@ -2,10 +2,10 @@ package io.lumine.mythic.lib.skill.trigger;
 
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.player.PlayerMetadata;
-import io.lumine.mythic.lib.skill.Skill;
-import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.script.variable.VariableList;
 import io.lumine.mythic.lib.script.variable.VariableScope;
+import io.lumine.mythic.lib.skill.Skill;
+import io.lumine.mythic.lib.skill.SkillMetadata;
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,9 +22,11 @@ public class TriggerMetadata extends PlayerMetadata {
      * @param attack Either the current attackMeta when the trigger type is DAMAGE for instance,
      *               or an empty one for any other trigger type.
      * @param target Potential skill target
+     * @deprecated AttackMetadata no longer extends PlayerMetadata
      */
+    @Deprecated
     public TriggerMetadata(@NotNull AttackMetadata attack, @Nullable Entity target) {
-        super(attack);
+        super((PlayerMetadata) attack.getAttacker());
 
         this.attack = attack;
         this.target = target;

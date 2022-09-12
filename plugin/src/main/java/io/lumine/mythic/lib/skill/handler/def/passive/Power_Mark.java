@@ -3,7 +3,6 @@ package io.lumine.mythic.lib.skill.handler.def.passive;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.player.skill.PassiveSkill;
@@ -43,15 +42,14 @@ public class Power_Mark extends SkillHandler<SimpleSkillResult> implements Liste
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void a(PlayerAttackEvent event) {
-        MMOPlayerData data = MMOPlayerData.get(event.getData().getUniqueId());
         if (!event.getAttack().getDamage().hasType(DamageType.WEAPON))
             return;
 
-        PassiveSkill skill = data.getPassiveSkillMap().getSkill(this);
+        PassiveSkill skill = event.getAttacker().getData().getPassiveSkillMap().getSkill(this);
         if (skill == null)
             return;
 
-        skill.getTriggeredSkill().cast(new TriggerMetadata(event.getAttack(), event.getEntity()));
+        skill.getTriggeredSkill().cast(new TriggerMetadata(event.getAttacker(), event.getAttack(), event.getEntity()));
     }
 
     public class PowerMark extends BukkitRunnable implements Listener {
@@ -86,7 +84,7 @@ public class Power_Mark extends SkillHandler<SimpleSkillResult> implements Liste
 
         @EventHandler(priority = EventPriority.HIGHEST)
         public void stackDamage(PlayerAttackEvent event) {
-            if (!event.isCancelled() && j < 20 * (duration - 2) && radiusCheck(event.getEntity().getLocation()) && event.getPlayer().equals(caster.getPlayer())) {
+            if (!event.isCancelled() && j < 20 * (duration - 2) && radiusCheck(event.getEntity().getLocation()) && event.getAttacker().getPlayer().equals(caster.getPlayer())) {
                 accumulate += event.getAttack().getDamage().getDamage() * ratio;
                 new ParabolicProjectile(event.getEntity().getLocation().add(0, event.getEntity().getHeight() / 2, 0), loc, () -> loc.getWorld().playSound(loc, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1), Color.PURPLE);
             }

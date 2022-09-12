@@ -1,7 +1,5 @@
 package io.lumine.mythic.lib.skill.handler.def.target;
 
-import io.lumine.mythic.lib.damage.AttackMetadata;
-import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
@@ -23,7 +21,7 @@ public class Smite extends SkillHandler<TargetSkillResult> {
     @Override
     public void whenCast(TargetSkillResult result, SkillMetadata skillMeta) {
         LivingEntity target = result.getTarget();
-        new AttackMetadata(new DamageMetadata(skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.MAGIC), skillMeta.getCaster()).damage(target);
+        skillMeta.getCaster().attack(target, skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.MAGIC);
         target.getWorld().strikeLightningEffect(target.getLocation());
     }
 }

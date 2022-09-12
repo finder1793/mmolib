@@ -30,12 +30,12 @@ public class ElementalDamage implements Listener {
         if (!event.getDamage().hasType(DamageType.WEAPON))
             return;
 
-        final double critChance = Math.min(event.getAttack().getStat("CRITICAL_STRIKE_CHANCE"), MythicLib.plugin.getAttackEffects().getMaxWeaponCritChance());
-        final double attackCharge = MythicLib.plugin.getVersion().getWrapper().getAttackCooldown(event.getPlayer());
+        final double critChance = Math.min(event.getAttacker().getStat("CRITICAL_STRIKE_CHANCE"), MythicLib.plugin.getAttackEffects().getMaxWeaponCritChance());
+        final double attackCharge = MythicLib.plugin.getVersion().getWrapper().getAttackCooldown(event.getAttacker().getPlayer());
         for (Element element : MythicLib.plugin.getElements().getAll()) {
 
             // If the flat damage is 0; cancel everything asap
-            final StatProvider attackerStats = event.getAttack();
+            final StatProvider attackerStats = event.getAttacker();
             double damage = attackerStats.getStat(element.getId() + "_DAMAGE") * attackCharge;
             if (damage == 0)
                 continue;
@@ -65,7 +65,7 @@ public class ElementalDamage implements Listener {
             final boolean crit = RANDOM.nextDouble() < critChance / 100;
             Skill skill = element.getSkill(crit);
             if (skill != null)
-                skill.cast(new TriggerMetadata(event.getAttack(), event.getEntity()));
+                skill.cast(new TriggerMetadata(event.getAttacker(), event.getAttack(), event.getEntity()));
             if (crit)
                 event.getDamage().registerElementalCriticalStrike(element);
         }

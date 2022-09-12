@@ -64,7 +64,7 @@ public class Evade extends SkillHandler<SimpleSkillResult> {
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void b(PlayerAttackEvent event) {
             if (event.getAttack().getDamage().hasType(DamageType.WEAPON)
-                    && event.getData().getUniqueId().equals(data.getUniqueId()))
+                    && event.getAttacker().getData().equals(data))
                 close();
         }
 

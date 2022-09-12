@@ -2,8 +2,6 @@ package io.lumine.mythic.lib.skill.handler.def.target;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.damage.AttackMetadata;
-import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
@@ -45,8 +43,7 @@ public class Tactical_Grenade extends SkillHandler<TargetSkillResult> {
             int j = 0;
 
             public void run() {
-                j++;
-                if (target.isDead() || !target.getWorld().equals(loc.getWorld()) || j > 200) {
+                if (target.isDead() || !target.getWorld().equals(loc.getWorld()) || j++ > 200) {
                     cancel();
                     return;
                 }
@@ -64,14 +61,14 @@ public class Tactical_Grenade extends SkillHandler<TargetSkillResult> {
                     if (!hit.contains(entity.getEntityId()) && UtilityMethods.canTarget(caster, entity) && entity.getLocation().distanceSquared(loc) < radius * radius) {
 
                         /*
-                         * stop the runnable as soon as the grenade finally hits
-                         * the initial target.
+                         * Stop the runnable as soon as the
+                         * grenade finally hits the initial target.
                          */
                         hit.add(entity.getEntityId());
                         if (entity.equals(target))
                             cancel();
 
-                        new AttackMetadata(new DamageMetadata(skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.MAGIC), skillMeta.getCaster()).damage((LivingEntity) entity);
+                        skillMeta.getCaster().attack((LivingEntity) entity, skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.MAGIC);
                         entity.setVelocity(entity.getVelocity().add(offsetVector(knockup)));
                     }
             }

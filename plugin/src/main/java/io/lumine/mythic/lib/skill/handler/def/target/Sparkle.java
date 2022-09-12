@@ -1,8 +1,6 @@
 package io.lumine.mythic.lib.skill.handler.def.target;
 
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.damage.AttackMetadata;
-import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
@@ -36,7 +34,7 @@ public class Sparkle extends SkillHandler<TargetSkillResult> {
         double radius = skillMeta.getModifier("radius");
         double limit = skillMeta.getModifier("limit");
 
-        new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC), skillMeta.getCaster()).damage(target);
+        skillMeta.getCaster().attack(target, damage, DamageType.SKILL, DamageType.MAGIC);
         target.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, target.getLocation().add(0, 1, 0), 0);
         target.getWorld().playSound(target.getLocation(), VersionSound.ENTITY_FIREWORK_ROCKET_TWINKLE.toSound(), 2, 2);
 
@@ -44,7 +42,7 @@ public class Sparkle extends SkillHandler<TargetSkillResult> {
         for (Entity entity : target.getNearbyEntities(radius, radius, radius))
             if (count < limit && UtilityMethods.canTarget(caster, entity)) {
                 count++;
-                new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.MAGIC), skillMeta.getCaster()).damage((LivingEntity) entity);
+                skillMeta.getCaster().attack((LivingEntity) entity, damage, DamageType.SKILL, DamageType.MAGIC);
                 entity.getWorld().playSound(entity.getLocation(), VersionSound.ENTITY_FIREWORK_ROCKET_TWINKLE.toSound(), 2, 2);
                 Location loc_t = target.getLocation().add(0, .75, 0);
                 Location loc_ent = entity.getLocation().add(0, .75, 0);

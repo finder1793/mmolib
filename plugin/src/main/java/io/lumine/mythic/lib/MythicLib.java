@@ -36,7 +36,7 @@ import io.lumine.mythic.lib.hologram.HologramFactory;
 import io.lumine.mythic.lib.hologram.HologramFactoryList;
 import io.lumine.mythic.lib.hologram.factory.BukkitHologramFactory;
 import io.lumine.mythic.lib.listener.*;
-import io.lumine.mythic.lib.listener.event.PlayerAttackEventListener;
+import io.lumine.mythic.lib.listener.event.AttackEventListener;
 import io.lumine.mythic.lib.listener.option.DamageIndicators;
 import io.lumine.mythic.lib.listener.option.FixMovementSpeed;
 import io.lumine.mythic.lib.listener.option.HealthScale;
@@ -125,7 +125,7 @@ public class MythicLib extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new DamageReduction(), this);
         Bukkit.getPluginManager().registerEvents(attackEffects = new AttackEffects(), this);
         Bukkit.getPluginManager().registerEvents(mitigationMechanics = new MitigationMechanics(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerAttackEventListener(), this);
+        Bukkit.getPluginManager().registerEvents(new AttackEventListener(), this);
         Bukkit.getPluginManager().registerEvents(new MythicCraftingManager(), this);
         Bukkit.getPluginManager().registerEvents(new SkillTriggers(), this);
         Bukkit.getPluginManager().registerEvents(new ElementalDamage(), this);

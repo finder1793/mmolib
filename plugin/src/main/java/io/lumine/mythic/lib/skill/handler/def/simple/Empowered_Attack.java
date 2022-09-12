@@ -77,7 +77,7 @@ public class Empowered_Attack extends SkillHandler<SimpleSkillResult> {
         @EventHandler
         public void a(PlayerAttackEvent event) {
             if (!caster.getData().isOnline()) return;
-            if (event.getPlayer().equals(caster.getPlayer()) && event.getAttack().getDamage().hasType(DamageType.WEAPON)) {
+            if (event.getAttacker().getPlayer().equals(caster.getPlayer()) && event.getAttack().getDamage().hasType(DamageType.WEAPON)) {
                 close();
 
                 Entity target = event.getEntity();
@@ -100,7 +100,7 @@ public class Empowered_Attack extends SkillHandler<SimpleSkillResult> {
                 for (Entity entity : target.getNearbyEntities(rad, rad, rad))
                     if (UtilityMethods.canTarget(caster.getPlayer(), entity)) {
                         drawVector(src, entity.getLocation().add(0, entity.getHeight() / 2, 0).subtract(src).toVector());
-                        event.getAttack().attack((LivingEntity) entity, sweep, DamageType.SKILL, DamageType.PHYSICAL);
+                        event.getAttacker().attack((LivingEntity) entity, sweep, DamageType.SKILL, DamageType.PHYSICAL);
                     }
 
                 /*

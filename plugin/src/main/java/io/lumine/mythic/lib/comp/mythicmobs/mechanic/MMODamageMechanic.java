@@ -68,15 +68,14 @@ public class MMODamageMechanic extends DamagingMechanic implements ITargetedEnti
         double damage = amount.get(data, target) * data.getPower();
 
         /*
-         * If the caster is not a player, this method falls off to the normal
-         * DamageMechanic of vanilla mythicmobs, rather than generating a null
-         * pointer exception when trying to find the PlayerData of this entity.
+         * If the caster is not a player, an AttackMetadata
+         * is now called but with no attacker provided.
          */
         if (!(data.getCaster().getEntity().getBukkitEntity() instanceof Player)) {
 
-            // Deals damage like normal mythicmobs hit each other
-            MythicLib.plugin.getDamage().registerCustomDamage(new DamageMetadata(damage, types), target.getBukkitEntity());
-            this.doDamage(data.getCaster(), target, damage);
+            // Deals damage like normal MythicMobs hit each other
+            MythicLib.plugin.getDamage().registerAttack(new AttackMetadata(new DamageMetadata(damage, types), (LivingEntity) target.getBukkitEntity(), null));
+            // this.doDamage(data.getCaster(), target, damage);
             return SkillResult.SUCCESS;
         }
 
@@ -90,7 +89,7 @@ public class MMODamageMechanic extends DamagingMechanic implements ITargetedEnti
 
         PlayerMetadata caster = data.getVariables().has(MythicMobsSkillResult.MMOSKILL_VAR_STATS) ? (PlayerMetadata) data.getVariables().get(MythicMobsSkillResult.MMOSKILL_VAR_STATS).get()
                 : MMOPlayerData.get(data.getCaster().getEntity().getUniqueId()).getStatMap().cache(EquipmentSlot.MAIN_HAND);
-        MythicLib.plugin.getDamage().damage(new AttackMetadata(new DamageMetadata(damage, types), caster), (LivingEntity) target.getBukkitEntity(), !this.preventKnockback, this.preventImmunity);
+        MythicLib.plugin.getDamage().registerAttack(new AttackMetadata(new DamageMetadata(damage, types), (LivingEntity) target.getBukkitEntity(), caster), !this.preventKnockback, this.preventImmunity);
         return SkillResult.SUCCESS;
     }
 }

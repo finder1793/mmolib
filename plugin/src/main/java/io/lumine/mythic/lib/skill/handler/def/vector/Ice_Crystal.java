@@ -2,8 +2,6 @@ package io.lumine.mythic.lib.skill.handler.def.vector;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.damage.AttackMetadata;
-import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
@@ -75,7 +73,7 @@ public class Ice_Crystal extends SkillHandler<VectorSkillResult> {
                             loc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, loc, 0);
                             loc.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, loc, 48, 0, 0, 0, .2);
                             loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 2, 1);
-                            new AttackMetadata(new DamageMetadata(skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE), skillMeta.getCaster()).damage((LivingEntity) entity);
+                            skillMeta.getCaster().attack((LivingEntity) entity, skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE);
                             ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW,
                                     (int) (skillMeta.getModifier("duration") * 20), (int) skillMeta.getModifier("amplifier")));
                             cancel();

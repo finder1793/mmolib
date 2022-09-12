@@ -2,8 +2,6 @@ package io.lumine.mythic.lib.skill.handler.def.vector;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.damage.AttackMetadata;
-import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
@@ -53,7 +51,7 @@ public class Heavy_Charge extends SkillHandler<VectorSkillResult> {
                         caster.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, target.getLocation().add(0, 1, 0), 0);
                         target.setVelocity(caster.getVelocity().setY(0.3).multiply(1.7 * knockback));
                         caster.setVelocity(caster.getVelocity().setX(0).setY(0).setZ(0));
-                        new AttackMetadata(new DamageMetadata(skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.PHYSICAL), skillMeta.getCaster()).damage((LivingEntity) target);
+                        skillMeta.getCaster().attack((LivingEntity) target, skillMeta.getModifier("damage"), DamageType.SKILL, DamageType.PHYSICAL);
                         cancel();
                         break;
                     }

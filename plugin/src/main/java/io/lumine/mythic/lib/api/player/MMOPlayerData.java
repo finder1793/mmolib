@@ -136,9 +136,22 @@ public class MMOPlayerData {
      * @param target         The potential target to cast the skill onto
      * @param attackMetadata The attack being performed
      */
+    @Deprecated
     public void triggerSkills(TriggerType triggerType, @NotNull AttackMetadata attackMetadata, @Nullable Entity target) {
         Validate.notNull(attackMetadata, "Attack meta cannot be null");
-        triggerSkills(triggerType, attackMetadata, attackMetadata, target, passiveSkillMap.getModifiers());
+        triggerSkills(triggerType, (PlayerMetadata) attackMetadata.getAttacker(), attackMetadata, target, passiveSkillMap.getModifiers());
+    }
+
+    /**
+     * Trigger skills with an attack metadata.
+     *
+     * @param triggerType    Action performed to trigger the skills
+     * @param target         The potential target to cast the skill onto
+     * @param attackMetadata The attack being performed
+     */
+    public void triggerSkills(TriggerType triggerType, @NotNull PlayerMetadata caster, @NotNull AttackMetadata attackMetadata, @Nullable Entity target) {
+        Validate.notNull(attackMetadata, "Attack meta cannot be null");
+        triggerSkills(triggerType, caster, attackMetadata, target, passiveSkillMap.getModifiers());
     }
 
     /**

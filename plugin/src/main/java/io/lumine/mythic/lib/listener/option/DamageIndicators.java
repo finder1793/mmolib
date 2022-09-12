@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.listener.option;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.api.event.AttackEvent;
 import io.lumine.mythic.lib.api.event.IndicatorDisplayEvent;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
@@ -61,18 +62,18 @@ public class DamageIndicators extends GameIndicators {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void a(EntityDamageEvent event) {
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void a(AttackEvent event) {
 
         Entity entity = event.getEntity();
-        if (!(entity instanceof LivingEntity) || event.getEntity() instanceof ArmorStand || event.getDamage() <= 0)
+        if (!(entity instanceof LivingEntity) || event.getEntity() instanceof ArmorStand)
             return;
 
         // Display no indicator around vanished player
         if (entity instanceof Player && UtilityMethods.isVanished((Player) entity))
             return;
 
-        @NotNull final DamageMetadata damage = MythicLib.plugin.getDamage().findDamage(event);
+        final @NotNull DamageMetadata damage = event.getDamage();
 
         // Calculate holograms
         final List<String> holos = new ArrayList<>();
@@ -94,12 +95,12 @@ public class DamageIndicators extends GameIndicators {
         // Display multiple indicators
         if (splitHolograms)
             for (String holo : holos)
-                displayIndicator(entity, holo, getDirection(event), IndicatorDisplayEvent.IndicatorType.DAMAGE);
+                displayIndicator(entity, holo, getDirection(event.toBukkit()), IndicatorDisplayEvent.IndicatorType.DAMAGE);
 
             // Only display one indicator
         else {
             String joined = String.join(" ", holos);
-            displayIndicator(entity, joined, getDirection(event), IndicatorDisplayEvent.IndicatorType.DAMAGE);
+            displayIndicator(entity, joined, getDirection(event.toBukkit()), IndicatorDisplayEvent.IndicatorType.DAMAGE);
         }
     }
 

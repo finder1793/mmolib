@@ -25,9 +25,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Instantiated every time a player casts a skill. This contains
- * all the required temporary data like the skill caster and
- * the cached statistics.
+ * Instantiated every time a player casts a skill/script. This
+ * contains all the required temporary data like the skill caster
+ * and the cached statistics.
  * <p>
  * This also stores variables which can be edited and manipulated by the user.
  */
@@ -75,9 +75,11 @@ public class SkillMetadata {
      * @param source         The location at which the skill/mechanic was cast
      * @param targetLocation The skill/mechanic target location
      * @param targetEntity   The skill/mechanic target entity
+     * @deprecated AttackMetadata no longer extends PlayerMetadata
      */
+    @Deprecated
     public SkillMetadata(Skill cast, @NotNull AttackMetadata attackMeta, @NotNull Location source, @Nullable Location targetLocation, @Nullable Entity targetEntity) {
-        this(cast, attackMeta, new VariableList(VariableScope.SKILL), attackMeta, source, targetLocation, targetEntity, null);
+        this(cast, (PlayerMetadata) attackMeta.getAttacker(), new VariableList(VariableScope.SKILL), attackMeta, source, targetLocation, targetEntity, null);
     }
 
     /**

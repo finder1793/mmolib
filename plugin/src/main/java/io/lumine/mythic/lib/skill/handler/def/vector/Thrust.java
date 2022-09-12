@@ -1,8 +1,6 @@
 package io.lumine.mythic.lib.skill.handler.def.vector;
 
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.damage.AttackMetadata;
-import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
@@ -31,9 +29,8 @@ public class Thrust extends SkillHandler<VectorSkillResult> {
 
     @Override
     public void whenCast(VectorSkillResult result, SkillMetadata skillMeta) {
-        Player caster = skillMeta.getCaster().getPlayer();
-
-        double damage = skillMeta.getModifier("damage");
+        final Player caster = skillMeta.getCaster().getPlayer();
+        final double damage = skillMeta.getModifier("damage");
 
         caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 1, 0);
         caster.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 2, 3));
@@ -44,7 +41,7 @@ public class Thrust extends SkillHandler<VectorSkillResult> {
             loc.add(vec);
             for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
                 if (UtilityMethods.canTarget(caster, loc, entity))
-                    new AttackMetadata(new DamageMetadata(damage, DamageType.SKILL, DamageType.PHYSICAL), skillMeta.getCaster()).damage((LivingEntity) entity);
+                    skillMeta.getCaster().attack((LivingEntity) entity, damage, DamageType.SKILL, DamageType.PHYSICAL);
             loc.getWorld().spawnParticle(Particle.SMOKE_LARGE, loc, 0);
         }
     }

@@ -110,7 +110,7 @@ public class PlayerMetadata implements StatProvider {
      * @return The (modified) attack metadata
      */
     public AttackMetadata attack(LivingEntity target, double damage, boolean knockback, DamageType... types) {
-        AttackMetadata attackMeta = new AttackMetadata(new DamageMetadata(damage, types), target, this);
+        final AttackMetadata attackMeta = new AttackMetadata(new DamageMetadata(damage, types), target, this);
         MythicLib.plugin.getDamage().registerAttack(attackMeta, knockback, false);
         return attackMeta;
     }

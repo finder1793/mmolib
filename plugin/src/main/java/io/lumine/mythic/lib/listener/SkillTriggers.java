@@ -31,12 +31,12 @@ public class SkillTriggers implements Listener {
 
     @EventHandler
     public void killEntity(PlayerKillEntityEvent event) {
-        event.getAttack().getData().triggerSkills(TriggerType.KILL_ENTITY, event.getTarget());
+        event.getData().triggerSkills(TriggerType.KILL_ENTITY, event.getTarget());
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void attack(PlayerAttackEvent event) {
-        event.getData().triggerSkills(TriggerType.ATTACK, event.getAttack(), event.getEntity());
+        event.getAttacker().getData().triggerSkills(TriggerType.ATTACK, event.getAttacker(), event.getAttack(), event.getEntity());
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

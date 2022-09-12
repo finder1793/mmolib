@@ -31,14 +31,14 @@ public class Fire_Berserker extends SkillHandler<SimpleSkillResult> implements L
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void a(PlayerAttackEvent event) {
-        MMOPlayerData data = event.getData();
-        if (event.getPlayer().getFireTicks() <= 0)
+        MMOPlayerData data = event.getAttacker().getData();
+        if (event.getAttacker().getPlayer().getFireTicks() <= 0)
             return;
 
         PassiveSkill skill = data.getPassiveSkillMap().getSkill(this);
         if (skill == null)
             return;
 
-        skill.getTriggeredSkill().cast(new TriggerMetadata(event.getAttack(), event.getEntity()));
+        skill.getTriggeredSkill().cast(new TriggerMetadata(event.getAttacker(), event.getAttack(), event.getEntity()));
     }
 }

@@ -1,6 +1,6 @@
 package io.lumine.mythic.lib.listener;
 
-import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.api.event.AttackEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.damage.DamageMetadata;
@@ -30,28 +30,26 @@ public class DamageReduction implements Listener {
      * correctly, fixing a bug with MythicMobs skill mechanics.
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void damageMitigation(EntityDamageEvent event) {
+    public void damageMitigation(AttackEvent event) {
         if (!(event.getEntity() instanceof Player) || event.getEntity().hasMetadata("NPC"))
             return;
 
-        // Find the damageMeta. ML doesn't need an attackMeta here.
-        MMOPlayerData data = MMOPlayerData.get((OfflinePlayer) event.getEntity());
-        DamageMetadata damageMeta = MythicLib.plugin.getDamage().findDamage(event);
-
         // Applies specific damage reduction
+        final MMOPlayerData data = MMOPlayerData.get((OfflinePlayer) event.getEntity());
         for (SpecificDamageReductionType type : SpecificDamageReductionType.values())
-            type.applyReduction(data.getStatMap(), damageMeta, event);
+            type.applyReduction(data.getStatMap(), event.getDamage(), event.toBukkit());
 
         // Applies damage reduction for existing damage types
         for (DamageType damageType : DamageType.values())
-            damageMeta.multiplicativeModifier(1 - data.getStatMap().getStat(damageType + "_DAMAGE_REDUCTION") / 100, damageType);
+            event.getDamage().multiplicativeModifier(1 - data.getStatMap().getStat(damageType + "_DAMAGE_REDUCTION") / 100, damageType);
 
         // Applies the Defense stat
         final double defense = data.getStatMap().getStat("DEFENSE");
-        final double damage = defense > 0 ? new DefenseFormula().getAppliedDamage(defense, damageMeta.getDamage()) : damageMeta.getDamage();
-
-        // Finally update damage
-        event.setDamage(damage);
+        if (defense > 0) {
+            final double initialDamage = event.getDamage().getDamage();
+            final double ratio = new DefenseFormula().getAppliedDamage(defense, initialDamage) / initialDamage;
+            event.getDamage().multiplicativeModifier(ratio);
+        }
     }
 
     private static final Set<EntityDamageEvent.DamageCause> FIRE_DAMAGE_CAUSES
