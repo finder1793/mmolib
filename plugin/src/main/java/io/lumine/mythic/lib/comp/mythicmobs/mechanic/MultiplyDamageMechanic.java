@@ -43,7 +43,7 @@ public class MultiplyDamageMechanic implements INoTargetSkill {
         AttackMetadata attackMeta = (AttackMetadata) skillMetadata.getVariables().get(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK).get();
         Validate.isTrue(!attackMeta.hasExpired(), "Attack meta has expired");
 
-        double a = this.amount.get(skillMetadata.getCaster());
+        double a = this.amount.get(skillMetadata);
         if (additive) {
             if (type == null)
                 attackMeta.getDamage().additiveModifier(a);
