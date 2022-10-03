@@ -1,13 +1,23 @@
 package io.lumine.mythic.lib.skill;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.skill.PlayerCastSkillEvent;
 import io.lumine.mythic.lib.api.event.skill.SkillCastEvent;
+import io.lumine.mythic.lib.api.util.TemporaryListener;
 import io.lumine.mythic.lib.player.cooldown.CooldownObject;
+import io.lumine.mythic.lib.player.modifier.PlayerModifier;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.SkillResult;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -29,10 +39,20 @@ public abstract class Skill implements CooldownObject {
     }
 
     public SkillResult cast(TriggerMetadata triggerMeta) {
-        return cast(triggerMeta.toSkillMetadata(this));
+        return cast(triggerMeta,0);
+    }
+    public SkillResult cast(TriggerMetadata triggerMeta,int delay) {
+        return cast(triggerMeta.toSkillMetadata(this),delay);
     }
 
     public <T extends SkillResult> SkillResult cast(SkillMetadata meta) {
+        return cast(meta, 0);
+    }
+
+    /**
+     * Used when casting a skill with a delay to it. The player must not move in this delay otherwise the skill will be canceled.
+     */
+    public <T extends SkillResult> SkillResult cast(SkillMetadata meta, int delay) {
 
         SkillHandler<T> handler = (SkillHandler<T>) getHandler();
 
@@ -50,15 +70,56 @@ public abstract class Skill implements CooldownObject {
         Bukkit.getPluginManager().callEvent(called1);
         if (called1.isCancelled())
             return result;
+        NamespacedKey bossbarNamespacedKey = new NamespacedKey(MythicLib.plugin, "mmocore_quest_progress_" + meta.getCaster().getPlayer().getUniqueId().toString());
+        BossBar bossbar = Bukkit.createBossBar(bossbarNamespacedKey, "CASTING", BarColor.WHITE, BarStyle.SEGMENTED_20);
+        bossbar.addPlayer(meta.getCaster().getPlayer());
+        //Implement a runnable to run the task later
+        BukkitRunnable runnable = new BukkitRunnable() {
+            private int counter =delay;
 
-        // High level skill effects
-        whenCast(meta);
+            @Override
+            public void run() {
 
-        // Lower level skill effects
-        handler.whenCast(result, meta);
+                bossbar.setProgress((double)(delay-counter)/(double)delay);
+                counter--;
+                if (counter <= 0) {
+                    // High level skill effects
+                    whenCast(meta);
 
-        // Call second Bukkit event
-        Bukkit.getPluginManager().callEvent(new SkillCastEvent(meta, result));
+                    // Lower level skill effects
+                    handler.whenCast(result, meta);
+
+                    // Call second Bukkit event
+                    Bukkit.getPluginManager().callEvent(new SkillCastEvent(meta, result));
+                    bossbar.removeAll();
+                    cancel();
+                }
+            }
+        };
+        runnable.runTaskTimer(MythicLib.plugin, 0L, 1L);
+
+        //Listener that cancels the event if the player moves.
+        TemporaryListener temporaryListener=new TemporaryListener(PlayerMoveEvent.getHandlerList()) {
+            @EventHandler
+            public void onMove(PlayerMoveEvent event) {
+                if (event.getPlayer().equals(meta.getCaster().getPlayer()))
+                    event.setCancelled(true);
+            }
+
+            @Override
+            public void whenClosed() {
+
+            }
+        };
+
+        //Closes the listener after the delay to avoid memory issues.
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                temporaryListener.close();
+            }
+        }.runTaskLater(MythicLib.plugin,delay);
+
 
         return result;
     }
