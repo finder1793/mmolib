@@ -39,10 +39,11 @@ public abstract class Skill implements CooldownObject {
     }
 
     public SkillResult cast(TriggerMetadata triggerMeta) {
-        return cast(triggerMeta,0);
+        return cast(triggerMeta, 0);
     }
-    public SkillResult cast(TriggerMetadata triggerMeta,int delay) {
-        return cast(triggerMeta.toSkillMetadata(this),delay);
+
+    public SkillResult cast(TriggerMetadata triggerMeta, int delay) {
+        return cast(triggerMeta.toSkillMetadata(this), delay);
     }
 
     public <T extends SkillResult> SkillResult cast(SkillMetadata meta) {
@@ -71,8 +72,8 @@ public abstract class Skill implements CooldownObject {
             return result;
 
         //If the delay is null we cast normally the skill
-        if(delay==0) {
-            onCast(meta,result);
+        if (delay == 0) {
+            onCast(meta, result);
             return result;
         }
 
@@ -81,15 +82,15 @@ public abstract class Skill implements CooldownObject {
         bossbar.addPlayer(meta.getCaster().getPlayer());
         //Implement a runnable to run the task later
         BukkitRunnable runnable = new BukkitRunnable() {
-            private int counter =delay;
+            private int counter = delay;
 
             @Override
             public void run() {
 
-                bossbar.setProgress((double)(delay-counter)/(double)delay);
+                bossbar.setProgress((double) (delay - counter) / (double) delay);
                 counter--;
                 if (counter <= 0) {
-
+                    onCast(meta, result);
                     bossbar.removeAll();
                     cancel();
                 }
@@ -98,7 +99,7 @@ public abstract class Skill implements CooldownObject {
         runnable.runTaskTimer(MythicLib.plugin, 0L, 1L);
 
         //Listener that cancels the event if the player moves.
-        TemporaryListener temporaryListener=new TemporaryListener(PlayerMoveEvent.getHandlerList()) {
+        TemporaryListener temporaryListener = new TemporaryListener(PlayerMoveEvent.getHandlerList()) {
             @EventHandler
             public void onMove(PlayerMoveEvent event) {
                 if (event.getPlayer().equals(meta.getCaster().getPlayer()))
@@ -117,7 +118,7 @@ public abstract class Skill implements CooldownObject {
             public void run() {
                 temporaryListener.close();
             }
-        }.runTaskLater(MythicLib.plugin,delay);
+        }.runTaskLater(MythicLib.plugin, delay);
 
 
         return result;
@@ -139,8 +140,8 @@ public abstract class Skill implements CooldownObject {
     /**
      * Everything that happens when a skill is cast.
      */
-    public  <T extends SkillResult> void onCast(SkillMetadata meta,T result) {
-        SkillHandler<T> handler=(SkillHandler<T>) getHandler();
+    public <T extends SkillResult> void onCast(SkillMetadata meta, T result) {
+        SkillHandler<T> handler = (SkillHandler<T>) getHandler();
         // High level skill effects
         whenCast(meta);
 
