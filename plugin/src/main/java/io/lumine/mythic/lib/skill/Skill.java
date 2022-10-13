@@ -53,7 +53,6 @@ public abstract class Skill implements CooldownObject {
      * Used when casting a skill with a delay to it. The player must not move in this delay otherwise the skill will be canceled.
      */
     public <T extends SkillResult> SkillResult cast(SkillMetadata meta, int delay) {
-
         SkillHandler<T> handler = (SkillHandler<T>) getHandler();
 
         // Lower level skill restrictions
@@ -70,6 +69,13 @@ public abstract class Skill implements CooldownObject {
         Bukkit.getPluginManager().callEvent(called1);
         if (called1.isCancelled())
             return result;
+
+        //If the delay is null we cast normally the skill
+        if(delay==0) {
+            onCast(meta,result);
+            return result;
+        }
+
         NamespacedKey bossbarNamespacedKey = new NamespacedKey(MythicLib.plugin, "mmocore_quest_progress_" + meta.getCaster().getPlayer().getUniqueId().toString());
         BossBar bossbar = Bukkit.createBossBar(bossbarNamespacedKey, "CASTING", BarColor.WHITE, BarStyle.SEGMENTED_20);
         bossbar.addPlayer(meta.getCaster().getPlayer());
@@ -83,14 +89,7 @@ public abstract class Skill implements CooldownObject {
                 bossbar.setProgress((double)(delay-counter)/(double)delay);
                 counter--;
                 if (counter <= 0) {
-                    // High level skill effects
-                    whenCast(meta);
 
-                    // Lower level skill effects
-                    handler.whenCast(result, meta);
-
-                    // Call second Bukkit event
-                    Bukkit.getPluginManager().callEvent(new SkillCastEvent(meta, result));
                     bossbar.removeAll();
                     cancel();
                 }
@@ -135,6 +134,22 @@ public abstract class Skill implements CooldownObject {
      */
     @NotNull
     public abstract boolean getResult(SkillMetadata skillMeta);
+
+
+    /**
+     * Everything that happens when a skill is cast.
+     */
+    public  <T extends SkillResult> void onCast(SkillMetadata meta,T result) {
+        SkillHandler<T> handler=(SkillHandler<T>) getHandler();
+        // High level skill effects
+        whenCast(meta);
+
+        // Lower level skill effects
+        handler.whenCast(result, meta);
+
+        // Call second Bukkit event
+        Bukkit.getPluginManager().callEvent(new SkillCastEvent(meta, result));
+    }
 
     /**
      * This is NOT where the actual skill effects are applied.
