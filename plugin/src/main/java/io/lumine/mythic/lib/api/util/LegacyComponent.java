@@ -16,9 +16,11 @@ public class LegacyComponent {
     /**
      * Used to parse text for display names by adding a
      * white color code by default if no color is added
+     *
+     * @return
      */
     @NotNull
-    public static Component parse(String text) {
+    public static Component parse(@NotNull String text) {
         return simpleParse(text).colorIfAbsent(NamedTextColor.WHITE);
     }
 
@@ -26,7 +28,7 @@ public class LegacyComponent {
      * Used to parse lore lines (does NOT add a white color code)
      */
     @NotNull
-    public static Component simpleParse(String text) {
+    public static Component simpleParse(@NotNull String text) {
         Component component = MiniMessage.miniMessage().deserialize(translateLegacyColorCodes(text));
 
         if (component.decorations().get(TextDecoration.ITALIC) == TextDecoration.State.NOT_SET)
@@ -35,7 +37,9 @@ public class LegacyComponent {
         return component;
     }
 
-    private static final Pattern LEGACY_COLOR_CODES = Pattern.compile("(&|§)[a-fA-F0-9kKlLmMnNoOrR]");
+    private static final Pattern LEGACY_HEX_COLOR = Pattern.compile("<HEX([a-fA-F0-9]{6})>");
+    private static final Pattern COMPILED_LEGACY_HEX_COLOR = Pattern.compile("§[xX](§[a-fA-F0-9]){6}");
+    private static final Pattern LEGACY_COLOR = Pattern.compile("(&|§)[a-fA-F0-9kKlLmMnNoOrR]");
     private static final Map<Character, String> NEW_COLORS = new HashMap<>();
 
     static {
@@ -67,8 +71,6 @@ public class LegacyComponent {
         NEW_COLORS.put('r', "reset");
     }
 
-    private static final Pattern LEGACY_HEX_COLOR = Pattern.compile("<HEX([a-fA-F0-9]{6})>");
-
     /**
      * @return String with & and § color codes translated into MiniMessage format.
      * @deprecated It is now preferred to use the MiniMessage format.
@@ -77,10 +79,14 @@ public class LegacyComponent {
     private static String translateLegacyColorCodes(String text) {
 
         // Replace legacy color codes
-        text = LEGACY_COLOR_CODES.matcher(text).replaceAll(result -> {
+        text = LEGACY_COLOR.matcher(text).replaceAll(result -> {
             final char legacyColorCode = Character.toLowerCase(result.group().charAt(1));
             return new StringBuilder("<").append(Objects.requireNonNullElse(NEW_COLORS.get(legacyColorCode), "cc_err")).append(">").toString();
         });
+
+        // Replace §x§1§1§2§2§3§3 compiled color codes
+        text = COMPILED_LEGACY_HEX_COLOR.matcher(text).replaceAll(result -> "<#" + result.group().replaceAll("[§xX]", "") + ">");
+
 
         // Replace <HEX112233> color codes
         return LEGACY_HEX_COLOR.matcher(text).replaceAll(result -> "<#" + result.group().substring(4));
