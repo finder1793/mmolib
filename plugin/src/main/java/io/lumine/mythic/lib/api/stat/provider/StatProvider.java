@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.api.stat.provider;
 
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -17,7 +18,15 @@ import org.bukkit.entity.Player;
 public interface StatProvider {
     double getStat(String stat);
 
-    public static StatProvider get(LivingEntity living) {
-        return living instanceof Player ? MMOPlayerData.get(living.getUniqueId()).getStatMap() : new EntityStatProvider(living);
+    static StatProvider get(LivingEntity living) {
+        return isRealPlayer(living) ? MMOPlayerData.get(living.getUniqueId()).getStatMap() : new EntityStatProvider(living);
+    }
+
+    static StatProvider generate(LivingEntity living, EquipmentSlot actionHand) {
+        return isRealPlayer(living) ? MMOPlayerData.get(living.getUniqueId()).getStatMap().cache(actionHand) : new EntityStatProvider(living);
+    }
+
+    private static boolean isRealPlayer(Object entity) {
+        return entity instanceof Player && !((Player) entity).hasMetadata("NPC");
     }
 }

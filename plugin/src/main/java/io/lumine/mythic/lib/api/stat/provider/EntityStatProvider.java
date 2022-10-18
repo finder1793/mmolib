@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.api.stat.provider;
 
 import io.lumine.mythic.lib.api.item.NBTItem;
+import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
@@ -16,7 +17,7 @@ import java.util.Set;
  * This way, mechanics which were initially limited to players can now be
  * generalized to any monster
  * <p>
- * TODO Implement the following mecanics so that they also work on monsters
+ * TODO Implement the following mechanics so that they also work on monsters
  * - Damage mitigation
  * - Elemental mechanics
  * - Critical strikes
@@ -28,15 +29,22 @@ public class EntityStatProvider implements StatProvider {
 
     public EntityStatProvider(LivingEntity entity) {
 
-        // Null for ModelEngine mobs
+        // ModelEngine mobs have no equipment TODO support
         final @Nullable EntityEquipment equip = entity.getEquipment();
         if (equip == null)
             return;
 
         for (ItemStack equipped : entity.getEquipment().getArmorContents())
-            equipment.add(NBTItem.get(equipped));
-        equipment.add(NBTItem.get(entity.getEquipment().getItemInMainHand()));
-        equipment.add(NBTItem.get(entity.getEquipment().getItemInOffHand()));
+            registerItem(equipped);
+        registerItem(entity.getEquipment().getItemInMainHand());
+        registerItem(entity.getEquipment().getItemInOffHand());
+    }
+
+    private void registerItem(ItemStack item) {
+        if (item == null || item.getType() == Material.AIR || !item.hasItemMeta())
+            return;
+
+        equipment.add(NBTItem.get(item));
     }
 
     @Override

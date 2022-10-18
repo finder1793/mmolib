@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.damage;
 
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
+import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -30,7 +31,7 @@ public class MeleeAttackMetadata extends AttackMetadata {
      * @param attacker The entity who dealt the damage
      * @param hand Hand used in the melee attack
      */
-    public MeleeAttackMetadata(DamageMetadata damage, LivingEntity target, PlayerMetadata attacker, EquipmentSlot hand) {
+    public MeleeAttackMetadata(DamageMetadata damage, LivingEntity target, StatProvider attacker, EquipmentSlot hand) {
         super(damage, target, attacker);
 
         this.hand = hand;

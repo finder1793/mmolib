@@ -2,13 +2,12 @@ package io.lumine.mythic.lib.manager;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.damage.*;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.util.CustomProjectile;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
@@ -28,7 +27,9 @@ import org.bukkit.projectiles.ProjectileSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -181,6 +182,22 @@ public class DamageManager implements Listener, AttackHandler {
     }
 
     /**
+     * This method is used to unregister MythicLib custom damage after everything
+     * was calculated, hence MONITOR priority. As a safe practice, it does NOT
+     * ignore cancelled damage events.
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void unregisterCustomAttacks(EntityDamageByEntityEvent event) {
+
+        // Ignore fake events from RDW/mcMMO/...
+        if (event.getDamage() == 0)
+            return;
+
+        event.getEntity().removeMetadata(ATTACK_METADATA_TAG, MythicLib.plugin);
+        event.getEntity().removeMetadata(OFFHAND_ATTACK_TAG, MythicLib.plugin);
+    }
+
+    /**
      * This method draws an interface between MythicLib damage mitigation system
      * and Bukkit damage events.
      * <p>
@@ -240,9 +257,10 @@ public class DamageManager implements Listener, AttackHandler {
              * other item, it is considered a WEAPON attack.
              */
             final Entity damager = ((EntityDamageByEntityEvent) event).getDamager();
-            if (isRealPlayer(damager)) {
+            if (damager instanceof LivingEntity) {
                 final EquipmentSlot hand = isBeingOffHandAttacked(event.getEntity()) ? EquipmentSlot.OFF_HAND : EquipmentSlot.MAIN_HAND;
-                final AttackMetadata attackMeta = new MeleeAttackMetadata(new DamageMetadata(event.getDamage(), getDamageTypes((EntityDamageByEntityEvent) event, hand)), entity, MMOPlayerData.get((OfflinePlayer) damager).getStatMap().cache(hand), hand);
+                final StatProvider attacker = StatProvider.generate((LivingEntity) damager, hand);
+                final AttackMetadata attackMeta = new MeleeAttackMetadata(new DamageMetadata(event.getDamage(), getDamageTypes((EntityDamageByEntityEvent) event, hand)), entity, attacker, hand);
                 event.getEntity().setMetadata(ATTACK_METADATA_TAG, new FixedMetadataValue(MythicLib.plugin, attackMeta));
                 return attackMeta;
             }
@@ -259,7 +277,7 @@ public class DamageManager implements Listener, AttackHandler {
              * Make sure to check the shooter is not the damaged entity. We don't want
              * players to backstab themselves using projectiles.
              */
-            if (damager instanceof Projectile) {
+            else if (damager instanceof Projectile) {
 
                 // First tries to find original CustomProjectile
                 final Projectile projectile = (Projectile) damager;
@@ -273,9 +291,10 @@ public class DamageManager implements Listener, AttackHandler {
 
                 // Try to trace back the player source
                 final ProjectileSource source = projectile.getShooter();
-                if (source != null && !source.equals(event.getEntity()) && isRealPlayer(source)) {
+                if (source != null && !source.equals(event.getEntity())) {
+                    final StatProvider attacker = StatProvider.generate((LivingEntity) damager, EquipmentSlot.MAIN_HAND);
                     final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
-                            (LivingEntity) event.getEntity(), MMOPlayerData.get((Player) source).getStatMap().cache(EquipmentSlot.MAIN_HAND), projectile);
+                            (LivingEntity) event.getEntity(), attacker, projectile);
                     event.getEntity().setMetadata(ATTACK_METADATA_TAG, new FixedMetadataValue(MythicLib.plugin, attackMeta));
                     return attackMeta;
                 }
