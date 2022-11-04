@@ -299,11 +299,6 @@ public class VersionWrapper_1_18_R2 implements VersionWrapper {
                 compound.getCompound("display").remove("Lore");
             }
         }
-
-        @Override
-        public CraftNBTItem cancelVanillaAttributeModifiers() {
-            return this;
-        }
     }
 
     private static class CraftNBTCompound extends NBTCompound {

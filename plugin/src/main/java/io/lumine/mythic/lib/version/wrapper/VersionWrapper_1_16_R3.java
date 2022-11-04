@@ -298,11 +298,6 @@ public class VersionWrapper_1_16_R3 implements VersionWrapper {
                 compound.getCompound("display").remove("Lore");
             }
         }
-
-        @Override
-        public NBTItem_v1_16_R3 cancelVanillaAttributeModifiers() {
-            return this;
-        }
     }
 
     private static class NBTCompound_v1_16_R3 extends NBTCompound {

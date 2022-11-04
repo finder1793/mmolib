@@ -51,9 +51,6 @@ public abstract class NBTItem {
 
     public abstract void setLoreComponents(List<Component> components);
 
-    @Deprecated
-    public abstract NBTItem cancelVanillaAttributeModifiers();
-
     public NBTItem addTag(ItemTag... tags) {
         return addTag(Arrays.asList(tags));
     }
