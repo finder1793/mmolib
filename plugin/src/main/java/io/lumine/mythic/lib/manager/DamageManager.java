@@ -291,8 +291,8 @@ public class DamageManager implements Listener, AttackHandler {
 
                 // Try to trace back the player source
                 final ProjectileSource source = projectile.getShooter();
-                if (source != null && !source.equals(event.getEntity())) {
-                    final StatProvider attacker = StatProvider.generate((LivingEntity) damager, EquipmentSlot.MAIN_HAND);
+                if (source != null && !source.equals(event.getEntity()) && source instanceof LivingEntity) {
+                    final StatProvider attacker = StatProvider.generate((LivingEntity) source, EquipmentSlot.MAIN_HAND);
                     final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
                             (LivingEntity) event.getEntity(), attacker, projectile);
                     event.getEntity().setMetadata(ATTACK_METADATA_TAG, new FixedMetadataValue(MythicLib.plugin, attackMeta));
@@ -334,13 +334,6 @@ public class DamageManager implements Listener, AttackHandler {
             default:
                 return new DamageMetadata(event.getDamage());
         }
-    }
-
-    /**
-     * @return If the entity is a player and NOT a Citizens or Sentinels NPC
-     */
-    private boolean isRealPlayer(Object entity) {
-        return entity instanceof Player && !((Player) entity).hasMetadata("NPC");
     }
 
     /**
