@@ -74,14 +74,12 @@ public class VersionWrapper_1_16_R3 implements VersionWrapper {
 
     @Override
     public void sendJson(Player player, String message) {
-        ((CraftPlayer) player).getHandle().playerConnection
-                .sendPacket(new PacketPlayOutChat(ChatSerializer.a(message), ChatMessageType.CHAT, UUID.randomUUID()));
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutChat(ChatSerializer.a(message), ChatMessageType.CHAT, UUID.randomUUID()));
     }
 
     @Override
-    public void sendActionBar(Player player, String message) {
-        ((CraftPlayer) player).getHandle().playerConnection
-                .sendPacket(new PacketPlayOutChat(ChatSerializer.a("{\"text\": \"" + message + "\"}"), ChatMessageType.GAME_INFO, UUID.randomUUID()));
+    public void sendActionBarRaw(Player player, String message) {
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutChat(ChatSerializer.a(message), ChatMessageType.GAME_INFO, UUID.randomUUID()));
     }
 
     @Override

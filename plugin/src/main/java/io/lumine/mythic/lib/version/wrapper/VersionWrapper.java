@@ -78,8 +78,15 @@ public interface VersionWrapper {
     // Mostly NMS based methods from here
     NBTItem getNBTItem(ItemStack item);
 
-    void sendActionBar(Player player, String message);
+    default void sendActionBar(Player player, String message) {
+        sendActionBarRaw(player, "{\"text\": \"" + message + "\"}");
+    }
 
+    void sendActionBarRaw(Player player, String message);
+
+    /**
+     * Sends a raw chat message
+     */
     void sendJson(Player player, String message);
 
     @Deprecated

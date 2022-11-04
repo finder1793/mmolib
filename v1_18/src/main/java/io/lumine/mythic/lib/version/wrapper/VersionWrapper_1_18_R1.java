@@ -91,15 +91,16 @@ public class VersionWrapper_1_18_R1 implements VersionWrapper {
 
     @Override
     public void sendJson(Player player, String message) {
-        ((CraftPlayer) player).getHandle().connection.send(
-                new ClientboundChatPacket(net.minecraft.network.chat.Component.Serializer.fromJson(message), ChatType.CHAT, UUID.randomUUID()));
+        clientboundChatPacket(player, message, ChatType.CHAT);
     }
 
     @Override
-    public void sendActionBar(Player player, String message) {
-        ((CraftPlayer) player).getHandle().connection.send(
-                new ClientboundChatPacket(net.minecraft.network.chat.Component.Serializer.fromJson("{\"text\": \"" + message + "\"}"),
-                        ChatType.GAME_INFO, UUID.randomUUID()));
+    public void sendActionBarRaw(Player player, String message) {
+        clientboundChatPacket(player, message, ChatType.GAME_INFO);
+    }
+
+    private void clientboundChatPacket(Player player, String jsonMessage, ChatType chatType) {
+        ((CraftPlayer) player).getHandle().connection.send(new ClientboundChatPacket(net.minecraft.network.chat.Component.Serializer.fromJson(jsonMessage), chatType, UUID.randomUUID()));
     }
 
     @Override

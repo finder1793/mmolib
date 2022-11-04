@@ -76,9 +76,8 @@ public class VersionWrapper_1_14_R1 implements VersionWrapper {
     }
 
     @Override
-    public void sendActionBar(Player player, String message) {
-        ((CraftPlayer) player).getHandle().playerConnection
-                .sendPacket(new PacketPlayOutChat(ChatSerializer.a("{\"text\": \"" + message + "\"}"), ChatMessageType.GAME_INFO));
+    public void sendActionBarRaw(Player player, String message) {
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutChat(ChatSerializer.a(message), ChatMessageType.GAME_INFO));
     }
 
     @Override

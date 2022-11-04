@@ -112,6 +112,11 @@ public class VersionWrapper_1_19_R1 implements VersionWrapper {
     }
 
     @Override
+    public void sendActionBarRaw(Player player, String message) {
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, ComponentSerializer.parse(message));
+    }
+
+    @Override
     public int getNextContainerId(Player player) {
         throw new RuntimeException("Not implemented");
     }
