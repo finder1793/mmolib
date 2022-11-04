@@ -72,7 +72,12 @@ public class DamageMechanic extends TargetMechanic {
             return;
         }
 
-        AttackMetadata result = new AttackMetadata(new DamageMetadata(amount.evaluate(meta), types), (LivingEntity) target, meta.getCaster());
-        MythicLib.plugin.getDamage().registerAttack(result, knockback, ignoreImmunity);
+        final DamageMetadata damageMetadata = new DamageMetadata();
+        if (element == null)
+            damageMetadata.add(amount.evaluate(meta), types);
+        else
+            damageMetadata.add(amount.evaluate(meta), element, types);
+        final AttackMetadata attackMetadata = new AttackMetadata(damageMetadata, (LivingEntity) target, meta.getCaster());
+        MythicLib.plugin.getDamage().registerAttack(attackMetadata, knockback, ignoreImmunity);
     }
 }
