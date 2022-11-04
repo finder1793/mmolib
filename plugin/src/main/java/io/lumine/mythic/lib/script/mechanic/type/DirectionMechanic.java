@@ -27,7 +27,11 @@ public abstract class DirectionMechanic extends Mechanic {
         targetLocation = config.contains("target") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("target")) : new DefaultDirectionTargeter();
     }
 
-    public LocationTargeter getTargetLocation() {
+    public LocationTargeter getSource() {
+        return sourceLocation;
+    }
+
+    public LocationTargeter getTarget() {
         return targetLocation;
     }
 
