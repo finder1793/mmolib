@@ -9,8 +9,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A mythic placeholder that just passes on to PAPI
- * to do all the parsing.
+ * A mythic placeholder that just passes
+ * on to PAPI to do all the parsing.
  *
  * @author Gunging
  */
@@ -40,7 +40,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
         if (params.startsWith("defense_damage_reduction")) {
             final double defenseStat = MMOPlayerData.get(player).getStatMap().getStat("DEFENSE");
-            final double damageReduction = 100 - new DefenseFormula().getAppliedDamage(defenseStat, 100);
+            final double damageReduction = 100 - new DefenseFormula(false).getAppliedDamage(defenseStat, 100);
             return MythicLib.plugin.getMMOConfig().decimal.format(damageReduction);
         }
 

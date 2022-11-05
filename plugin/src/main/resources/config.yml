@@ -9,11 +9,16 @@ number-format:
 # Defines how defense behaves. The formula should return the
 # final amount of damage dealt, given the following inputs:
 # - damage dealt #damage#
-# - player defense #defense#
+# - current player defense #defense#
 #
 # The default formula is inspired from Path of Exile, you can
 # learn more about it on their wiki: https://pathofexile.fandom.com/wiki/Armour
-defense-application: '#damage# * (1 - (#defense# / (5 * #damage# + #defense#)))'
+#
+# natural   <-> non-elemental damage
+# elemental <-> fire/water/.. damage
+defense-application:
+  natural: '#damage# * (1 - (#defense# / (5 * #damage# + #defense#)))'
+  elemental: '#damage# * (1 - #defense# / 100)'
 
 # Allows to scale health up/down to a specific
 # amount so extra health does not fill up the screen.

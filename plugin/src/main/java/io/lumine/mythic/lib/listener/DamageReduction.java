@@ -47,7 +47,7 @@ public class DamageReduction implements Listener {
         final double defense = data.getStatMap().getStat("DEFENSE");
         if (defense > 0) {
             final double initialDamage = event.getDamage().getDamage();
-            final double ratio = new DefenseFormula().getAppliedDamage(defense, initialDamage) / initialDamage;
+            final double ratio = new DefenseFormula(false).getAppliedDamage(defense, initialDamage) / initialDamage;
             event.getDamage().multiplicativeModifier(ratio);
         }
     }

@@ -10,16 +10,19 @@ public class ConfigManager {
 
     public DecimalFormat decimal, decimals;
     public boolean playerAbilityDamage;
-    public String defenseFormula;
+    public String naturalDefenseFormula, elementalDefenseFormula;
 
     public void reload() {
-        playerAbilityDamage = MythicLib.plugin.getConfig().getBoolean("player-ability-damage");
 
-        // Decimal separator
+        // Decimal formatting
         formatSymbols.setDecimalSeparator(getFirstChar(MythicLib.plugin.getConfig().getString("number-format.decimal-separator")));
         decimal = newDecimalFormat("0.#");
         decimals = newDecimalFormat("0.##");
-        defenseFormula = MythicLib.plugin.getConfig().getString("defense-application", "#damage# * (1 - (#defense# / (#defense# + 100)))");
+
+        // Other options
+        playerAbilityDamage = MythicLib.plugin.getConfig().getBoolean("player-ability-damage");
+        naturalDefenseFormula = MythicLib.plugin.getConfig().getString("defense-application.natural");
+        elementalDefenseFormula = MythicLib.plugin.getConfig().getString("defense-application.elemental");
     }
 
     /**

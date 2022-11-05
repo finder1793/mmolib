@@ -6,13 +6,19 @@ import org.matheclipse.commons.parser.client.eval.DoubleEvaluator;
 import java.util.logging.Level;
 
 public class DefenseFormula {
+    private final String formula;
+
+    public DefenseFormula(boolean elemental) {
+        this.formula = elemental ? MythicLib.plugin.getMMOConfig().elementalDefenseFormula : MythicLib.plugin.getMMOConfig().naturalDefenseFormula;
+    }
+
     public double getAppliedDamage(double defense, double damage) {
-        String formula = MythicLib.plugin.getMMOConfig().defenseFormula;
-        formula = formula.replace("#defense#", String.valueOf(defense));
-        formula = formula.replace("#damage#", String.valueOf(damage));
+        String expression = this.formula;
+        expression = expression.replace("#defense#", String.valueOf(defense));
+        expression = expression.replace("#damage#", String.valueOf(damage));
 
         try {
-            return Math.max(0, new DoubleEvaluator().evaluate(formula));
+            return Math.max(0, new DoubleEvaluator().evaluate(expression));
         } catch (RuntimeException exception) {
 
             /**

@@ -56,7 +56,7 @@ public class ElementalDamage implements Listener {
             // Apply elemental defense
             double defense = opponentStats.getStat(element.getId() + "_DEFENSE");
             defense *= 1 + Math.max(-1, opponentStats.getStat(element.getId() + "_DEFENSE_PERCENT") / 100);
-            damage = new DefenseFormula().getAppliedDamage(defense, damage);
+            damage = new DefenseFormula(true).getAppliedDamage(defense, damage);
 
             // Register the damage packet
             event.getDamage().add(damage, element);
