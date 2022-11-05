@@ -95,6 +95,11 @@ public enum EquipmentSlot {
      *         be taken into account given the action hand
      */
     public boolean isCompatible(ModifierSource modifierSource, EquipmentSlot equipmentSlot) {
+        Validate.isTrue(isHand(), "Instance called must be a hand equipment slot");
+
+        if (equipmentSlot == OTHER || equipmentSlot == ANY)
+            return true;
+
         switch (modifierSource) {
 
             case VOID:
