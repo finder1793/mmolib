@@ -8,6 +8,11 @@ import java.util.logging.Level;
 public class DefenseFormula {
     private final String formula;
 
+    @Deprecated
+    public DefenseFormula() {
+        this(false);
+    }
+
     public DefenseFormula(boolean elemental) {
         this.formula = elemental ? MythicLib.plugin.getMMOConfig().elementalDefenseFormula : MythicLib.plugin.getMMOConfig().naturalDefenseFormula;
     }
