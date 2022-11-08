@@ -9,7 +9,7 @@ public class ConfigManager {
     public final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
 
     public DecimalFormat decimal, decimals;
-    public boolean playerAbilityDamage;
+    public boolean playerAbilityDamage, fixTooLargePackets;
     public String naturalDefenseFormula, elementalDefenseFormula;
 
     public void reload() {
@@ -23,6 +23,7 @@ public class ConfigManager {
         playerAbilityDamage = MythicLib.plugin.getConfig().getBoolean("player-ability-damage");
         naturalDefenseFormula = MythicLib.plugin.getConfig().getString("defense-application.natural");
         elementalDefenseFormula = MythicLib.plugin.getConfig().getString("defense-application.elemental");
+        fixTooLargePackets = MythicLib.plugin.getConfig().getBoolean("fix-too-large-packets", false);
     }
 
     /**
