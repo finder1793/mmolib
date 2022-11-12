@@ -16,7 +16,7 @@
     <name>MythicLib</name>
 
     <properties>
-        <downloadSources>false</downloadSources>
+        <downloadSources>false</downloahhdSources>
         <downloadJavadocs>false</downloadJavadocs>
         <revision>1.4.3-SNAPSHOT</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
