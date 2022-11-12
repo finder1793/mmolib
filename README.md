@@ -7,7 +7,7 @@ Register the PhoenixDev repo
     <url>https://nexus.phoenixdvpt.fr/repository/maven-public/</url>
 </repository>
 ```
-Then add MythicLib-dist as dependencyyyyyy
+Then add MythicLib-dist as dependencyyyyyyy
 ```
 <dependency>
     <groupId>io.lumine</groupId>
