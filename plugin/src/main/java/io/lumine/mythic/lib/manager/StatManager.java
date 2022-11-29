@@ -15,10 +15,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 
 public class StatManager {
@@ -135,5 +133,12 @@ public class StatManager {
 
     public Set<String> getRegisteredStats() {
         return handlers.keySet();
+    }
+
+    public void clearRegisteredStats(Predicate<StatHandler> filter) {
+        final Iterator<StatHandler> ite = handlers.values().iterator();
+        while (ite.hasNext())
+            if (filter.test(ite.next()))
+                ite.remove();
     }
 }
