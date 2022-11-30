@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.comp.adventure;
 import io.lumine.mythic.lib.comp.adventure.argument.AdventureArgument;
 import io.lumine.mythic.lib.comp.adventure.argument.AdventureArgumentQueue;
 import io.lumine.mythic.lib.comp.adventure.tag.AdventureTag;
+import org.bukkit.ChatColor;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,7 +41,7 @@ public class AdventureParser {
             for (String alias : tag.aliases())
                 cpy = parseTag(cpy, tag, alias);
         }
-        return cpy;
+        return minecraftColorization(cpy);
     }
 
     private @NotNull String parseTag(@NotNull final String src, @NotNull final AdventureTag tag, @NotNull final String rawTag) {
@@ -58,6 +59,10 @@ public class AdventureParser {
             return src.replace(group, Objects.requireNonNullElse(resolved, ""));
         }
         return src;
+    }
+
+    private @NotNull String minecraftColorization(@NotNull final String src) {
+        return ChatColor.translateAlternateColorCodes('&', src);
     }
 
     public void add(AdventureTag tag) {
