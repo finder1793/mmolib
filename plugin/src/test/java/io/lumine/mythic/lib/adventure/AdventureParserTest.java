@@ -249,6 +249,26 @@ public class AdventureParserTest {
         parser.remove(tag);
     }
 
+    @Test
+    public void testClosedTag() {
+        // Add tag
+        AdventureColorTag tag = new AdventureColorTag();
+        parser.forceRegister(tag);
+
+        // Valid tag
+        final String i1 = "<color:red>This is a red text</color>Hey";
+        final String i1Expected = "§cThis is a red text§rHey";
+        Assertions.assertEquals(i1Expected, parser.parse(i1));
+
+        // Multiple tags
+        final String i2 = "<color:red>This is a red text</color><color:blue>This is a blue text</color>";
+        final String i2Expected = "§cThis is a red text§r§9This is a blue text§r";
+        Assertions.assertEquals(i2Expected, parser.parse(i2));
+
+        // Remove tag
+        parser.remove(tag);
+    }
+
     @AfterAll
     static void afterAll() {
         parser = null;

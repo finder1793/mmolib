@@ -85,8 +85,9 @@ public class AdventureParser {
     private @NotNull String removeUnparsedAndUselessTags(@NotNull String src) {
         Matcher matcher = TAG_REGEX.matcher(src);
         while (matcher.find()) {
-            final String original = "<%s>".formatted(matcher.group());
-            src = src.replace(original, fallBackResolver.apply(original));
+            final String matched = matcher.group();
+            final String original = "<%s>".formatted(matched);
+            src = src.replace(original, matched.startsWith("/") ? "§r" : fallBackResolver.apply(original));
             matcher = TAG_REGEX.matcher(src);
         }
         return src;
