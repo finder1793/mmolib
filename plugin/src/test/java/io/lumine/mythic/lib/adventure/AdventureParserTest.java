@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.adventure;
 
 import io.lumine.mythic.lib.comp.adventure.AdventureParser;
-import io.lumine.mythic.lib.comp.adventure.tag.implementation.BasicColorTag;
+import io.lumine.mythic.lib.comp.adventure.tag.implementation.VanillaColorTag;
 import io.lumine.mythic.lib.comp.adventure.tag.implementation.HexColorTag;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -20,7 +20,7 @@ public class AdventureParserTest {
 
     @BeforeEach
     void setUp() {
-        parser = new AdventureParser();
+        parser = new AdventureParser(s -> "");
     }
 
     @Test
@@ -63,9 +63,9 @@ public class AdventureParserTest {
     }
 
     @Test
-    void testBasicColors() {
+    void testVanillaColors() {
         // Add tag parser
-        final BasicColorTag tag = new BasicColorTag();
+        final VanillaColorTag tag = new VanillaColorTag();
         parser.add(tag);
 
         // Valid tag
@@ -74,9 +74,24 @@ public class AdventureParserTest {
         Assertions.assertEquals(i1Expected, parser.parse(i1));
 
         // Invalid tag
-        final String i2 = "<RE>This is a red text";
-        final String i2Expected = "<RE>This is a red text";
+        final String i2 = "This is a red text";
+        final String i2Expected = "This is a red text";
         Assertions.assertEquals(i2Expected, parser.parse(i2));
+
+        // Multiple valid tags
+        final String i3 = "<RED>This is a <GREEN>green<RED> text";
+        final String i3Expected = "§cThis is a §agreen§c text";
+        Assertions.assertEquals(i3Expected, parser.parse(i3));
+
+        // Multiple invalid tags
+        final String i4 = "This is a <GREN>green<RE> text";
+        final String i4Expected = "This is a green text";
+        Assertions.assertEquals(i4Expected, parser.parse(i4));
+
+        // Decorations
+        final String i5 = "<RED>This is a <GREEN>green<RED> <BOLD>bold<RED> text";
+        final String i5Expected = "§cThis is a §agreen§c bold§c text";
+        Assertions.assertEquals(i5Expected, parser.parse(i5));
 
         // Remove tag parser
         parser.remove(tag);
