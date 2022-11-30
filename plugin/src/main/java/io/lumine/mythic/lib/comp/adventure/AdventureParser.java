@@ -26,7 +26,7 @@ public class AdventureParser {
     // TODO: make a builder]
 
     /* Constants */
-    private static final String DEFAULT_TAG_REGEX = "<(%s)([^>].*)>";
+    private static final String DEFAULT_TAG_REGEX = "(?i)(?<=<(%s)).*?(?=>)";
 
     private final List<AdventureTag> tags = new ArrayList<>();
 
@@ -44,21 +44,23 @@ public class AdventureParser {
         return minecraftColorization(cpy);
     }
 
-    private @NotNull String parseTag(@NotNull final String src, @NotNull final AdventureTag tag, @NotNull final String rawTag) {
-        final Pattern pattern = Pattern.compile(String.format(DEFAULT_TAG_REGEX, rawTag));
-        final Matcher matcher = pattern.matcher(src);
+    private @NotNull String parseTag(@NotNull final String src, @NotNull final AdventureTag tag, @NotNull final String tagIdentifier) {
+        final Pattern pattern = Pattern.compile(String.format(DEFAULT_TAG_REGEX, tagIdentifier));
+        Matcher matcher = pattern.matcher(src);
 
-        if (matcher.find()) {
-            final String group = matcher.group();
-            final String rawArgs = matcher.group(2);
+        String cpy = src;
+        while (matcher.find()) {
+            final String rawTag = matcher.group(1);
+            final String rawArgs = matcher.group();
             final List<AdventureArgument> args = Arrays.stream(rawArgs.split(":"))
                     .map(AdventureArgument::new)
                     .collect(Collectors.toList());
 
-            final String resolved = tag.resolver().resolve(group, new AdventureArgumentQueue(args));
-            return src.replace(group, Objects.requireNonNullElse(resolved, ""));
+            final String resolved = tag.resolver().resolve(rawTag, new AdventureArgumentQueue(args));
+            cpy = cpy.replace("<%s%s>".formatted(rawTag, rawArgs), Objects.requireNonNullElse(resolved, ""));
+            matcher = pattern.matcher(cpy);
         }
-        return src;
+        return cpy;
     }
 
     private @NotNull String minecraftColorization(@NotNull final String src) {
