@@ -9,10 +9,7 @@ import org.bukkit.ChatColor;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -57,6 +54,25 @@ public class AdventureParser {
     }
 
     public @NotNull CompletableFuture<String> parseAsync(@NotNull final String src) {
+        return AdventureUtils.supplyAsync(() -> parse(src));
+    }
+
+    public @NotNull Collection<String> parse(@NotNull final Collection<String> src) {
+        List<String> parsed = src.stream()
+                .map(this::parse)
+                .collect(Collectors.toList());
+        List<String> finalList = new ArrayList<>();
+        for (final String line : parsed) {
+            if (!line.contains("\n")) {
+                finalList.add(line);
+                continue;
+            }
+            finalList.addAll(Arrays.asList(line.split("\n")));
+        }
+        return finalList;
+    }
+
+    public @NotNull CompletableFuture<Collection<String>> parseAsync(@NotNull Collection<String> src) {
         return AdventureUtils.supplyAsync(() -> parse(src));
     }
 

@@ -3,12 +3,16 @@ package io.lumine.mythic.lib.adventure;
 import io.lumine.mythic.lib.comp.adventure.AdventureParser;
 import io.lumine.mythic.lib.comp.adventure.tag.implementation.AdventureColorTag;
 import io.lumine.mythic.lib.comp.adventure.tag.implementation.HexColorTag;
+import io.lumine.mythic.lib.comp.adventure.tag.implementation.NewlineTag;
 import io.lumine.mythic.lib.comp.adventure.tag.implementation.VanillaColorTag;
 import io.lumine.mythic.lib.comp.adventure.tag.implementation.decorations.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * mythiclib
@@ -264,6 +268,26 @@ public class AdventureParserTest {
         final String i2 = "<color:red>This is a red text</color><color:blue>This is a blue text</color>";
         final String i2Expected = "§cThis is a red text§r§9This is a blue text§r";
         Assertions.assertEquals(i2Expected, parser.parse(i2));
+
+        // Remove tag
+        parser.remove(tag);
+    }
+
+    @Test
+    public void testNewline() {
+        // Add tag
+        NewlineTag tag = new NewlineTag();
+        parser.forceRegister(tag);
+
+        // Valid tag
+        Collection<String> i1 = List.of("Hey!", "What a good<newline><newline>day!", "Init?", "Yeah!<newline>It a pretty day<newline>We could go out, nah?");
+        Collection<String> result = parser.parse(i1);
+        Assertions.assertEquals(result.size(), 8);
+
+        // Alias tag
+        Collection<String> i2 = List.of("Hey!", "What a good<br><br>day!", "Init?", "Yeah!<br>It a pretty day<br>We could go out, nah?");
+        Collection<String> result2 = parser.parse(i2);
+        Assertions.assertEquals(result2.size(), 8);
 
         // Remove tag
         parser.remove(tag);
