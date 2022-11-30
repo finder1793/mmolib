@@ -18,10 +18,12 @@ public abstract class AdventureTag {
     private final String name;
     private final List<String> aliases = new ArrayList<>();
     private final AdventureTagResolver resolver;
+    private final boolean backwardsCompatible;
 
-    public AdventureTag(@NotNull String name, @NotNull AdventureTagResolver resolver, @NotNull String... aliases) {
+    public AdventureTag(@NotNull String name, @NotNull AdventureTagResolver resolver, boolean backwardsCompatible, @NotNull String... aliases) {
         this.name = name;
         this.resolver = resolver;
+        this.backwardsCompatible = backwardsCompatible;
         this.aliases.addAll(Arrays.asList(aliases));
     }
 
@@ -31,6 +33,10 @@ public abstract class AdventureTag {
 
     public String name() {
         return name;
+    }
+
+    public boolean backwardsCompatible() {
+        return backwardsCompatible;
     }
 
     public List<String> aliases() {

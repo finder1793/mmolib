@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 public class ObfuscatedTag extends AdventureTag {
 
     public ObfuscatedTag() {
-        super("obfuscated", new ObfuscatedResolver(), "obf");
+        super("obfuscated", new ObfuscatedResolver(), true,"obf");
     }
 
     public static class ObfuscatedResolver implements AdventureTagResolver {

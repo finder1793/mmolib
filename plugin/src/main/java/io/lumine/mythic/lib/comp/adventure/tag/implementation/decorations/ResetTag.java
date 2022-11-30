@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 public class ResetTag extends AdventureTag {
 
     public ResetTag() {
-        super("reset", new BoldResolver(), "r");
+        super("reset", new BoldResolver(), true,"r");
     }
 
     public static class BoldResolver implements AdventureTagResolver {

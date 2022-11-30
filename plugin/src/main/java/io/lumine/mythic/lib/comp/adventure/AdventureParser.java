@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.comp.adventure;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.comp.adventure.argument.AdventureArgument;
 import io.lumine.mythic.lib.comp.adventure.argument.AdventureArgumentQueue;
 import io.lumine.mythic.lib.comp.adventure.tag.AdventureTag;
@@ -96,6 +97,15 @@ public class AdventureParser {
     }
 
     public void add(AdventureTag tag) {
+        if (tag.backwardsCompatible() && MythicLib.plugin.getVersion().isBelowOrEqual(1, 15)) {
+            MythicLib.plugin.getLogger().warning("The tag %s is not compatible with your server version.".formatted(tag.name()));
+            return;
+        }
+        tags.add(tag);
+    }
+
+    @ApiStatus.Internal
+    public void forceRegister(AdventureTag tag) {
         tags.add(tag);
     }
 

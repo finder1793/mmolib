@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.adventure;
 
 import io.lumine.mythic.lib.comp.adventure.AdventureParser;
+import io.lumine.mythic.lib.comp.adventure.tag.implementation.AdventureColorTag;
 import io.lumine.mythic.lib.comp.adventure.tag.implementation.HexColorTag;
 import io.lumine.mythic.lib.comp.adventure.tag.implementation.VanillaColorTag;
 import io.lumine.mythic.lib.comp.adventure.tag.implementation.decorations.*;
@@ -28,7 +29,7 @@ public class AdventureParserTest {
     void testHexColorTag() {
         // Add tag parser
         final HexColorTag tag = new HexColorTag();
-        parser.add(tag);
+        parser.forceRegister(tag);
 
         // Invalid tag
         final String i1 = "This is a #FF0000red#FFFFFF text";
@@ -67,7 +68,7 @@ public class AdventureParserTest {
     void testVanillaColors() {
         // Add tag parser
         final VanillaColorTag tag = new VanillaColorTag();
-        parser.add(tag);
+        parser.forceRegister(tag);
 
         // Valid tag
         final String i1 = "<RED>This is a red text";
@@ -102,7 +103,7 @@ public class AdventureParserTest {
     void testObfuscatedTag() {
         // Add tag
         ObfuscatedTag tag = new ObfuscatedTag();
-        parser.add(tag);
+        parser.forceRegister(tag);
 
         // Valid tag
         final String i1 = "<obfuscated>This is a obfuscated text";
@@ -122,7 +123,7 @@ public class AdventureParserTest {
     void testBoldTag() {
         // Add tag
         BoldTag tag = new BoldTag();
-        parser.add(tag);
+        parser.forceRegister(tag);
 
         // Valid tag
         final String i1 = "<bold>This is a bold text";
@@ -142,7 +143,7 @@ public class AdventureParserTest {
     void testItalicTag() {
         // Add tag
         ItalicTag tag = new ItalicTag();
-        parser.add(tag);
+        parser.forceRegister(tag);
 
         // Valid tag
         final String i1 = "<italic>This is a italic text";
@@ -162,7 +163,7 @@ public class AdventureParserTest {
     public void testResetTag() {
         // Add tag
         ResetTag tag = new ResetTag();
-        parser.add(tag);
+        parser.forceRegister(tag);
 
         // Valid tag
         final String i1 = "<reset>This is a reset text";
@@ -182,7 +183,7 @@ public class AdventureParserTest {
     public void testUnderlineTag() {
         // Add tag
         UnderlineTag tag = new UnderlineTag();
-        parser.add(tag);
+        parser.forceRegister(tag);
 
         // Valid tag
         final String i1 = "<underline>This is a underline text";
@@ -202,7 +203,7 @@ public class AdventureParserTest {
     public void testStrikethroughTag() {
         // Add tag
         StrikethroughTag tag = new StrikethroughTag();
-        parser.add(tag);
+        parser.forceRegister(tag);
 
         // Valid tag
         final String i1 = "<strikethrough>This is a strikethrough text";
@@ -213,6 +214,36 @@ public class AdventureParserTest {
         final String i2 = "<ST>This is a strikethrough text";
         final String i2Expected = "§mThis is a strikethrough text";
         Assertions.assertEquals(i2Expected, parser.parse(i2));
+
+        // Remove tag
+        parser.remove(tag);
+    }
+
+    @Test
+    public void testAdventureColors() {
+        // Add tag
+        AdventureColorTag tag = new AdventureColorTag();
+        parser.forceRegister(tag);
+
+        // Valid tag
+        final String i1 = "<color:red>This is a red text";
+        final String i1Expected = "§cThis is a red text";
+        Assertions.assertEquals(i1Expected, parser.parse(i1));
+
+        // Invalid tag
+        final String i2 = "<color:invalid>This is a red text";
+        final String i2Expected = "This is a red text";
+        Assertions.assertEquals(i2Expected, parser.parse(i2));
+
+        // Hex tag
+        final String i3 = "<color:#FF0000>This is a red text";
+        final String i3Expected = "§x§F§F§0§0§0§0This is a red text";
+        Assertions.assertEquals(i3Expected, parser.parse(i3));
+
+        // Hex tag without #
+        final String i4 = "<color:FF0000>This is a red text";
+        final String i4Expected = "§x§F§F§0§0§0§0This is a red text";
+        Assertions.assertEquals(i4Expected, parser.parse(i4));
 
         // Remove tag
         parser.remove(tag);

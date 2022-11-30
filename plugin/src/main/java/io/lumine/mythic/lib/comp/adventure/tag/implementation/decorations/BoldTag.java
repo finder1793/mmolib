@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 public class BoldTag extends AdventureTag {
 
     public BoldTag() {
-        super("bold", new BoldResolver(), "b");
+        super("bold", new BoldResolver(), true,"b");
     }
 
     public static class BoldResolver implements AdventureTagResolver {

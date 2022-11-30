@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 public class StrikethroughTag extends AdventureTag {
 
     public StrikethroughTag() {
-        super("strikethrough", new BoldResolver(), "st");
+        super("strikethrough", new BoldResolver(), true,"st");
     }
 
     public static class BoldResolver implements AdventureTagResolver {

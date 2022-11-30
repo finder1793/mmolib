@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 public class UnderlineTag extends AdventureTag {
 
     public UnderlineTag() {
-        super("underline", new BoldResolver(), "u");
+        super("underline", new BoldResolver(), true, "u");
     }
 
     public static class BoldResolver implements AdventureTagResolver {
