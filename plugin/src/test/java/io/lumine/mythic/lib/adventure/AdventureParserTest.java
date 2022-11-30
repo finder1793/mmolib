@@ -1,8 +1,9 @@
 package io.lumine.mythic.lib.adventure;
 
 import io.lumine.mythic.lib.comp.adventure.AdventureParser;
-import io.lumine.mythic.lib.comp.adventure.tag.implementation.VanillaColorTag;
 import io.lumine.mythic.lib.comp.adventure.tag.implementation.HexColorTag;
+import io.lumine.mythic.lib.comp.adventure.tag.implementation.VanillaColorTag;
+import io.lumine.mythic.lib.comp.adventure.tag.implementation.decorations.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,6 +95,126 @@ public class AdventureParserTest {
         Assertions.assertEquals(i5Expected, parser.parse(i5));
 
         // Remove tag parser
+        parser.remove(tag);
+    }
+
+    @Test
+    void testObfuscatedTag() {
+        // Add tag
+        ObfuscatedTag tag = new ObfuscatedTag();
+        parser.add(tag);
+
+        // Valid tag
+        final String i1 = "<obfuscated>This is a obfuscated text";
+        final String i1Expected = "§kThis is a obfuscated text";
+        Assertions.assertEquals(i1Expected, parser.parse(i1));
+
+        // Alias tag
+        final String i2 = "<OBF>This is a obfuscated text";
+        final String i2Expected = "§kThis is a obfuscated text";
+        Assertions.assertEquals(i2Expected, parser.parse(i2));
+
+        // Remove tag
+        parser.remove(tag);
+    }
+
+    @Test
+    void testBoldTag() {
+        // Add tag
+        BoldTag tag = new BoldTag();
+        parser.add(tag);
+
+        // Valid tag
+        final String i1 = "<bold>This is a bold text";
+        final String i1Expected = "§lThis is a bold text";
+        Assertions.assertEquals(i1Expected, parser.parse(i1));
+
+        // Alias tag
+        final String i2 = "<B>This is a bold text";
+        final String i2Expected = "§lThis is a bold text";
+        Assertions.assertEquals(i2Expected, parser.parse(i2));
+
+        // Remove tag
+        parser.remove(tag);
+    }
+
+    @Test
+    void testItalicTag() {
+        // Add tag
+        ItalicTag tag = new ItalicTag();
+        parser.add(tag);
+
+        // Valid tag
+        final String i1 = "<italic>This is a italic text";
+        final String i1Expected = "§oThis is a italic text";
+        Assertions.assertEquals(i1Expected, parser.parse(i1));
+
+        // Alias tag
+        final String i2 = "<I>This is a italic text";
+        final String i2Expected = "§oThis is a italic text";
+        Assertions.assertEquals(i2Expected, parser.parse(i2));
+
+        // Remove tag
+        parser.remove(tag);
+    }
+
+    @Test
+    public void testResetTag() {
+        // Add tag
+        ResetTag tag = new ResetTag();
+        parser.add(tag);
+
+        // Valid tag
+        final String i1 = "<reset>This is a reset text";
+        final String i1Expected = "§rThis is a reset text";
+        Assertions.assertEquals(i1Expected, parser.parse(i1));
+
+        // Alias tag
+        final String i2 = "<R>This is a reset text";
+        final String i2Expected = "§rThis is a reset text";
+        Assertions.assertEquals(i2Expected, parser.parse(i2));
+
+        // Remove tag
+        parser.remove(tag);
+    }
+
+    @Test
+    public void testUnderlineTag() {
+        // Add tag
+        UnderlineTag tag = new UnderlineTag();
+        parser.add(tag);
+
+        // Valid tag
+        final String i1 = "<underline>This is a underline text";
+        final String i1Expected = "§nThis is a underline text";
+        Assertions.assertEquals(i1Expected, parser.parse(i1));
+
+        // Alias tag
+        final String i2 = "<U>This is a underline text";
+        final String i2Expected = "§nThis is a underline text";
+        Assertions.assertEquals(i2Expected, parser.parse(i2));
+
+        // Remove tag
+        parser.remove(tag);
+    }
+
+    @Test
+    public void testStrikethroughTag() {
+        // Add tag
+        StrikethroughTag tag = new StrikethroughTag();
+        parser.add(tag);
+
+        // Valid tag
+        final String i1 = "<strikethrough>This is a strikethrough text";
+        final String i1Expected = "§mThis is a strikethrough text";
+        Assertions.assertEquals(i1Expected, parser.parse(i1));
+
+        // Alias tag
+        final String i2 = "<ST>This is a strikethrough text";
+        final String i2Expected = "§mThis is a strikethrough text";
+        Assertions.assertEquals(i2Expected, parser.parse(i2));
+
+        // Remove tag
         parser.remove(tag);
     }
 
