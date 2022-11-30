@@ -3,8 +3,10 @@ package io.lumine.mythic.lib.comp.adventure;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.comp.adventure.argument.AdventureArgument;
 import io.lumine.mythic.lib.comp.adventure.argument.AdventureArgumentQueue;
+import io.lumine.mythic.lib.comp.adventure.resolver.ContextTagResolver;
 import io.lumine.mythic.lib.comp.adventure.tag.AdventureTag;
 import io.lumine.mythic.lib.util.AdventureUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -84,13 +86,31 @@ public class AdventureParser {
         while (matcher.find()) {
             final String rawTag = matcher.group(1);
             final String rawArgs = matcher.group();
-            final String resolved = tag.resolver().resolve(rawTag, parseArguments(rawArgs));
             final String original = "<%s%s>".formatted(rawTag, rawArgs);
+            final AdventureArgumentQueue args = parseArguments(rawArgs);
+            final String context = getTagContent(cpy, rawTag, original);
 
-            cpy = cpy.replace(original, Objects.requireNonNullElse(resolved, fallBackResolver.apply(original)));
+            boolean hasContext = tag.resolver() instanceof ContextTagResolver;
+            final String resolved = hasContext ?
+                    ((ContextTagResolver) tag.resolver()).resolve(rawTag, args, context)
+                    : tag.resolver().resolve(rawTag, args);
+
+            cpy = cpy.replace(hasContext ?
+                    Objects.requireNonNullElse("%s%s".formatted(original, context), fallBackResolver.apply(original))
+                    : original, Objects.requireNonNullElse(resolved, fallBackResolver.apply(original)));
             matcher = pattern.matcher(cpy);
         }
         return cpy;
+    }
+
+    private @NotNull String getTagContent(@NotNull String src, @NotNull String tagName, @NotNull String tagIdentifier) {
+        String content = StringUtils.substringBetween(src, tagIdentifier, "</%s>".formatted(tagName));
+        if (content == null) {
+            // MythicLib.plugin.getLogger().warning("Tag %s is not closed".formatted(tagIdentifier));
+            return "";
+        }
+        // TODO: finish this code
+        return content;
     }
 
     private AdventureArgumentQueue parseArguments(@NotNull String rawArgs) {

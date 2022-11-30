@@ -83,4 +83,8 @@ public class AdventureUtils {
         }.runTaskAsynchronously(MythicLib.plugin);
         return future;
     }
+
+    public static net.md_5.bungee.api.ChatColor toBungee(ChatColor color) {
+        return net.md_5.bungee.api.ChatColor.of(color.name());
+    }
 }

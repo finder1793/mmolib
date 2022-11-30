@@ -11,15 +11,20 @@ import org.jetbrains.annotations.Nullable;
  * @author Roch Blondiaux (Kiwix).
  */
 @FunctionalInterface
-public interface AdventureTagResolver {
+public interface ContextTagResolver extends AdventureTagResolver {
 
     /**
      * Resolve a tag.
      *
      * @param src           the source of the tag.
      * @param argumentQueue the argument queue.
+     * @param context       the context of the tag.
      * @return the resolved tag
      */
-    @Nullable String resolve(@NotNull String src, @NotNull AdventureArgumentQueue argumentQueue);
+    @Nullable String resolve(@NotNull String src, @NotNull AdventureArgumentQueue argumentQueue, @NotNull String context);
 
+    @Override
+    default @Nullable String resolve(@NotNull String src, @NotNull AdventureArgumentQueue argumentQueue) {
+        return null;
+    }
 }

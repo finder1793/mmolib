@@ -1,10 +1,6 @@
 package io.lumine.mythic.lib.comp.adventure.tag.implementation.decorations;
 
-import io.lumine.mythic.lib.comp.adventure.argument.AdventureArgumentQueue;
-import io.lumine.mythic.lib.comp.adventure.resolver.AdventureTagResolver;
 import io.lumine.mythic.lib.comp.adventure.tag.AdventureTag;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * mythiclib
@@ -15,14 +11,6 @@ import org.jetbrains.annotations.Nullable;
 public class StrikethroughTag extends AdventureTag {
 
     public StrikethroughTag() {
-        super("strikethrough", new BoldResolver(), true,"st");
-    }
-
-    public static class BoldResolver implements AdventureTagResolver {
-
-        @Override
-        public @Nullable String resolve(@NotNull String src, @NotNull AdventureArgumentQueue argumentQueue) {
-            return "§m";
-        }
+        super("strikethrough", (src, argumentQueue) -> "§m", true,"st");
     }
 }
