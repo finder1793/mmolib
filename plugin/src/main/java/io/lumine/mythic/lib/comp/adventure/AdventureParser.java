@@ -61,15 +61,24 @@ public class AdventureParser {
         while (matcher.find()) {
             final String rawTag = matcher.group(1);
             final String rawArgs = matcher.group();
-            final List<AdventureArgument> args = Arrays.stream(rawArgs.split(":"))
-                    .map(AdventureArgument::new)
-                    .collect(Collectors.toList());
-            final String resolved = tag.resolver().resolve(rawTag, new AdventureArgumentQueue(args));
+            final String resolved = tag.resolver().resolve(rawTag, parseArguments(rawArgs));
             final String original = "<%s%s>".formatted(rawTag, rawArgs);
+
             cpy = cpy.replace(original, Objects.requireNonNullElse(resolved, fallBackResolver.apply(original)));
             matcher = pattern.matcher(cpy);
         }
         return cpy;
+    }
+
+    private AdventureArgumentQueue parseArguments(@NotNull String rawArgs) {
+        String[] unparsedArgs = rawArgs.split(":");
+        if (unparsedArgs.length > 0 && unparsedArgs[0].isEmpty())
+            unparsedArgs = Arrays.copyOfRange(unparsedArgs, 1, unparsedArgs.length);
+        return new AdventureArgumentQueue(
+                Arrays.stream(unparsedArgs)
+                        .map(AdventureArgument::new)
+                        .collect(Collectors.toList())
+        );
     }
 
     private @NotNull String removeUnparsedAndUselessTags(@NotNull String src) {
