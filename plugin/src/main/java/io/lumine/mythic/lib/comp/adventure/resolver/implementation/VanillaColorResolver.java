@@ -1,6 +1,6 @@
 package io.lumine.mythic.lib.comp.adventure.resolver.implementation;
 
-import io.lumine.mythic.lib.comp.adventure.AdventureUtils;
+import io.lumine.mythic.lib.util.AdventureUtils;
 import io.lumine.mythic.lib.comp.adventure.argument.AdventureArgumentQueue;
 import io.lumine.mythic.lib.comp.adventure.resolver.AdventureTagResolver;
 import org.bukkit.ChatColor;

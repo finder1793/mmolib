@@ -4,6 +4,7 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.comp.adventure.argument.AdventureArgument;
 import io.lumine.mythic.lib.comp.adventure.argument.AdventureArgumentQueue;
 import io.lumine.mythic.lib.comp.adventure.tag.AdventureTag;
+import io.lumine.mythic.lib.util.AdventureUtils;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,6 +54,10 @@ public class AdventureParser {
         }
         cpy = removeUnparsedAndUselessTags(cpy);
         return minecraftColorization(cpy);
+    }
+
+    public @NotNull CompletableFuture<String> parseAsync(@NotNull final String src) {
+        return AdventureUtils.supplyAsync(() -> parse(src));
     }
 
     private @NotNull String parseTag(@NotNull final String src, @NotNull final AdventureTag tag, @NotNull final String tagIdentifier) {
