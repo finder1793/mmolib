@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -23,15 +24,22 @@ import java.util.stream.Collectors;
  */
 @ApiStatus.NonExtendable
 public class AdventureParser {
-    // TODO: make a builder]
+    // TODO: make a builder
 
     /* Constants */
     private static final String DEFAULT_TAG_REGEX = "(?i)(?<=<(%s)).*?(?=>)";
+    private static final Pattern TAG_REGEX = Pattern.compile("(?i)(?<=<).*?(?=>)");
 
     private final List<AdventureTag> tags = new ArrayList<>();
+    private final Function<String, String> fallBackResolver;
+
+    public AdventureParser(@NotNull Function<String, String> fallBackResolver) {
+        // TODO: register all default tags
+        this.fallBackResolver = fallBackResolver;
+    }
 
     public AdventureParser() {
-        // TODO: register all default tags
+        this(s -> "<invalid>");
     }
 
     public @NotNull String parse(@NotNull final String src) {
@@ -41,6 +49,7 @@ public class AdventureParser {
             for (String alias : tag.aliases())
                 cpy = parseTag(cpy, tag, alias);
         }
+        cpy = removeUnparsedAndUselessTags(cpy);
         return minecraftColorization(cpy);
     }
 
@@ -55,12 +64,22 @@ public class AdventureParser {
             final List<AdventureArgument> args = Arrays.stream(rawArgs.split(":"))
                     .map(AdventureArgument::new)
                     .collect(Collectors.toList());
-
             final String resolved = tag.resolver().resolve(rawTag, new AdventureArgumentQueue(args));
-            cpy = cpy.replace("<%s%s>".formatted(rawTag, rawArgs), Objects.requireNonNullElse(resolved, ""));
+            final String original = "<%s%s>".formatted(rawTag, rawArgs);
+            cpy = cpy.replace(original, Objects.requireNonNullElse(resolved, fallBackResolver.apply(original)));
             matcher = pattern.matcher(cpy);
         }
         return cpy;
+    }
+
+    private @NotNull String removeUnparsedAndUselessTags(@NotNull String src) {
+        Matcher matcher = TAG_REGEX.matcher(src);
+        while (matcher.find()) {
+            final String original = "<%s>".formatted(matcher.group());
+            src = src.replace(original, fallBackResolver.apply(original));
+            matcher = TAG_REGEX.matcher(src);
+        }
+        return src;
     }
 
     private @NotNull String minecraftColorization(@NotNull final String src) {
