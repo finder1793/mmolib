@@ -7,11 +7,13 @@ import io.lumine.mythic.lib.api.crafting.uifilters.MythicItemUIFilter;
 import io.lumine.mythic.lib.api.event.armorequip.ArmorEquipEvent;
 import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.command.ColorCommand;
 import io.lumine.mythic.lib.command.ExploreAttributesCommand;
 import io.lumine.mythic.lib.command.HealthScaleCommand;
 import io.lumine.mythic.lib.command.MMOTempStatCommand;
 import io.lumine.mythic.lib.command.mythiclib.MythicLibCommand;
 import io.lumine.mythic.lib.comp.McMMOAttackHandler;
+import io.lumine.mythic.lib.comp.adventure.AdventureParser;
 import io.lumine.mythic.lib.comp.anticheat.AntiCheatSupport;
 import io.lumine.mythic.lib.comp.anticheat.SpartanPlugin;
 import io.lumine.mythic.lib.comp.dualwield.DualWieldHook;
@@ -20,9 +22,6 @@ import io.lumine.mythic.lib.comp.flags.FlagHandler;
 import io.lumine.mythic.lib.comp.flags.FlagPlugin;
 import io.lumine.mythic.lib.comp.flags.ResidenceFlags;
 import io.lumine.mythic.lib.comp.flags.WorldGuardFlags;
-import io.lumine.mythic.lib.comp.hexcolor.ColorParser;
-import io.lumine.mythic.lib.comp.hexcolor.HexColorParser;
-import io.lumine.mythic.lib.comp.hexcolor.SimpleColorParser;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
 import io.lumine.mythic.lib.comp.placeholder.*;
@@ -74,7 +73,7 @@ public class MythicLib extends JavaPlugin {
     private ServerVersion version;
     private AttackEffects attackEffects;
     private MitigationMechanics mitigationMechanics;
-    private ColorParser colorParser;
+    private AdventureParser adventureParser;
     @Deprecated
     @Getter
     private PlaceholderParser placeholderParser;
@@ -99,7 +98,7 @@ public class MythicLib extends JavaPlugin {
             getLogger().log(Level.INFO, "Hooked onto WorldGuard");
         }
 
-        colorParser = version.isBelowOrEqual(1, 15) ? new SimpleColorParser() : new HexColorParser();
+        adventureParser = new AdventureParser();
     }
 
     @Override
@@ -228,6 +227,7 @@ public class MythicLib extends JavaPlugin {
         getCommand("mythiclib").setExecutor(new MythicLibCommand());
         getCommand("mmotempstat").setExecutor(new MMOTempStatCommand());
         getCommand("healthscale").setExecutor(new HealthScaleCommand());
+        new ColorCommand(this, adventureParser);
 
         // Super workbench
         getCommand("superworkbench").setExecutor(SuperWorkbenchMapping.SWB);
@@ -268,7 +268,7 @@ public class MythicLib extends JavaPlugin {
             if (player.getOpenInventory() != null && player.getOpenInventory().getTopInventory().getHolder() != null && player.getOpenInventory().getTopInventory().getHolder() instanceof PluginInventory)
                 player.closeInventory();
 
-            glowModule.disable();
+        glowModule.disable();
     }
 
     public static MythicLib inst() {
@@ -346,7 +346,7 @@ public class MythicLib extends JavaPlugin {
      * @return String with parsed (hex) color codes
      */
     public String parseColors(String format) {
-        return colorParser.parseColorCodes(format);
+        return adventureParser.parse(format);
     }
 
     public File getJarFile() {

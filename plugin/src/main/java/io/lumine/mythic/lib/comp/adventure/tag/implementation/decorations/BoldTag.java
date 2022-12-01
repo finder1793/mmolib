@@ -11,6 +11,6 @@ import io.lumine.mythic.lib.comp.adventure.tag.AdventureTag;
 public class BoldTag extends AdventureTag {
 
     public BoldTag() {
-        super("bold", (src, argumentQueue) -> "§l", true, "b");
+        super("bold", (src, argumentQueue) -> "§l", true, false,"b");
     }
 }

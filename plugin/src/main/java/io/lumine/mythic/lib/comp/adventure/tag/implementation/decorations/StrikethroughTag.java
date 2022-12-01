@@ -11,6 +11,6 @@ import io.lumine.mythic.lib.comp.adventure.tag.AdventureTag;
 public class StrikethroughTag extends AdventureTag {
 
     public StrikethroughTag() {
-        super("strikethrough", (src, argumentQueue) -> "§m", true,"st");
+        super("strikethrough", (src, argumentQueue) -> "§m", true, false,"st");
     }
 }

@@ -11,6 +11,6 @@ import io.lumine.mythic.lib.comp.adventure.tag.AdventureTag;
 public class NewlineTag extends AdventureTag {
 
     public NewlineTag() {
-        super("newline", (src, argumentQueue) -> "\n", true, "br");
+        super("newline", (src, argumentQueue) -> "\n", true, false,"br");
     }
 }

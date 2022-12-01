@@ -1,10 +1,11 @@
 package io.lumine.mythic.lib.comp.adventure;
 
-import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.comp.adventure.argument.AdventureArgument;
 import io.lumine.mythic.lib.comp.adventure.argument.AdventureArgumentQueue;
 import io.lumine.mythic.lib.comp.adventure.resolver.ContextTagResolver;
 import io.lumine.mythic.lib.comp.adventure.tag.AdventureTag;
+import io.lumine.mythic.lib.comp.adventure.tag.implementation.*;
+import io.lumine.mythic.lib.comp.adventure.tag.implementation.decorations.*;
 import io.lumine.mythic.lib.util.AdventureUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
@@ -36,12 +37,23 @@ public class AdventureParser {
     private final Function<String, String> fallBackResolver;
 
     public AdventureParser(@NotNull Function<String, String> fallBackResolver) {
-        // TODO: register all default tags
         this.fallBackResolver = fallBackResolver;
     }
 
     public AdventureParser() {
         this(s -> "<invalid>");
+
+        add(new GradientTag());
+        add(new VanillaColorTag());
+        add(new HexColorTag());
+        add(new AdventureColorTag());
+        add(new NewlineTag());
+        add(new BoldTag());
+        add(new ItalicTag());
+        add(new ObfuscatedTag());
+        add(new ResetTag());
+        add(new StrikethroughTag());
+        add(new UnderlineTag());
     }
 
     public @NotNull String parse(@NotNull final String src) {
@@ -83,33 +95,53 @@ public class AdventureParser {
         Matcher matcher = pattern.matcher(src);
 
         String cpy = src;
-        while (matcher.find()) {
-            final String rawTag = matcher.group(1);
-            final String rawArgs = matcher.group();
-            final String original = "<%s%s>".formatted(rawTag, rawArgs);
-            final AdventureArgumentQueue args = parseArguments(rawArgs);
-            final String context = getTagContent(cpy, rawTag, original);
+        int iterations = 0;
+        while (matcher.find() && iterations++ < 50) {
+            try {
+                final String rawTag = matcher.group(1);
+                final String rawArgs = matcher.group();
+                final String original = "<%s%s>".formatted(rawTag, rawArgs);
+                final AdventureArgumentQueue args = parseArguments(rawArgs);
+                boolean hasContext = tag.resolver() instanceof ContextTagResolver;
 
-            boolean hasContext = tag.resolver() instanceof ContextTagResolver;
-            final String resolved = hasContext ?
-                    ((ContextTagResolver) tag.resolver()).resolve(rawTag, args, context)
-                    : tag.resolver().resolve(rawTag, args);
-
-            cpy = cpy.replace(hasContext ?
-                    Objects.requireNonNullElse("%s%s".formatted(original, context), fallBackResolver.apply(original))
-                    : original, Objects.requireNonNullElse(resolved, fallBackResolver.apply(original)));
-            matcher = pattern.matcher(cpy);
+                String context = hasContext ? getTagContent(cpy, rawTag, original) : null;
+                String resolved = hasContext ?
+                        ((ContextTagResolver) tag.resolver()).resolve(rawTag, args, context)
+                        : tag.resolver().resolve(rawTag, args);
+                cpy = cpy.replace(hasContext ?
+                        Objects.requireNonNullElse("%s%s".formatted(original, context), fallBackResolver.apply(original))
+                        : original, Objects.requireNonNullElse(resolved, fallBackResolver.apply(original)));
+                matcher = pattern.matcher(cpy);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return cpy;
     }
 
     private @NotNull String getTagContent(@NotNull String src, @NotNull String tagName, @NotNull String tagIdentifier) {
-        String content = StringUtils.substringBetween(src, tagIdentifier, "</%s>".formatted(tagName));
-        if (content == null) {
-            // MythicLib.plugin.getLogger().warning("Tag %s is not closed".formatted(tagIdentifier));
-            return "";
+        // Match closed tags
+        final String closeTag = "</%s>".formatted(tagName);
+        String content = StringUtils.substringBetween(src, tagIdentifier, closeTag);
+        if (content != null) return content;
+
+        String cpy = src.substring(src.indexOf(tagIdentifier) + tagIdentifier.length());
+        int colorIndex = cpy.length();
+
+        // Match colors tags as context end
+        Matcher matcher = TAG_REGEX.matcher(cpy);
+        int iterations = 0;
+        while (matcher.find() && iterations++ < 10) {
+            final String rawTag = matcher.group();
+            String[] split = rawTag.split(":");
+            Optional<AdventureTag> optTag = findByName(split[0]).filter(AdventureTag::color);
+            if (optTag.isPresent()) {
+                colorIndex = cpy.indexOf("<%s>".formatted(rawTag));
+                break;
+            }
+            matcher = TAG_REGEX.matcher(cpy);
         }
-        // TODO: finish this code
+        content = cpy.substring(0, colorIndex);
         return content;
     }
 
@@ -126,7 +158,8 @@ public class AdventureParser {
 
     private @NotNull String removeUnparsedAndUselessTags(@NotNull String src) {
         Matcher matcher = TAG_REGEX.matcher(src);
-        while (matcher.find()) {
+        int iterations = 0;
+        while (matcher.find() && iterations++ < 50) {
             final String matched = matcher.group();
             final String original = "<%s>".formatted(matched);
             src = src.replace(original, matched.startsWith("/") ? "§r" : fallBackResolver.apply(original));
@@ -140,8 +173,8 @@ public class AdventureParser {
     }
 
     public void add(AdventureTag tag) {
-        if (tag.backwardsCompatible() && MythicLib.plugin.getVersion().isBelowOrEqual(1, 15)) {
-            MythicLib.plugin.getLogger().warning("The tag %s is not compatible with your server version.".formatted(tag.name()));
+        if (tag.backwardsCompatible() /* && MythicLib.plugin.getVersion().isBelowOrEqual(1, 15) */) {
+            // MythicLib.plugin.getLogger().warning("The tag %s is not compatible with your server version.".formatted(tag.name()));
             return;
         }
         tags.add(tag);
@@ -154,6 +187,12 @@ public class AdventureParser {
 
     public void remove(AdventureTag tag) {
         tags.remove(tag);
+    }
+
+    public Optional<AdventureTag> findByName(@NotNull String name) {
+        return tags.stream()
+                .filter(tag -> tag.name().equalsIgnoreCase(name) || tag.aliases().stream().anyMatch(s -> s.equalsIgnoreCase(name)))
+                .findFirst();
     }
 
     public List<AdventureTag> tags() {

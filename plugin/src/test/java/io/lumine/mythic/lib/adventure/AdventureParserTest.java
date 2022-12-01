@@ -291,6 +291,46 @@ public class AdventureParserTest {
     }
 
     @Test
+    public void testTagContext() {
+        AdventureParser specialParser = new AdventureParser(s -> "<invalid>");
+        specialParser.forceRegister(new GradientTag());
+        specialParser.forceRegister(new VanillaColorTag());
+        specialParser.forceRegister(new HexColorTag());
+        specialParser.forceRegister(new AdventureColorTag());
+        specialParser.forceRegister(new NewlineTag());
+        specialParser.forceRegister(new BoldTag());
+        specialParser.forceRegister(new ItalicTag());
+        specialParser.forceRegister(new ObfuscatedTag());
+        specialParser.forceRegister(new ResetTag());
+        specialParser.forceRegister(new StrikethroughTag());
+        specialParser.forceRegister(new UnderlineTag());
+
+
+        // Single closed context tag
+        final String i1 = "<gradient>Test</gradient>";
+        final String i1Expected = "§x§f§f§f§f§f§fT§x§a§a§a§a§a§ae§x§5§5§5§5§5§5s§x§0§0§0§0§0§0t§r";
+        Assertions.assertEquals(i1Expected, specialParser.parse(i1));
+
+        // Single context tag unclosed
+        final String i2 = "<gradient>Test";
+        final String i2Expected = "§x§f§f§f§f§f§fT§x§a§a§a§a§a§ae§x§5§5§5§5§5§5s§x§0§0§0§0§0§0t";
+        Assertions.assertEquals(i2Expected, specialParser.parse(i2));
+
+        // Single context tag & normal tag
+        final String i3 = "<gradient>Test <color:red>Hey";
+        final String i3Expected = "§x§f§f§f§f§f§fT§x§b§f§b§f§b§fe§x§8§0§8§0§8§0s§x§4§0§4§0§4§0t§x§0§0§0§0§0§0 §cHey";
+        Assertions.assertEquals(i3Expected, specialParser.parse(i3));
+
+        // Multiple context tag
+        final String i4 = "<gradient>Test <gradient:red:blue>Hey";
+        final String i4Expected = "§x§f§f§f§f§f§fT§x§b§f§b§f§b§fe§x§8§0§8§0§8§0s§x§4§0§4§0§4§0t§x§0§0§0§0§0§0 §x§f§f§5§5§5§5H§x§a§a§5§5§a§ae§x§5§5§5§5§f§fy";
+        Assertions.assertEquals(i4Expected, specialParser.parse(i4));
+
+        // Uninitialized parser
+        specialParser = null;
+    }
+
+    @Test
     public void testGradient() {
         // Add tag
         GradientTag tag = new GradientTag();
@@ -302,18 +342,18 @@ public class AdventureParserTest {
         Assertions.assertEquals(i1Expected, parser.parse(i1));
 
         // 2 color gradient
-        final String i2 = "<gradient:red,blue>This is a gradient text</gradient>";
-        final String i2Expected = "§x§f§f§f§f§f§fT§x§f§3§f§3§f§3h§x§e§8§e§8§e§8i§x§d§c§d§c§d§cs§x§d§1§d§1§d§1 §x§c§5§c§5§c§5i§x§b§9§b§9§b§9s§x§a§e§a§e§a§e §x§a§2§a§2§a§2a§x§9§7§9§7§9§7 §x§8§b§8§b§8§bg§x§7§f§7§f§7§fr§x§7§4§7§4§7§4a§x§6§8§6§8§6§8d§x§5§d§5§d§5§di§x§5§1§5§1§5§1e§x§4§6§4§6§4§6n§x§3§a§3§a§3§at§x§2§e§2§e§2§e §x§2§3§2§3§2§3t§x§1§7§1§7§1§7e§x§0§c§0§c§0§cx§x§0§0§0§0§0§0t§r";
+        final String i2 = "<gradient:red:blue>This is a gradient text</gradient>";
+        final String i2Expected = "§x§f§f§5§5§5§5T§x§f§7§5§5§5§dh§x§f§0§5§5§6§4i§x§e§8§5§5§6§cs§x§e§0§5§5§7§4 §x§d§8§5§5§7§ci§x§d§1§5§5§8§3s§x§c§9§5§5§8§b §x§c§1§5§5§9§3a§x§b§9§5§5§9§b §x§b§2§5§5§a§2g§x§a§a§5§5§a§ar§x§a§2§5§5§b§2a§x§9§b§5§5§b§9d§x§9§3§5§5§c§1i§x§8§b§5§5§c§9e§x§8§3§5§5§d§1n§x§7§c§5§5§d§8t§x§7§4§5§5§e§0 §x§6§c§5§5§e§8t§x§6§4§5§5§f§0e§x§5§d§5§5§f§7x§x§5§5§5§5§f§ft§r";
         Assertions.assertEquals(i2Expected, parser.parse(i2));
 
         // 3 color gradient
-        final String i3 = "<gradient:red,blue,green>This is a gradient text</gradient>";
-        final String i3Expected = "§x§f§f§f§f§f§fT§x§f§3§f§3§f§3h§x§e§8§e§8§e§8i§x§d§c§d§c§d§cs§x§d§1§d§1§d§1 §x§c§5§c§5§c§5i§x§b§9§b§9§b§9s§x§a§e§a§e§a§e §x§a§2§a§2§a§2a§x§9§7§9§7§9§7 §x§8§b§8§b§8§bg§x§7§f§7§f§7§fr§x§7§4§7§4§7§4a§x§6§8§6§8§6§8d§x§5§d§5§d§5§di§x§5§1§5§1§5§1e§x§4§6§4§6§4§6n§x§3§a§3§a§3§at§x§2§e§2§e§2§e §x§2§3§2§3§2§3t§x§1§7§1§7§1§7e§x§0§c§0§c§0§cx§x§0§0§0§0§0§0t§r";
+        final String i3 = "<gradient:red:blue:green>This is a gradient text</gradient>";
+        final String i3Expected = "§x§f§f§5§5§5§5T§x§e§e§5§5§6§6h§x§d§d§5§5§7§7i§x§c§c§5§5§8§8s§x§b§b§5§5§9§9 §x§a§a§5§5§a§ai§x§9§9§5§5§b§bs§x§8§8§5§5§c§c §x§7§7§5§5§d§da§x§6§6§5§5§e§e §x§5§5§5§5§f§fg§x§5§5§5§5§f§fr§x§5§5§6§6§e§ea§x§5§5§7§7§d§dd§x§5§5§8§8§c§ci§x§5§5§9§9§b§be§x§5§5§a§a§a§an§x§5§5§b§b§9§9t§x§5§5§c§c§8§8 §x§5§5§d§d§7§7t§x§5§5§e§e§6§6e§x§5§5§f§f§5§5x§r";
         Assertions.assertEquals(i3Expected, parser.parse(i3));
 
         // 4 color gradient
-        final String i4 = "<gradient:red,blue,green,yellow>This is a gradient text</gradient>";
-        final String i4Expected = "§x§f§f§f§f§f§fT§x§f§3§f§3§f§3h§x§e§8§e§8§e§8i§x§d§c§d§c§d§cs§x§d§1§d§1§d§1 §x§c§5§c§5§c§5i§x§b§9§b§9§b§9s§x§a§e§a§e§a§e §x§a§2§a§2§a§2a§x§9§7§9§7§9§7 §x§8§b§8§b§8§bg§x§7§f§7§f§7§fr§x§7§4§7§4§7§4a§x§6§8§6§8§6§8d§x§5§d§5§d§5§di§x§5§1§5§1§5§1e§x§4§6§4§6§4§6n§x§3§a§3§a§3§at§x§2§e§2§e§2§e §x§2§3§2§3§2§3t§x§1§7§1§7§1§7e§x§0§c§0§c§0§cx§x§0§0§0§0§0§0t§r";
+        final String i4 = "<gradient:red:blue:green:yellow>This is a gradient text</gradient>";
+        final String i4Expected = "§x§f§f§5§5§5§5T§x§e§3§5§5§7§1h§x§c§6§5§5§8§ei§x§a§a§5§5§a§as§x§8§e§5§5§c§6 §x§7§1§5§5§e§3i§x§5§5§5§5§f§fs§x§5§5§5§5§f§f §x§5§5§7§1§e§3a§x§5§5§8§e§c§6 §x§5§5§a§a§a§ag§x§5§5§c§6§8§er§x§5§5§e§3§7§1a§x§5§5§f§f§5§5d§x§5§5§f§f§5§5i§x§7§1§f§f§5§5e§x§8§e§f§f§5§5n§x§a§a§f§f§5§5t§x§c§6§f§f§5§5 §x§e§3§f§f§5§5t§x§f§f§f§f§5§5e§r";
         Assertions.assertEquals(i4Expected, parser.parse(i4));
 
         // Remove tag
