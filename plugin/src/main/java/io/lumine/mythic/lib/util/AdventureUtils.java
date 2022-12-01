@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -86,5 +87,14 @@ public class AdventureUtils {
 
     public static net.md_5.bungee.api.ChatColor toBungee(ChatColor color) {
         return net.md_5.bungee.api.ChatColor.of(color.name());
+    }
+
+    public static Color color(String raw) {
+        try {
+            net.md_5.bungee.api.ChatColor chatColor = net.md_5.bungee.api.ChatColor.of(raw);
+            return chatColor.getColor();
+        } catch (Exception e) {
+            return Color.WHITE;
+        }
     }
 }

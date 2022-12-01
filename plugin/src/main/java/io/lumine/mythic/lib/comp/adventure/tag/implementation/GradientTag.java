@@ -12,6 +12,6 @@ import io.lumine.mythic.lib.comp.adventure.tag.AdventureTag;
 public class GradientTag extends AdventureTag {
 
     public GradientTag() {
-        super("gradient", new GradientResolver(), true, true);
+        super("gradient", new GradientResolver(), false, true);
     }
 }

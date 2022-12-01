@@ -54,9 +54,8 @@ public class GradientBuilder {
         if (portions == null) {
             p = new double[colors.length - 1];
             Arrays.fill(p, 1 / (double) p.length);
-        } else {
+        } else
             p = portions;
-        }
 
         Preconditions.checkArgument(colors.length >= 2);
         Preconditions.checkArgument(p.length == colors.length - 1);

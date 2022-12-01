@@ -3,9 +3,7 @@ package io.lumine.mythic.lib.adventure;
 import io.lumine.mythic.lib.comp.adventure.AdventureParser;
 import io.lumine.mythic.lib.comp.adventure.tag.implementation.*;
 import io.lumine.mythic.lib.comp.adventure.tag.implementation.decorations.*;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -19,16 +17,10 @@ import java.util.List;
  */
 public class AdventureParserTest {
 
-    static AdventureParser parser;
-
-    @BeforeEach
-    void setUp() {
-        parser = new AdventureParser(s -> "");
-    }
-
     @Test
     void testHexColorTag() {
         // Add tag parser
+        final AdventureParser parser = new AdventureParser(s -> "");
         final HexColorTag tag = new HexColorTag();
         parser.forceRegister(tag);
 
@@ -68,6 +60,7 @@ public class AdventureParserTest {
     @Test
     void testVanillaColors() {
         // Add tag parser
+        final AdventureParser parser = new AdventureParser(s -> "");
         final VanillaColorTag tag = new VanillaColorTag();
         parser.forceRegister(tag);
 
@@ -103,6 +96,7 @@ public class AdventureParserTest {
     @Test
     void testObfuscatedTag() {
         // Add tag
+        final AdventureParser parser = new AdventureParser(s -> "");
         ObfuscatedTag tag = new ObfuscatedTag();
         parser.forceRegister(tag);
 
@@ -123,6 +117,7 @@ public class AdventureParserTest {
     @Test
     void testBoldTag() {
         // Add tag
+        final AdventureParser parser = new AdventureParser(s -> "");
         BoldTag tag = new BoldTag();
         parser.forceRegister(tag);
 
@@ -143,6 +138,7 @@ public class AdventureParserTest {
     @Test
     void testItalicTag() {
         // Add tag
+        final AdventureParser parser = new AdventureParser(s -> "");
         ItalicTag tag = new ItalicTag();
         parser.forceRegister(tag);
 
@@ -163,6 +159,7 @@ public class AdventureParserTest {
     @Test
     public void testResetTag() {
         // Add tag
+        final AdventureParser parser = new AdventureParser(s -> "");
         ResetTag tag = new ResetTag();
         parser.forceRegister(tag);
 
@@ -183,6 +180,7 @@ public class AdventureParserTest {
     @Test
     public void testUnderlineTag() {
         // Add tag
+        final AdventureParser parser = new AdventureParser(s -> "");
         UnderlineTag tag = new UnderlineTag();
         parser.forceRegister(tag);
 
@@ -203,6 +201,7 @@ public class AdventureParserTest {
     @Test
     public void testStrikethroughTag() {
         // Add tag
+        final AdventureParser parser = new AdventureParser(s -> "");
         StrikethroughTag tag = new StrikethroughTag();
         parser.forceRegister(tag);
 
@@ -223,6 +222,7 @@ public class AdventureParserTest {
     @Test
     public void testAdventureColors() {
         // Add tag
+        final AdventureParser parser = new AdventureParser(s -> "");
         AdventureColorTag tag = new AdventureColorTag();
         parser.forceRegister(tag);
 
@@ -253,6 +253,7 @@ public class AdventureParserTest {
     @Test
     public void testClosedTag() {
         // Add tag
+        final AdventureParser parser = new AdventureParser(s -> "");
         AdventureColorTag tag = new AdventureColorTag();
         parser.forceRegister(tag);
 
@@ -273,6 +274,7 @@ public class AdventureParserTest {
     @Test
     public void testNewline() {
         // Add tag
+        final AdventureParser parser = new AdventureParser(s -> "");
         NewlineTag tag = new NewlineTag();
         parser.forceRegister(tag);
 
@@ -333,6 +335,7 @@ public class AdventureParserTest {
     @Test
     public void testGradient() {
         // Add tag
+        final AdventureParser parser = new AdventureParser(s -> "");
         GradientTag tag = new GradientTag();
         parser.forceRegister(tag);
 
@@ -358,10 +361,5 @@ public class AdventureParserTest {
 
         // Remove tag
         parser.remove(tag);
-    }
-
-    @AfterAll
-    static void afterAll() {
-        parser = null;
     }
 }

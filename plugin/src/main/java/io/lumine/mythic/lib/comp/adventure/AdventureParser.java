@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.comp.adventure;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.comp.adventure.argument.AdventureArgument;
 import io.lumine.mythic.lib.comp.adventure.argument.AdventureArgumentQueue;
 import io.lumine.mythic.lib.comp.adventure.resolver.ContextTagResolver;
@@ -43,7 +44,11 @@ public class AdventureParser {
     public AdventureParser() {
         this(s -> "<invalid>");
 
+        // Context
         add(new GradientTag());
+        add(new RainbowTag());
+
+        // Normal
         add(new VanillaColorTag());
         add(new HexColorTag());
         add(new AdventureColorTag());
@@ -173,8 +178,8 @@ public class AdventureParser {
     }
 
     public void add(AdventureTag tag) {
-        if (tag.backwardsCompatible() /* && MythicLib.plugin.getVersion().isBelowOrEqual(1, 15) */) {
-            // MythicLib.plugin.getLogger().warning("The tag %s is not compatible with your server version.".formatted(tag.name()));
+        if (tag.backwardsCompatible() && MythicLib.plugin.getVersion().isBelowOrEqual(1, 15)) {
+            MythicLib.plugin.getLogger().warning("The tag %s is not compatible with your server version.".formatted(tag.name()));
             return;
         }
         tags.add(tag);
