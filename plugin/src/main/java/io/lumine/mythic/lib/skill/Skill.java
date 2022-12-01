@@ -77,6 +77,7 @@ public abstract class Skill implements CooldownObject {
             return result;
         }
 
+
         NamespacedKey bossbarNamespacedKey = new NamespacedKey(MythicLib.plugin, "mmocore_quest_progress_" + meta.getCaster().getPlayer().getUniqueId().toString());
         BossBar bossbar = Bukkit.createBossBar(bossbarNamespacedKey, "CASTING", BarColor.WHITE, BarStyle.SEGMENTED_20);
         bossbar.addPlayer(meta.getCaster().getPlayer());
@@ -99,11 +100,17 @@ public abstract class Skill implements CooldownObject {
         runnable.runTaskTimer(MythicLib.plugin, 0L, 1L);
 
         //Listener that cancels the event if the player moves.
-        TemporaryListener temporaryListener = new TemporaryListener(PlayerMoveEvent.getHandlerList()) {
+        TemporaryListener temporaryListener = new TemporaryListener(PlayerMoveEvent.getHandlerList(), PlayerCastSkillEvent.getHandlerList()) {
             @EventHandler
             public void onMove(PlayerMoveEvent event) {
                 if (event.getPlayer().equals(meta.getCaster().getPlayer()))
                     event.setCancelled(true);
+            }
+
+            @EventHandler
+            public void onCast(PlayerCastSkillEvent e) {
+                if (e.getPlayer().equals(meta.getCaster().getPlayer()))
+                    e.setCancelled(true);
             }
 
             @Override
