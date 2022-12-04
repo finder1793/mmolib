@@ -37,11 +37,21 @@ public class RainbowResolver implements ContextTagResolver {
             return GradientBuilder.multiRgbGradient(context, colors, null, Interpolator.LINEAR);
         AdventureArgument argument = argsQueue.pop();
         if (argument.asInt().isPresent())
-            // TODO
-            throw new UnsupportedOperationException("Not implemented yet");
-        else if (argument.value().equals("!"))
+            return GradientBuilder.multiRgbGradient(context, reverse(), argument.asInt().getAsInt(), Interpolator.LINEAR);
+        else if (containsNumberAndExclamation(argument.value())) {
+            try {
+                int phase = Integer.parseInt(argument.value().substring(1));
+                return GradientBuilder.multiRgbGradient(context, reverse(), phase, Interpolator.LINEAR);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        } else if (argument.value().equals("!"))
             return GradientBuilder.multiRgbGradient(context, reverse(), null, Interpolator.LINEAR);
         return null;
+    }
+
+    private boolean containsNumberAndExclamation(String src) {
+        return src.matches(".*\\d.*") && src.contains("!");
     }
 
     private Color[] reverse() {
