@@ -332,6 +332,7 @@ public class AdventureParserTest {
         specialParser = null;
     }
 
+    /*
     @Test
     public void testGradient() {
         // Add tag
@@ -362,4 +363,6 @@ public class AdventureParserTest {
         // Remove tag
         parser.remove(tag);
     }
+
+     */
 }

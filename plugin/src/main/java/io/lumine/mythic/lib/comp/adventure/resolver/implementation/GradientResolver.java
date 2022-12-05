@@ -29,11 +29,11 @@ public class GradientResolver implements ContextTagResolver {
             args.add(argsQueue.pop().value());
         double phase = getPhase(args);
         if (args.size() > 2)
-            return GradientBuilder.multiRgbGradient(context, args.stream().map(AdventureUtils::color).toArray(Color[]::new), null, Interpolator.LINEAR);
+            return GradientBuilder.multiRgbGradient(context, args.stream().map(AdventureUtils::color).toArray(Color[]::new), phase, Interpolator.LINEAR);
         final Color c1 = AdventureUtils.color(args.get(0));
         if (args.size() == 1)
-            return GradientBuilder.rgbGradient(context, c1, Color.BLACK, Interpolator.LINEAR);
-        return GradientBuilder.rgbGradient(context, c1, AdventureUtils.color(args.get(1)), Interpolator.LINEAR);
+            return GradientBuilder.rgbGradient(context, c1, Color.BLACK, phase, Interpolator.LINEAR);
+        return GradientBuilder.rgbGradient(context, c1, AdventureUtils.color(args.get(1)), phase, Interpolator.LINEAR);
     }
 
     private double getPhase(List<String> args) {

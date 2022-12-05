@@ -18,11 +18,24 @@ import java.util.Arrays;
 public class GradientBuilder {
 
     public static String rgbGradient(String str, Color from, Color to, Interpolator interpolator) {
+        return rgbGradient(str, from, to, 0d, interpolator);
+    }
+
+    public static String rgbGradient(String str, Color from, Color to, double phase, Interpolator interpolator) {
         final double[] red = interpolator.interpolate(from.getRed(), to.getRed(), str.length());
         final double[] green = interpolator.interpolate(from.getGreen(), to.getGreen(), str.length());
         final double[] blue = interpolator.interpolate(from.getBlue(), to.getBlue(), str.length());
         final StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < str.length(); i++) {
+
+        int start = str.length() - (int) (str.length() * phase);
+        for (int i = start; i < str.length(); i++) {
+            builder.append(ChatColor.of(new Color(
+                            (int) Math.round(red[i] * phase),
+                            (int) Math.round(green[i] * phase),
+                            (int) Math.round(blue[i] * phase))))
+                    .append(str.charAt(i));
+        }
+        for (int i = 0; i < start; i++) {
             builder.append(ChatColor.of(new Color(
                             (int) Math.round(red[i]),
                             (int) Math.round(green[i]),
@@ -43,9 +56,8 @@ public class GradientBuilder {
 
         final StringBuilder builder = new StringBuilder();
 
-        for (int i = 0; i < str.length(); i++) {
+        for (int i = 0; i < str.length(); i++)
             builder.append(ChatColor.of(Color.getHSBColor((float) h[i], (float) s[i], (float) v[i]))).append(str.charAt(i));
-        }
         return builder.toString();
     }
 
@@ -72,6 +84,13 @@ public class GradientBuilder {
             strIndex += p[i] * str.length();
         }
         return builder.toString();
+    }
+
+    public static String multiRgbGradient(String str, Color[] colors, double phase, Interpolator interpolator) {
+        final Color[] c = new Color[colors.length];
+        for (int i = 0; i < colors.length; i++)
+            c[i] = colors[(int) (i + phase * colors.length) % colors.length];
+        return multiRgbGradient(str, c, null, interpolator);
     }
 
     public static String multiHsvQuadraticGradient(String str, boolean first) {
