@@ -27,12 +27,24 @@ public class GradientResolver implements ContextTagResolver {
         List<String> args = new ArrayList<>();
         while (argsQueue.hasNext())
             args.add(argsQueue.pop().value());
+        double phase = getPhase(args);
         if (args.size() > 2)
             return GradientBuilder.multiRgbGradient(context, args.stream().map(AdventureUtils::color).toArray(Color[]::new), null, Interpolator.LINEAR);
         final Color c1 = AdventureUtils.color(args.get(0));
         if (args.size() == 1)
             return GradientBuilder.rgbGradient(context, c1, Color.BLACK, Interpolator.LINEAR);
         return GradientBuilder.rgbGradient(context, c1, AdventureUtils.color(args.get(1)), Interpolator.LINEAR);
+    }
+
+    private double getPhase(List<String> args) {
+        String lastArg = args.get(args.size() - 1);
+        try {
+            double phase = Double.parseDouble(lastArg);
+            args.remove(args.size() - 1);
+            return phase;
+        } catch (NumberFormatException e) {
+            return 1d;
+        }
     }
 
 }

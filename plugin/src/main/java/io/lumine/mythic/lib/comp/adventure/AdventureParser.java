@@ -47,6 +47,7 @@ public class AdventureParser {
         // Context
         add(new GradientTag());
         add(new RainbowTag());
+        add(new TransitionTag());
 
         // Normal
         add(new VanillaColorTag());

@@ -14,18 +14,16 @@ interface Interpolator {
 
     Interpolator LINEAR = (from, to, max) -> {
         final double[] res = new double[max];
-        for (int i = 0; i < max; i++) {
+        for (int i = 0; i < max; i++)
             res[i] = from + i * ((to - from) / (max - 1));
-        }
         return res;
     };
 
     Interpolator QUADRATIC_SLOW_TO_FAST = (from, to, max) -> {
         final double[] results = new double[max];
         double a = (to - from) / (max * max);
-        for (int i = 0; i < results.length; i++) {
+        for (int i = 0; i < results.length; i++)
             results[i] = a * i * i + from;
-        }
         return results;
     };
 
@@ -33,9 +31,8 @@ interface Interpolator {
         final double[] results = new double[max];
         double a = (from - to) / (max * max);
         double b = -2 * a * max;
-        for (int i = 0; i < results.length; i++) {
+        for (int i = 0; i < results.length; i++)
             results[i] = a * i * i + b * i + from;
-        }
         return results;
     };
 }
