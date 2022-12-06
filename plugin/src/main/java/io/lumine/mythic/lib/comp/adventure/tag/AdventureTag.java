@@ -12,6 +12,8 @@ import java.util.List;
  * 30/11/2022
  *
  * @author Roch Blondiaux (Kiwix).
+ * <p>
+ * This class is holding the tag information and resolver.
  */
 public abstract class AdventureTag {
 

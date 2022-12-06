@@ -11,6 +11,8 @@ import java.util.OptionalInt;
  * 30/11/2022
  *
  * @author Roch Blondiaux (Kiwix).
+ * <p>
+ * This class contains information about the argument.
  */
 @ApiStatus.NonExtendable
 public class AdventureArgument {

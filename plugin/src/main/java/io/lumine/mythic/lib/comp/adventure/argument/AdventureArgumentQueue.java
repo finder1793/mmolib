@@ -11,6 +11,8 @@ import java.util.function.Supplier;
  * 30/11/2022
  *
  * @author Roch Blondiaux (Kiwix).
+ * <p>
+ * This class is reponsible holding the arguments in a linked queue.
  */
 @ApiStatus.Internal
 public class AdventureArgumentQueue {

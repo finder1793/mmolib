@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 public class AdventureParser {
 
     /* Constants */
-    private static final String DEFAULT_TAG_REGEX = "(?i)(?<=<(%s)).*?(?=>)";
     private static final Pattern TAG_REGEX = Pattern.compile("(?i)(?<=<).*?(?=>)");
 
     private final List<AdventureTag> tags = new ArrayList<>();
@@ -61,6 +60,15 @@ public class AdventureParser {
         add(new UnderlineTag());
     }
 
+    /**
+     * Parse a string synchronously.
+     * Note that if a tag is not found or invalid, it will be replaced by the fallback resolver.
+     * Also note that this method will not parse
+     * the <newline> tag, you will have to use {@link #parse(Collection)} or {@link #parseAsync(Collection)}.
+     *
+     * @param src The string to parse.
+     * @return The parsed string.
+     */
     public @NotNull String parse(@NotNull final String src) {
         String cpy = src;
         Matcher matcher = TAG_REGEX.matcher(cpy);
@@ -93,10 +101,22 @@ public class AdventureParser {
         return minecraftColorization(cpy);
     }
 
+    /**
+     * Parse a string asynchronously.
+     *
+     * @param src The string to parse.
+     * @return A {@link CompletableFuture} containing the parsed string.
+     */
     public @NotNull CompletableFuture<String> parseAsync(@NotNull final String src) {
         return AdventureUtils.supplyAsync(() -> parse(src));
     }
 
+    /**
+     * Parse a collection of strings synchronously.
+     *
+     * @param src The collection of strings to parse.
+     * @return The parsed collection of strings.
+     */
     public @NotNull Collection<String> parse(@NotNull final Collection<String> src) {
         List<String> parsed = src.stream()
                 .map(this::parse)
@@ -112,10 +132,26 @@ public class AdventureParser {
         return finalList;
     }
 
+    /**
+     * Parse a collection of strings asynchronously.
+     *
+     * @param src The collection of strings to parse.
+     * @return A future containing the parsed collection.
+     */
     public @NotNull CompletableFuture<Collection<String>> parseAsync(@NotNull Collection<String> src) {
         return AdventureUtils.supplyAsync(() -> parse(src));
     }
 
+    /**
+     * Parse a tag and replace it in the string.
+     * Note that if the tag is not found or invalid, it will be replaced by the fallback resolver.
+     *
+     * @param src           The source string.
+     * @param tag           The tag to parse.
+     * @param tagIdentifier The tag identifier.
+     * @param plainTag      The plain tag.
+     * @return The parsed string.
+     */
     private @NotNull String parseTag(@NotNull final String src, @NotNull final AdventureTag tag, @NotNull final String tagIdentifier, @NotNull final String plainTag) {
         String cpy = src;
         try {
@@ -144,6 +180,15 @@ public class AdventureParser {
         return cpy;
     }
 
+    /**
+     * Parse the tag context, which is basically everything between the tag and the closing tag.
+     * or the end of the string if there is no closing tag.
+     *
+     * @param src           The source string.
+     * @param tagName       The tag name.
+     * @param tagIdentifier The tag identifier.
+     * @return The tag context.
+     */
     private @NotNull String getTagContent(@NotNull String src, @NotNull String tagName, @NotNull String tagIdentifier) {
         // Match closed tags
         final String closeTag = "</%s>".formatted(tagName);
@@ -170,6 +215,12 @@ public class AdventureParser {
         return content;
     }
 
+    /**
+     * Parse tags arguments from a string.
+     *
+     * @param rawArgs The raw arguments.
+     * @return The parsed arguments as {@link AdventureArgumentQueue}.
+     */
     private AdventureArgumentQueue parseArguments(@NotNull String rawArgs) {
         String[] unparsedArgs = rawArgs.split(":");
         if (unparsedArgs.length > 0 && unparsedArgs[0].isEmpty())
@@ -181,6 +232,13 @@ public class AdventureParser {
         );
     }
 
+    /**
+     * Remove all unparsed tags and close tags.
+     * Note: close tags are replaced with reset character.
+     *
+     * @param src The source string.
+     * @return The parsed string.
+     */
     private @NotNull String removeUnparsedAndUselessTags(@NotNull String src) {
         Matcher matcher = TAG_REGEX.matcher(src);
         int iterations = 0;
@@ -193,6 +251,12 @@ public class AdventureParser {
         return src;
     }
 
+    /**
+     * Minecraft colorization is a feature that allows to use the § character to colorize text.
+     *
+     * @param src The source string to colorize.
+     * @return The colorized string.
+     */
     private @NotNull String minecraftColorization(@NotNull final String src) {
         return ChatColor.translateAlternateColorCodes('&', src);
     }

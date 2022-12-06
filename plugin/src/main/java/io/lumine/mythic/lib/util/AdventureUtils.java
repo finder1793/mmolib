@@ -55,8 +55,13 @@ public class AdventureUtils {
         }
     }
 
+    /**
+     * Run a task asynchronously.
+     *
+     * @param runnable The task to run.
+     */
     public static void runAsync(Runnable runnable) {
-        if (Bukkit.isPrimaryThread()) {
+        if (!Bukkit.isPrimaryThread()) {
             runnable.run();
             return;
         }
@@ -68,8 +73,15 @@ public class AdventureUtils {
         }.runTaskAsynchronously(MythicLib.plugin);
     }
 
+    /**
+     * Run a task asynchronously and supply a result.
+     *
+     * @param supplier The task to run.
+     * @param <U>      The type of the result.
+     * @return A completable future containing the result.
+     */
     public static <U> CompletableFuture<U> supplyAsync(Supplier<U> supplier) {
-        if (Bukkit.isPrimaryThread())
+        if (!Bukkit.isPrimaryThread())
             return CompletableFuture.completedFuture(supplier.get());
         CompletableFuture<U> future = new CompletableFuture<>();
         new BukkitRunnable() {
@@ -85,10 +97,12 @@ public class AdventureUtils {
         return future;
     }
 
-    public static net.md_5.bungee.api.ChatColor toBungee(ChatColor color) {
-        return net.md_5.bungee.api.ChatColor.of(color.name());
-    }
-
+    /**
+     * Convert a string (hex color or color name) to a {@link Color} using {@link net.md_5.bungee.api.ChatColor}.
+     *
+     * @param raw The color to convert.
+     * @return The converted color.
+     */
     public static Color color(String raw) {
         try {
             net.md_5.bungee.api.ChatColor chatColor = net.md_5.bungee.api.ChatColor.of(raw);

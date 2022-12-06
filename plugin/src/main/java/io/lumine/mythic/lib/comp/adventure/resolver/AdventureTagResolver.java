@@ -9,6 +9,9 @@ import org.jetbrains.annotations.Nullable;
  * 30/11/2022
  *
  * @author Roch Blondiaux (Kiwix).
+ * <p>
+ * This interface is responsible for resolving a tag
+ * from a tag name and it's arguments.
  */
 @FunctionalInterface
 public interface AdventureTagResolver {

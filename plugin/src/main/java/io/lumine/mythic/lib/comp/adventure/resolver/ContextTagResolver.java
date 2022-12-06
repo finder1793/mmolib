@@ -9,6 +9,10 @@ import org.jetbrains.annotations.Nullable;
  * 30/11/2022
  *
  * @author Roch Blondiaux (Kiwix).
+ * <p>
+ * This interface is responsible for resolving a context tag.
+ * The "context" is everything that is between the open and close tags
+ * or the end of the string if there is no close tag.
  */
 @FunctionalInterface
 public interface ContextTagResolver extends AdventureTagResolver {

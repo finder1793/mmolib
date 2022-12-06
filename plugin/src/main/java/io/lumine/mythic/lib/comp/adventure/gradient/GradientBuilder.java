@@ -17,10 +17,29 @@ import java.util.Arrays;
 @UtilityClass
 public class GradientBuilder {
 
+    /**
+     * Create a gradient from a string from two colors.
+     *
+     * @param str          The string to parse.
+     * @param from         The first color.
+     * @param to           The second color.
+     * @param interpolator The interpolator to use.
+     * @return The gradient.
+     */
     public static String rgbGradient(String str, Color from, Color to, Interpolator interpolator) {
         return rgbGradient(str, from, to, 0d, interpolator);
     }
 
+    /**
+     * Create a gradient from a string from two colors with a phase.
+     *
+     * @param str          The string to parse.
+     * @param from         The first color.
+     * @param to           The second color.
+     * @param phase        The phase.
+     * @param interpolator The interpolator to use.
+     * @return The gradient.
+     */
     public static String rgbGradient(String str, Color from, Color to, double phase, Interpolator interpolator) {
         final double[] red = interpolator.interpolate(from.getRed(), to.getRed(), str.length());
         final double[] green = interpolator.interpolate(from.getGreen(), to.getGreen(), str.length());
@@ -45,6 +64,15 @@ public class GradientBuilder {
         return builder.toString();
     }
 
+    /**
+     * Create a gradient from a string from two colors.
+     *
+     * @param str          The string to parse.
+     * @param from         The first color.
+     * @param to           The second color.
+     * @param interpolator The interpolator to use.
+     * @return The gradient.
+     */
     public static String hsvGradient(String str, Color from, Color to, Interpolator interpolator) {
         // returns a float-array where hsv[0] = hue, hsv[1] = saturation, hsv[2] = value/brightness
         final float[] hsvFrom = Color.RGBtoHSB(from.getRed(), from.getGreen(), from.getBlue(), null);
@@ -61,6 +89,15 @@ public class GradientBuilder {
         return builder.toString();
     }
 
+    /**
+     * Create a gradient from a string from a colors array.
+     *
+     * @param str          The string to parse.
+     * @param colors       The colors to use.
+     * @param portions     The portions of each color.
+     * @param interpolator The interpolator to use.
+     * @return The gradient.
+     */
     public static String multiRgbGradient(String str, Color[] colors, double @Nullable [] portions, Interpolator interpolator) {
         final double[] p;
         if (portions == null) {
@@ -86,32 +123,19 @@ public class GradientBuilder {
         return builder.toString();
     }
 
+    /**
+     * Create a gradient from a string from a colors array with a phase.
+     *
+     * @param str          The string to parse.
+     * @param colors       The colors to use.
+     * @param phase        The phase.
+     * @param interpolator The interpolator to use.
+     * @return The gradient.
+     */
     public static String multiRgbGradient(String str, Color[] colors, double phase, Interpolator interpolator) {
         final Color[] c = new Color[colors.length];
         for (int i = 0; i < colors.length; i++)
             c[i] = colors[(int) (i + phase * colors.length) % colors.length];
         return multiRgbGradient(str, c, null, interpolator);
-    }
-
-    public static String multiHsvQuadraticGradient(String str, boolean first) {
-        final StringBuilder builder = new StringBuilder();
-        builder.append(hsvGradient(
-                str.substring(0, (int) (0.2 * str.length())),
-                Color.RED,
-                Color.GREEN,
-                first ? Interpolator.QUADRATIC_SLOW_TO_FAST : Interpolator.QUADRATIC_FAST_TO_SLOW
-        ));
-
-        for (int i = (int) (0.2 * str.length()); i < (int) (0.8 * str.length()); i++) {
-            builder.append(ChatColor.of(Color.GREEN)).append(str.charAt(i));
-        }
-
-        builder.append(hsvGradient(
-                str.substring((int) (0.8 * str.length())),
-                Color.GREEN,
-                Color.RED,
-                first ? Interpolator.QUADRATIC_FAST_TO_SLOW : Interpolator.QUADRATIC_SLOW_TO_FAST
-        ));
-        return builder.toString();
     }
 }

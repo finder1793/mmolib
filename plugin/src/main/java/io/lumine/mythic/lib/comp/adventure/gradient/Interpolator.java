@@ -5,6 +5,8 @@ package io.lumine.mythic.lib.comp.adventure.gradient;
  * 30/11/2022
  *
  * @author Roch Blondiaux (Kiwix).
+ * <p>
+ * This class is responsible for interpolating between two colors.
  */
 @FunctionalInterface
 public
