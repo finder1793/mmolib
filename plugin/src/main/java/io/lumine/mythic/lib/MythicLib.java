@@ -7,7 +7,6 @@ import io.lumine.mythic.lib.api.crafting.uifilters.MythicItemUIFilter;
 import io.lumine.mythic.lib.api.event.armorequip.ArmorEquipEvent;
 import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.command.ColorCommand;
 import io.lumine.mythic.lib.command.ExploreAttributesCommand;
 import io.lumine.mythic.lib.command.HealthScaleCommand;
 import io.lumine.mythic.lib.command.MMOTempStatCommand;
@@ -227,7 +226,6 @@ public class MythicLib extends JavaPlugin {
         getCommand("mythiclib").setExecutor(new MythicLibCommand());
         getCommand("mmotempstat").setExecutor(new MMOTempStatCommand());
         getCommand("healthscale").setExecutor(new HealthScaleCommand());
-        new ColorCommand(this, adventureParser);
 
         // Super workbench
         getCommand("superworkbench").setExecutor(SuperWorkbenchMapping.SWB);
