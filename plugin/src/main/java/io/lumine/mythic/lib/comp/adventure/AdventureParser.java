@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
  */
 @ApiStatus.NonExtendable
 public class AdventureParser {
-    // TODO: make a builder
 
     /* Constants */
     private static final String DEFAULT_TAG_REGEX = "(?i)(?<=<(%s)).*?(?=>)";
@@ -64,10 +63,31 @@ public class AdventureParser {
 
     public @NotNull String parse(@NotNull final String src) {
         String cpy = src;
-        for (AdventureTag tag : tags) {
-            cpy = parseTag(cpy, tag, tag.name());
-            for (String alias : tag.aliases())
-                cpy = parseTag(cpy, tag, alias);
+        Matcher matcher = TAG_REGEX.matcher(cpy);
+        while (matcher.find()) {
+            final String tag = matcher.group();
+            final String tagName = tag.contains(":") ? tag.split(":")[0] : tag;
+            final String finalCpy = cpy;
+            if (tagName.isEmpty() || tagName.startsWith("/"))
+                continue;
+
+            cpy = findByName(tagName)
+                    .map(adventureTag -> parseTag(finalCpy, adventureTag, tagName))
+                    .orElseGet(() -> {
+                        // Hex color
+                        if ((tagName.length() == 7 && tagName.startsWith("#"))
+                                || (tagName.length() == 9 && tagName.startsWith("HEX"))) {
+                            final String prefix = tagName.startsWith("#") ? "#" : "HEX";
+                            final String hex = tagName.substring(tagName.startsWith("#") ? 1 : 3);
+                            if (hex.matches("[0-9a-fA-F]+"))
+                                return findByName("#")
+                                        .map(adventureTag -> parseTag(finalCpy, adventureTag, prefix))
+                                        .orElse(finalCpy.replace("<" + tag + ">", fallBackResolver.apply(tag)));
+                        }
+
+                        // Fall back
+                        return finalCpy.replace("<" + tag + ">", fallBackResolver.apply(tag));
+                    });
         }
         cpy = removeUnparsedAndUselessTags(cpy);
         return minecraftColorization(cpy);
