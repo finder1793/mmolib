@@ -38,19 +38,22 @@ public class TransitionResolver implements ContextTagResolver {
     }
 
     private Color transition(double phase, List<Color> colors) {
-        int index = (int) (phase * (colors.size() - 1));
-        double localPhase = phase * (colors.size() - 1) - index;
-        if (phase == 0)
+        if (colors.size() == 1)
             return colors.get(0);
         if (phase == 1)
             return colors.get(colors.size() - 1);
-        Color color1 = colors.get(index);
-        Color color2 = colors.get(index + 1);
+        double step = 1d / (colors.size() - 1);
+        int index = (int) (phase / step);
+        double localPhase = (phase - (index * step)) / step;
+        return interpolate(colors.get(index), colors.get(index + 1), localPhase);
+    }
+
+    private Color interpolate(Color c1, Color c2, double phase) {
         return new Color(
-                (int) (color1.getRed() * (1 - localPhase) + color2.getRed() * localPhase),
-                (int) (color1.getGreen() * (1 - localPhase) + color2.getGreen() * localPhase),
-                (int) (color1.getBlue() * (1 - localPhase) + color2.getBlue() * localPhase),
-                (int) (color1.getAlpha() * (1 - localPhase) + color2.getAlpha() * localPhase)
+                (int) (c1.getRed() + (c2.getRed() - c1.getRed()) * phase),
+                (int) (c1.getGreen() + (c2.getGreen() - c1.getGreen()) * phase),
+                (int) (c1.getBlue() + (c2.getBlue() - c1.getBlue()) * phase),
+                (int) (c1.getAlpha() + (c2.getAlpha() - c1.getAlpha()) * phase)
         );
     }
 

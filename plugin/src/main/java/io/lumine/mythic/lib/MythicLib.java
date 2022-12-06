@@ -51,6 +51,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.logging.Level;
 
 public class MythicLib extends JavaPlugin {
@@ -344,6 +346,14 @@ public class MythicLib extends JavaPlugin {
      * @return String with parsed (hex) color codes
      */
     public String parseColors(String format) {
+        return adventureParser.parse(format);
+    }
+
+    public Collection<String> parseColors(String... format) {
+        return parseColors(Arrays.asList(format));
+    }
+
+    public Collection<String> parseColors(Collection<String> format) {
         return adventureParser.parse(format);
     }
 
