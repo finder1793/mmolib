@@ -72,7 +72,7 @@ public class AdventureParser {
                 continue;
 
             cpy = findByName(tagName)
-                    .map(adventureTag -> parseTag(finalCpy, adventureTag, tagName))
+                    .map(adventureTag -> parseTag(finalCpy, adventureTag, tagName, tag))
                     .orElseGet(() -> {
                         // Hex color
                         if ((tagName.length() == 7 && tagName.startsWith("#"))
@@ -81,7 +81,7 @@ public class AdventureParser {
                             final String hex = tagName.substring(tagName.startsWith("#") ? 1 : 3);
                             if (hex.matches("[0-9a-fA-F]+"))
                                 return findByName("#")
-                                        .map(adventureTag -> parseTag(finalCpy, adventureTag, prefix))
+                                        .map(adventureTag -> parseTag(finalCpy, adventureTag, prefix, tag))
                                         .orElse(finalCpy.replace("<" + tag + ">", fallBackResolver.apply(tag)));
                         }
 
@@ -116,31 +116,30 @@ public class AdventureParser {
         return AdventureUtils.supplyAsync(() -> parse(src));
     }
 
-    private @NotNull String parseTag(@NotNull final String src, @NotNull final AdventureTag tag, @NotNull final String tagIdentifier) {
-        final Pattern pattern = Pattern.compile(String.format(DEFAULT_TAG_REGEX, tagIdentifier));
-        Matcher matcher = pattern.matcher(src);
-
+    private @NotNull String parseTag(@NotNull final String src, @NotNull final AdventureTag tag, @NotNull final String tagIdentifier, @NotNull final String plainTag) {
         String cpy = src;
-        int iterations = 0;
-        while (matcher.find() && iterations++ < 50) {
-            try {
-                final String rawTag = matcher.group(1);
-                final String rawArgs = matcher.group();
-                final String original = "<%s%s>".formatted(rawTag, rawArgs);
-                final AdventureArgumentQueue args = parseArguments(rawArgs);
-                boolean hasContext = tag.resolver() instanceof ContextTagResolver;
+        try {
+            int firstArgIndex = plainTag.indexOf(":");
+            boolean hasArgs = firstArgIndex != -1;
+            boolean isHex = tagIdentifier.equals("#") || tagIdentifier.equalsIgnoreCase("HEX");
+            String hexPrefix = tagIdentifier.startsWith("#") ? "#" : "HEX";
 
-                String context = hasContext ? getTagContent(cpy, rawTag, original) : null;
-                String resolved = hasContext ?
-                        ((ContextTagResolver) tag.resolver()).resolve(rawTag, args, context)
-                        : tag.resolver().resolve(rawTag, args);
-                cpy = cpy.replace(hasContext ?
-                        Objects.requireNonNullElse("%s%s".formatted(original, context), fallBackResolver.apply(original))
-                        : original, Objects.requireNonNullElse(resolved, fallBackResolver.apply(original)));
-                matcher = pattern.matcher(cpy);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            final String rawTag = isHex ? tagIdentifier : plainTag.substring(0, hasArgs ? firstArgIndex : plainTag.length());
+            final String rawArgs = isHex ? plainTag.substring(hexPrefix.length()) : (hasArgs ? plainTag.substring(firstArgIndex + 1) : "");
+            final String original = "<%s%s>".formatted(rawTag, hasArgs ? ':' + rawArgs : rawArgs);
+
+            final AdventureArgumentQueue args = parseArguments(rawArgs);
+            boolean hasContext = tag.resolver() instanceof ContextTagResolver;
+
+            String context = hasContext ? getTagContent(cpy, rawTag, original) : null;
+            String resolved = hasContext ?
+                    ((ContextTagResolver) tag.resolver()).resolve(rawTag, args, context)
+                    : tag.resolver().resolve(rawTag, args);
+            cpy = cpy.replace(hasContext ?
+                    Objects.requireNonNullElse("%s%s".formatted(original, context), fallBackResolver.apply(original))
+                    : original, Objects.requireNonNullElse(resolved, fallBackResolver.apply(original)));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return cpy;
     }
@@ -198,6 +197,12 @@ public class AdventureParser {
         return ChatColor.translateAlternateColorCodes('&', src);
     }
 
+    /**
+     * Register a new tag and check if it's compatible with the server
+     * current version.
+     *
+     * @param tag The tag to register.
+     */
     public void add(AdventureTag tag) {
         if (tag.backwardsCompatible() && MythicLib.plugin.getVersion().isBelowOrEqual(1, 15)) {
             MythicLib.plugin.getLogger().warning("The tag %s is not compatible with your server version.".formatted(tag.name()));
@@ -206,21 +211,42 @@ public class AdventureParser {
         tags.add(tag);
     }
 
+    /**
+     * Force register a tag, without checking for compatibility.
+     *
+     * @param tag The tag to register.
+     */
     @ApiStatus.Internal
     public void forceRegister(AdventureTag tag) {
         tags.add(tag);
     }
 
+    /**
+     * Remove a registered tag.
+     *
+     * @param tag The tag to remove
+     */
     public void remove(AdventureTag tag) {
         tags.remove(tag);
     }
 
+    /**
+     * This method will return an optional containing the tag if it exists.
+     *
+     * @param name The name of the tag to find.
+     * @return An optional containing the tag if it exists.
+     */
     public Optional<AdventureTag> findByName(@NotNull String name) {
         return tags.stream()
                 .filter(tag -> tag.name().equalsIgnoreCase(name) || tag.aliases().stream().anyMatch(s -> s.equalsIgnoreCase(name)))
                 .findFirst();
     }
 
+    /**
+     * Get the list of registered tags.
+     *
+     * @return A list of all registered tags
+     */
     public List<AdventureTag> tags() {
         return tags;
     }
