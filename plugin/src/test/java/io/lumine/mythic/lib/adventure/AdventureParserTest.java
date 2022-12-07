@@ -327,9 +327,6 @@ public class AdventureParserTest {
         final String i4 = "<gradient>Test <gradient:red:blue>Hey";
         final String i4Expected = "§x§f§f§f§f§f§fT§x§b§f§b§f§b§fe§x§8§0§8§0§8§0s§x§4§0§4§0§4§0t§x§0§0§0§0§0§0 §x§f§f§5§5§5§5H§x§a§a§5§5§a§ae§x§5§5§5§5§f§fy";
         Assertions.assertEquals(i4Expected, specialParser.parse(i4));
-
-        // Uninitialized parser
-        specialParser = null;
     }
 
     @Test
@@ -362,4 +359,29 @@ public class AdventureParserTest {
         // Remove tag
         parser.remove(tag);
     }
+
+    @Test
+    public void testStripColor() {
+        final AdventureParser parser = new AdventureParser(s -> "<invalid>");
+
+        final String i1 = "§cThis is a red text";
+        final String i1Expected = "This is a red text";
+        Assertions.assertEquals(i1Expected, parser.stripColors(i1));
+
+
+        final String i2 = "§cThis is a red text§r";
+        final String i2Expected = "This is a red text";
+        Assertions.assertEquals(i2Expected, parser.stripColors(i2));
+
+        final String i3 = "<red>This is a red text<reset><red>";
+        final String i3Expected = "This is a red text";
+        Assertions.assertEquals(i3Expected, parser.stripColors(i3));
+
+        final String i4 = "<gradient:red:blue>This is a gradient text";
+        final String i4Expected = "This is a gradient text";
+        Assertions.assertEquals(i4Expected, parser.stripColors(i4));
+    }
+
+
+
 }

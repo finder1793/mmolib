@@ -262,6 +262,24 @@ public class AdventureParser {
     }
 
     /**
+     * Remove all tags from the string.
+     *
+     * @param src The source string.
+     * @return The string without tags.
+     */
+    public @NotNull String stripColors(@NotNull final String src) {
+        String cpy = src;
+        Matcher matcher = TAG_REGEX.matcher(src);
+        while (matcher.find()) {
+            final String tag = matcher.group();
+            final String original = "<%s>".formatted(tag);
+            cpy = cpy.replace(original, "");
+        }
+        return ChatColor.stripColor(cpy);
+    }
+
+
+    /**
      * Register a new tag and check if it's compatible with the server
      * current version.
      *
