@@ -13,7 +13,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
 
 public abstract class GameIndicators implements Listener {
@@ -72,7 +72,7 @@ public abstract class GameIndicators implements Listener {
     private void displayIndicator(Location loc, String message, @NotNull Vector dir) {
 
         // Use individual holo to hide the temporary armor stand
-        Hologram holo = Hologram.create(loc, Arrays.asList(MythicLib.plugin.parseColors(message)));
+        Hologram holo = Hologram.create(loc, MythicLib.plugin.parseColors(Collections.singletonList(message)));
 
         // Parabola trajectory
         new BukkitRunnable() {
