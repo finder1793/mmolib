@@ -424,8 +424,8 @@ public class AdventureParserTest {
         final String i8Expected = "";
         Assertions.assertEquals(i8Expected, parser.lastColor(i8, false));
 
-        final String i9 = "<red>This is a <gradient>gradient <blue>text<bold>bold";
-        final String i9Expected = "<bold>";
+        final String i9 = "<red>This is a <gradient>gradient <blue><bold>bold";
+        final String i9Expected = "<blue><bold>";
         final String i9Expected1 = "<blue>";
         Assertions.assertEquals(i9Expected, parser.lastColor(i9, true));
         Assertions.assertEquals(i9Expected1, parser.lastColor(i9, false));
@@ -437,6 +437,18 @@ public class AdventureParserTest {
         final String i11 = "This is a plain text";
         final String i11Expected = "";
         Assertions.assertEquals(i11Expected, parser.lastColor(i11, true));
+
+        final String i12 = "<red>This is a <gradient>gradient <bold><blue>bold";
+        final String i12Expected = "<bold><blue>";
+        final String i12Expected1 = "<blue>";
+        Assertions.assertEquals(i12Expected, parser.lastColor(i12, true));
+        Assertions.assertEquals(i12Expected1, parser.lastColor(i12, false));
+
+        final String i13 = "<red>This is a <gradient>gradient <underlined><yellow><bold><blue><bold>bold";
+        final String i13Expected = "<bold><blue><bold>";
+        final String i13Expected1 = "<blue>";
+        Assertions.assertEquals(i13Expected, parser.lastColor(i13, true));
+        Assertions.assertEquals(i13Expected1, parser.lastColor(i13, false));
     }
 
 }

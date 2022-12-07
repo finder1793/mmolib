@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -281,7 +282,7 @@ public class AdventureParser {
 
     public @NotNull String lastColor(@NotNull final String src, boolean matchDecorations) {
         String cpy = minecraftColorization(src);
-        final LinkedList<String> tags = new LinkedList<>();
+        final LinkedList<Map.Entry<AdventureTag, String>> tags = new LinkedList<>();
         final Matcher matcher = TAG_REGEX.matcher(cpy);
 
         while (matcher.find()) {
@@ -290,20 +291,53 @@ public class AdventureParser {
             if (tagName.isEmpty() || tagName.startsWith("/"))
                 continue;
 
-            if (findByName(tagName)
-                    .filter(adventureTag -> adventureTag.color() || (matchDecorations && !adventureTag.color()))
-                    .isPresent()
-                    || (((tagName.length() == 7 && tagName.startsWith("#")) || (tagName.length() == 9 && tagName.startsWith("HEX")))
-                    && (tagName.substring(1).matches("[0-9A-Fa-f]+"))))
-                tags.add(tag);
+            findByName(tagName)
+                    .ifPresentOrElse(adventureTag -> tags.add(Map.entry(adventureTag, tag)),
+                            () -> {
+                                // Hex color
+                                if ((tagName.length() == 7 && tagName.startsWith("#"))
+                                        || (tagName.length() == 9 && tagName.startsWith("HEX"))) {
+                                    final String hex = tagName.substring(tagName.startsWith("#") ? 1 : 3);
+                                    if (hex.matches("[0-9a-fA-F]+"))
+                                        findByName("#").ifPresent(adventureTag -> tags.add(Map.entry(adventureTag, tag)));
+                                }
+                            });
         }
         String vanilla = ChatColor.getLastColors(cpy);
         if (tags.isEmpty())
             return vanilla;
-        final String lastTag = "<%s>".formatted(tags.getLast());
+        final String lastTag = matchDecorations ? getSurroundingDecorations(src, tags) : getLastColorTag(tags);
+        if (lastTag == null)
+            return "";
         if (vanilla.isEmpty())
             return lastTag;
         return cpy.indexOf(vanilla) > cpy.indexOf(lastTag) ? vanilla : lastTag;
+    }
+
+    private @Nullable String getLastColorTag(final LinkedList<Map.Entry<AdventureTag, String>> list) {
+        Collections.reverse(list);
+        for (Map.Entry<AdventureTag, String> entry : list) {
+            if (entry.getKey().color())
+                return "<%s>".formatted(entry.getValue());
+        }
+        return null;
+    }
+
+    private @Nullable String getSurroundingDecorations(final String src, final LinkedList<Map.Entry<AdventureTag, String>> list) {
+        StringBuilder builder = new StringBuilder();
+        Collections.reverse(list);
+
+        boolean found = false;
+        for (Map.Entry<AdventureTag, String> entry : list) {
+            final String tag = "<%s>".formatted(entry.getValue());
+            if (entry.getKey().color()) {
+                if (found)
+                    break;
+                found = true;
+            }
+            builder.insert(0, tag);
+        }
+        return builder.isEmpty() ? null : builder.toString();
     }
 
     /**
