@@ -358,6 +358,10 @@ public class MythicLib extends JavaPlugin {
         return new ArrayList<>(adventureParser.parse(format));
     }
 
+    public AdventureParser getAdventureParser() {
+        return adventureParser;
+    }
+
     public File getJarFile() {
         return plugin.getFile();
     }

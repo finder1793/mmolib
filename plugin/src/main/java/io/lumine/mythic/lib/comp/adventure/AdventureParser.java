@@ -268,7 +268,7 @@ public class AdventureParser {
      * @return The string without tags.
      */
     public @NotNull String stripColors(@NotNull final String src) {
-        String cpy = src;
+        String cpy = minecraftColorization(src);
         Matcher matcher = TAG_REGEX.matcher(src);
         while (matcher.find()) {
             final String tag = matcher.group();
@@ -278,6 +278,33 @@ public class AdventureParser {
         return ChatColor.stripColor(cpy);
     }
 
+
+    public @NotNull String lastColor(@NotNull final String src, boolean matchDecorations) {
+        String cpy = minecraftColorization(src);
+        final LinkedList<String> tags = new LinkedList<>();
+        final Matcher matcher = TAG_REGEX.matcher(cpy);
+
+        while (matcher.find()) {
+            final String tag = matcher.group();
+            final String tagName = tag.contains(":") ? tag.split(":")[0] : tag;
+            if (tagName.isEmpty() || tagName.startsWith("/"))
+                continue;
+
+            if (findByName(tagName)
+                    .filter(adventureTag -> adventureTag.color() || (matchDecorations && !adventureTag.color()))
+                    .isPresent()
+                    || (((tagName.length() == 7 && tagName.startsWith("#")) || (tagName.length() == 9 && tagName.startsWith("HEX")))
+                    && (tagName.substring(1).matches("[0-9A-Fa-f]+"))))
+                tags.add(tag);
+        }
+        String vanilla = ChatColor.getLastColors(cpy);
+        if (tags.isEmpty())
+            return vanilla;
+        final String lastTag = "<%s>".formatted(tags.getLast());
+        if (vanilla.isEmpty())
+            return lastTag;
+        return cpy.indexOf(vanilla) > cpy.indexOf(lastTag) ? vanilla : lastTag;
+    }
 
     /**
      * Register a new tag and check if it's compatible with the server

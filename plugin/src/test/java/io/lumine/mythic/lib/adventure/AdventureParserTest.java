@@ -382,6 +382,61 @@ public class AdventureParserTest {
         Assertions.assertEquals(i4Expected, parser.stripColors(i4));
     }
 
+    @Test
+    public void testLastColor() {
+        final AdventureParser parser = new AdventureParser(s -> "<invalid>");
+        parser.forceRegister(new GradientTag());
+        parser.forceRegister(new VanillaColorTag());
+        parser.forceRegister(new HexColorTag());
+        parser.forceRegister(new AdventureColorTag());
+        parser.forceRegister(new BoldTag());
+        parser.forceRegister(new ResetTag());
 
+        final String i1 = "§cThis is a red text";
+        final String i1Expected = "§c";
+        Assertions.assertEquals(i1Expected, parser.lastColor(i1, true));
+
+        final String i2 = "§cThis is a red text§r";
+        final String i2Expected = "§r";
+        Assertions.assertEquals(i2Expected, parser.lastColor(i2, true));
+
+        final String i3 = "<red>This is a red text<reset></red>";
+        final String i3Expected = "<reset>";
+        Assertions.assertEquals(i3Expected, parser.lastColor(i3, true));
+
+        final String i4 = "<gradient:red:blue>This is a gradient text";
+        final String i4Expected = "<gradient:red:blue>";
+        Assertions.assertEquals(i4Expected, parser.lastColor(i4, true));
+
+        final String i5 = "<#FFFFFF>This is a gradient text";
+        final String i5Expected = "<#FFFFFF>";
+        Assertions.assertEquals(i5Expected, parser.lastColor(i5, true));
+
+        final String i6 = "<color:blue>This is a gradient text";
+        final String i6Expected = "<color:blue>";
+        Assertions.assertEquals(i6Expected, parser.lastColor(i6, true));
+
+        final String i7 = "<bold>This is a gradient text";
+        final String i7Expected = "<bold>";
+        Assertions.assertEquals(i7Expected, parser.lastColor(i7, true));
+
+        final String i8 = "<bold>This is a gradient text";
+        final String i8Expected = "";
+        Assertions.assertEquals(i8Expected, parser.lastColor(i8, false));
+
+        final String i9 = "<red>This is a <gradient>gradient <blue>text<bold>bold";
+        final String i9Expected = "<bold>";
+        final String i9Expected1 = "<blue>";
+        Assertions.assertEquals(i9Expected, parser.lastColor(i9, true));
+        Assertions.assertEquals(i9Expected1, parser.lastColor(i9, false));
+
+        final String i10 = "<red>This is a <gradient>gradient <blue>text§abold";
+        final String i10Expected = "§a";
+        Assertions.assertEquals(i10Expected, parser.lastColor(i10, false));
+
+        final String i11 = "This is a plain text";
+        final String i11Expected = "";
+        Assertions.assertEquals(i11Expected, parser.lastColor(i11, true));
+    }
 
 }
