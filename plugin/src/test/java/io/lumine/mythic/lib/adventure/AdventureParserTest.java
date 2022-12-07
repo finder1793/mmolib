@@ -185,7 +185,7 @@ public class AdventureParserTest {
         parser.forceRegister(tag);
 
         // Valid tag
-        final String i1 = "<underline>This is a underline text";
+        final String i1 = "<underlined>This is a underline text";
         final String i1Expected = "§nThis is a underline text";
         Assertions.assertEquals(i1Expected, parser.parse(i1));
 
