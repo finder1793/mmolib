@@ -2,13 +2,17 @@ package io.lumine.mythic.lib.util;
 
 import io.lumine.mythic.lib.MythicLib;
 import lombok.experimental.UtilityClass;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -111,4 +115,54 @@ public class AdventureUtils {
             return Color.WHITE;
         }
     }
+
+    /**
+     * Convert a legacy string {@link Component}
+     *
+     * @param message The message to convert.
+     * @return The converted component.
+     */
+    public static @NotNull Component asComponent(@NotNull String message) {
+        return LegacyComponentSerializer.legacySection().deserialize(MythicLib.plugin.parseColors(message));
+    }
+
+    /**
+     * Convert a list of legacy strings to a list of {@link Component}.
+     *
+     * @param message The list of messages to convert.
+     * @return The converted list of components.
+     */
+    public static @NotNull Component asComponent(@NotNull List<String> message) {
+        final List<String> parsed = MythicLib.plugin.parseColors(message);
+        Component component = Component.empty();
+        for (String line : parsed)
+            component = component.append(LegacyComponentSerializer.legacySection().deserialize(line))
+                    .append(Component.newline());
+        return component;
+    }
+
+    /**
+     * Parse and color a string then set it as the display name of an item.
+     *
+     * @param meta The item meta to set the display name of.
+     * @param name The name to set.
+     * @return The item meta.
+     */
+    public static ItemMeta setDisplayName(ItemMeta meta, String name) {
+        meta.setDisplayName(MythicLib.plugin.parseColors(name));
+        return meta;
+    }
+
+    /**
+     * Parse and color a list of strings then set it as the lore of an item.
+     *
+     * @param meta The item meta to set the lore of.
+     * @param lore The lore to set.
+     * @return The item meta.
+     */
+    public static ItemMeta setLore(ItemMeta meta, List<String> lore) {
+        meta.setLore(MythicLib.plugin.parseColors(lore));
+        return meta;
+    }
+
 }
