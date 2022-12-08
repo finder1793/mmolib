@@ -32,6 +32,7 @@ public class AdventureParser {
 
     /* Constants */
     private static final Pattern TAG_REGEX = Pattern.compile("(?i)(?<=<).*?(?=>)");
+    private static final Pattern HEX_REGEX = Pattern.compile("(?i)(#|HEX)[0-9a-f]{6}");
 
     private final List<AdventureTag> tags = new ArrayList<>();
     private final Function<String, String> fallBackResolver;
@@ -83,19 +84,15 @@ public class AdventureParser {
             cpy = findByName(tagName)
                     .map(adventureTag -> parseTag(finalCpy, adventureTag, tagName, tag))
                     .orElseGet(() -> {
-                        // Hex color
-                        if ((tagName.length() == 7 && tagName.startsWith("#"))
-                                || (tagName.length() == 9 && tagName.startsWith("HEX"))) {
-                            final String prefix = tagName.startsWith("#") ? "#" : "HEX";
-                            final String hex = tagName.substring(tagName.startsWith("#") ? 1 : 3);
-                            if (hex.matches("[0-9a-fA-F]+"))
-                                return findByName("#")
-                                        .map(adventureTag -> parseTag(finalCpy, adventureTag, prefix, tag))
-                                        .orElse(finalCpy.replace("<" + tag + ">", fallBackResolver.apply(tag)));
-                        }
-
+                        Matcher matcher1 = HEX_REGEX.matcher(tag);
                         // Fall back
-                        return finalCpy.replace("<" + tag + ">", fallBackResolver.apply(tag));
+                        if (!matcher1.find())
+                            return finalCpy.replace("<" + tag + ">", fallBackResolver.apply(tag));
+
+                        String prefix = matcher1.group(1);
+                        return findByName(prefix)
+                                .map(adventureTag -> parseTag(finalCpy, adventureTag, prefix, tag))
+                                .orElse(finalCpy.replace("<" + tag + ">", fallBackResolver.apply(tag)));
                     });
         }
         cpy = removeUnparsedAndUselessTags(cpy);
@@ -294,13 +291,10 @@ public class AdventureParser {
             findByName(tagName)
                     .ifPresentOrElse(adventureTag -> tags.add(Map.entry(adventureTag, tag)),
                             () -> {
-                                // Hex color
-                                if ((tagName.length() == 7 && tagName.startsWith("#"))
-                                        || (tagName.length() == 9 && tagName.startsWith("HEX"))) {
-                                    final String hex = tagName.substring(tagName.startsWith("#") ? 1 : 3);
-                                    if (hex.matches("[0-9a-fA-F]+"))
-                                        findByName("#").ifPresent(adventureTag -> tags.add(Map.entry(adventureTag, tag)));
-                                }
+                                Matcher matcher1 = HEX_REGEX.matcher(tag);
+                                if (matcher1.find())
+                                    findByName(matcher1.group(1))
+                                            .ifPresent(adventureTag -> tags.add(Map.entry(adventureTag, tag)));
                             });
         }
         String vanilla = ChatColor.getLastColors(cpy);
