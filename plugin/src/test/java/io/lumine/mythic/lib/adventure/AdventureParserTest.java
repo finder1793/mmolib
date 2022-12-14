@@ -453,6 +453,14 @@ public class AdventureParserTest {
         final String i14 = "<HEXFFFFFF>This is a gradient text";
         final String i14Expected = "<HEXFFFFFF>";
         Assertions.assertEquals(i14Expected, parser.lastColor(i14, true));
+
+        final String i15 = "<strikethrough><italic><HEXFFFFFF><bold><obfuscated>This is a gradient text";
+        final String i15Expected = "<strikethrough><italic><HEXFFFFFF><bold><obfuscated>";
+        Assertions.assertEquals(i15Expected, parser.lastColor(i15, true));
+
+        final String i16 = "<strikethrough><italic><HEXFFFFFF><obfuscated>This is a gradient text";
+        final String i16Expected = "<HEXFFFFFF>";
+        Assertions.assertEquals(i16Expected, parser.lastColor(i15, false));
     }
 
 }

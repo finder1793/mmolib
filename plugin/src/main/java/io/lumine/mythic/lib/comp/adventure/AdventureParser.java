@@ -297,6 +297,7 @@ public class AdventureParser {
                                             .ifPresent(adventureTag -> tags.add(Map.entry(adventureTag, tag)));
                             });
         }
+
         String vanilla = ChatColor.getLastColors(cpy);
         if (tags.isEmpty())
             return vanilla;
@@ -309,8 +310,8 @@ public class AdventureParser {
     }
 
     private @Nullable String getLastColorTag(final LinkedList<Map.Entry<AdventureTag, String>> list) {
-        Collections.reverse(list);
-        for (Map.Entry<AdventureTag, String> entry : list) {
+        for (int i = list.size() - 1; i >= 0; i--) {
+            final Map.Entry<AdventureTag, String> entry = list.get(i);
             if (entry.getKey().color())
                 return "<%s>".formatted(entry.getValue());
         }
@@ -318,21 +319,60 @@ public class AdventureParser {
     }
 
     private @Nullable String getSurroundingDecorations(final String src, final LinkedList<Map.Entry<AdventureTag, String>> list) {
-        StringBuilder builder = new StringBuilder();
-        Collections.reverse(list);
+        final String colorTag = getLastColorTag(list);
 
-        boolean found = false;
-        for (Map.Entry<AdventureTag, String> entry : list) {
-            final String tag = "<%s>".formatted(entry.getValue());
-            if (entry.getKey().color()) {
-                if (found)
-                    break;
-                found = true;
+        // If there is no color tag, search for the last decoration tag
+        if (colorTag == null) {
+            for (int i = list.size() - 1; i >= 0; i--) {
+                final Map.Entry<AdventureTag, String> entry = list.get(i);
+                if (!entry.getKey().color())
+                    return "<%s>".formatted(entry.getValue());
             }
-            builder.insert(0, tag);
+            return null;
         }
-        return builder.isEmpty() ? null : builder.toString();
+        int tagIndex = src.indexOf(colorTag);
+        int index;
+
+        // Search for every decoration before the color tag
+        List<String> previousTags = new ArrayList<>();
+        String before = src.substring(0, tagIndex);
+        if (before.length() > 3 && before.charAt(before.length() - 1) == '>') {
+            while (before.length() > 3 && before.charAt(before.length() - 1) == '>') {
+                index = before.lastIndexOf('<');
+                if (index == -1 || findByName(before.substring(index + 1, before.length() - 1).split(":")[0])
+                        .filter(AdventureTag::color)
+                        .isPresent()
+                        || before.substring(index).startsWith("</"))
+                    break;
+                previousTags.add(0, before.substring(index));
+                before = before.substring(0, index);
+            }
+        }
+
+        // Search for every decoration after the color tag
+        List<String> nextTags = new ArrayList<>();
+        String after = src.substring(tagIndex + colorTag.length());
+        if (after.length() > 3 && after.charAt(0) == '<') {
+            while (after.length() > 3 && after.charAt(0) == '<') {
+                index = after.indexOf('>');
+                if (index == -1 || findByName(after.substring(1, index).split(":")[0])
+                        .filter(AdventureTag::color)
+                        .isPresent()
+                        || after.substring(0, index).startsWith("</"))
+                    break;
+                nextTags.add(after.substring(0, index + 1));
+                after = after.substring(index + 1);
+            }
+        }
+
+        // Build the final string
+        final StringBuilder builder = new StringBuilder();
+        previousTags.forEach(builder::append);
+        builder.append(colorTag);
+        nextTags.forEach(builder::append);
+        return builder.toString();
     }
+
 
     /**
      * Register a new tag and check if it's compatible with the server
