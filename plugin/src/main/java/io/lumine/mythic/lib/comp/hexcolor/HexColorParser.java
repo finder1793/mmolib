@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.comp.hexcolor;
 
+import io.lumine.mythic.lib.comp.adventure.AdventureParser;
 import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -7,6 +8,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @deprecated Use {@link AdventureParser} instead.
+ */
+@Deprecated(forRemoval = true)
 public class HexColorParser implements ColorParser {
     private static final Pattern PATTERN = Pattern.compile("<(#|HEX)([a-fA-F0-9]{6})>");
 
