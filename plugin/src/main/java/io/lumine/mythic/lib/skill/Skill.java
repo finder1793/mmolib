@@ -68,13 +68,12 @@ public abstract class Skill implements CooldownObject {
      * This method however calls {@link SkillCastEvent} after skill casting.
      */
     public <T extends SkillResult> void castInstantly(SkillMetadata meta, T result) {
-        final SkillHandler<T> handler = (SkillHandler<T>) getHandler();
 
         // High level skill effects
         whenCast(meta);
 
         // Lower level skill effects
-        handler.whenCast(result, meta);
+        ((SkillHandler<T>) getHandler()).whenCast(result, meta);
 
         // Call second Bukkit event
         Bukkit.getPluginManager().callEvent(new SkillCastEvent(meta, result));
