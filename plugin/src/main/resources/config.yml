@@ -202,3 +202,10 @@ fix-movement-speed: true
 damage-particles-cap:
   max-per-tick: 10
   enabled: false
+
+# By enabling this option, the plugin will attempt to fix
+# too large packets sent to the client. This can happen
+# when the recipes are too large and the client cannot
+# handle them.
+# If you change this option value, you must restart your server.
+fix-too-large-packets: false

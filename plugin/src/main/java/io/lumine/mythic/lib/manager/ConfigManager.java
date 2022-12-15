@@ -1,12 +1,6 @@
 package io.lumine.mythic.lib.manager;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.skill.SimpleSkill;
-import io.lumine.mythic.lib.skill.Skill;
-import io.lumine.mythic.lib.skill.handler.MythicLibSkillHandler;
-import io.lumine.mythic.lib.skill.trigger.TriggerType;
-
-import javax.annotation.Nullable;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
@@ -14,9 +8,10 @@ public class ConfigManager {
     public final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
 
     public DecimalFormat decimal, decimals;
-    public boolean playerAbilityDamage, castingDelayCancelOnMove, enableCastingDelayBossbar;
+    public boolean playerAbilityDamage, castingDelayCancelOnMove, enableCastingDelayBossbar, fixTooLargePackets;
     public String naturalDefenseFormula, elementalDefenseFormula, castingDelayBossbarFormat;
     public double castingDelaySlowness;
+
     @Nullable
     public Skill skillCastScript, skillCancelScript;
 
@@ -31,6 +26,7 @@ public class ConfigManager {
         playerAbilityDamage = MythicLib.plugin.getConfig().getBoolean("player-ability-damage");
         naturalDefenseFormula = MythicLib.plugin.getConfig().getString("defense-application.natural");
         elementalDefenseFormula = MythicLib.plugin.getConfig().getString("defense-application.elemental");
+        fixTooLargePackets = MythicLib.plugin.getConfig().getBoolean("fix-too-large-packets");
 
         // Casting delay
         castingDelaySlowness = MythicLib.plugin.getConfig().getDouble("casting-delay.slowness");
