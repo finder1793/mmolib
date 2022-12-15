@@ -12,6 +12,7 @@ import io.lumine.mythic.lib.command.HealthScaleCommand;
 import io.lumine.mythic.lib.command.MMOTempStatCommand;
 import io.lumine.mythic.lib.command.mythiclib.MythicLibCommand;
 import io.lumine.mythic.lib.comp.McMMOAttackHandler;
+import io.lumine.mythic.lib.comp.adventure.AdventureParser;
 import io.lumine.mythic.lib.comp.anticheat.AntiCheatSupport;
 import io.lumine.mythic.lib.comp.anticheat.SpartanPlugin;
 import io.lumine.mythic.lib.comp.dualwield.DualWieldHook;
@@ -20,9 +21,6 @@ import io.lumine.mythic.lib.comp.flags.FlagHandler;
 import io.lumine.mythic.lib.comp.flags.FlagPlugin;
 import io.lumine.mythic.lib.comp.flags.ResidenceFlags;
 import io.lumine.mythic.lib.comp.flags.WorldGuardFlags;
-import io.lumine.mythic.lib.comp.hexcolor.ColorParser;
-import io.lumine.mythic.lib.comp.hexcolor.HexColorParser;
-import io.lumine.mythic.lib.comp.hexcolor.SimpleColorParser;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
 import io.lumine.mythic.lib.comp.placeholder.*;
@@ -51,6 +49,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 
 public class MythicLib extends JavaPlugin {
@@ -73,7 +74,7 @@ public class MythicLib extends JavaPlugin {
     private ServerVersion version;
     private AttackEffects attackEffects;
     private MitigationMechanics mitigationMechanics;
-    private ColorParser colorParser;
+    private AdventureParser adventureParser;
     @Deprecated
     @Getter
     private PlaceholderParser placeholderParser;
@@ -98,7 +99,7 @@ public class MythicLib extends JavaPlugin {
             getLogger().log(Level.INFO, "Hooked onto WorldGuard");
         }
 
-        colorParser = version.isBelowOrEqual(1, 15) ? new SimpleColorParser() : new HexColorParser();
+        adventureParser = new AdventureParser();
     }
 
     @Override
@@ -340,10 +341,23 @@ public class MythicLib extends JavaPlugin {
      * @return String with parsed (hex) color codes
      */
     public String parseColors(String format) {
-        return colorParser.parseColorCodes(format);
+        return adventureParser.parse(format);
+    }
+
+    public List<String> parseColors(String... format) {
+        return parseColors(Arrays.asList(format));
+    }
+
+    public List<String> parseColors(List<String> format) {
+        return new ArrayList<>(adventureParser.parse(format));
+    }
+
+    public AdventureParser getAdventureParser() {
+        return adventureParser;
     }
 
     public File getJarFile() {
         return plugin.getFile();
     }
+
 }
