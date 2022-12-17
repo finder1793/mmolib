@@ -32,14 +32,6 @@ public enum EquipmentSlot {
     OTHER,
 
     /**
-     * Apply its stats anywhere
-     *
-     * @deprecated Use {@link #OTHER} instead
-     */
-    @Deprecated
-    ANY,
-
-    /**
      * Apply stats in main hand only
      */
     MAIN_HAND,
@@ -97,7 +89,7 @@ public enum EquipmentSlot {
     public boolean isCompatible(ModifierSource modifierSource, EquipmentSlot equipmentSlot) {
         Validate.isTrue(isHand(), "Instance called must be a hand equipment slot");
 
-        if (equipmentSlot == OTHER || equipmentSlot == ANY)
+        if (equipmentSlot == OTHER)
             return true;
 
         switch (modifierSource) {
