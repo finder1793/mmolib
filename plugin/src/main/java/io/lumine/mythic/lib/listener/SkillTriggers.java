@@ -71,11 +71,11 @@ public class SkillTriggers implements Listener {
     private void shootBow(EntityShootBowEvent event) {
         final MMOPlayerData caster;
         if (event.getEntity() instanceof Player && (caster = MMOPlayerData.getOrNull(event.getEntity().getUniqueId())) != null) {
-            caster.triggerSkills(TriggerType.SHOOT_BOW, event.getProjectile());
+            final EquipmentSlot actionHand = getShootHand(((Player) event.getEntity()).getInventory());
+            caster.triggerSkills(TriggerType.SHOOT_BOW, actionHand, event.getProjectile());
 
             // Register a runnable to trigger projectile skills
-            final EquipmentSlot hand = getShootHand(((Player) event.getEntity()).getInventory());
-            new CustomProjectile(caster, CustomProjectile.ProjectileType.ARROW, event.getProjectile(), hand);
+            new CustomProjectile(caster, CustomProjectile.ProjectileType.ARROW, event.getProjectile(), actionHand);
         }
     }
 
@@ -83,12 +83,12 @@ public class SkillTriggers implements Listener {
     public void shootTrident(ProjectileLaunchEvent event) {
         final MMOPlayerData caster;
         if (event.getEntity() instanceof Trident && event.getEntity().getShooter() instanceof Player && (caster = MMOPlayerData.getOrNull(event.getEntity().getUniqueId())) != null) {
-            Player shooter = (Player) event.getEntity().getShooter();
-            caster.triggerSkills(TriggerType.SHOOT_TRIDENT, event.getEntity());
+            final Player shooter = (Player) event.getEntity().getShooter();
+            final EquipmentSlot actionHand = getShootHand(shooter.getInventory());
+            caster.triggerSkills(TriggerType.SHOOT_TRIDENT, actionHand, event.getEntity());
 
             // Register a runnable to trigger projectile skills
-            final EquipmentSlot hand = getShootHand(shooter.getInventory());
-            new CustomProjectile(caster, CustomProjectile.ProjectileType.TRIDENT, event.getEntity(), hand);
+            new CustomProjectile(caster, CustomProjectile.ProjectileType.TRIDENT, event.getEntity(), actionHand);
         }
     }
 
@@ -112,6 +112,7 @@ public class SkillTriggers implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW)
     public void click(PlayerInteractEvent event) {
+        Bukkit.broadcastMessage("Click event: " + event.getAction() + " " + event.getHand() + " " + event.getMaterial());
         // || event.useItemInHand() == Event.Result.DENY
         if (event.getAction() == Action.PHYSICAL)
             return;
@@ -119,7 +120,7 @@ public class SkillTriggers implements Listener {
         final MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
         final boolean left = event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK, sneaking = event.getPlayer().isSneaking();
         final TriggerType type = sneaking ? (left ? TriggerType.SHIFT_LEFT_CLICK : TriggerType.SHIFT_RIGHT_CLICK) : (left ? TriggerType.LEFT_CLICK : TriggerType.RIGHT_CLICK);
-        caster.triggerSkills(type, null);
+        caster.triggerSkills(type, EquipmentSlot.fromBukkit(event.getHand()), null);
     }
 
     /**
