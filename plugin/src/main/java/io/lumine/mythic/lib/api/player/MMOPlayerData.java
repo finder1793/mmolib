@@ -125,7 +125,7 @@ public class MMOPlayerData {
      * @param triggerType Action performed to trigger the skills
      * @param target      The potential target to cast the skill onto
      */
-    public void triggerSkills(TriggerType triggerType, @Nullable Entity target) {
+    public void triggerSkills(@NotNull TriggerType triggerType, @Nullable Entity target) {
         Validate.isTrue(!triggerType.isActionHandSpecific(), "You must provide an action hand");
         triggerSkills(triggerType, EquipmentSlot.MAIN_HAND, target);
     }
@@ -138,7 +138,8 @@ public class MMOPlayerData {
      * @param actionHand  Hand used to perform action
      * @param target      The potential target to cast the skill onto
      */
-    public void triggerSkills(TriggerType triggerType, EquipmentSlot actionHand, @Nullable Entity target) {
+    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull EquipmentSlot actionHand, @Nullable Entity target) {
+        Validate.notNull(actionHand, "Action hand cannot be null");
         triggerSkills(triggerType, statMap.cache(actionHand), null, target);
     }
 
@@ -149,7 +150,7 @@ public class MMOPlayerData {
      * @param target         The potential target to cast the skill onto
      * @param attackMetadata The attack being performed
      */
-    public void triggerSkills(TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable AttackMetadata attackMetadata, @Nullable Entity target) {
+    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable AttackMetadata attackMetadata, @Nullable Entity target) {
         final Iterable<PassiveSkill> cast = triggerType.isActionHandSpecific() ? passiveSkillMap.isolateModifiers(caster.getActionHand()) : passiveSkillMap.getModifiers();
         triggerSkills(triggerType, caster, attackMetadata, target, cast);
     }

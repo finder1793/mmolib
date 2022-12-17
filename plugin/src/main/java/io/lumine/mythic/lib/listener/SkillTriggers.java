@@ -112,7 +112,6 @@ public class SkillTriggers implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW)
     public void click(PlayerInteractEvent event) {
-        Bukkit.broadcastMessage("Click event: " + event.getAction() + " " + event.getHand() + " " + event.getMaterial());
         // || event.useItemInHand() == Event.Result.DENY
         if (event.getAction() == Action.PHYSICAL)
             return;
