@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.api.player;
 
 import io.lumine.mythic.lib.player.modifier.ModifierSource;
 import io.lumine.mythic.lib.player.modifier.PlayerModifier;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.Validate;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,29 +18,33 @@ import org.jetbrains.annotations.NotNull;
 public enum EquipmentSlot {
 
     /**
-     * Can only apply stats in armor slots
+     * When placed in any armor slot. No distinction between
+     * helmet, chestplate, leggings and boots unlike vanilla
+     * Minecraft since you can't place a chestplate item
+     * inside of the feet slot for instance.
      */
     ARMOR,
 
     /**
-     * Can't apply stats in vanilla slots
+     * When placed in an accessory slot.
      */
     ACCESSORY,
 
     /**
-     * Apply its stats anywhere
-     */
-    OTHER,
-
-    /**
-     * Apply stats in main hand only
+     * When placed in main hand.
      */
     MAIN_HAND,
 
     /**
-     * Apply stats in off hand only
+     * When placed in off hand.
      */
-    OFF_HAND;
+    OFF_HAND,
+
+    /**
+     * Fictive equipment slot which overrides all
+     * rules and apply the item stats whatsoever.
+     */
+    OTHER;
 
     @NotNull
     public org.bukkit.inventory.EquipmentSlot toBukkit() {
@@ -94,8 +99,12 @@ public enum EquipmentSlot {
 
         switch (modifierSource) {
 
+            // Simple rules
             case VOID:
                 return false;
+
+            case OTHER:
+                return true;
 
             // Ignore modifiers from opposite hand if it's a weapon
             case RANGED_WEAPON:
@@ -110,11 +119,14 @@ public enum EquipmentSlot {
             case HAND_ITEM:
                 return equipmentSlot.isHand();
 
+            // Accessories & armor
             case ARMOR:
                 return equipmentSlot == ARMOR;
+            case ACCESSORY:
+                return equipmentSlot == ACCESSORY;
 
             default:
-                return true;
+                throw new NotImplementedException();
         }
     }
 
