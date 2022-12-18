@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.comp.mythicmobs.mechanic;
 import io.lumine.mythic.api.adapters.AbstractEntity;
 import io.lumine.mythic.api.config.MythicLineConfig;
 import io.lumine.mythic.api.skills.ITargetedEntitySkill;
+import io.lumine.mythic.api.skills.SkillCaster;
 import io.lumine.mythic.api.skills.SkillMetadata;
 import io.lumine.mythic.api.skills.SkillResult;
 import io.lumine.mythic.api.skills.placeholders.PlaceholderDouble;
@@ -13,14 +14,18 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.stat.provider.EntityStatProvider;
+import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.element.Element;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.skill.result.MythicMobsSkillResult;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -88,7 +93,9 @@ public class MMODamageMechanic extends DamagingMechanic implements ITargetedEnti
          */
         if (!(data.getCaster().getEntity().getBukkitEntity() instanceof Player)) {
             final DamageMetadata dmg = element == null ? new DamageMetadata(damage, types) : new DamageMetadata(damage, element, types);
-            MythicLib.plugin.getDamage().registerAttack(new AttackMetadata(dmg, (LivingEntity) target.getBukkitEntity(), null));
+            final Entity attackerBukkit = data.getCaster().getEntity().getBukkitEntity();
+            final @Nullable StatProvider attacker = attackerBukkit instanceof LivingEntity ? new EntityStatProvider((LivingEntity) attackerBukkit) : null;
+            MythicLib.plugin.getDamage().registerAttack(new AttackMetadata(dmg, (LivingEntity) target.getBukkitEntity(), attacker));
             return SkillResult.SUCCESS;
         }
 
@@ -108,5 +115,9 @@ public class MMODamageMechanic extends DamagingMechanic implements ITargetedEnti
                 : MMOPlayerData.get(data.getCaster().getEntity().getUniqueId()).getStatMap().cache(EquipmentSlot.MAIN_HAND);
         MythicLib.plugin.getDamage().registerAttack(new AttackMetadata(dmg, (LivingEntity) target.getBukkitEntity(), caster), !this.preventKnockback, this.preventImmunity);
         return SkillResult.SUCCESS;
+    }
+
+    private io.lumine.mythic.api.skills.damage.DamageMetadata adaptDamageMetadata(SkillCaster who, DamageMetadata damageMetadata) {
+        return new io.lumine.mythic.api.skills.damage.DamageMetadata(who, damageMetadata.getDamage(), elementName, false, false, false, false, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
     }
 }
