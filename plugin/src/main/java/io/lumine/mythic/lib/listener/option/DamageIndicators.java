@@ -134,7 +134,7 @@ public class DamageIndicators extends GameIndicators {
          * UNARMED or no primary damage type at all. It makes sense
          * to group these three categories
          */
-        final boolean skill;
+        final boolean skill, weapon;
 
         final @Nullable Element element;
 
@@ -146,6 +146,7 @@ public class DamageIndicators extends GameIndicators {
 
         IndicatorType(DamageMetadata damageMetadata, DamagePacket packet) {
             skill = packet.hasType(DamageType.SKILL);
+            weapon = !skill && (packet.hasType(DamageType.WEAPON) || packet.hasType(DamageType.UNARMED));
             element = packet.getElement();
             crit = (skill ? damageMetadata.isSkillCriticalStrike() : damageMetadata.isWeaponCriticalStrike()) || (element != null && damageMetadata.isElementalCriticalStrike(element));
         }
@@ -154,7 +155,10 @@ public class DamageIndicators extends GameIndicators {
             final StringBuilder build = new StringBuilder();
 
             // Append damage type
-            build.append(skill ? (crit ? skillIconCrit : skillIcon) : (crit ? weaponIconCrit : weaponIcon));
+            if (skill)
+                build.append(crit ? skillIconCrit : skillIcon);
+            else if (weapon)
+                build.append(crit ? weaponIconCrit : weaponIcon);
 
             // Append element
             if (element != null)
