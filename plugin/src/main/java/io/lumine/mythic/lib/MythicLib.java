@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib;
 
+import com.google.gson.Gson;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.MegaWorkbenchMapping;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.SuperWorkbenchMapping;
@@ -69,13 +70,13 @@ public class MythicLib extends JavaPlugin {
     private final ModifierManager modifierManager = new ModifierManager();
     private final FlagHandler flagHandler = new FlagHandler();
     private final IndicatorManager indicatorManager = new IndicatorManager();
+    private final Gson gson = new Gson();
 
     private AntiCheatSupport antiCheatSupport;
     private ServerVersion version;
     private AttackEffects attackEffects;
     private MitigationMechanics mitigationMechanics;
     private AdventureParser adventureParser;
-    @Deprecated
     @Getter
     private PlaceholderParser placeholderParser;
     private GlowModule glowModule;
@@ -270,10 +271,15 @@ public class MythicLib extends JavaPlugin {
         return plugin;
     }
 
+    public Gson getGson() {
+        return gson;
+    }
+
     public ServerVersion getVersion() {
         return version;
     }
 
+    @Deprecated
     public JsonManager getJson() {
         return jsonManager;
     }
@@ -359,5 +365,4 @@ public class MythicLib extends JavaPlugin {
     public File getJarFile() {
         return plugin.getFile();
     }
-
 }
