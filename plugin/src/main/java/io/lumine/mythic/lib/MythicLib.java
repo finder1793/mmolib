@@ -35,10 +35,8 @@ import io.lumine.mythic.lib.hologram.HologramFactoryList;
 import io.lumine.mythic.lib.hologram.factory.BukkitHologramFactory;
 import io.lumine.mythic.lib.listener.*;
 import io.lumine.mythic.lib.listener.event.AttackEventListener;
-import io.lumine.mythic.lib.listener.option.DamageIndicators;
 import io.lumine.mythic.lib.listener.option.FixMovementSpeed;
 import io.lumine.mythic.lib.listener.option.HealthScale;
-import io.lumine.mythic.lib.listener.option.RegenIndicators;
 import io.lumine.mythic.lib.manager.*;
 import io.lumine.mythic.lib.version.ServerVersion;
 import io.lumine.mythic.lib.version.SpigotPlugin;
@@ -70,6 +68,7 @@ public class MythicLib extends JavaPlugin {
     private final SkillManager skillManager = new SkillManager();
     private final ModifierManager modifierManager = new ModifierManager();
     private final FlagHandler flagHandler = new FlagHandler();
+    private final IndicatorManager indicatorManager = new IndicatorManager();
 
     private AntiCheatSupport antiCheatSupport;
     private ServerVersion version;
@@ -206,14 +205,8 @@ public class MythicLib extends JavaPlugin {
         }
 
         // Regen and damage indicators
-        if (getConfig().getBoolean("game-indicators.damage.enabled"))
-            try {
-                Bukkit.getPluginManager().registerEvents(new DamageIndicators(getConfig().getConfigurationSection("game-indicators.damage")), this);
-            } catch (RuntimeException exception) {
-                getLogger().log(Level.WARNING, "Could not load damage indicators: " + exception.getMessage());
-            }
-        if (getConfig().getBoolean("game-indicators.regen.enabled"))
-            Bukkit.getPluginManager().registerEvents(new RegenIndicators(getConfig().getConfigurationSection("game-indicators.regen")), this);
+        this.indicatorManager.load(getConfig());
+
 
 //		if (Bukkit.getPluginManager().getPlugin("ShopKeepers") != null)
 //			entityManager.registerHandler(new ShopKeepersEntityHandler());
@@ -245,7 +238,7 @@ public class MythicLib extends JavaPlugin {
         // Load player data of online players
         Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.setup(player));
 
-        // Loop for temporary player data
+        // Loop for flushing temporary player data
         Bukkit.getScheduler().runTaskTimer(this, MMOPlayerData::flushOfflinePlayerData, 20 * 60 * 60, 20 * 60 * 60);
 
         configManager.reload();
@@ -254,12 +247,13 @@ public class MythicLib extends JavaPlugin {
 
     public void reload() {
         reloadConfig();
-        configManager.reload();
         statManager.initialize(true);
         attackEffects.reload();
         mitigationMechanics.reload();
         skillManager.initialize(true);
+        configManager.reload();
         elementManager.reload(true);
+        this.indicatorManager.reload(getConfig());
     }
 
     @Override
