@@ -47,19 +47,20 @@ public class GradientBuilder {
         final StringBuilder builder = new StringBuilder();
 
         int start = str.length() - (int) (str.length() * phase);
+        int charIndex = 0;
         for (int i = start; i < str.length(); i++) {
             builder.append(ChatColor.of(new Color(
-                            (int) Math.round(red[i] * phase),
-                            (int) Math.round(green[i] * phase),
-                            (int) Math.round(blue[i] * phase))))
-                    .append(str.charAt(i));
+                            (int) Math.round(red[i]),
+                            (int) Math.round(green[i]),
+                            (int) Math.round(blue[i]))))
+                    .append(str.charAt(charIndex++));
         }
         for (int i = 0; i < start; i++) {
             builder.append(ChatColor.of(new Color(
                             (int) Math.round(red[i]),
                             (int) Math.round(green[i]),
                             (int) Math.round(blue[i]))))
-                    .append(str.charAt(i));
+                    .append(str.charAt(charIndex++));
         }
         return builder.toString();
     }
