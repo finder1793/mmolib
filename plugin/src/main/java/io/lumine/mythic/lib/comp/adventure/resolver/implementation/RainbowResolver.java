@@ -34,7 +34,7 @@ public class RainbowResolver implements ContextTagResolver {
     @Override
     public @Nullable String resolve(@NotNull String src, @NotNull AdventureArgumentQueue argsQueue, @NotNull String context) {
         if (!argsQueue.hasNext())
-            return GradientBuilder.multiRgbGradient(context, colors, null, Interpolator.LINEAR);
+            return GradientBuilder.multiRgbGradient(context, colors, 0, Interpolator.LINEAR);
         AdventureArgument argument = argsQueue.pop();
         if (argument.asInt().isPresent())
             return GradientBuilder.multiRgbGradient(context, reverse(), argument.asInt().getAsInt(), Interpolator.LINEAR);

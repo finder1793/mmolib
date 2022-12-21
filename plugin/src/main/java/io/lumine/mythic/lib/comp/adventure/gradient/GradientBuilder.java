@@ -111,16 +111,16 @@ public class GradientBuilder {
         Preconditions.checkArgument(p.length == colors.length - 1);
 
         final StringBuilder builder = new StringBuilder();
-        int strIndex = 0;
-
-        for (int i = 0; i < colors.length - 1; i++) {
-            builder.append(rgbGradient(
-                    str.substring(strIndex, strIndex + (int) (p[i] * str.length())),
-                    colors[i],
-                    colors[i + 1],
-                    interpolator));
-            strIndex += p[i] * str.length();
+        int stringIndex = 0;
+        for (double portion : p) {
+            final int length = (int) (portion * str.length());
+            final String substring = str.substring(stringIndex, stringIndex + length);
+            builder.append(rgbGradient(substring, colors[0], colors[1], interpolator));
+            colors = Arrays.copyOfRange(colors, 1, colors.length);
+            stringIndex += length;
         }
+        if (stringIndex < str.length())
+            builder.append(ChatColor.of(colors[colors.length - 1])).append(str.substring(stringIndex));
         return builder.toString();
     }
 
@@ -134,9 +134,9 @@ public class GradientBuilder {
      * @return The gradient.
      */
     public static String multiRgbGradient(String str, Color[] colors, double phase, Interpolator interpolator) {
-        final Color[] c = new Color[colors.length];
+        Color[] c = new Color[colors.length];
         for (int i = 0; i < colors.length; i++)
-            c[i] = colors[(int) (i + phase * colors.length) % colors.length];
+            c[i] = colors[(i + (int) (colors.length * phase)) % colors.length];
         return multiRgbGradient(str, c, null, interpolator);
     }
 }

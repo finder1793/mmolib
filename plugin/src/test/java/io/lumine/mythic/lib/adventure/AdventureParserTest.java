@@ -1,14 +1,5 @@
 package io.lumine.mythic.lib.adventure;
 
-import io.lumine.mythic.lib.comp.adventure.AdventureParser;
-import io.lumine.mythic.lib.comp.adventure.tag.implementation.*;
-import io.lumine.mythic.lib.comp.adventure.tag.implementation.decorations.*;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import java.util.Collection;
-import java.util.List;
-
 /**
  * mythiclib
  * 30/11/2022
@@ -17,6 +8,7 @@ import java.util.List;
  */
 public class AdventureParserTest {
 
+    /*
     @Test
     void testHexColorTag() {
         // Add tag parser
@@ -467,5 +459,5 @@ public class AdventureParserTest {
         final String i17Expected = "§c§l";
         Assertions.assertEquals(i17Expected, parser.lastColor(i17, true));
     }
-
+*/
 }
