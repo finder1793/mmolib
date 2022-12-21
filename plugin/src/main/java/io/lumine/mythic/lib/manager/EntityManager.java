@@ -50,7 +50,7 @@ public class EntityManager {
      * - plugins which implement friendly fire player sets like parties, guilds, nations, factions....
      * - plugins which implement custom invulnerable entities like NPCs, sentinels....
      *
-     * @param source      Player targeted another entity
+     * @param source      Player targeting another entity
      * @param target      Entity being targeted
      * @param interaction Type of interaction, whether it's positive (buff, heal) or negative (offense skill, attack)
      * @return If false, any interaction should be cancelled!
@@ -67,9 +67,9 @@ public class EntityManager {
             return false;
 
         // Specific plugin checks (Citizens, Factions..)
-        LivingEntity livingEntity = (LivingEntity) target;
+        final LivingEntity livingTarget = (LivingEntity) target;
         for (TargetRestriction restriction : restrictions)
-            if (!restriction.canTarget(source, livingEntity, interaction))
+            if (!restriction.canTarget(source, livingTarget, interaction))
                 return false;
 
         return true;

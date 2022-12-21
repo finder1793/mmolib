@@ -43,7 +43,7 @@ public class AttackEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void registerEvents(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof LivingEntity) || event.getDamage() == 0 || event.getEntity().hasMetadata("NPC"))
+        if (!(event.getEntity() instanceof LivingEntity) || event.getDamage() == 0)
             return;
 
         // Call the Bukkit event with the attack meta found
