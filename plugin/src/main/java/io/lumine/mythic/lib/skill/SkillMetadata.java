@@ -242,7 +242,7 @@ public class SkillMetadata {
     public Variable getReference(String name) {
 
         // Find initial variable
-        String[] args = name.split("\\.");
+        final String[] args = name.split("\\.");
         Variable var;
         int i = 1;
 
@@ -309,7 +309,7 @@ public class SkillMetadata {
      * @param name Variable name
      * @return Variable found
      */
-    @Nullable
+    @NotNull
     public Variable getCustomVariable(String name) {
 
         // Prioritize SKILL scope
@@ -331,17 +331,17 @@ public class SkillMetadata {
     public String parseString(String str) {
 
         // Parse any placeholders and apply color codes
-        String format = MythicLib.plugin.getPlaceholderParser().parse(getCaster().getPlayer(), str);
+        str = MythicLib.plugin.getPlaceholderParser().parse(getCaster().getPlayer(), str);
 
         // Internal placeholders
-        Matcher match = INTERNAL_PLACEHOLDER_PATTERN.matcher(format);
+        Matcher match = INTERNAL_PLACEHOLDER_PATTERN.matcher(str);
         while (match.find()) {
-            String placeholder = format.substring(match.start() + 1, match.end() - 1);
-            format = format.replace("<" + placeholder + ">", getReference(placeholder).toString());
-            match = INTERNAL_PLACEHOLDER_PATTERN.matcher(format);
+            final String placeholder = str.substring(match.start() + 1, match.end() - 1);
+            str = str.replace("<" + placeholder + ">", getReference(placeholder).toString());
+            match = INTERNAL_PLACEHOLDER_PATTERN.matcher(str);
         }
 
-        return format;
+        return str;
     }
 
     /**

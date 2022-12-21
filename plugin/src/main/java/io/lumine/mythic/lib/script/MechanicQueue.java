@@ -47,7 +47,7 @@ public class MechanicQueue {
             return false;
 
         counter++;
-        Mechanic mechanic = queue.next();
+        final Mechanic mechanic = queue.next();
 
         // Handles the delay mechanic
         if (mechanic instanceof DelayMechanic)
