@@ -242,10 +242,6 @@ public class DamageManager implements Listener, AttackHandler {
                 return found;
         }
 
-        // Players damaging Citizens NPCs are not registered
-        if (entity.hasMetadata("NPC"))
-            return null;
-
         // Attacks with a damager
         if (event instanceof EntityDamageByEntityEvent) {
 
