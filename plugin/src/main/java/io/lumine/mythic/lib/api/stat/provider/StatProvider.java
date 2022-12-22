@@ -26,7 +26,7 @@ public interface StatProvider {
         return isRealPlayer(living) ? MMOPlayerData.get(living.getUniqueId()).getStatMap().cache(actionHand) : new EntityStatProvider(living);
     }
 
-    private static boolean isRealPlayer(Object entity) {
+    static boolean isRealPlayer(Object entity) {
         return entity instanceof Player && !((Player) entity).hasMetadata("NPC");
     }
 }
