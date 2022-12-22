@@ -339,6 +339,10 @@ public class DamageManager implements Listener, AttackHandler {
     private DamageType[] getDamageTypes(EntityDamageByEntityEvent event, EquipmentSlot hand) {
         Validate.isTrue(event.getDamager() instanceof LivingEntity, "Not an entity attack");
 
+        // Not an entity attack
+        if (event.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK && event.getCause() != EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK)
+            return new DamageType[]{DamageType.PHYSICAL};
+
         // Physical attack with bare fists.
         final LivingEntity damager = (LivingEntity) event.getDamager();
         if (isAir(damager.getEquipment().getItem(hand.toBukkit())))

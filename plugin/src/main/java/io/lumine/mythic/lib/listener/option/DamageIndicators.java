@@ -96,6 +96,7 @@ public class DamageIndicators extends GameIndicators {
      * @param event Damage event
      * @return Direction of the hologram
      */
+    @NotNull
     private Vector getDirection(EntityDamageEvent event) {
 
         if (event instanceof EntityDamageByEntityEvent) {
@@ -116,6 +117,7 @@ public class DamageIndicators extends GameIndicators {
         return new Vector(Math.cos(a), 0, Math.sin(a));
     }
 
+    @NotNull
     private Map<IndicatorType, Double> mapDamage(DamageMetadata damageMetadata) {
         final Map<IndicatorType, Double> mapped = new HashMap<>();
 
@@ -130,11 +132,10 @@ public class DamageIndicators extends GameIndicators {
     private class IndicatorType {
 
         /**
-         * If it's not skill damage, then it's either PHYSICAL or
-         * UNARMED or no primary damage type at all. It makes sense
-         * to group these three categories
+         * If it's not MAGICAL damage, then it's
+         * either PHYSICAL or ELEMENTAL.
          */
-        final boolean skill, weapon;
+        final boolean physical;
 
         final @Nullable Element element;
 
@@ -145,20 +146,20 @@ public class DamageIndicators extends GameIndicators {
         final boolean crit;
 
         IndicatorType(DamageMetadata damageMetadata, DamagePacket packet) {
-            skill = packet.hasType(DamageType.SKILL);
-            weapon = !skill && (packet.hasType(DamageType.WEAPON) || packet.hasType(DamageType.UNARMED));
+            physical = packet.hasType(DamageType.PHYSICAL);
             element = packet.getElement();
-            crit = (skill ? damageMetadata.isSkillCriticalStrike() : damageMetadata.isWeaponCriticalStrike()) || (element != null && damageMetadata.isElementalCriticalStrike(element));
+            crit = (physical ? damageMetadata.isWeaponCriticalStrike() : damageMetadata.isSkillCriticalStrike()) || (element != null && damageMetadata.isElementalCriticalStrike(element));
         }
 
+        @NotNull
         private String computeIcon() {
             final StringBuilder build = new StringBuilder();
 
             // Append damage type
-            if (skill)
-                build.append(crit ? skillIconCrit : skillIcon);
-            else if (weapon)
+            if (physical)
                 build.append(crit ? weaponIconCrit : weaponIcon);
+            else
+                build.append(crit ? skillIconCrit : skillIcon);
 
             // Append element
             if (element != null)
@@ -167,6 +168,7 @@ public class DamageIndicators extends GameIndicators {
             return build.toString();
         }
 
+        @NotNull
         private String computeFormat(double damage) {
             @Nullable final CustomFont indicatorFont = crit && fontCrit != null ? fontCrit : font;
             @NotNull final String formattedDamage = indicatorFont == null ? formatNumber(damage) : indicatorFont.format(formatNumber(damage));
@@ -181,12 +183,12 @@ public class DamageIndicators extends GameIndicators {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             IndicatorType that = (IndicatorType) o;
-            return skill == that.skill && Objects.equals(element, that.element);
+            return physical == that.physical && Objects.equals(element, that.element);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(skill, element);
+            return Objects.hash(physical, element);
         }
     }
 }
