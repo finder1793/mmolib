@@ -122,6 +122,7 @@ public class AdventureUtils {
      * @param message The message to convert.
      * @return The converted component.
      */
+    @Deprecated
     public static @NotNull Component asComponent(@NotNull String message) {
         return LegacyComponentSerializer.legacySection().deserialize(MythicLib.plugin.parseColors(message));
     }
@@ -132,6 +133,7 @@ public class AdventureUtils {
      * @param message The list of messages to convert.
      * @return The converted list of components.
      */
+    @Deprecated
     public static @NotNull Component asComponent(@NotNull List<String> message) {
         final List<String> parsed = MythicLib.plugin.parseColors(message);
         Component component = Component.empty();

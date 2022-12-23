@@ -43,12 +43,16 @@ public abstract class NBTItem {
 
     public abstract int getTypeId(String path);
 
+    @Deprecated
     public abstract Component getDisplayNameComponent();
 
+    @Deprecated
     public abstract void setDisplayNameComponent(Component component);
 
+    @Deprecated
     public abstract List<Component> getLoreComponents();
 
+    @Deprecated
     public abstract void setLoreComponents(List<Component> components);
 
     public NBTItem addTag(ItemTag... tags) {
