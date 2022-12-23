@@ -120,6 +120,10 @@ public class UtilityMethods {
         return loc == null || target.getBoundingBox().expand(BOUNDING_BOX_EXPANSION).contains(loc.toVector());
     }
 
+    public static boolean isMetaItem(@Nullable ItemStack item) {
+        return item != null && item.hasItemMeta() && item.getItemMeta().hasDisplayName();
+    }
+
     /**
      * @param player Player to heal
      * @param heal   Heal amount

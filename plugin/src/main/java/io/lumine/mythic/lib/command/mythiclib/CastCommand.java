@@ -32,7 +32,7 @@ public class CastCommand extends CommandTreeNode {
         }
 
         String skillId = args[1].toUpperCase().replace("-", "_");
-        SkillHandler<?> handler = null;
+        SkillHandler<?> handler;
         try {
             handler = MythicLib.plugin.getSkills().getHandlerOrThrow(skillId);
         } catch (RuntimeException exception) {
