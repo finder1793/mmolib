@@ -1,5 +1,14 @@
 package io.lumine.mythic.lib.adventure;
 
+import io.lumine.mythic.lib.comp.adventure.AdventureParser;
+import io.lumine.mythic.lib.comp.adventure.tag.implementation.*;
+import io.lumine.mythic.lib.comp.adventure.tag.implementation.decorations.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import java.util.Collection;
+import java.util.List;
+
 /**
  * mythiclib
  * 30/11/2022
@@ -8,7 +17,6 @@ package io.lumine.mythic.lib.adventure;
  */
 public class AdventureParserTest {
 
-    /*
     @Test
     void testHexColorTag() {
         // Add tag parser
@@ -340,12 +348,12 @@ public class AdventureParserTest {
 
         // 3 color gradient
         final String i3 = "<gradient:red:blue:green>This is a gradient text</gradient>";
-        final String i3Expected = "§x§f§f§5§5§5§5T§x§e§e§5§5§6§6h§x§d§d§5§5§7§7i§x§c§c§5§5§8§8s§x§b§b§5§5§9§9 §x§a§a§5§5§a§ai§x§9§9§5§5§b§bs§x§8§8§5§5§c§c §x§7§7§5§5§d§da§x§6§6§5§5§e§e §x§5§5§5§5§f§fg§x§5§5§5§5§f§fr§x§5§5§6§6§e§ea§x§5§5§7§7§d§dd§x§5§5§8§8§c§ci§x§5§5§9§9§b§be§x§5§5§a§a§a§an§x§5§5§b§b§9§9t§x§5§5§c§c§8§8 §x§5§5§d§d§7§7t§x§5§5§e§e§6§6e§x§5§5§f§f§5§5x§r";
+        final String i3Expected = "§x§f§f§5§5§5§5T§x§e§e§5§5§6§6h§x§d§d§5§5§7§7i§x§c§c§5§5§8§8s§x§b§b§5§5§9§9 §x§a§a§5§5§a§ai§x§9§9§5§5§b§bs§x§8§8§5§5§c§c §x§7§7§5§5§d§da§x§6§6§5§5§e§e §x§5§5§5§5§f§fg§x§5§5§5§5§f§fr§x§5§5§6§6§e§ea§x§5§5§7§7§d§dd§x§5§5§8§8§c§ci§x§5§5§9§9§b§be§x§5§5§a§a§a§an§x§5§5§b§b§9§9t§x§5§5§c§c§8§8 §x§5§5§d§d§7§7t§x§5§5§e§e§6§6e§x§5§5§f§f§5§5x§x§5§5§f§f§5§5t§r";
         Assertions.assertEquals(i3Expected, parser.parse(i3));
 
         // 4 color gradient
         final String i4 = "<gradient:red:blue:green:yellow>This is a gradient text</gradient>";
-        final String i4Expected = "§x§f§f§5§5§5§5T§x§e§3§5§5§7§1h§x§c§6§5§5§8§ei§x§a§a§5§5§a§as§x§8§e§5§5§c§6 §x§7§1§5§5§e§3i§x§5§5§5§5§f§fs§x§5§5§5§5§f§f §x§5§5§7§1§e§3a§x§5§5§8§e§c§6 §x§5§5§a§a§a§ag§x§5§5§c§6§8§er§x§5§5§e§3§7§1a§x§5§5§f§f§5§5d§x§5§5§f§f§5§5i§x§7§1§f§f§5§5e§x§8§e§f§f§5§5n§x§a§a§f§f§5§5t§x§c§6§f§f§5§5 §x§e§3§f§f§5§5t§x§f§f§f§f§5§5e§r";
+        final String i4Expected = "§x§f§f§5§5§5§5T§x§e§3§5§5§7§1h§x§c§6§5§5§8§ei§x§a§a§5§5§a§as§x§8§e§5§5§c§6 §x§7§1§5§5§e§3i§x§5§5§5§5§f§fs§x§5§5§5§5§f§f §x§5§5§7§1§e§3a§x§5§5§8§e§c§6 §x§5§5§a§a§a§ag§x§5§5§c§6§8§er§x§5§5§e§3§7§1a§x§5§5§f§f§5§5d§x§5§5§f§f§5§5i§x§7§1§f§f§5§5e§x§8§e§f§f§5§5n§x§a§a§f§f§5§5t§x§c§6§f§f§5§5 §x§e§3§f§f§5§5t§x§f§f§f§f§5§5e§x§f§f§f§f§5§5xt§r";
         Assertions.assertEquals(i4Expected, parser.parse(i4));
 
         // Remove tag
@@ -459,5 +467,22 @@ public class AdventureParserTest {
         final String i17Expected = "§c§l";
         Assertions.assertEquals(i17Expected, parser.lastColor(i17, true));
     }
-*/
+
+    @Test
+    void testGradientWithDecorations() {
+        AdventureParser parser = new AdventureParser(true);
+        parser.forceRegister(new GradientTag());
+        parser.forceRegister(new BoldTag());
+        parser.forceRegister(new ResetTag());
+
+        // Basic gradient with a bold tag in the context
+        String input = "<gradient><bold>This is a gradient text";
+        String expected = "§x§f§f§f§f§f§f§lT§x§f§3§f§3§f§3§lh§x§e§8§e§8§e§8§li§x§d§c§d§c§d§c§ls§x§d§1§d§1§d§1§l §x§c§5§c§5§c§5§li§x§b§9§b§9§b§9§ls§x§a§e§a§e§a§e§l §x§a§2§a§2§a§2§la§x§9§7§9§7§9§7§l §x§8§b§8§b§8§b§lg§x§7§f§7§f§7§f§lr§x§7§4§7§4§7§4§la§x§6§8§6§8§6§8§ld§x§5§d§5§d§5§d§li§x§5§1§5§1§5§1§le§x§4§6§4§6§4§6§ln§x§3§a§3§a§3§a§lt§x§2§e§2§e§2§e§l §x§2§3§2§3§2§3§lt§x§1§7§1§7§1§7§le§x§0§c§0§c§0§c§lx§x§0§0§0§0§0§0§lt";
+        Assertions.assertEquals(expected, parser.parse(input));
+
+//        // Basic gradient with a bold tag in the middle of the gradient
+//        input = "<gradient>This is a <bold>gradient text";
+//        expected = "§x§f§f§f§f§f§f§§x§f§8§f§8§f§8l§x§f§2§f§2§f§2g§x§e§b§e§b§e§b§§x§e§4§e§4§e§4l§x§d§d§d§d§d§dr§x§d§7§d§7§d§7§§x§d§0§d§0§d§0l§x§c§9§c§9§c§9a§x§c§3§c§3§c§3§§x§b§c§b§c§b§cl§x§b§5§b§5§b§5d§x§a§e§a§e§a§e§§x§a§8§a§8§a§8l§x§a§1§a§1§a§1i§x§9§a§9§a§9§a§§x§9§4§9§4§9§4l§x§8§d§8§d§8§de§x§8§6§8§6§8§6§§x§8§0§8§0§8§0l§x§7§9§7§9§7§9n§x§7§2§7§2§7§2§§x§6§b§6§b§6§bl§x§6§5§6§5§6§5t§x§5§e§5§e§5§e§§x§5§7§5§7§5§7l§x§5§1§5§1§5§1 §x§4§a§4§a§4§a§§x§4§3§4§3§4§3l§x§3§c§3§c§3§ct§x§3§6§3§6§3§6§§x§2§f§2§f§2§fl§x§2§8§2§8§2§8e§x§2§2§2§2§2§2§§x§1§b§1§b§1§bl§x§1§4§1§4§1§4x§x§0§d§0§d§0§d§§x§0§7§0§7§0§7l§x§0§0§0§0§0§0t";
+//        Assertions.assertEquals(expected, parser.parse(input));
+    }
 }

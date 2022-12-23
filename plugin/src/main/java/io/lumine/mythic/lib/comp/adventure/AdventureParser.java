@@ -3,12 +3,14 @@ package io.lumine.mythic.lib.comp.adventure;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.comp.adventure.argument.AdventureArgument;
 import io.lumine.mythic.lib.comp.adventure.argument.AdventureArgumentQueue;
+import io.lumine.mythic.lib.comp.adventure.argument.EmptyArgumentQueue;
 import io.lumine.mythic.lib.comp.adventure.resolver.ContextTagResolver;
 import io.lumine.mythic.lib.comp.adventure.tag.AdventureTag;
 import io.lumine.mythic.lib.comp.adventure.tag.implementation.*;
 import io.lumine.mythic.lib.comp.adventure.tag.implementation.decorations.*;
 import io.lumine.mythic.lib.util.AdventureUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.math3.util.Pair;
 import org.bukkit.ChatColor;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -166,8 +168,9 @@ public class AdventureParser {
             boolean hasContext = tag.resolver() instanceof ContextTagResolver;
 
             String context = hasContext ? getTagContent(cpy, rawTag, original) : null;
+            Pair<List<String>, String> contextDecorations = hasContext ? processContextDecorations(context) : null;
             String resolved = hasContext ?
-                    ((ContextTagResolver) tag.resolver()).resolve(rawTag, args, context)
+                    ((ContextTagResolver) tag.resolver()).resolve(rawTag, args, contextDecorations.getValue(), contextDecorations.getKey())
                     : tag.resolver().resolve(rawTag, args);
             cpy = cpy.replace(hasContext ? "%s%s".formatted(original, context) : original, resolved != null ? resolved : "");
         } catch (Exception e) {
@@ -370,6 +373,31 @@ public class AdventureParser {
         builder.append(colorTag);
         nextTags.forEach(builder::append);
         return builder.toString();
+    }
+
+    private @NotNull Pair<List<String>, String> processContextDecorations(@NotNull String context) {
+        final Map<String, String> decorations = new HashMap<>();
+        final String cpy = minecraftColorization(context);
+        final Matcher matcher = TAG_REGEX.matcher(cpy);
+
+        // Find decorations
+        while (matcher.find()) {
+            final String tag = matcher.group();
+            final String tagName = tag.contains(":") ? tag.split(":")[0] : tag;
+            if (tagName.isEmpty() || tagName.startsWith("/"))
+                continue;
+
+            findByName(tagName)
+                    .filter(t -> !t.color())
+                    .map(t -> t.resolver().resolve("", new EmptyArgumentQueue()))
+                    .ifPresent(s -> decorations.put(tag, s));
+        }
+
+        // Replace decorations tags
+        for (Map.Entry<String, String> e : decorations.entrySet())
+            context = context.replace("<%s>".formatted(e.getKey()), "");
+
+        return Pair.create(new ArrayList<>(decorations.values()), context);
     }
 
     private @NotNull String getLastLegacyColor(@NotNull final String input, boolean matchDecorations) {
