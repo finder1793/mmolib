@@ -345,11 +345,9 @@ public class SkillMetadata {
     }
 
     /**
-     * Utility method that makes a player deal damage to a specific
-     * entity.
-     * <p>
-     * This method either creates a new attackMetadata based on this
-     * metadata, or uses the existing one if any is bound.
+     * Have the skill caster damage an entity. Either creates a new
+     * instance of AttackMeta based on this metadata, or uses the
+     * existing one if any is bound.
      *
      * @param target Target entity
      * @param damage Damage dealt

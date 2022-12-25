@@ -38,7 +38,7 @@ import java.util.logging.Level;
  *
  * @author jules
  */
-public class DamageManager implements Listener, AttackHandler {
+public class DamageManager implements Listener {
 
     /**
      * External attack handlers
@@ -46,18 +46,11 @@ public class DamageManager implements Listener, AttackHandler {
     private final Set<AttackHandler> handlers = new HashSet<>();
 
     private static final AttributeModifier NO_KNOCKBACK = new AttributeModifier(UUID.randomUUID(), "noKnockback", 100, AttributeModifier.Operation.ADD_NUMBER);
-    private static final double MINIMUM_DAMAGE = .001;
 
-    private static final String
-            ATTACK_METADATA_TAG = "AttackMetadata",
-            OFFHAND_ATTACK_TAG = "OffhandAttack";
-
-    public DamageManager() {
-        handlers.add(this);
-    }
+    private static final String ATTACK_METADATA_TAG = "AttackMetadata";
 
     /**
-     * Damage handlers are used by MythicLib to keep track of details of every
+     * Attack handlers are used by MythicLib to keep track of details of every
      * attack so that it can apply damage based stats like PvE damage, Magic
      * Damage...
      *
@@ -69,37 +62,10 @@ public class DamageManager implements Listener, AttackHandler {
         handlers.add(handler);
     }
 
-    @Override
-    @Nullable
-    public AttackMetadata getAttack(EntityDamageEvent event) {
-        for (MetadataValue value : event.getEntity().getMetadata(ATTACK_METADATA_TAG))
-            if (value.getOwningPlugin().equals(MythicLib.plugin))
-                return (AttackMetadata) value.value();
-        return null;
-    }
-
-    /**
-     * This marks the next EntityDamageEvent to be processed as
-     * an offhand melee attack. That way plugins can use player
-     * stats from the offhand instead of the main hand.
-     * <p>
-     * This method has the effect of caching the attack target.
-     * <p>
-     * Because of RDW we are not guaranteed that an EntityDamageEvent
-     * will be called afterwards. Therefore, there is a simple timeout
-     * system where if the attack is more than 1s old, it is ignored.
-     *
-     * @param target Entity being damaged.
-     */
-    public void registerOffHandAttack(Entity target) {
-        target.setMetadata(OFFHAND_ATTACK_TAG, new FixedMetadataValue(MythicLib.plugin, System.currentTimeMillis()));
-    }
-
     @Deprecated
     public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target) {
         damage(metadata, target, true);
     }
-
 
     /**
      * Forces a player to damage an entity with knockback
@@ -127,21 +93,25 @@ public class DamageManager implements Listener, AttackHandler {
 
     @Deprecated
     public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target, boolean knockback, boolean ignoreImmunity) {
-        target.setMetadata(ATTACK_METADATA_TAG, new FixedMetadataValue(MythicLib.plugin, metadata));
-        applyDamage(Math.max(metadata.getDamage().getDamage(), MINIMUM_DAMAGE), target, metadata.getPlayer(), knockback, ignoreImmunity);
+        registerAttack(new AttackMetadata(metadata.getDamage(), target, metadata.getAttacker()), knockback, ignoreImmunity);
     }
 
     /**
-     * Deals damage to an entity.
+     * Deals damage to an entity. Does not do anything if the
+     * damage is negative or null.
      *
      * @param attack         The class containing all info about the current attack
      * @param knockback      If the attack should deal knockback
      * @param ignoreImmunity The attack will not produce immunity frames.
      */
     public void registerAttack(@NotNull AttackMetadata attack, boolean knockback, boolean ignoreImmunity) {
+        final double damage = attack.getDamage().getDamage();
+        if (damage <= 0)
+            return;
+
         Validate.notNull(attack.getTarget(), "Target cannot be null"); // BW compatibility check
-        attack.getTarget().setMetadata(ATTACK_METADATA_TAG, new FixedMetadataValue(MythicLib.plugin, attack));
-        applyDamage(Math.max(attack.getDamage().getDamage(), MINIMUM_DAMAGE), attack.getTarget(), attack.isPlayer() ? ((PlayerMetadata) attack.getAttacker()).getPlayer() : null, knockback, ignoreImmunity);
+        markAsMetadata(attack);
+        applyDamage(attack.getDamage().getDamage(), attack.getTarget(), attack.isPlayer() ? ((PlayerMetadata) attack.getAttacker()).getPlayer() : null, knockback, ignoreImmunity);
     }
 
     private void applyDamage(double damage, @NotNull LivingEntity target, @Nullable Player damager, boolean knockback, boolean ignoreImmunity) {
@@ -182,28 +152,10 @@ public class DamageManager implements Listener, AttackHandler {
     }
 
     /**
-     * This method is used to unregister MythicLib custom damage after everything
-     * was calculated, hence MONITOR priority. As a safe practice, it does NOT
-     * ignore cancelled damage events.
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void unregisterCustomAttacks(EntityDamageByEntityEvent event) {
-
-        // Ignore fake events from RDW/mcMMO/...
-        if (event.getDamage() == 0)
-            return;
-
-        event.getEntity().removeMetadata(ATTACK_METADATA_TAG, MythicLib.plugin);
-        event.getEntity().removeMetadata(OFFHAND_ATTACK_TAG, MythicLib.plugin);
-    }
-
-    /**
      * This method draws an interface between MythicLib damage mitigation system
      * and Bukkit damage events.
      * <p>
-     * Unlike {@link #getAttack(EntityDamageEvent)} which can return a null object
-     * if MythicLib cannot find an attack source, this method NEVER returns null. In
-     * the worst case (unknown damage cause/damage not logged by any plugin) scenario,
+     * In the worst case (unknown damage cause/damage not logged by any plugin) scenario,
      * it just returns a damage metadata with no damage type which is completely fine.
      *
      * @param event The damage event
@@ -232,14 +184,18 @@ public class DamageManager implements Listener, AttackHandler {
         Validate.isTrue(event.getEntity() instanceof LivingEntity, "Target entity is not living");
         final LivingEntity entity = (LivingEntity) event.getEntity();
 
-        /*
-         * Checks in the MythicLib attack registry. This is used by MMOItems skills,
-         * MMOCore skills, scripts, items or any plugin using the ML damage system.
-         */
+        // MythicLib attack registry
+        for (MetadataValue value : event.getEntity().getMetadata(ATTACK_METADATA_TAG))
+            if (value.getOwningPlugin().equals(MythicLib.plugin))
+                return (AttackMetadata) value.value();
+
+        // Attack registries from other plugins
         for (AttackHandler handler : handlers) {
             final AttackMetadata found = handler.getAttack(event);
-            if (found != null && !found.hasExpired())
+            if (found != null && !found.hasExpired()) {
+                markAsMetadata(found);
                 return found;
+            }
         }
 
         // Attacks with a damager
@@ -251,13 +207,15 @@ public class DamageManager implements Listener, AttackHandler {
              * The attack damage type can vary depending on the context: if it is a bare-firsts
              * attack, final attack has no WEAPON damage type. If the player is holding any
              * other item, it is considered a WEAPON attack.
+             *
+             * If MythicLib reaches this portion of the code this means that the attack is with
+             * the right hand. Left-hand attacks are handled by specific listeners.
              */
             final Entity damager = ((EntityDamageByEntityEvent) event).getDamager();
             if (damager instanceof LivingEntity) {
-                final EquipmentSlot hand = isBeingOffHandAttacked(event.getEntity()) ? EquipmentSlot.OFF_HAND : EquipmentSlot.MAIN_HAND;
-                final StatProvider attacker = StatProvider.get((LivingEntity) damager, hand, true);
-                final AttackMetadata attackMeta = new MeleeAttackMetadata(new DamageMetadata(event.getDamage(), getDamageTypes((EntityDamageByEntityEvent) event, hand)), entity, attacker);
-                event.getEntity().setMetadata(ATTACK_METADATA_TAG, new FixedMetadataValue(MythicLib.plugin, attackMeta));
+                final StatProvider attacker = StatProvider.get((LivingEntity) damager, EquipmentSlot.MAIN_HAND, true);
+                final AttackMetadata attackMeta = new MeleeAttackMetadata(new DamageMetadata(event.getDamage(), getVanillaDamageTypes((EntityDamageByEntityEvent) event, EquipmentSlot.MAIN_HAND)), entity, attacker);
+                markAsMetadata(attackMeta);
                 return attackMeta;
             }
 
@@ -281,7 +239,7 @@ public class DamageManager implements Listener, AttackHandler {
                 if (projectileData != null) {
                     final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
                             (LivingEntity) event.getEntity(), projectileData.getCaster(), projectile);
-                    event.getEntity().setMetadata(ATTACK_METADATA_TAG, new FixedMetadataValue(MythicLib.plugin, attackMeta));
+                    markAsMetadata(attackMeta);
                     return attackMeta;
                 }
 
@@ -291,35 +249,53 @@ public class DamageManager implements Listener, AttackHandler {
                     final StatProvider attacker = StatProvider.get((LivingEntity) source, EquipmentSlot.MAIN_HAND, true);
                     final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
                             (LivingEntity) event.getEntity(), attacker, projectile);
-                    event.getEntity().setMetadata(ATTACK_METADATA_TAG, new FixedMetadataValue(MythicLib.plugin, attackMeta));
+                    markAsMetadata(attackMeta);
                     return attackMeta;
                 }
             }
         }
 
         // Attacks with NO damager
-        final @NotNull AttackMetadata vanillaAttack = new AttackMetadata(getVanillaDamageMetadata(event), entity, null);
-        event.getEntity().setMetadata(ATTACK_METADATA_TAG, new FixedMetadataValue(MythicLib.plugin, vanillaAttack));
+        final @NotNull AttackMetadata vanillaAttack = new AttackMetadata(new DamageMetadata(event.getDamage(), getVanillaDamageTypes(event)), entity, null);
+        markAsMetadata(vanillaAttack);
         return vanillaAttack;
     }
 
-    @NotNull
-    private DamageMetadata getVanillaDamageMetadata(EntityDamageEvent event) {
-        return getVanillaDamageMetadata(event.getCause(), event.getDamage());
+    /**
+     * Registers the attackMetadata inside of the entity metadata.
+     * This does NOT apply any damage to the target entity.
+     *
+     * @param attackMeta Attack metadata being registered
+     */
+    public void markAsMetadata(AttackMetadata attackMeta) {
+        attackMeta.getTarget().setMetadata(ATTACK_METADATA_TAG, new FixedMetadataValue(MythicLib.plugin, attackMeta));
     }
 
+    /**
+     * @param event Attack event
+     * @return The damage types of a vanilla attack
+     */
     @NotNull
-    public DamageMetadata getVanillaDamageMetadata(EntityDamageEvent.DamageCause cause, double damage) {
+    public DamageType[] getVanillaDamageTypes(EntityDamageEvent event) {
+        return getVanillaDamageTypes(event.getCause());
+    }
+
+    /**
+     * @param cause Cause of the attack
+     * @return The damage types of a vanilla attack
+     */
+    @NotNull
+    public DamageType[] getVanillaDamageTypes(EntityDamageEvent.DamageCause cause) {
         switch (cause) {
             case MAGIC:
             case DRAGON_BREATH:
-                return new DamageMetadata(damage, DamageType.MAGIC);
+                return new DamageType[]{DamageType.MAGIC};
             case POISON:
             case WITHER:
-                return new DamageMetadata(damage, DamageType.MAGIC, DamageType.DOT);
+                return new DamageType[]{DamageType.MAGIC, DamageType.DOT};
             case FIRE_TICK:
             case MELTING:
-                return new DamageMetadata(damage, DamageType.PHYSICAL, DamageType.DOT);
+                return new DamageType[]{DamageType.PHYSICAL, DamageType.DOT};
             case FALL:
             case THORNS:
             case CONTACT:
@@ -329,27 +305,42 @@ public class DamageManager implements Listener, AttackHandler {
             case FLY_INTO_WALL:
             case BLOCK_EXPLOSION:
             case ENTITY_ATTACK:
-                return new DamageMetadata(damage, DamageType.PHYSICAL);
+            case SUFFOCATION:
+            case CRAMMING:
+            case DROWNING:
+                return new DamageType[]{DamageType.PHYSICAL};
             case PROJECTILE:
-                return new DamageMetadata(damage, DamageType.PHYSICAL, DamageType.PROJECTILE);
+                return new DamageType[]{DamageType.PHYSICAL, DamageType.PROJECTILE};
             default:
-                return new DamageMetadata(damage);
+                return new DamageType[0];
         }
     }
 
     /**
-     * @param event The attack event
+     * @param event Attack event
+     * @param hand  Hand used to perform the attack
      * @return The damage types of a vanilla melee entity attack
      */
-    private DamageType[] getDamageTypes(EntityDamageByEntityEvent event, EquipmentSlot hand) {
+    @NotNull
+    public DamageType[] getVanillaDamageTypes(EntityDamageByEntityEvent event, EquipmentSlot hand) {
         Validate.isTrue(event.getDamager() instanceof LivingEntity, "Not an entity attack");
+        return getVanillaDamageTypes((LivingEntity) event.getDamager(), event.getCause(), hand);
+    }
+
+    /**
+     * @param damager Entity attacking
+     * @param cause   Cause of the attack
+     * @param hand    Hand used to perform the attack
+     * @return The damage types of a vanilla melee entity attack
+     */
+    @NotNull
+    public DamageType[] getVanillaDamageTypes(@NotNull LivingEntity damager, @NotNull EntityDamageEvent.DamageCause cause, @NotNull EquipmentSlot hand) {
 
         // Not an entity attack
-        if (event.getCause() != EntityDamageEvent.DamageCause.ENTITY_ATTACK && event.getCause() != EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK)
+        if (cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK && cause != EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK)
             return new DamageType[]{DamageType.PHYSICAL};
 
         // Physical attack with bare fists.
-        final LivingEntity damager = (LivingEntity) event.getDamager();
         if (isAir(damager.getEquipment().getItem(hand.toBukkit())))
             return new DamageType[]{DamageType.UNARMED, DamageType.PHYSICAL};
 
@@ -361,6 +352,21 @@ public class DamageManager implements Listener, AttackHandler {
         return new DamageType[]{DamageType.PHYSICAL};
     }
 
+    /**
+     * This method is used to unregister MythicLib custom damage after everything
+     * was calculated, hence MONITOR priority. As a safe practice, it does NOT
+     * ignore cancelled damage events.
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void unregisterCustomAttacks(EntityDamageByEntityEvent event) {
+
+        // Ignore fake events from RDW/mcMMO/...
+        if (event.getDamage() == 0)
+            return;
+
+        event.getEntity().removeMetadata(DamageManager.ATTACK_METADATA_TAG, MythicLib.plugin);
+    }
+
     // Purely arbitrary but works decently
     private boolean isWeapon(Material mat) {
         return mat.getMaxDurability() > 0;
@@ -368,17 +374,5 @@ public class DamageManager implements Listener, AttackHandler {
 
     private boolean isAir(ItemStack item) {
         return item == null || item.getType() == Material.AIR;
-    }
-
-    /**
-     * @see {@link #registerOffHandAttack(Entity)}
-     */
-    private static final long OFFHAND_ATTACK_TIMEOUT = 100;
-
-    private boolean isBeingOffHandAttacked(Entity entity) {
-        for (MetadataValue value : entity.getMetadata(OFFHAND_ATTACK_TAG))
-            if (value.getOwningPlugin().equals(MythicLib.plugin))
-                return System.currentTimeMillis() - (long) value.value() < OFFHAND_ATTACK_TIMEOUT;
-        return false;
     }
 }

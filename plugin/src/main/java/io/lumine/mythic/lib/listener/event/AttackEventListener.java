@@ -43,6 +43,8 @@ public class AttackEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void registerEvents(EntityDamageEvent event) {
+
+        // Ignore fake events from RDW/mcMMO/...
         if (!(event.getEntity() instanceof LivingEntity) || event.getDamage() == 0)
             return;
 
