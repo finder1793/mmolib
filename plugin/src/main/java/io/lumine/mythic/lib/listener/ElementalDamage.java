@@ -54,7 +54,7 @@ public class ElementalDamage implements Listener {
             event.getDamage().multiplicativeModifier(1 + Math.max(-1, attacker.getStat(element.getId() + "_DAMAGE_PERCENT") / 100), element);
 
             // Apply elemental weakness
-            final StatProvider opponent = StatProvider.get(event.getEntity());
+            final StatProvider opponent = StatProvider.get(event.getEntity(), null, false);
             event.getDamage().multiplicativeModifier(1 + Math.max(-1, opponent.getStat(element.getId() + "_WEAKNESS") / 100), element);
 
             // Apply elemental defense

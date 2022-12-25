@@ -255,8 +255,8 @@ public class DamageManager implements Listener, AttackHandler {
             final Entity damager = ((EntityDamageByEntityEvent) event).getDamager();
             if (damager instanceof LivingEntity) {
                 final EquipmentSlot hand = isBeingOffHandAttacked(event.getEntity()) ? EquipmentSlot.OFF_HAND : EquipmentSlot.MAIN_HAND;
-                final StatProvider attacker = StatProvider.generate((LivingEntity) damager, hand);
-                final AttackMetadata attackMeta = new MeleeAttackMetadata(new DamageMetadata(event.getDamage(), getDamageTypes((EntityDamageByEntityEvent) event, hand)), entity, attacker, hand);
+                final StatProvider attacker = StatProvider.get((LivingEntity) damager, hand, true);
+                final AttackMetadata attackMeta = new MeleeAttackMetadata(new DamageMetadata(event.getDamage(), getDamageTypes((EntityDamageByEntityEvent) event, hand)), entity, attacker);
                 event.getEntity().setMetadata(ATTACK_METADATA_TAG, new FixedMetadataValue(MythicLib.plugin, attackMeta));
                 return attackMeta;
             }
@@ -288,7 +288,7 @@ public class DamageManager implements Listener, AttackHandler {
                 // Try to trace back the player source
                 final ProjectileSource source = projectile.getShooter();
                 if (source != null && !source.equals(event.getEntity()) && source instanceof LivingEntity) {
-                    final StatProvider attacker = StatProvider.generate((LivingEntity) source, EquipmentSlot.MAIN_HAND);
+                    final StatProvider attacker = StatProvider.get((LivingEntity) source, EquipmentSlot.MAIN_HAND, true);
                     final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
                             (LivingEntity) event.getEntity(), attacker, projectile);
                     event.getEntity().setMetadata(ATTACK_METADATA_TAG, new FixedMetadataValue(MythicLib.plugin, attackMeta));
@@ -305,16 +305,21 @@ public class DamageManager implements Listener, AttackHandler {
 
     @NotNull
     private DamageMetadata getVanillaDamageMetadata(EntityDamageEvent event) {
-        switch (event.getCause()) {
+        return getVanillaDamageMetadata(event.getCause(), event.getDamage());
+    }
+
+    @NotNull
+    public DamageMetadata getVanillaDamageMetadata(EntityDamageEvent.DamageCause cause, double damage) {
+        switch (cause) {
             case MAGIC:
             case DRAGON_BREATH:
-                return new DamageMetadata(event.getDamage(), DamageType.MAGIC);
+                return new DamageMetadata(damage, DamageType.MAGIC);
             case POISON:
             case WITHER:
-                return new DamageMetadata(event.getDamage(), DamageType.MAGIC, DamageType.DOT);
+                return new DamageMetadata(damage, DamageType.MAGIC, DamageType.DOT);
             case FIRE_TICK:
             case MELTING:
-                return new DamageMetadata(event.getDamage(), DamageType.PHYSICAL, DamageType.DOT);
+                return new DamageMetadata(damage, DamageType.PHYSICAL, DamageType.DOT);
             case FALL:
             case THORNS:
             case CONTACT:
@@ -324,11 +329,11 @@ public class DamageManager implements Listener, AttackHandler {
             case FLY_INTO_WALL:
             case BLOCK_EXPLOSION:
             case ENTITY_ATTACK:
-                return new DamageMetadata(event.getDamage(), DamageType.PHYSICAL);
+                return new DamageMetadata(damage, DamageType.PHYSICAL);
             case PROJECTILE:
-                return new DamageMetadata(event.getDamage(), DamageType.PHYSICAL, DamageType.PROJECTILE);
+                return new DamageMetadata(damage, DamageType.PHYSICAL, DamageType.PROJECTILE);
             default:
-                return new DamageMetadata(event.getDamage());
+                return new DamageMetadata(damage);
         }
     }
 

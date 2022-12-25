@@ -16,7 +16,7 @@ import java.util.Objects;
  * to then apply the 'Melee Damage' stat, it would only apply to the first packet.
  * <p>
  * Since 1.3.1 it is now possible to create implementations of the DamagePacket
- * class which can be used by other plugins to
+ * class which can be used by other plugins to implement other mechanics.
  *
  * @author jules
  */

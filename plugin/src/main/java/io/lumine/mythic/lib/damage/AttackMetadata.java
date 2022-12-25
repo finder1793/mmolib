@@ -15,6 +15,11 @@ import java.util.Objects;
 
 /**
  * Instanced every time MythicLib detects and monitors an attack from any player.
+ * <p>
+ * TODO remove multiple instances of AttackMeta and make them instances of DamagePacket
+ * TODO Better to reduce confusion. It makes more sense to have MythicLib fully control
+ * TODO types of AttackMeta but have other plugins able to implement other types
+ * TODO of damage packets.
  *
  * @author Indyuce
  */

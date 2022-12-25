@@ -120,6 +120,10 @@ public class UtilityMethods {
         return loc == null || target.getBoundingBox().expand(BOUNDING_BOX_EXPANSION).contains(loc.toVector());
     }
 
+    public static boolean isRealPlayer(Object entity) {
+        return entity instanceof Player && !((Player) entity).hasMetadata("NPC");
+    }
+
     public static boolean isMetaItem(@Nullable ItemStack item) {
         return item != null && item.hasItemMeta() && item.getItemMeta().hasDisplayName();
     }
@@ -232,7 +236,6 @@ public class UtilityMethods {
     public static String ymlName(String str) {
         return str.toLowerCase().replace("_", "-").replace(" ", "-");
     }
-
 
     public static double[] getYawPitch(Vector axis) {
         double _2PI = 6.283185307179586D;

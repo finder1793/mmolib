@@ -11,9 +11,8 @@ import java.util.*;
  * Contains all the information about damage being dealt
  * during a specific attack.
  * <p>
- * TODO ?
- * - Merge damage types and elements
- * - Turn damage types into strings for external compatibility
+ * TODO Merge damage types and elements
+ * TODO Turn damage types into strings for external compatibility
  */
 public class DamageMetadata implements Cloneable {
     private final List<DamagePacket> packets = new ArrayList<>();
