@@ -14,6 +14,7 @@ Then add MythicLib-dist as dependency
     <artifactId>MythicLib-dist</artifactId>
     <version>1.3.4-SNAPSHOT</version>
     <scope>provided</scope>
+    <optional>true</optional>
 </dependency>
 ```
 
