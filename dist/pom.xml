@@ -54,10 +54,6 @@
 
                             <relocations>
                                 <relocation>
-                                    <pattern>net.kyori</pattern>
-                                    <shadedPattern>io.lumine.mythic.lib</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>org.matheclipse.commons.parser</pattern>
                                     <shadedPattern>io.lumine.mythic.lib.parser</shadedPattern>
                                 </relocation>
