@@ -166,10 +166,13 @@ public class MythicLib extends JavaPlugin {
             getLogger().log(Level.INFO, "Hooked onto Spartan");
         }
 
-        if (Bukkit.getPluginManager().getPlugin("Factions") != null) {
-            entityManager.registerRestriction(new FactionsRestriction());
-            getLogger().log(Level.INFO, "Hooked onto Factions");
-        }
+        if (Bukkit.getPluginManager().getPlugin("Factions") != null)
+            if (Bukkit.getPluginManager().getPlugin("FactionsBridge") == null) {
+                getLogger().log(Level.WARNING, "Detected a Faction plugin but not FactionsBridge. Install it for extra compatibility.");
+            } else {
+                entityManager.registerRestriction(new FactionsRestriction());
+                getLogger().log(Level.INFO, "Hooked onto Factions");
+            }
 
         if (Bukkit.getPluginManager().getPlugin("Citizens") != null) {
             entityManager.registerRestriction(new CitizensTargetRestriction());
