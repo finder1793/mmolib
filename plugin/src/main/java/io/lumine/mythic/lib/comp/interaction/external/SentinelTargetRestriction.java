@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.comp.target;
+package io.lumine.mythic.lib.comp.interaction.external;
 
 import net.citizensnpcs.api.npc.NPC;
 import org.mcmonkey.sentinel.SentinelTrait;

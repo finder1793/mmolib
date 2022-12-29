@@ -10,6 +10,12 @@ public enum CustomFlag {
 
     // Common flags
     MMO_ABILITIES,
+    MMO_PVP,
+
+    /**
+     * @deprecated Useless
+     */
+    @Deprecated
     ABILITY_PVP;
 
     public String getPath() {

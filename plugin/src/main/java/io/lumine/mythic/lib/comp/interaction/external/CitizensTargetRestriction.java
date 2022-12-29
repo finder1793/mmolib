@@ -1,5 +1,8 @@
-package io.lumine.mythic.lib.comp.target;
+package io.lumine.mythic.lib.comp.interaction.external;
 
+import io.lumine.mythic.lib.comp.interaction.InteractionType;
+import io.lumine.mythic.lib.comp.interaction.TargetRestriction;
+import io.lumine.mythic.lib.comp.interaction.external.SentinelTargetRestriction;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;

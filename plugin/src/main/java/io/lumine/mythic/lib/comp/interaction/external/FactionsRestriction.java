@@ -1,9 +1,11 @@
-package io.lumine.mythic.lib.comp.target;
+package io.lumine.mythic.lib.comp.interaction.external;
 
 import cc.javajobs.factionsbridge.FactionsBridge;
 import cc.javajobs.factionsbridge.bridge.infrastructure.struct.Faction;
 import cc.javajobs.factionsbridge.bridge.infrastructure.struct.FactionsAPI;
 import cc.javajobs.factionsbridge.bridge.infrastructure.struct.Relationship;
+import io.lumine.mythic.lib.comp.interaction.InteractionType;
+import io.lumine.mythic.lib.comp.interaction.TargetRestriction;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 

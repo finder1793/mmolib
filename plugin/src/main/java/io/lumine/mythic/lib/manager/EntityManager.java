@@ -1,8 +1,9 @@
 package io.lumine.mythic.lib.manager;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.comp.target.InteractionType;
-import io.lumine.mythic.lib.comp.target.TargetRestriction;
+import io.lumine.mythic.lib.comp.interaction.InteractionType;
+import io.lumine.mythic.lib.comp.interaction.TargetRestriction;
+import io.lumine.mythic.lib.comp.interaction.relation.RelationHandler;
 import io.lumine.mythic.lib.util.CustomProjectile;
 import org.bukkit.entity.*;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +16,7 @@ import java.util.Set;
 
 public class EntityManager {
     private final Set<TargetRestriction> restrictions = new HashSet<>();
+    private final Set<RelationHandler> relations = new HashSet<>();
     private final Map<Integer, CustomProjectile> projectiles = new HashMap<>();
 
     /**
@@ -29,6 +31,17 @@ public class EntityManager {
      */
     public void registerRestriction(TargetRestriction restriction) {
         restrictions.add(restriction);
+    }
+
+    /**
+     * Plugins which create player groups create relations between
+     * players. Depending on the
+     *
+     * @param relationHandler New handler for player relations
+     * @see {@link RelationHandler}
+     */
+    public void registerRelation(RelationHandler relationHandler) {
+        restrictions.add(relationHandler);
     }
 
     @Nullable
