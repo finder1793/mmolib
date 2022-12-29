@@ -1,7 +1,6 @@
 package io.lumine.mythic.lib.damage;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.player.PlayerMetadata;
@@ -37,14 +36,6 @@ public class AttackMetadata {
 
     @Nullable
     private final StatProvider attacker;
-
-    /**
-     * Attacks expire as soon as the corresponding {@link PlayerAttackEvent}
-     * was called. This simple boolean makes it easy to keep track of current
-     * registered attacks and whether or not this attack can still be used
-     * to modify the outcome of the Bukkit damage event.
-     */
-    private boolean expired;
 
     /**
      * @deprecated Attack metas with no targets are deprecated
@@ -101,14 +92,21 @@ public class AttackMetadata {
 
     /**
      * @return Whether or not the corresponding attack is closed.
+     * @deprecated Expiration is no longer well defined since AttackMetadatas
+     *         are cleaned right after damage application.
      */
+    @Deprecated
     public boolean hasExpired() {
-        return expired;
+        return false;
     }
 
+    /**
+     * @deprecated Expiration is no longer well defined since AttackMetadatas
+     *         are cleaned right after damage application.
+     */
+    @Deprecated
     public void expire() {
-        Validate.isTrue(!expired, "Attack has expired already");
-        expired = true;
+        // Nothing
     }
 
     /**

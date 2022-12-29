@@ -37,27 +37,21 @@ public class SkillMetadata {
     private final VariableList vars;
 
     /**
-     * Some mechanics
-     */
-    @Nullable
-    private final AttackMetadata attackMeta;
-
-    /**
      * Location at which the skill was cast
      */
     @NotNull
     private final Location source;
 
     /**
-     * Some skills like ray casts cache a target location which is
-     * later used in targeters
+     * Some skills like ray casts cache a target
+     * location which is later used in targeters
      */
     @Nullable
     private final Location targetLocation;
 
     /**
-     * Some skills like projectiles or ray casts cache a target
-     * entity which is later used in targeters
+     * Some skills like projectiles or ray casts cache
+     * a target entity which is later used in targeters
      */
     @Nullable
     private final Entity targetEntity;
@@ -70,11 +64,6 @@ public class SkillMetadata {
     }
 
     /**
-     * @param cast           Initial skill being cast. It's used to retrieve skill modifiers
-     * @param attackMeta     Some triggers pass an attackMeta as argument, like DAMAGED or DAMAGE.
-     * @param source         The location at which the skill/mechanic was cast
-     * @param targetLocation The skill/mechanic target location
-     * @param targetEntity   The skill/mechanic target entity
      * @deprecated AttackMetadata no longer extends PlayerMetadata
      */
     @Deprecated
@@ -83,20 +72,26 @@ public class SkillMetadata {
     }
 
     /**
-     * @param cast           Initial skill being cast. It's used to retrieve skill modifiers
-     * @param caster         Cached statistics of the skill caster
-     * @param vars           Skill variable list if it already exists
-     * @param attackMeta     Some triggers pass an attackMeta as argument, like DAMAGED or DAMAGE.
-     * @param source         The location at which the skill/mechanic was cast
-     * @param targetLocation The skill/mechanic target location
-     * @param targetEntity   The skill/mechanic target entity
-     * @param orientation    Skill orientation if some rotation is required later on
+     * @deprecated SkillMetadatas no longer take as arguments attackMetadatas.
      */
+    @Deprecated
     public SkillMetadata(Skill cast, @NotNull PlayerMetadata caster, @NotNull VariableList vars, @Nullable AttackMetadata attackMeta, @NotNull Location source, @Nullable Location targetLocation, @Nullable Entity targetEntity, @Nullable SkillOrientation orientation) {
+        this(cast, caster, vars, source, targetLocation, targetEntity, orientation);
+    }
+
+        /**
+         * @param cast           Initial skill being cast. It's used to retrieve skill modifiers
+         * @param caster         Cached statistics of the skill caster
+         * @param vars           Skill variable list if it already exists
+         * @param source         The location at which the skill/mechanic was cast
+         * @param targetLocation The skill/mechanic target location
+         * @param targetEntity   The skill/mechanic target entity
+         * @param orientation    Skill orientation if some rotation is required later on
+         */
+    public SkillMetadata(Skill cast, @NotNull PlayerMetadata caster, @NotNull VariableList vars, @NotNull Location source, @Nullable Location targetLocation, @Nullable Entity targetEntity, @Nullable SkillOrientation orientation) {
         this.cast = cast;
         this.caster = caster;
         this.vars = vars;
-        this.attackMeta = attackMeta;
         this.source = source;
         this.targetLocation = targetLocation;
         this.targetEntity = targetEntity;
@@ -119,8 +114,9 @@ public class SkillMetadata {
         return source;
     }
 
+    @Deprecated
     public boolean hasAttackBound() {
-        return attackMeta != null;
+        return targetEntity != null && MythicLib.plugin.getDamage().getRegisteredAttackMetadata(targetEntity) != null;
     }
 
     /**
@@ -132,11 +128,6 @@ public class SkillMetadata {
      */
     public double getModifier(String path) {
         return cast.getModifier(path);
-    }
-
-    @NotNull
-    public AttackMetadata getAttack() {
-        return Objects.requireNonNull(attackMeta, "Skill has no attack metadata bound");
     }
 
     @NotNull
@@ -188,6 +179,7 @@ public class SkillMetadata {
      * @param sourceLocation If the source location should be prioritized
      * @return Target location (and if it exists) OR location of target entity (and if it exists), source location otherwise
      */
+    @NotNull
     public Location getSkillLocation(boolean sourceLocation) {
         return sourceLocation ? source : targetLocation != null ? targetLocation : targetEntity != null ? EntityLocationType.BODY.getLocation(targetEntity) : source;
     }
@@ -199,8 +191,20 @@ public class SkillMetadata {
      * @param caster If the skill caster should be prioritized
      * @return Target entity if prioritized (and if it exists), skill caster otherwise
      */
+    @NotNull
     public Entity getSkillEntity(boolean caster) {
         return caster || targetEntity == null ? getCaster().getPlayer() : targetEntity;
+    }
+
+    /**
+     * Looks into the target entity metadata for an AttackMetadata.
+     * If it finds one then it has to be from the skill caster.
+     *
+     * @return Eventual attack currently being dealt to the entity.
+     */
+    @NotNull
+    public AttackMetadata getAttack() {
+        return Objects.requireNonNull(MythicLib.plugin.getDamage().getRegisteredAttackMetadata(getTargetEntity()), "Skill has no attack bound");
     }
 
     /**
@@ -212,6 +216,7 @@ public class SkillMetadata {
      *         one using the skill target and source location if it is not null.
      *         Throws a NPE if the metadata has neither an orientation nor a target location.
      */
+    @NotNull
     public SkillOrientation getSkillOrientation() {
         return orientation != null ? orientation : new SkillOrientation(Objects.requireNonNull(targetLocation, "Skill has no orientation"), targetLocation.subtract(source).toVector());
     }
@@ -223,8 +228,9 @@ public class SkillMetadata {
      *
      * @return New skill metadata for other subskills
      */
+    @NotNull
     public SkillMetadata clone(Location source, Location targetLocation, Entity targetEntity, SkillOrientation orientation) {
-        return new SkillMetadata(cast, caster, vars, attackMeta, source, targetLocation, targetEntity, orientation);
+        return new SkillMetadata(cast, caster, vars, source, targetLocation, targetEntity, orientation);
     }
 
     /**
@@ -356,9 +362,10 @@ public class SkillMetadata {
      */
     @NotNull
     public AttackMetadata attack(@NotNull LivingEntity target, double damage, DamageType... types) {
-        if (attackMeta != null && !attackMeta.hasExpired() && target.equals(attackMeta.getTarget())) {
-            attackMeta.getDamage().add(damage, types);
-            return attackMeta;
+        final @Nullable AttackMetadata opt = MythicLib.plugin.getDamage().getRegisteredAttackMetadata(targetEntity);
+        if (opt != null) {
+            opt.getDamage().add(damage, types);
+            return opt;
         }
 
         return caster.attack(target, damage, types);

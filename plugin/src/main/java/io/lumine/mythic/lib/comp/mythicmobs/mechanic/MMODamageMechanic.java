@@ -3,7 +3,6 @@ package io.lumine.mythic.lib.comp.mythicmobs.mechanic;
 import io.lumine.mythic.api.adapters.AbstractEntity;
 import io.lumine.mythic.api.config.MythicLineConfig;
 import io.lumine.mythic.api.skills.ITargetedEntitySkill;
-import io.lumine.mythic.api.skills.SkillCaster;
 import io.lumine.mythic.api.skills.SkillMetadata;
 import io.lumine.mythic.api.skills.SkillResult;
 import io.lumine.mythic.api.skills.placeholders.PlaceholderDouble;
@@ -13,8 +12,6 @@ import io.lumine.mythic.core.utils.annotations.MythicMechanic;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.api.stat.provider.EntityStatProvider;
 import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
@@ -24,16 +21,17 @@ import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.skill.result.MythicMobsSkillResult;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.Objects;
+import java.util.logging.Level;
 
 @MythicMechanic(
         author = "Indyuce",
         name = "mmodamage",
-        aliases = {"mmod"},
+        aliases = {"mmod", "mmodmg"},
         description = "Deals damage to the target (compatible with MMO plugins)"
 )
 public class MMODamageMechanic extends DamagingMechanic implements ITargetedEntitySkill {
@@ -57,16 +55,22 @@ public class MMODamageMechanic extends DamagingMechanic implements ITargetedEnti
     @Nullable
     private final String elementName;
 
-    public MMODamageMechanic(SkillExecutor manager, String line, MythicLineConfig config) {
-        super(manager, line, config);
+    @Deprecated
+    public MMODamageMechanic(SkillExecutor manager, String file, MythicLineConfig mlc) {
+        this(manager, new File(file), mlc.getLine(), mlc);
+    }
 
-        this.amount = PlaceholderDouble.of(config.getString(new String[]{"amount", "a"}, "1", new String[0]));
-        String typesString = config.getString(new String[]{"type", "t", "types"}, null, new String[0]);
-        this.ignoreMMOAttack = config.getBoolean(new String[]{"ignoreMMOAttack", "immo"}, false);
-        this.elementName = config.getString(new String[]{"element", "el", "e"}, null);
+    public MMODamageMechanic(SkillExecutor manager, File file, String line, MythicLineConfig mlc) {
+        super(manager, file, line, mlc);
+
+        this.amount = PlaceholderDouble.of(mlc.getString(new String[]{"amount", "a"}, "1", new String[0]));
+        String typesString = mlc.getString(new String[]{"type", "t", "types"}, null, new String[0]);
+        this.ignoreMMOAttack = mlc.getBoolean(new String[]{"ignoreMMOAttack", "immo"}, false);
+        this.elementName = mlc.getString(new String[]{"element", "el", "e"}, null);
         this.types = (typesString == null || typesString.isEmpty() || "NONE".equalsIgnoreCase(typesString)) ? new DamageType[0] : toDamageTypeArray(typesString);
     }
 
+    @NotNull
     private DamageType[] toDamageTypeArray(String typesString) {
         String[] split = typesString.split("\\,");
         DamageType[] array = new DamageType[split.length];
@@ -83,41 +87,40 @@ public class MMODamageMechanic extends DamagingMechanic implements ITargetedEnti
         if (target.isDead() || !(target.getBukkitEntity() instanceof LivingEntity) || data.getCaster().isUsingDamageSkill() || target.getHealth() <= 0)
             return SkillResult.INVALID_TARGET;
 
-        // Calculate damage and find element if existing
-        double damage = amount.get(data, target) * data.getPower();
-        final @Nullable Element element = elementName != null ? Objects.requireNonNull(MythicLib.plugin.getElements().get(elementName), "Could not find element with ID '" + elementName + "'") : null;
+        // Find damageMeta
+        final double damage = amount.get(data, target) * data.getPower();
+        final @Nullable Element element = elementName != null ? Objects.requireNonNull(MythicLib.plugin.getElements().get(UtilityMethods.enumName(elementName)), "Could not find element with ID '" + elementName + "'") : null;
 
-        /*
-         * If the caster is not a player, an AttackMetadata
-         * is now called but with no attacker provided.
-         */
-        if (!(data.getCaster().getEntity().getBukkitEntity() instanceof Player)) {
-            final DamageMetadata dmg = element == null ? new DamageMetadata(damage, types) : new DamageMetadata(damage, element, types);
-            final Entity attackerBukkit = data.getCaster().getEntity().getBukkitEntity();
-            final @Nullable StatProvider attacker = attackerBukkit instanceof LivingEntity ? new EntityStatProvider((LivingEntity) attackerBukkit) : null;
-            MythicLib.plugin.getDamage().registerAttack(new AttackMetadata(dmg, (LivingEntity) target.getBukkitEntity(), attacker));
+        final AttackMetadata currentAttack;
+        if (!ignoreMMOAttack && (currentAttack = MythicLib.plugin.getDamage().getRegisteredAttackMetadata(target.getBukkitEntity())) != null) {
+            if (element == null)
+                currentAttack.getDamage().add(damage, types);
+            else
+                currentAttack.getDamage().add(damage, element, types);
             return SkillResult.SUCCESS;
         }
 
-        if (!ignoreMMOAttack && data.getVariables().has(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK)) {
-            final AttackMetadata currentAttack = (AttackMetadata) data.getVariables().get(MythicMobsSkillResult.MMOSKILL_VAR_ATTACK).get();
-            if (!currentAttack.hasExpired() && currentAttack.getTarget().equals(target.getBukkitEntity())) {
-                if (element == null)
-                    currentAttack.getDamage().add(damage, types);
-                else
-                    currentAttack.getDamage().add(damage, element, types);
-                return SkillResult.SUCCESS;
-            }
+        // Find attacker
+        final Entity attackerBukkit = data.getCaster().getEntity().getBukkitEntity();
+        final @Nullable StatProvider attacker = data.getVariables().has(MythicMobsSkillResult.MMOSKILL_VAR_STATS) ?
+                (PlayerMetadata) data.getVariables().get(MythicMobsSkillResult.MMOSKILL_VAR_STATS).get()
+                : attackerBukkit instanceof LivingEntity ? StatProvider.get((LivingEntity) attackerBukkit, EquipmentSlot.MAIN_HAND, true) : null;
+
+        // Find damage
+        final DamageMetadata damageMeta = element == null ? new DamageMetadata(damage, types) : new DamageMetadata(damage, element, types);
+        final AttackMetadata attackMeta = new AttackMetadata(damageMeta, (LivingEntity) target.getBukkitEntity(), attacker);
+
+        // Register damage in ML and apply damage
+        MythicLib.plugin.getDamage().markAsMetadata(attackMeta);
+        try {
+            doDamage(data.getCaster(), target, damage);
+        } catch (Exception exception) {
+            MythicLib.plugin.getLogger().log(Level.SEVERE, "Caught an exception (4) while damaging entity '" + target.getUniqueId() + "':");
+            exception.printStackTrace();
+        } finally {
+            MythicLib.plugin.getDamage().unmarkAsMetadata(attackMeta);
         }
 
-        final DamageMetadata dmg = element == null ? new DamageMetadata(damage, types) : new DamageMetadata(damage, element, types);
-        final PlayerMetadata caster = data.getVariables().has(MythicMobsSkillResult.MMOSKILL_VAR_STATS) ? (PlayerMetadata) data.getVariables().get(MythicMobsSkillResult.MMOSKILL_VAR_STATS).get()
-                : MMOPlayerData.get(data.getCaster().getEntity().getUniqueId()).getStatMap().cache(EquipmentSlot.MAIN_HAND);
-        MythicLib.plugin.getDamage().registerAttack(new AttackMetadata(dmg, (LivingEntity) target.getBukkitEntity(), caster), !this.preventKnockback, this.preventImmunity);
         return SkillResult.SUCCESS;
-    }
-
-    private io.lumine.mythic.api.skills.damage.DamageMetadata adaptDamageMetadata(SkillCaster who, DamageMetadata damageMetadata) {
-        return new io.lumine.mythic.api.skills.damage.DamageMetadata(who, damageMetadata.getDamage(), elementName, false, false, false, false, EntityDamageEvent.DamageCause.ENTITY_ATTACK);
     }
 }

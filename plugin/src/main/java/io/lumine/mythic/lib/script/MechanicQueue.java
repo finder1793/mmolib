@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.script;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.script.mechanic.Mechanic;
 import io.lumine.mythic.lib.script.mechanic.misc.DelayMechanic;
 import io.lumine.mythic.lib.skill.SkillMetadata;

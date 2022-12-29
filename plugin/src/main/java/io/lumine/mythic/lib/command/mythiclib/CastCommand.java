@@ -42,7 +42,7 @@ public class CastCommand extends CommandTreeNode {
 
         SimpleSkill castable = new SimpleSkill(TriggerType.CAST, handler);
         PlayerMetadata caster = MMOPlayerData.get((Player) sender).getStatMap().cache(EquipmentSlot.MAIN_HAND);
-        castable.cast(new TriggerMetadata(caster, null, null));
+        castable.cast(new TriggerMetadata(caster, null));
 
         return CommandResult.SUCCESS;
     }

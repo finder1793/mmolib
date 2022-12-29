@@ -140,19 +140,35 @@ public class MMOPlayerData {
      */
     public void triggerSkills(@NotNull TriggerType triggerType, @NotNull EquipmentSlot actionHand, @Nullable Entity target) {
         Validate.notNull(actionHand, "Action hand cannot be null");
-        triggerSkills(triggerType, statMap.cache(actionHand), null, target);
+        triggerSkills(triggerType, statMap.cache(actionHand), target);
+    }
+
+    /**
+     * @deprecated It is now useless to store AttackMetadatas in SkillMetadatas
+     */
+    @Deprecated
+    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable AttackMetadata attackMetadata, @Nullable Entity target) {
+        final Iterable<PassiveSkill> cast = triggerType.isActionHandSpecific() ? passiveSkillMap.isolateModifiers(caster.getActionHand()) : passiveSkillMap.getModifiers();
+        triggerSkills(triggerType, caster, target, cast);
     }
 
     /**
      * Trigger skills with an attack metadata and target entity.
      *
-     * @param triggerType    Action performed to trigger the skills
-     * @param target         The potential target to cast the skill onto
-     * @param attackMetadata The attack being performed
+     * @param triggerType Action performed to trigger the skills
+     * @param target      The potential target to cast the skill onto
      */
-    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable AttackMetadata attackMetadata, @Nullable Entity target) {
+    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable Entity target) {
         final Iterable<PassiveSkill> cast = triggerType.isActionHandSpecific() ? passiveSkillMap.isolateModifiers(caster.getActionHand()) : passiveSkillMap.getModifiers();
-        triggerSkills(triggerType, caster, attackMetadata, target, cast);
+        triggerSkills(triggerType, caster, target, cast);
+    }
+
+    /**
+     * @deprecated It is now useless to store AttackMetadatas in SkillMetadatas
+     */
+    @Deprecated
+    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable AttackMetadata attackMetadata, @Nullable Entity target, @NotNull Iterable<PassiveSkill> skills) {
+        triggerSkills(triggerType, caster, target, skills);
     }
 
     /**
@@ -160,17 +176,16 @@ public class MMOPlayerData {
      * You can also provide the player statistics used to cast the skills
      * which is for instance used for projectile trigger types.
      *
-     * @param triggerType    Action performed to trigger the skills
-     * @param caster         The player cached statistics
-     * @param target         The potential target to cast the skill onto
-     * @param attackMetadata The attack being performed
-     * @param skills         The list of skills currently active for the player
+     * @param triggerType Action performed to trigger the skills
+     * @param caster      The player cached statistics
+     * @param target      The potential target to cast the skill onto
+     * @param skills      The list of skills currently active for the player
      */
-    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable AttackMetadata attackMetadata, @Nullable Entity target, @NotNull Iterable<PassiveSkill> skills) {
+    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable Entity target, @NotNull Iterable<PassiveSkill> skills) {
         if (!MythicLib.plugin.getFlags().isFlagAllowed(getPlayer(), CustomFlag.MMO_ABILITIES))
             return;
 
-        final TriggerMetadata triggerMeta = new TriggerMetadata(caster, attackMetadata, target);
+        final TriggerMetadata triggerMeta = new TriggerMetadata(caster, target);
 
         for (PassiveSkill skill : skills) {
             final SkillHandler handler = skill.getTriggeredSkill().getHandler();

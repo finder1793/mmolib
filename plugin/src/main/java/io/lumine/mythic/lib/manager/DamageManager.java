@@ -111,7 +111,15 @@ public class DamageManager implements Listener {
 
         Validate.notNull(attack.getTarget(), "Target cannot be null"); // BW compatibility check
         markAsMetadata(attack);
-        applyDamage(attack.getDamage().getDamage(), attack.getTarget(), attack.isPlayer() ? ((PlayerMetadata) attack.getAttacker()).getPlayer() : null, knockback, ignoreImmunity);
+
+        try {
+            applyDamage(attack.getDamage().getDamage(), attack.getTarget(), attack.isPlayer() ? ((PlayerMetadata) attack.getAttacker()).getPlayer() : null, knockback, ignoreImmunity);
+        } catch (Exception exception) {
+            MythicLib.plugin.getLogger().log(Level.SEVERE, "Caught an exception (1) while damaging entity '" + attack.getTarget().getUniqueId() + "':");
+            exception.printStackTrace();
+        } finally {
+            unmarkAsMetadata(attack);
+        }
     }
 
     private void applyDamage(double damage, @NotNull LivingEntity target, @Nullable Player damager, boolean knockback, boolean ignoreImmunity) {
@@ -123,7 +131,7 @@ public class DamageManager implements Listener {
                 instance.addModifier(NO_KNOCKBACK);
                 applyDamage(damage, target, damager, true, ignoreImmunity);
             } catch (Exception anyError) {
-                MythicLib.plugin.getLogger().log(Level.SEVERE, "An error occured while registering player damage");
+                MythicLib.plugin.getLogger().log(Level.SEVERE, "Caught an exception (2) while damaging entity '" + target.getUniqueId() + "':");
                 anyError.printStackTrace();
             } finally {
                 instance.removeModifier(NO_KNOCKBACK);
@@ -136,7 +144,7 @@ public class DamageManager implements Listener {
                 target.setNoDamageTicks(0);
                 applyDamage(damage, target, damager, true, false);
             } catch (Exception anyError) {
-                MythicLib.plugin.getLogger().log(Level.SEVERE, "An error occured while registering player damage");
+                MythicLib.plugin.getLogger().log(Level.SEVERE, "Caught an exception (3) while damaging entity '" + target.getUniqueId() + "':");
                 anyError.printStackTrace();
             } finally {
                 target.setNoDamageTicks(noDamageTicks);
@@ -192,7 +200,7 @@ public class DamageManager implements Listener {
         // Attack registries from other plugins
         for (AttackHandler handler : handlers) {
             final AttackMetadata found = handler.getAttack(event);
-            if (found != null && !found.hasExpired()) {
+            if (found != null) {
                 markAsMetadata(found);
                 return found;
             }
@@ -269,6 +277,16 @@ public class DamageManager implements Listener {
      */
     public void markAsMetadata(AttackMetadata attackMeta) {
         attackMeta.getTarget().setMetadata(ATTACK_METADATA_TAG, new FixedMetadataValue(MythicLib.plugin, attackMeta));
+    }
+
+    /**
+     * Registers the attackMetadata inside of the entity metadata.
+     * This does NOT apply any damage to the target entity.
+     *
+     * @param attackMeta Attack metadata being registered
+     */
+    public void unmarkAsMetadata(AttackMetadata attackMeta) {
+        attackMeta.getTarget().removeMetadata(ATTACK_METADATA_TAG, MythicLib.plugin);
     }
 
     /**
@@ -352,19 +370,31 @@ public class DamageManager implements Listener {
         return new DamageType[]{DamageType.PHYSICAL};
     }
 
+    @Nullable
+    public AttackMetadata getRegisteredAttackMetadata(Entity entity) {
+        for (MetadataValue mv : entity.getMetadata(ATTACK_METADATA_TAG))
+            if (mv.getOwningPlugin().equals(MythicLib.plugin))
+                return (AttackMetadata) mv.value();
+        return null;
+    }
+
     /**
      * This method is used to unregister MythicLib custom damage after everything
      * was calculated, hence MONITOR priority. As a safe practice, it does NOT
      * ignore cancelled damage events.
+     * <p>
+     * This method is ABSOLUTELY NECESSARY. While MythicLib does clean up the
+     * entity metadata as soon as damage is dealt, vanilla attacks and extra
+     * plugins just don't.
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    public void unregisterCustomAttacks(EntityDamageByEntityEvent event) {
+    public void unregisterCustomAttacks(EntityDamageEvent event) {
 
         // Ignore fake events from RDW/mcMMO/...
-        if (event.getDamage() == 0)
+        if (!(event.getEntity() instanceof LivingEntity) || event.getDamage() == 0)
             return;
 
-        event.getEntity().removeMetadata(DamageManager.ATTACK_METADATA_TAG, MythicLib.plugin);
+        event.getEntity().removeMetadata(ATTACK_METADATA_TAG, MythicLib.plugin);
     }
 
     // Purely arbitrary but works decently

@@ -28,8 +28,8 @@ public class MeleeAttackMetadata extends AttackMetadata {
     }
 
     /**
-     * @return
-     * @deprecated
+     * @return Hand used in the action
+     * @deprecated Useless
      */
     @Deprecated
     public EquipmentSlot getHand() {

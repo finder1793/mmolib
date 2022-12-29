@@ -68,7 +68,7 @@ public class ElementalDamage implements Listener {
             final boolean crit = RANDOM.nextDouble() < critChance / 100;
             final Skill skill = element.getSkill(crit);
             if (skill != null && attacker instanceof PlayerMetadata)
-                skill.cast(new TriggerMetadata((PlayerMetadata) attacker, event.getAttack(), event.getEntity()));
+                skill.cast(new TriggerMetadata((PlayerMetadata) attacker, event.getEntity()));
             if (crit)
                 event.getDamage().registerElementalCriticalStrike(element);
         }
