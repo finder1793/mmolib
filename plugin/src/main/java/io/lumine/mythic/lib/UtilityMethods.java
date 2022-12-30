@@ -112,12 +112,16 @@ public class UtilityMethods {
      */
     public static boolean canTarget(@Nullable Player source, @Nullable Location loc, Entity target, InteractionType interaction) {
 
+        // Check for bounding box
+        // Small computations first
+        if (loc != null && !target.getBoundingBox().expand(BOUNDING_BOX_EXPANSION).contains(loc.toVector()))
+            return false;
+
         // Interaction type check
         if (!MythicLib.plugin.getEntities().canTarget(source, target, interaction))
             return false;
 
-        // Check for bounding box
-        return loc == null || target.getBoundingBox().expand(BOUNDING_BOX_EXPANSION).contains(loc.toVector());
+        return true;
     }
 
     public static boolean isRealPlayer(Object entity) {
