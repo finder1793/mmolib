@@ -9,15 +9,13 @@ import org.bukkit.entity.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class EntityManager {
     private final Set<TargetRestriction> restrictions = new HashSet<>();
-    private final Set<RelationHandler> relations = new HashSet<>();
-    private final Map<Integer, CustomProjectile> projectiles = new HashMap<>();
+    private final Set<RelationshipHandler> relHandlers = new HashSet<>();
 
     /**
      * See {@link TargetRestriction} for more information. This should be
@@ -44,16 +42,23 @@ public class EntityManager {
         restrictions.add(relationHandler);
     }
 
+    /**
+     * @see {@link CustomProjectile#getCustomData(Entity)}
+     * @deprecated
+     */
     @Nullable
+    @Deprecated
     public CustomProjectile getCustomProjectile(Entity entity) {
-        return projectiles.get(entity.getEntityId());
+        return CustomProjectile.getCustomData(entity);
     }
 
     /**
      * Registers a custom projectile. This is used for bows, crossbows and tridents.
+     *
+     * @deprecated Automatically registers on class instanciation
      */
+    @Deprecated
     public void registerCustomProjectile(Entity entity, CustomProjectile projectileData) {
-        projectiles.put(entity.getEntityId(), projectileData);
     }
 
     /**
@@ -88,7 +93,8 @@ public class EntityManager {
         return true;
     }
 
+    @Deprecated
     public void unregisterCustomProjectile(Projectile projectile) {
-        projectiles.remove(projectile.getEntityId());
+        projectile.removeMetadata(CustomProjectile.METADATA_KEY, MythicLib.plugin);
     }
 }

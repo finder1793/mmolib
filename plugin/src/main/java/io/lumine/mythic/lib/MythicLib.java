@@ -130,7 +130,6 @@ public class MythicLib extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new MythicCraftingManager(), this);
         Bukkit.getPluginManager().registerEvents(new SkillTriggers(), this);
         Bukkit.getPluginManager().registerEvents(new ElementalDamage(), this);
-        Bukkit.getPluginManager().registerEvents(new EntityListener(), this);
         ArmorEquipEvent.registerListener(this);
 
         if (getConfig().getBoolean("health-scale.enabled"))

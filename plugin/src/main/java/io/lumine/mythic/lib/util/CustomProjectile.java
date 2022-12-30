@@ -16,7 +16,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The one thing about projectiles is that they create some type of
@@ -45,6 +48,8 @@ public class CustomProjectile extends TemporaryListener {
      */
     private final Iterable<PassiveSkill> cachedSkills;
     private final PlayerMetadata caster;
+
+    public static final String METADATA_KEY = "CustomProjectile";
 
     /**
      * Used to trigger skills related to projectiles (either arrows or tridents). This
@@ -75,8 +80,8 @@ public class CustomProjectile extends TemporaryListener {
         };
         runnable.runTaskTimer(MythicLib.plugin, 0, 1);
 
-        // Register in MythicLib
-        MythicLib.plugin.getEntities().registerCustomProjectile(projectile, this);
+        // Register
+        projectile.setMetadata(METADATA_KEY, new FixedMetadataValue(MythicLib.plugin, this));
     }
 
     public PlayerMetadata getCaster() {
@@ -144,5 +149,13 @@ public class CustomProjectile extends TemporaryListener {
         public TriggerType getLandTrigger() {
             return land;
         }
+    }
+
+    @Nullable
+    public static CustomProjectile getCustomData(Entity proj) {
+        for (MetadataValue mv : proj.getMetadata(METADATA_KEY))
+            if (mv.getOwningPlugin().equals(MythicLib.plugin))
+                return (CustomProjectile) mv.value();
+        return null;
     }
 }

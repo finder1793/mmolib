@@ -243,7 +243,7 @@ public class DamageManager implements Listener {
 
                 // First tries to find original CustomProjectile
                 final Projectile projectile = (Projectile) damager;
-                final @Nullable CustomProjectile projectileData = MythicLib.plugin.getEntities().getCustomProjectile(projectile);
+                final @Nullable CustomProjectile projectileData = CustomProjectile.getCustomData(projectile);
                 if (projectileData != null) {
                     final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
                             (LivingEntity) event.getEntity(), projectileData.getCaster(), projectile);
