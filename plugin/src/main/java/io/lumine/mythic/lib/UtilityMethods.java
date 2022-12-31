@@ -45,10 +45,10 @@ public class UtilityMethods {
     /**
      * @param loc Where we are looking for nearby entities
      * @return List of all entities surrounding a location. This method loops
-     * through the 9 surrounding chunks and collect all entities from
-     * them. This list can be cached and used multiple times in the same
-     * tick for projectile based spells which need to run entity
-     * checkups
+     *         through the 9 surrounding chunks and collect all entities from
+     *         them. This list can be cached and used multiple times in the same
+     *         tick for projectile based spells which need to run entity
+     *         checkups
      */
     public static List<Entity> getNearbyChunkEntities(Location loc) {
         List<Entity> entities = new ArrayList<>();
@@ -110,7 +110,7 @@ public class UtilityMethods {
      * @param interaction Type of interaction
      * @return If the entity can be damaged, by a specific player, at a specific spot
      */
-    public static boolean canTarget(@Nullable Player source, @Nullable Location loc, Entity target, InteractionType interaction) {
+    public static boolean canTarget(@Nullable Player source, @Nullable Location loc, @NotNull Entity target, @NotNull InteractionType interaction) {
 
         // Check for bounding box
         // Small computations first
