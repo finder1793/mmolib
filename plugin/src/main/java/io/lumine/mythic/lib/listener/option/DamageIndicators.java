@@ -74,7 +74,7 @@ public class DamageIndicators extends GameIndicators {
         // Calculate holograms, take into account DAMAGE MODIFIERS (bug fix)
         final List<String> holos = new ArrayList<>();
         final Map<IndicatorType, Double> mappedDamage = mapDamage(event.getDamage());
-        @Deprecated final double modifierDue = (event.toBukkit().getFinalDamage() - event.toBukkit().getDamage()) / mappedDamage.size();
+        final double modifierDue = (event.toBukkit().getFinalDamage() - event.toBukkit().getDamage()) / Math.max(1, mappedDamage.size());
         mappedDamage.forEach((type, val) -> holos.add(type.computeFormat(val + modifierDue)));
 
         // Display multiple indicators
