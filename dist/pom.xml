@@ -82,21 +82,6 @@
         </plugins>
     </build>
 
-    <distributionManagement>
-        <repository>
-            <id>phoenixdevt-releases</id>
-            <name>PhoenixDevt Releases</name>
-            <url>https://nexus.phoenixdevt.fr/repository/maven-releases/</url>
-        </repository>
-
-        <snapshotRepository>
-            <id>phoenixdevt-snapshots</id>
-            <name>PhoenixDevt Snapshots</name>
-            <url>https://nexus.phoenixdevt.fr/repository/maven-snapshots/</url>
-        </snapshotRepository>
-
-    </distributionManagement>
-
     <dependencies>
         <dependency>
             <groupId>io.lumine</groupId>
