@@ -124,8 +124,8 @@ public class UtilityMethods {
         return true;
     }
 
-    public static boolean isRealPlayer(Object entity) {
-        return entity instanceof Player && !((Player) entity).hasMetadata("NPC");
+    public static boolean isRealPlayer(Entity entity) {
+        return entity instanceof Player && !entity.hasMetadata("NPC");
     }
 
     public static boolean isMetaItem(@Nullable ItemStack item) {

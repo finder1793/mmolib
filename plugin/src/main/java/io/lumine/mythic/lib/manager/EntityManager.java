@@ -1,16 +1,17 @@
 package io.lumine.mythic.lib.manager;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.api.event.DamageCheckEvent;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
 import io.lumine.mythic.lib.comp.interaction.TargetRestriction;
-import io.lumine.mythic.lib.comp.interaction.relation.RelationHandler;
+import io.lumine.mythic.lib.comp.interaction.relation.RelationshipHandler;
 import io.lumine.mythic.lib.util.CustomProjectile;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class EntityManager {
@@ -36,10 +37,10 @@ public class EntityManager {
      * players. Depending on the
      *
      * @param relationHandler New handler for player relations
-     * @see {@link RelationHandler}
+     * @see {@link RelationshipHandler}
      */
-    public void registerRelation(RelationHandler relationHandler) {
-        restrictions.add(relationHandler);
+    public void registerRelationHandler(RelationshipHandler relationHandler) {
+        relHandlers.add(relationHandler);
     }
 
     /**
@@ -68,27 +69,39 @@ public class EntityManager {
      * - plugins which implement friendly fire player sets like parties, guilds, nations, factions....
      * - plugins which implement custom invulnerable entities like NPCs, sentinels....
      *
-     * @param source      Player targeting another entity
-     * @param target      Entity being targeted
-     * @param interaction Type of interaction, whether it's positive (buff, heal) or negative (offense skill, attack)
+     * @param source          Player targeting another entity
+     * @param target          Entity being targeted
+     * @param interactionType Type of interaction, whether it's positive (buff, heal) or negative (offense skill, attack)
      * @return If false, any interaction should be cancelled!
      */
-    public boolean canTarget(@NotNull Player source, @NotNull Entity target, @NotNull InteractionType interaction) {
+    public boolean canTarget(@NotNull Player source, @NotNull Entity target, @NotNull InteractionType interactionType) {
 
         // Simple checks
         if (source.equals(target) || target.isDead() || !(target instanceof LivingEntity) || target instanceof ArmorStand)
             return false;
 
-        // PvP checks
-        if (interaction.isOffense() && target instanceof Player &&
-                (!target.getWorld().getPVP() || (interaction == InteractionType.OFFENSE_SKILL && !MythicLib.plugin.getMMOConfig().playerAbilityDamage) || !MythicLib.plugin.getFlags().isPvpAllowed(target.getLocation())))
-            return false;
-
-        // Specific plugin checks (Citizens, Factions..)
+        // Specific plugin checks (Not used anymore)
         final LivingEntity livingTarget = (LivingEntity) target;
         for (TargetRestriction restriction : restrictions)
-            if (!restriction.canTarget(source, livingTarget, interaction))
+            if (!restriction.canTarget(source, livingTarget, interactionType))
                 return false;
+
+        // Pvp Interaction rules: PvE -> PvP
+        if (target instanceof Player) {
+
+            final DamageCheckEvent damageCheckEvent = new DamageCheckEvent(source, target, interactionType);
+            Bukkit.getPluginManager().callEvent(damageCheckEvent);
+
+            // Offense
+            if (interactionType.isOffense())
+                return !damageCheckEvent.isCancelled();
+
+            // Support
+            final boolean pvp = !damageCheckEvent.isCancelled();
+            for (RelationshipHandler relHandler : relHandlers)
+                if (!MythicLib.plugin.getMMOConfig().pvpInteractionRules.isEnabled(pvp, interactionType, relHandler.getRelationship(source, (Player) target)))
+                    return false;
+        }
 
         return true;
     }

@@ -55,18 +55,6 @@ public class MMOPlayerData {
      */
     private final Map<String, Object> externalData = new HashMap<>();
 
-    /**
-     * When a player logs off, the MythicLib player data is cached for
-     * an extra delay which is set to 24 hours before it is finally removed
-     * from the memory.
-     * <p>
-     * Cache time out is set to one full day. If the player does NOT reconnect
-     * after one day, the temporary player data will be completely lost.
-     */
-    private static final long CACHE_TIME_OUT = 1000 * 60 * 60 * 24;
-
-    private static final Map<UUID, MMOPlayerData> data = new HashMap<>();
-
     private MMOPlayerData(Player player) {
         this.uuid = player.getUniqueId();
         this.player = player;
@@ -214,9 +202,20 @@ public class MMOPlayerData {
         return lastLogActivity;
     }
 
+    /**
+     * When a player logs off, the MythicLib player data is cached for
+     * an extra delay which is set to 24 hours before it is finally removed
+     * from the memory.
+     * <p>
+     * Cache time out is set to one full day. If the player does NOT reconnect
+     * after one day, the temporary player data will be completely lost.
+     */
+    private static final long CACHE_TIME_OUT = 1000 * 60 * 60 * 24;
+
     public boolean isTimedOut() {
         return !isOnline() && lastLogActivity + CACHE_TIME_OUT < System.currentTimeMillis();
     }
+
 
     /**
      * This method simply checks if the cached Player instance is null
@@ -295,6 +294,22 @@ public class MMOPlayerData {
     public boolean hasExternalData(String key) {
         return externalData.containsKey(key);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MMOPlayerData)) return false;
+
+        MMOPlayerData that = (MMOPlayerData) o;
+        return uuid.equals(that.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return uuid.hashCode();
+    }
+
+    private static final Map<UUID, MMOPlayerData> data = new HashMap<>();
 
     /**
      * Called everytime a player enters the server. If the
@@ -408,20 +423,6 @@ public class MMOPlayerData {
             if (tempData.isTimedOut())
                 iterator.remove();
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MMOPlayerData)) return false;
-
-        MMOPlayerData that = (MMOPlayerData) o;
-        return uuid.equals(that.uuid);
-    }
-
-    @Override
-    public int hashCode() {
-        return uuid.hashCode();
     }
 }
 

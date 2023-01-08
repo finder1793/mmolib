@@ -18,16 +18,11 @@ import io.lumine.mythic.lib.comp.anticheat.AntiCheatSupport;
 import io.lumine.mythic.lib.comp.anticheat.SpartanPlugin;
 import io.lumine.mythic.lib.comp.dualwield.DualWieldHook;
 import io.lumine.mythic.lib.comp.dualwield.RealDualWieldHook;
-import io.lumine.mythic.lib.comp.flags.FlagHandler;
-import io.lumine.mythic.lib.comp.flags.FlagPlugin;
-import io.lumine.mythic.lib.comp.flags.ResidenceFlags;
-import io.lumine.mythic.lib.comp.flags.WorldGuardFlags;
+import io.lumine.mythic.lib.comp.flags.*;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
 import io.lumine.mythic.lib.comp.placeholder.*;
 import io.lumine.mythic.lib.comp.protocollib.DamageParticleCap;
-import io.lumine.mythic.lib.comp.interaction.external.CitizensTargetRestriction;
-import io.lumine.mythic.lib.comp.interaction.external.FactionsRestriction;
 import io.lumine.mythic.lib.glow.GlowModule;
 import io.lumine.mythic.lib.glow.provided.MythicGlowModule;
 import io.lumine.mythic.lib.gui.PluginInventory;
@@ -163,19 +158,6 @@ public class MythicLib extends JavaPlugin {
         if (Bukkit.getPluginManager().getPlugin("Spartan") != null) {
             antiCheatSupport = new SpartanPlugin();
             getLogger().log(Level.INFO, "Hooked onto Spartan");
-        }
-
-        if (Bukkit.getPluginManager().getPlugin("Factions") != null)
-            if (Bukkit.getPluginManager().getPlugin("FactionsBridge") == null) {
-                getLogger().log(Level.WARNING, "Detected a Faction plugin but not FactionsBridge. Install it for extra compatibility.");
-            } else {
-                entityManager.registerRestriction(new FactionsRestriction());
-                getLogger().log(Level.INFO, "Hooked onto Factions");
-            }
-
-        if (Bukkit.getPluginManager().getPlugin("Citizens") != null) {
-            entityManager.registerRestriction(new CitizensTargetRestriction());
-            getLogger().log(Level.INFO, "Hooked onto Citizens");
         }
 
         if (Bukkit.getPluginManager().getPlugin("ProtocolLib") != null) {
