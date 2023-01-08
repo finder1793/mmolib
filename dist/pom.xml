@@ -20,7 +20,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <finalName>MythicLib-${pom.version}</finalName>
+                    <finalName>MythicLib-${project.version}</finalName>
                     <outputDirectory>../target/</outputDirectory>
                 </configuration>
             </plugin>
