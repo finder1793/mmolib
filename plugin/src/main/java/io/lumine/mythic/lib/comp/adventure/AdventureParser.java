@@ -102,7 +102,7 @@ public class AdventureParser {
                     });
         }
         cpy = removeUnparsedAndUselessTags(cpy);
-        final String output = minimiseOutput(minecraftColorization(cpy));
+        final String output = minecraftColorization(cpy);
         CACHE.put(hashcode, output);
         return output;
     }
@@ -428,23 +428,6 @@ public class AdventureParser {
         return builder.toString();
     }
 
-    public @NotNull String minimiseOutput(@NotNull String input) {
-        int originalLength = input.length();
-        final String original = input;
-
-        for (int i = 0; i < input.length(); i++) {
-            if (i + 4 >= input.length())
-                break;
-            if (input.charAt(i) != ChatColor.COLOR_CHAR || input.charAt(i + 2) != ChatColor.COLOR_CHAR)
-                continue;
-            String currentColor = input.substring(i, i + 2);
-            String nextColor = input.substring(i + 2, i + 4);
-            if (currentColor.equals(nextColor)) {
-                input = input.substring(0, i + 2) + input.substring(i + 4);
-            }
-        }
-        return input;
-    }
 
     /**
      * Register a new tag and check if it's compatible with the server
