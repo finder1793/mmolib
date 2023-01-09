@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
 @ApiStatus.NonExtendable
 public class AdventureParser {
 
+    private static final Map<Integer, String> CACHE = new HashMap<>();
+
     /* Constants */
     private static final Pattern TAG_REGEX = Pattern.compile("(?i)(?<=<).*?(?=>)");
     private static final Pattern HEX_REGEX = Pattern.compile("(?i)(#|HEX)[0-9a-f]{6}");
@@ -72,6 +74,9 @@ public class AdventureParser {
      * @return The parsed string.
      */
     public @NotNull String parse(@NotNull final String src) {
+        int hashcode = src.hashCode();
+        if (CACHE.containsKey(hashcode))
+            return CACHE.get(hashcode);
         String cpy = src;
         Matcher matcher = TAG_REGEX.matcher(cpy);
         while (matcher.find()) {
@@ -98,7 +103,7 @@ public class AdventureParser {
                     });
         }
         cpy = removeUnparsedAndUselessTags(cpy);
-        return minecraftColorization(cpy);
+        return Objects.requireNonNull(CACHE.put(hashcode, minimiseOutput(minecraftColorization(cpy))));
     }
 
     /**
@@ -422,6 +427,23 @@ public class AdventureParser {
         return builder.toString();
     }
 
+    public @NotNull String minimiseOutput(@NotNull String input) {
+        int originalLength = input.length();
+        final String original = input;
+
+        for (int i = 0; i < input.length(); i++) {
+            if (i + 4 >= input.length())
+                break;
+            if (input.charAt(i) != ChatColor.COLOR_CHAR || input.charAt(i + 2) != ChatColor.COLOR_CHAR)
+                continue;
+            String currentColor = input.substring(i, i + 2);
+            String nextColor = input.substring(i + 2, i + 4);
+            if (currentColor.equals(nextColor)) {
+                input = input.substring(0, i + 2) + input.substring(i + 4);
+            }
+        }
+        return input;
+    }
 
     /**
      * Register a new tag and check if it's compatible with the server
