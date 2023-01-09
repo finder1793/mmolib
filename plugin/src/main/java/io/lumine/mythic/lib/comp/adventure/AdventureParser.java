@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @ApiStatus.NonExtendable
 public class AdventureParser {
 
-    private static final Map<Integer, String> CACHE = new HashMap<>();
+    public static final Map<Integer, String> CACHE = new HashMap<>();
 
     /* Constants */
     private static final Pattern TAG_REGEX = Pattern.compile("(?i)(?<=<).*?(?=>)");
@@ -74,6 +74,8 @@ public class AdventureParser {
      * @return The parsed string.
      */
     public @NotNull String parse(@NotNull final String src) {
+        if (src.isEmpty())
+            return src;
         int hashcode = src.hashCode();
         if (CACHE.containsKey(hashcode))
             return CACHE.get(hashcode);
@@ -92,18 +94,17 @@ public class AdventureParser {
                         Matcher matcher1 = HEX_REGEX.matcher(tag);
                         if (!matcher1.find())
                             return finalCpy;
-                        // Fall back
-                        // return finalCpy.replace("<" + tag + ">", fallBackResolver.apply(tag));
 
                         String prefix = matcher1.group(1);
                         return findByName(prefix)
                                 .map(adventureTag -> parseTag(finalCpy, adventureTag, prefix, tag))
                                 .orElse(finalCpy);
-                        // .orElse(finalCpy.replace("<" + tag + ">", fallBackResolver.apply(tag)));
                     });
         }
         cpy = removeUnparsedAndUselessTags(cpy);
-        return Objects.requireNonNull(CACHE.put(hashcode, minimiseOutput(minecraftColorization(cpy))));
+        final String output = minimiseOutput(minecraftColorization(cpy));
+        CACHE.put(hashcode, output);
+        return output;
     }
 
     /**
