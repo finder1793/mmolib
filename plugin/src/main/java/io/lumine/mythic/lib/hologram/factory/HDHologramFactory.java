@@ -1,9 +1,9 @@
 package io.lumine.mythic.lib.hologram.factory;
 
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.hologram.Hologram;
 import io.lumine.mythic.lib.hologram.HologramFactory;
+import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
@@ -21,6 +21,7 @@ import java.util.List;
  */
 public class HDHologramFactory implements HologramFactory {
 
+
    /* public void displayIndicator(Location loc, String format, Player player) {
         Hologram hologram = HologramsAPI.createHologram(MythicLib.plugin, loc);
         hologram.appendTextLine(format);
@@ -31,19 +32,20 @@ public class HDHologramFactory implements HologramFactory {
 
     @Override
     public Hologram newHologram(Location loc, List<String> lines) {
+
         return new HDHologram(loc, lines);
     }
 
-    public class HDHologram implements Hologram {
-        private final com.gmail.filoghost.holographicdisplays.api.Hologram holo;
+    public static class HDHologram implements Hologram {
+        private final me.filoghost.holographicdisplays.api.hologram.@NotNull Hologram holo;
         private final List<String> lines;
         private boolean spawned = true;
 
         public HDHologram(Location loc, List<String> list) {
-            holo = HologramsAPI.createHologram(MythicLib.plugin, loc);
             this.lines = list;
+            this.holo = HolographicDisplaysAPI.get(MythicLib.plugin).createHologram(loc);
             for (String line : lines)
-                holo.appendTextLine(line);
+                this.holo.getLines().appendText(line);
         }
 
         @Override
@@ -58,12 +60,12 @@ public class HDHologramFactory implements HologramFactory {
 
         @Override
         public Location getLocation() {
-            return holo.getLocation();
+            return holo.getPosition().toLocation();
         }
 
         @Override
         public void updateLocation(Location loc) {
-            holo.teleport(loc);
+            holo.setPosition(loc);
         }
 
         @Override
