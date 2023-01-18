@@ -1,6 +1,8 @@
 package io.lumine.mythic.lib;
 
 import com.google.gson.Gson;
+import fr.phoenix.mmoprofiles.MMOProfiles;
+import fr.phoenix.mmoprofiles.manager.data.ProfilesManager;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.MegaWorkbenchMapping;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.SuperWorkbenchMapping;
@@ -74,6 +76,7 @@ public class MythicLib extends JavaPlugin {
     private AdventureParser adventureParser;
     @Getter
     private PlaceholderParser placeholderParser;
+    private ProfilesManager profilesManager;
     private GlowModule glowModule;
 
     @Override
@@ -149,7 +152,10 @@ public class MythicLib extends JavaPlugin {
             MythicItemUIFilter.register();
             getLogger().log(Level.INFO, "Hooked onto MythicMobs");
         }
-
+        if (Bukkit.getPluginManager().getPlugin("MMOProfiles") != null) {
+            profilesManager = MMOProfiles.plugin.dataProvider.getProfilesManager();
+            getLogger().log(Level.INFO, "Hooked onto MMOProfiles");
+        }
         if (Bukkit.getPluginManager().getPlugin("Residence") != null) {
             flagHandler.registerPlugin(new ResidenceFlags());
             getLogger().log(Level.INFO, "Hooked onto Residence");
@@ -310,6 +316,10 @@ public class MythicLib extends JavaPlugin {
 
     public AntiCheatSupport getAntiCheat() {
         return antiCheatSupport;
+    }
+
+    public ProfilesManager getProfilesManager() {
+        return profilesManager;
     }
 
     @Nullable
