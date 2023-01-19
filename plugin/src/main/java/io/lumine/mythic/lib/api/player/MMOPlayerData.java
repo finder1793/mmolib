@@ -374,7 +374,7 @@ public class MMOPlayerData {
 
     @NotNull
     public static MMOPlayerData get(@NotNull OfflinePlayer player) {
-        return get(player.getUniqueId());
+        return get(MythicLib.plugin.getProfileModule().getUUID(player));
     }
 
     @NotNull

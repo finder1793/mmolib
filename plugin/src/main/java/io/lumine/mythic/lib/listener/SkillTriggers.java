@@ -64,7 +64,9 @@ public class SkillTriggers implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void login(PlayerJoinEvent event) {
-        MMOPlayerData.get(event.getPlayer()).triggerSkills(TriggerType.LOGIN, null);
+        //If there is a profiles module this needs to be done later
+        if (MythicLib.plugin.getProfileModule().canLoadPlayerData())
+            MMOPlayerData.get(event.getPlayer()).triggerSkills(TriggerType.LOGIN, null);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -100,15 +102,15 @@ public class SkillTriggers implements Listener {
 
     /**
      * @implNote {@link Cancellable#isCancelled()} does not work with PlayerInteractEvent
-     *         because there are now two possible ways to cancel the event, either
-     *         by canceling the item interaction, either by canceling the block interaction.
-     *         <p>
-     *         Checking if the event is cancelled points towards the block interaction
-     *         and not the item interaction which is NOT what MythicLib is interested in
+     * because there are now two possible ways to cancel the event, either
+     * by canceling the item interaction, either by canceling the block interaction.
+     * <p>
+     * Checking if the event is cancelled points towards the block interaction
+     * and not the item interaction which is NOT what MythicLib is interested in
      * @implNote Scrap this, it's 100% useless to check if the event is cancelled.
-     *         It makes sense to trigger skills even if the item or block interactions are canceled
+     * It makes sense to trigger skills even if the item or block interactions are canceled
      * @implNote Event priority set to {@link EventPriority#LOW} because MI consumes consumables on
-     *         priority NORMAL and item abilities require the held item not to be null in hand
+     * priority NORMAL and item abilities require the held item not to be null in hand
      */
     @EventHandler(priority = EventPriority.LOW)
     public void click(PlayerInteractEvent event) {
@@ -124,7 +126,7 @@ public class SkillTriggers implements Listener {
 
     /**
      * @return Hand used to shoot a projectile (arrow/trident) based on
-     *         what items the player is holding in his two hands
+     * what items the player is holding in his two hands
      */
     private EquipmentSlot getShootHand(PlayerInventory inv) {
         final ItemStack main = inv.getItemInMainHand();
