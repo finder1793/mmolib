@@ -18,8 +18,8 @@ public abstract class ProfileModule {
     public abstract UUID getUUID(Player player);
 
     public UUID getUUID(OfflinePlayer offlinePlayer) {
-        if(offlinePlayer instanceof Player player)
-            return getUUID(player);
+        if(offlinePlayer instanceof Player)
+            return getUUID((Player) offlinePlayer);
         return offlinePlayer.getUniqueId();
     }
 
