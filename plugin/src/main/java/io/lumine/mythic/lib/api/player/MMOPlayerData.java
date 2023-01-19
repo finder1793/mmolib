@@ -64,7 +64,7 @@ public class MMOPlayerData {
      * Method used by MMOProfiles to create a MMOPlayerData corresponding to a profile.
      * This means that the profile UUID is not necessarily the same as the player UUID.
      */
-    private MMOPlayerData(Player player,UUID profileUUID) {
+    private MMOPlayerData(Player player, UUID profileUUID) {
         this.uuid = profileUUID;
         this.player = player;
     }
@@ -85,8 +85,8 @@ public class MMOPlayerData {
 
     /**
      * @return The player's StatMap which can be used by any other plugins to
-     *         apply stat modifiers to ANY MMOItems/MMOCore/external stats,
-     *         calculate stat values, etc.
+     * apply stat modifiers to ANY MMOItems/MMOCore/external stats,
+     * calculate stat values, etc.
      */
     public StatMap getStatMap() {
         return statMap;
@@ -344,12 +344,12 @@ public class MMOPlayerData {
         return found;
     }
 
-    public static MMOPlayerData setup(Player player,UUID profileUUID) {
+    public static MMOPlayerData setup(Player player, UUID profileUUID) {
         final @Nullable MMOPlayerData found = data.get(profileUUID);
 
         // Not loaded yet, checks for temporary data
         if (found == null) {
-            final MMOPlayerData playerData = new MMOPlayerData(player,profileUUID);
+            final MMOPlayerData playerData = new MMOPlayerData(player, profileUUID);
             data.put(profileUUID, playerData);
             return playerData;
         }
@@ -391,6 +391,14 @@ public class MMOPlayerData {
     }
 
     /**
+     * Use it at your own risk! Player data might not be loaded
+     */
+    @Nullable
+    public static MMOPlayerData getOrNull(Player player) {
+        return getOrNull(MythicLib.plugin.getProfileModule().getUUID(player));
+    }
+
+    /**
      * This is being used to easily check if an online player corresponds to
      * a real player or a Citizens NPC. Citizens NPCs do not have any player
      * data associated to them
@@ -414,9 +422,9 @@ public class MMOPlayerData {
 
     /**
      * @return Currently loaded MMOPlayerData instances. This can be used to
-     *         apply things like resource regeneration or other runnable based
-     *         tasks instead of looping through online players and having to
-     *         resort to a map-lookup-based get(Player) call
+     * apply things like resource regeneration or other runnable based
+     * tasks instead of looping through online players and having to
+     * resort to a map-lookup-based get(Player) call
      */
     public static Collection<MMOPlayerData> getLoaded() {
         return data.values();
