@@ -4,7 +4,7 @@ main: io.lumine.mythic.lib.MythicLib
 api-version: 1.13
 version: ${project.version}
 loadbefore: [ MMOCore,MMOItems ]
-softdepend: [ WorldGuard,Residence,Factions,MythicMobs,MMOProfiles ]
+softdepend: [ WorldGuard,Residence,Factions,MythicMobs]
 description: 'A hard dependency for MMOItems and MMOCore'
 commands:
   mythiclib:
