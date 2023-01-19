@@ -1,8 +1,6 @@
 package io.lumine.mythic.lib;
 
 import com.google.gson.Gson;
-import fr.phoenix.mmoprofiles.MMOProfiles;
-import fr.phoenix.mmoprofiles.manager.data.ProfilesManager;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.MegaWorkbenchMapping;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.SuperWorkbenchMapping;
@@ -24,6 +22,8 @@ import io.lumine.mythic.lib.comp.flags.*;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
 import io.lumine.mythic.lib.comp.placeholder.*;
+import io.lumine.mythic.lib.comp.profiles.DefaultProfileModule;
+import io.lumine.mythic.lib.comp.profiles.ProfileModule;
 import io.lumine.mythic.lib.comp.protocollib.DamageParticleCap;
 import io.lumine.mythic.lib.glow.GlowModule;
 import io.lumine.mythic.lib.glow.provided.MythicGlowModule;
@@ -75,8 +75,8 @@ public class MythicLib extends JavaPlugin {
     private MitigationMechanics mitigationMechanics;
     private AdventureParser adventureParser;
     @Getter
+    private ProfileModule profileModule=new DefaultProfileModule();
     private PlaceholderParser placeholderParser;
-    private ProfilesManager profilesManager;
     private GlowModule glowModule;
 
     @Override
@@ -128,7 +128,6 @@ public class MythicLib extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new MythicCraftingManager(), this);
         Bukkit.getPluginManager().registerEvents(new SkillTriggers(), this);
         Bukkit.getPluginManager().registerEvents(new ElementalDamage(), this);
-        Bukkit.getPluginManager().registerEvents(new MMOProfilesListener(), this);
 
         ArmorEquipEvent.registerListener(this);
 
@@ -153,10 +152,6 @@ public class MythicLib extends JavaPlugin {
             Bukkit.getPluginManager().registerEvents(new MythicMobsHook(), this);
             MythicItemUIFilter.register();
             getLogger().log(Level.INFO, "Hooked onto MythicMobs");
-        }
-        if (Bukkit.getPluginManager().getPlugin("MMOProfiles") != null) {
-            profilesManager = MMOProfiles.plugin.dataProvider.getProfilesManager();
-            getLogger().log(Level.INFO, "Hooked onto MMOProfiles");
         }
         if (Bukkit.getPluginManager().getPlugin("Residence") != null) {
             flagHandler.registerPlugin(new ResidenceFlags());
@@ -320,13 +315,17 @@ public class MythicLib extends JavaPlugin {
         return antiCheatSupport;
     }
 
-    public ProfilesManager getProfilesManager() {
-        return profilesManager;
-    }
-
     @Nullable
     public GlowModule getGlowing() {
         return glowModule;
+    }
+
+    public ProfileModule getProfileModule() {
+        return profileModule;
+    }
+
+    public void setProfileModule(ProfileModule profileModule) {
+        this.profileModule = profileModule;
     }
 
     @Deprecated
