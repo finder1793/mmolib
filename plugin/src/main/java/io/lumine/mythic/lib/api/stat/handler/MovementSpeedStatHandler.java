@@ -36,7 +36,7 @@ public class MovementSpeedStatHandler implements StatHandler {
          * Calculate the stat base value. Since it can be changed by
          * external plugins, it's better to calculate it once and cache the result.
          */
-        final double base = getBaseValue(stats);
+        final double base = stats.getPlayerData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getValue();
 
         /*
          * Only add an attribute modifier if the very final stat
