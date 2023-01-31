@@ -118,7 +118,7 @@ public class UtilityMethods {
             return false;
 
         // Interaction type check
-        if (!MythicLib.plugin.getEntities().canTarget(source, target, interaction))
+        if (!MythicLib.plugin.getEntities().canInteract(source, target, interaction))
             return false;
 
         return true;

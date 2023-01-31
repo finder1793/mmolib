@@ -226,7 +226,7 @@ fix-too-large-packets: false
 # https://gitlab.com/phoenix-dvpmt/mmocore/-/wikis/Combat
 pvp_interaction_rules:
 
-  # When PVP is turned on
+  # When PVP is turned off
   pvp_off:
 
     # Ability to heal when PVP is off
