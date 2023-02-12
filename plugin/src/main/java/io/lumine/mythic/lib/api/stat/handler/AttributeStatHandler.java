@@ -46,7 +46,7 @@ public class AttributeStatHandler implements StatHandler {
          * held in off hand don't register any of their stats.
          */
         final StatInstance statIns = stats.getInstance(stat);
-        double mmo = statIns.getFilteredTotal(mod -> (!meleeWeaponStat || mod.getSource() != ModifierSource.RANGED_WEAPON) &&
+        final double mmo = statIns.getFilteredTotal(mod -> (!meleeWeaponStat || mod.getSource() != ModifierSource.RANGED_WEAPON) &&
                 (!mod.getSource().isWeapon() || mod.getSlot() != EquipmentSlot.OFF_HAND));
 
         /*
