@@ -20,7 +20,7 @@ public class EntityManager {
 
     /**
      * See {@link TargetRestriction} for more information. This should be
-     * called as soon as MythicLib enablesby plugins implementing player sets
+     * called as soon as MythicLib enables by plugins implementing player sets
      * like parties, friends, factions.... any set that could support friendly fire.
      * <p>
      * This is also helpful to prevent players from interacting with
@@ -34,7 +34,8 @@ public class EntityManager {
 
     /**
      * Plugins which create player groups create relations between
-     * players. Depending on the
+     * players. Depending on the type of relationship between players,
+     * two players may or may not be able to pvp/cast spells onto each other.
      *
      * @param relationHandler New handler for player relations
      * @see {@link RelationshipHandler}
@@ -107,7 +108,7 @@ public class EntityManager {
                 return false;
 
             // Otherwise check rules
-            if (!canInteract(source, (Player) target, interactionType, pvpEnabled))
+            if (!checkPvpInteractionRules(source, (Player) target, interactionType, pvpEnabled))
                 return false;
         }
 
@@ -120,24 +121,10 @@ public class EntityManager {
      * @param source          First player
      * @param target          Target player
      * @param interactionType Type of interaction. What matters here is if it's an offense or friendly action.
-     * @return If the two players can interact
-     */
-    public boolean canInteract(@NotNull Player source, @NotNull Player target, @NotNull InteractionType interactionType) {
-        final DamageCheckEvent damageCheckEvent = new DamageCheckEvent(source, target, interactionType);
-        Bukkit.getPluginManager().callEvent(damageCheckEvent);
-        return canInteract(source, target, interactionType, !damageCheckEvent.isCancelled());
-    }
-
-    /**
-     * If a player can interact with another player
-     *
-     * @param source          First player
-     * @param target          Target player
-     * @param interactionType Type of interaction. What matters here is if it's an offense or friendly action.
      * @param pvpEnabled      Is PvP enabled between the two players. It should be computed in advance
      * @return If the two players can interact
      */
-    public boolean canInteract(@NotNull Player source, @NotNull Player target, @NotNull InteractionType interactionType, @NotNull boolean pvpEnabled) {
+    public boolean checkPvpInteractionRules(@NotNull Player source, @NotNull Player target, @NotNull InteractionType interactionType, @NotNull boolean pvpEnabled) {
         for (RelationshipHandler relHandler : relHandlers)
             if (!MythicLib.plugin.getMMOConfig().pvpInteractionRules.isEnabled(pvpEnabled, interactionType, relHandler.getRelationship(source, target)))
                 return false;
