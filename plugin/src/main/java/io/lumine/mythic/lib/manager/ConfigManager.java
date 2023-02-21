@@ -1,12 +1,14 @@
 package io.lumine.mythic.lib.manager;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.comp.interaction.relation.EmptyPvPInteractionRules;
 import io.lumine.mythic.lib.comp.interaction.relation.PvPInteractionRules;
 import io.lumine.mythic.lib.skill.SimpleSkill;
 import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.handler.MythicLibSkillHandler;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.text.DecimalFormat;
@@ -19,6 +21,8 @@ public class ConfigManager {
     public boolean playerAbilityDamage, castingDelayCancelOnMove, enableCastingDelayBossbar, fixTooLargePackets, debugMode;
     public String naturalDefenseFormula, elementalDefenseFormula, castingDelayBossbarFormat;
     public double castingDelaySlowness;
+
+    @NotNull
     public PvPInteractionRules pvpInteractionRules;
 
     @Nullable
@@ -33,7 +37,7 @@ public class ConfigManager {
         decimals = newDecimalFormat("0.##");
 
         // Combat
-        pvpInteractionRules = new PvPInteractionRules(config.getConfigurationSection("pvp_interaction_rules"));
+        pvpInteractionRules = config.getBoolean("pvp_interaction_rules.enabled") ? new PvPInteractionRules(config.getConfigurationSection("pvp_interaction_rules")) : new EmptyPvPInteractionRules();
 
         // Other options
         playerAbilityDamage = config.getBoolean("player-ability-damage");
