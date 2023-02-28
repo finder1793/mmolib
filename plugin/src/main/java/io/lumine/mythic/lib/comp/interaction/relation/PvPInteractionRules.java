@@ -39,7 +39,6 @@ public class PvPInteractionRules {
             rules.put(Triplet.of(false, true, rel), false);
         rules.put(Triplet.of(true, true, Relationship.PARTY_OTHER), true);
         rules.put(Triplet.of(true, true, Relationship.GUILD_ENEMY), true);
-
     }
 
     /**
