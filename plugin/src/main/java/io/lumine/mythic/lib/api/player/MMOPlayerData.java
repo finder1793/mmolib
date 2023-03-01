@@ -4,6 +4,7 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.comp.flags.CustomFlag;
 import io.lumine.mythic.lib.damage.AttackMetadata;
+import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.listener.PlayerListener;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.player.cooldown.CooldownMap;
@@ -106,12 +107,17 @@ public class MMOPlayerData {
         return passiveSkillMap;
     }
 
+    //region Triggering Skills
     /**
-     * Used to trigger skills with no attack metadata. This caches
-     * the player statistics and create an attack metadata.
+     * Trigger the skills of this player {@link #getPlayer()}, using the default case where
+     * the action is assumed to be performed with the {@link EquipmentSlot#MAIN_HAND}.
+     * <p>
+     * Simplest way of triggering the skills where attack metadata is not involved.
      *
      * @param triggerType Action performed to trigger the skills
      * @param target      The potential target to cast the skill onto
+     *
+     * @see #triggerSkills(TriggerType, EquipmentSlot, Entity)
      */
     public void triggerSkills(@NotNull TriggerType triggerType, @Nullable Entity target) {
         Validate.isTrue(!triggerType.isActionHandSpecific(), "You must provide an action hand");
@@ -119,12 +125,18 @@ public class MMOPlayerData {
     }
 
     /**
-     * Used to trigger skills with no attack metadata. This caches
-     * the player statistics and create an attack metadata.
+     * Trigger the skills of this player {@link #getPlayer()}, decide if the action was performed
+     * by the {@link EquipmentSlot#MAIN_HAND} or {@link EquipmentSlot#OFF_HAND},
+     * which matters when deciding what kind of damage is being dealt. Knowing
+     * which hand to use, this method will cache the stat map of the caster.
+     * <p>
+     * Use when attack metadata is not involved.
      *
      * @param triggerType Action performed to trigger the skills
      * @param actionHand  Hand used to perform action
      * @param target      The potential target to cast the skill onto
+     *
+     * @see #triggerSkills(TriggerType, PlayerMetadata, Entity)
      */
     public void triggerSkills(@NotNull TriggerType triggerType, @NotNull EquipmentSlot actionHand, @Nullable Entity target) {
         Validate.notNull(actionHand, "Action hand cannot be null");
@@ -132,19 +144,17 @@ public class MMOPlayerData {
     }
 
     /**
-     * @deprecated It is now useless to store AttackMetadatas in SkillMetadatas
-     */
-    @Deprecated
-    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable AttackMetadata attackMetadata, @Nullable Entity target) {
-        final Iterable<PassiveSkill> cast = triggerType.isActionHandSpecific() ? passiveSkillMap.isolateModifiers(caster.getActionHand()) : passiveSkillMap.getModifiers();
-        triggerSkills(triggerType, caster, target, cast);
-    }
-
-    /**
-     * Trigger skills with an attack metadata and target entity.
+     * Trigger the skills of this player {@link #getPlayer()}, after having
+     * cached its stat map manually. This method will automatically select
+     * the passive skills to be cast as a result of this interaction.
+     * <p>
+     * Use when attack metadata is not involved.
      *
      * @param triggerType Action performed to trigger the skills
+     * @param caster      Cached statistics of this player {@link #getPlayer()}
      * @param target      The potential target to cast the skill onto
+     *
+     * @see #triggerSkills(TriggerType, PlayerMetadata, Entity, Iterable)
      */
     public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable Entity target) {
         final Iterable<PassiveSkill> cast = triggerType.isActionHandSpecific() ? passiveSkillMap.isolateModifiers(caster.getActionHand()) : passiveSkillMap.getModifiers();
@@ -152,24 +162,53 @@ public class MMOPlayerData {
     }
 
     /**
-     * @deprecated It is now useless to store AttackMetadatas in SkillMetadatas
+     * Trigger the selected passive skills of this player {@link #getPlayer()}.
+     * <p>
+     * Use when attack metadata is not involved.
+     *
+     * @param triggerType Action performed to trigger the skills
+     * @param caster      Cached statistics of this player {@link #getPlayer()}
+     * @param target      The potential target to cast the skill onto
+     * @param skills      The list of skills currently active for the player
+     *
+     * @see #triggerSkills(TriggerType, PlayerMetadata, AttackMetadata, Entity, Iterable)
      */
-    @Deprecated
-    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable AttackMetadata attackMetadata, @Nullable Entity target, @NotNull Iterable<PassiveSkill> skills) {
-        triggerSkills(triggerType, caster, target, skills);
+    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable Entity target, @NotNull Iterable<PassiveSkill> skills) {
+        triggerSkills(triggerType, caster, null, target, skills);
+    }
+
+    /**
+     * Trigger the skills of this player {@link #getPlayer()}, after having
+     * cached its stat map manually. This method will automatically select
+     * the passive skills to be cast as a result of this interaction.
+     * <p>
+     * <b>Use when attack metadata is involved.</b>
+     *
+     * @param triggerType Action performed to trigger the skills
+     * @param caster      Cached statistics of this player {@link #getPlayer()}
+     * @param target      The potential target to cast the skill onto
+     *
+     * @see #triggerSkills(TriggerType, PlayerMetadata, AttackMetadata, Entity, Iterable)
+     */
+    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable AttackMetadata attackMetadata, @Nullable Entity target) {
+        final Iterable<PassiveSkill> cast = triggerType.isActionHandSpecific() ? passiveSkillMap.isolateModifiers(caster.getActionHand()) : passiveSkillMap.getModifiers();
+        triggerSkills(triggerType, caster, attackMetadata, target, cast);
     }
 
     /**
      * Trigger a specific set of skills, with an attack metadata.
      * You can also provide the player statistics used to cast the skills
      * which is for instance used for projectile trigger types.
+     * <p>
+     * <b>Use when attack metadata is involved.</b>
      *
      * @param triggerType Action performed to trigger the skills
      * @param caster      The player cached statistics
+     * @param attackMetadata To compare the damage types inflicted by this skill
      * @param target      The potential target to cast the skill onto
      * @param skills      The list of skills currently active for the player
      */
-    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable Entity target, @NotNull Iterable<PassiveSkill> skills) {
+    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable AttackMetadata attackMetadata, @Nullable Entity target, @NotNull Iterable<PassiveSkill> skills) {
         if (!MythicLib.plugin.getFlags().isFlagAllowed(getPlayer(), CustomFlag.MMO_ABILITIES))
             return;
 
@@ -177,10 +216,17 @@ public class MMOPlayerData {
 
         for (PassiveSkill skill : skills) {
             final SkillHandler handler = skill.getTriggeredSkill().getHandler();
-            if (skill.getType().equals(triggerType) && handler.isTriggerable())
+
+            // Check if this skill can be triggered
+            if (skill.getType().equals(triggerType) && handler.isTriggerable() &&
+
+                // Check that the attack metadata matches the required attack metadata modifier
+                DamageType.matchesAttackMeta(attackMetadata, skill.getTriggeredSkill()))
+
                 skill.getTriggeredSkill().cast(triggerMeta);
         }
     }
+    //endregion
 
     public VariableList getVariableList() {
         return variableList;

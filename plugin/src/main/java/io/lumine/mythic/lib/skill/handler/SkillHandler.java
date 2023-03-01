@@ -41,6 +41,37 @@ public abstract class SkillHandler<T extends SkillResult> {
     protected static final Random random = new Random();
 
     /**
+     * Cooldown for skills to trigger again by the same person
+     */
+    public static String SKMOD_COOLDOWN = "cooldown";
+
+    /**
+     * Mana cost of the skills if MMOCore present
+     */
+    public static String SKMOD_MANA = "mana";
+
+    /**
+     * Stamina cost of the skills if MMOCore present
+     */
+    public static String SKMOD_STAMINA = "stamina";
+
+    /**
+     * If the timer trigger is present, the periodicity of the skill's activation
+     */
+    public static String SKMOD_TIMER = "timer";
+
+    /**
+     * Delay the casting of a skill after being triggered.
+     */
+    public static String SKMOD_DELAY = "delay";
+
+    /**
+     * Where it makes sense for the trigger to have a damage type
+     * attached to it, the damage types required.
+     */
+    public static String SKMOD_DAMAGE_TYPE = "required-damage-type";
+
+    /**
      * Used by default MythicLib skill handlers
      */
     public SkillHandler() {
@@ -56,7 +87,7 @@ public abstract class SkillHandler<T extends SkillResult> {
         this.id = formatId(getClass().getSimpleName());
         this.triggerable = triggerable;
 
-        registerModifiers("cooldown", "mana", "stamina", "timer", "delay");
+        registerModifiers(SKMOD_COOLDOWN, SKMOD_MANA, SKMOD_STAMINA, SKMOD_TIMER, SKMOD_DELAY, SKMOD_DAMAGE_TYPE);
     }
 
     /**
@@ -68,7 +99,7 @@ public abstract class SkillHandler<T extends SkillResult> {
         this.id = formatId(id);
         this.triggerable = true;
 
-        registerModifiers("cooldown", "mana", "stamina", "timer", "delay");
+        registerModifiers(SKMOD_COOLDOWN, SKMOD_MANA, SKMOD_STAMINA, SKMOD_TIMER, SKMOD_DELAY, SKMOD_DAMAGE_TYPE);
     }
 
     /**
@@ -86,7 +117,7 @@ public abstract class SkillHandler<T extends SkillResult> {
             registerModifiers(config.getStringList("modifiers"));
 
         // Default modifiers
-        registerModifiers("cooldown", "mana", "stamina", "timer", "delay");
+        registerModifiers(SKMOD_COOLDOWN, SKMOD_MANA, SKMOD_STAMINA, SKMOD_TIMER, SKMOD_DELAY, SKMOD_DAMAGE_TYPE);
     }
 
     private String formatId(String str) {
