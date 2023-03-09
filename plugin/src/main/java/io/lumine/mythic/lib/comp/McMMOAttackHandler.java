@@ -11,7 +11,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 public class McMMOAttackHandler implements AttackHandler {
-    private static final String METADATA_KEY = "mcMMO: Custom Damage";
+    private static final String METADATA_KEY = "mcmmo_rupture";
 
     @Override
     public AttackMetadata getAttack(EntityDamageEvent event) {
@@ -23,6 +23,6 @@ public class McMMOAttackHandler implements AttackHandler {
         if (!(event1.getDamager() instanceof Player) || !MMOPlayerData.has(event1.getDamager().getUniqueId()))
             return null;
 
-        return new AttackMetadata(new DamageMetadata(), (LivingEntity) entity, MMOPlayerData.get(event1.getDamager().getUniqueId()).getStatMap().cache(EquipmentSlot.MAIN_HAND));
+        return new AttackMetadata(new DamageMetadata(), entity, MMOPlayerData.get(event1.getDamager().getUniqueId()).getStatMap().cache(EquipmentSlot.MAIN_HAND));
     }
 }
