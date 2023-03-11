@@ -228,7 +228,7 @@ pvp_interaction_rules:
 
   # When enabled, apply PvP interaction rules for skills, melee and projectile hits.
   # This option is toggled off by default to reduce confusion for new users.
-  enabled: false
+  enabled: true
 
   # When PvP is turned off
   pvp_off:
