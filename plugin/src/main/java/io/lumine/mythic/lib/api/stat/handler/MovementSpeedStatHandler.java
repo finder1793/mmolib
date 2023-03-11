@@ -40,7 +40,7 @@ public class MovementSpeedStatHandler implements StatHandler {
          * function depends on the date of execution because of attribute
          * modifiers from other plugins.
          */
-        final double base = getBaseValue(stats);
+        final double base = stats.getPlayerData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue();
 
         /*
          * Only add an attribute modifier if the very final stat
