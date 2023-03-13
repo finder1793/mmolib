@@ -7,6 +7,7 @@ import io.lumine.mythic.api.skills.SkillCaster;
 import io.lumine.mythic.bukkit.BukkitAdapter;
 import io.lumine.mythic.core.skills.SkillMetadataImpl;
 import io.lumine.mythic.core.skills.SkillTriggers;
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.MythicMobsSkillHandler;
 import io.lumine.mythic.lib.util.RayTrace;
@@ -40,7 +41,7 @@ public class MythicMobsSkillResult implements SkillResult {
              * is purely for simplicity so that skills cast within MythicLib
              * match the /mm test cast command.
              */
-        else {
+        else if (behaviour.isAutoTarget()) {
             final Player player = skillMeta.getCaster().getPlayer();
             final RayTrace res = new RayTrace(player, 32, entity -> !entity.equals(player) && entity instanceof LivingEntity);
             if (res.hasHit())

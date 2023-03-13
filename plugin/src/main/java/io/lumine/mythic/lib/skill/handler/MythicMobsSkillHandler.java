@@ -6,6 +6,7 @@ import io.lumine.mythic.bukkit.MythicBukkit;
 import io.lumine.mythic.core.skills.MetaSkill;
 import io.lumine.mythic.core.skills.SkillExecutor;
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import io.lumine.mythic.lib.comp.anticheat.CheatType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.result.MythicMobsSkillResult;
@@ -26,8 +27,20 @@ public class MythicMobsSkillHandler extends SkillHandler<MythicMobsSkillResult> 
      */
     private final Map<CheatType, Integer> antiCheat = new HashMap<>();
 
+    private final Boolean autoTarget;
+    public boolean isAutoTarget() {
+
+        // If null, use default
+        if (autoTarget == null) { return MythicLib.plugin.getMMOConfig().mythicSkillAutoTargetDefault; }
+
+        // Otherwise, use as defined
+        return autoTarget;
+    }
+
     public MythicMobsSkillHandler(ConfigurationSection config) {
         super(config, config.getName().isEmpty() ? config.getString("mythicmobs-skill-id") : config.getName());
+
+        autoTarget = SilentNumbers.BooleanParse(config.getString("auto-target", null));
 
         final SkillExecutor skillManager = MythicBukkit.inst().getSkillManager();
 

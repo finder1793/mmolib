@@ -18,7 +18,7 @@ public class ConfigManager {
     public final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
 
     public DecimalFormat decimal, decimals;
-    public boolean playerAbilityDamage, castingDelayCancelOnMove, enableCastingDelayBossbar, fixTooLargePackets, debugMode;
+    public boolean playerAbilityDamage, castingDelayCancelOnMove, enableCastingDelayBossbar, fixTooLargePackets, debugMode, mythicSkillAutoTargetDefault;
     public String naturalDefenseFormula, elementalDefenseFormula, castingDelayBossbarFormat;
     public double castingDelaySlowness;
 
@@ -45,6 +45,8 @@ public class ConfigManager {
         elementalDefenseFormula = config.getString("defense-application.elemental");
         fixTooLargePackets = config.getBoolean("fix-too-large-packets");
         debugMode = config.getBoolean("debug");
+
+        mythicSkillAutoTargetDefault = config.getBoolean("abilities.mythic-skill-autotarget", true);
 
         // Casting delay
         castingDelaySlowness = config.getDouble("casting-delay.slowness");
