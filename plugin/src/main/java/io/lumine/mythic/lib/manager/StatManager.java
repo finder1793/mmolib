@@ -63,13 +63,13 @@ public class StatManager {
     public static String format(String stat, MMOPlayerData player) {
         final StatManager manager = MythicLib.plugin.getStats();
         final double value = MythicLib.plugin.getStats().getTotalValue(stat, player.getStatMap());
-        return Objects.requireNonNullElse(manager.decimalFormats.get(stat), manager.defaultDecimalFormat).format(value);
+        return manager.decimalFormats.get(stat) == null ? manager.defaultDecimalFormat.format(value) : manager.decimalFormats.get(stat).format(value);
     }
 
     @NotNull
     public static String format(String stat, double value) {
         final StatManager manager = MythicLib.plugin.getStats();
-        return Objects.requireNonNullElse(manager.decimalFormats.get(stat), manager.defaultDecimalFormat).format(value);
+        return manager.decimalFormats.get(stat) == null ? manager.defaultDecimalFormat.format(value) : manager.decimalFormats.get(stat).format(value);
     }
 
     /**
