@@ -200,10 +200,12 @@ public class AdventureParser {
         // Match colors tags as context end
         Matcher matcher = TAG_REGEX.matcher(cpy);
         int iterations = 0;
-        while (matcher.find() && iterations++ < 10) {
+        while (matcher.find() && iterations++ < 20) {
             final String rawTag = matcher.group();
-            String[] split = rawTag.split(":");
-            Optional<AdventureTag> optTag = findByName(split[0]).filter(AdventureTag::color);
+            boolean isHex = rawTag.startsWith("#") || rawTag.startsWith("HEX");
+            String rawTagName = isHex ? (rawTag.startsWith("#") ? "#" : "HEX") : rawTag.split(":")[0];
+
+            Optional<AdventureTag> optTag = findByName(rawTagName).filter(AdventureTag::color);
             if (optTag.isPresent()) {
                 colorIndex = cpy.indexOf(String.format("<%s>", rawTag));
                 break;

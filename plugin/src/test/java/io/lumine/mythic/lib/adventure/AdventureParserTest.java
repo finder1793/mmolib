@@ -492,9 +492,9 @@ public class AdventureParserTest {
         AdventureParser parser = new AdventureParser(true);
         parser.forceRegister(new GradientTag());
         parser.forceRegister(new AdventureColorTag());
+        parser.forceRegister(new HexColorTag());
 
         String input = "<#a1c7a1>❍ <gradient:#aff0af:#d5f2aa>Amplistone <#e0e0e0>Moon <#a1c7a1>❍";
-        String excepted = "";
         Assertions.assertFalse(parser.parse(input).contains(">"));
     }
 }
