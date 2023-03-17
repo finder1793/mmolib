@@ -31,7 +31,7 @@ number-format:
 # elemental <-> fire/water/.. damage
 defense-application:
   natural: '#damage# * (1 - (#defense# / (5 * #damage# + #defense#)))'
-  elemental: '#damage# * (1 - #defense# / 100)'
+  elemental: '#damage# * (1 - (#defense# / (5 * #damage# + #defense#)))'
 
 # Allows to scale health up/down to a specific
 # amount so extra health does not fill up the screen.
