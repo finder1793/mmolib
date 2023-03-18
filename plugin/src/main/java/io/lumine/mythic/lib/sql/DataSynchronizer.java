@@ -36,7 +36,7 @@ public abstract class DataSynchronizer {
     }
 
     /**
-     * Tries to fetch data
+     * Starts data fetching.
      *
      * @return True if the maximum amounf of tries hasn't been reached yet.
      */
@@ -59,15 +59,18 @@ public abstract class DataSynchronizer {
                         if (tries > MythicLib.plugin.getMMOConfig().maxSyncTries || result.getInt("is_saved") == 1) {
                             confirmReception(connection);
                             loadData(result);
-                            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Found and loaded data of " + uuid);
+                            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Found and loaded data of '" + uuid+"'");
                             UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Time taken: " + (System.currentTimeMillis() - start) + "ms");
                         } else {
-                            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Could not load data of " + uuid + " because is_saved is set to 0, trying again in 1s");
+                            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Did not load data of '" + uuid + "' as 'is_saved' is set to 0, trying again in 1s");
                             Bukkit.getScheduler().runTaskLater(MythicLib.plugin, this::fetch, 20);
                         }
-                    } else
-                        // Empty inventory
+                    } else {
+                        // Empty player data
                         confirmReception(connection);
+                        loadEmptyData();
+                        UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Found empty data for '" + uuid+ "', loading default");
+                    }
 
                 } catch (Throwable throwable) {
                     MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load player data of " + uuid);
@@ -89,24 +92,7 @@ public abstract class DataSynchronizer {
     }
 
     /**
-     * @deprecated Not used
-     */
-    @Deprecated
-    public void confirmSaving(Connection connection) throws SQLException {
-        final PreparedStatement prepared1 = connection.prepareStatement("INSERT INTO " + tableName + "(`uuid`, `is_saved`) VALUES(?, 0) ON DUPLICATE KEY UPDATE `is_saved` = 1;");
-        prepared1.setString(1, uuid.toString());
-        try {
-            prepared1.executeUpdate();
-        } catch (Exception exception) {
-            MythicLib.plugin.getLogger().log(Level.WARNING, "Could not confirm data sync of " + uuid);
-            exception.printStackTrace();
-        } finally {
-            prepared1.close();
-        }
-    }
-
-    /**
-     * This switches
+     * This confirms the loading of player and switches "is_saved" back to 0
      *
      * @param connection Current SQL connection
      * @throws SQLException Any exception. When thrown, the data will not be loaded.
