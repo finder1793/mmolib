@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.sql;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import org.bukkit.Bukkit;
 
 import java.io.IOException;
@@ -27,11 +28,6 @@ public abstract class DataSynchronizer {
 
     private int tries;
 
-    /**
-     * Maximum amount of tries before
-     */
-    private static final int MAX_TRIES = 3;
-
     public DataSynchronizer(String tableName, String uuidFieldName, MMODataSource dataSource, UUID uuid) {
         this.tableName = tableName;
         this.uuidFieldName = uuidFieldName;
@@ -55,18 +51,18 @@ public abstract class DataSynchronizer {
                 prepared.setString(1, uuid.toString());
 
                 try {
-                    MythicLib.debug("SQL", "Trying to load data of " + uuid);
+                    UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Trying to load data of " + uuid);
                     final ResultSet result = prepared.executeQuery();
 
                     // Load data if found
                     if (result.next()) {
-                        if (tries > MAX_TRIES || result.getInt("is_saved") == 1) {
+                        if (tries > MythicLib.plugin.getMMOConfig().maxSyncTries || result.getInt("is_saved") == 1) {
                             confirmReception(connection);
                             loadData(result);
-                            MythicLib.debug("SQL", "Found and loaded data of " + uuid);
-                            MythicLib.debug("SQL", "Time taken: " + (System.currentTimeMillis() - start) + "ms");
+                            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Found and loaded data of " + uuid);
+                            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Time taken: " + (System.currentTimeMillis() - start) + "ms");
                         } else {
-                            MythicLib.debug("SQL", "Could not load data of " + uuid + " because is_saved is set to 0, trying again in 1s");
+                            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Could not load data of " + uuid + " because is_saved is set to 0, trying again in 1s");
                             Bukkit.getScheduler().runTaskLater(MythicLib.plugin, this::fetch, 20);
                         }
                     } else
@@ -74,7 +70,7 @@ public abstract class DataSynchronizer {
                         confirmReception(connection);
 
                 } catch (Throwable throwable) {
-                    MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load player inventory of " + uuid);
+                    MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load player data of " + uuid);
                     throwable.printStackTrace();
                 } finally {
 
@@ -84,7 +80,7 @@ public abstract class DataSynchronizer {
                 }
 
             } catch (SQLException throwable) {
-                MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load player inventory of " + uuid);
+                MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load player data of " + uuid);
                 throwable.printStackTrace();
             }
         });

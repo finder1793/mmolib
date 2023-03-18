@@ -354,13 +354,4 @@ public class MythicLib extends JavaPlugin {
     public File getJarFile() {
         return plugin.getFile();
     }
-
-    public static void debug(@NotNull String message) {
-        debug(null, message);
-    }
-
-    public static void debug(@Nullable String prefix, @NotNull String message) {
-        if (plugin.configManager.debugMode)
-            plugin.getLogger().log(Level.INFO, "[Debug" + (prefix == null ? "" : ": " + prefix) + "] " + message);
-    }
 }

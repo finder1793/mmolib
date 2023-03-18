@@ -21,6 +21,7 @@ public class ConfigManager {
     public boolean playerAbilityDamage, castingDelayCancelOnMove, enableCastingDelayBossbar, fixTooLargePackets, debugMode;
     public String naturalDefenseFormula, elementalDefenseFormula, castingDelayBossbarFormat;
     public double castingDelaySlowness;
+    public int maxSyncTries;
 
     @NotNull
     public PvPInteractionRules pvpInteractionRules;
@@ -45,6 +46,7 @@ public class ConfigManager {
         elementalDefenseFormula = config.getString("defense-application.elemental");
         fixTooLargePackets = config.getBoolean("fix-too-large-packets");
         debugMode = config.getBoolean("debug");
+        maxSyncTries = config.getInt("max-sync-tries");
 
         // Casting delay
         castingDelaySlowness = config.getDouble("casting-delay.slowness");
