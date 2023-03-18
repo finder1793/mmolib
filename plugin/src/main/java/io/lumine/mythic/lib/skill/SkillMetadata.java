@@ -79,15 +79,15 @@ public class SkillMetadata {
         this(cast, caster, vars, source, targetLocation, targetEntity, orientation);
     }
 
-        /**
-         * @param cast           Initial skill being cast. It's used to retrieve skill modifiers
-         * @param caster         Cached statistics of the skill caster
-         * @param vars           Skill variable list if it already exists
-         * @param source         The location at which the skill/mechanic was cast
-         * @param targetLocation The skill/mechanic target location
-         * @param targetEntity   The skill/mechanic target entity
-         * @param orientation    Skill orientation if some rotation is required later on
-         */
+    /**
+     * @param cast           Initial skill being cast. It's used to retrieve skill modifiers
+     * @param caster         Cached statistics of the skill caster
+     * @param vars           Skill variable list if it already exists
+     * @param source         The location at which the skill/mechanic was cast
+     * @param targetLocation The skill/mechanic target location
+     * @param targetEntity   The skill/mechanic target entity
+     * @param orientation    Skill orientation if some rotation is required later on
+     */
     public SkillMetadata(Skill cast, @NotNull PlayerMetadata caster, @NotNull VariableList vars, @NotNull Location source, @Nullable Location targetLocation, @Nullable Entity targetEntity, @Nullable SkillOrientation orientation) {
         this.cast = cast;
         this.caster = caster;
@@ -213,8 +213,8 @@ public class SkillMetadata {
      * to potentially orient locations.
      *
      * @return Skill orientation if not null. If it is, it tries to create
-     *         one using the skill target and source location if it is not null.
-     *         Throws a NPE if the metadata has neither an orientation nor a target location.
+     * one using the skill target and source location if it is not null.
+     * Throws a NPE if the metadata has neither an orientation nor a target location.
      */
     @NotNull
     public SkillOrientation getSkillOrientation() {
@@ -253,6 +253,11 @@ public class SkillMetadata {
         int i = 1;
 
         switch (args[0]) {
+
+            // Access modifiers
+            case "modifier":
+                Validate.isTrue(args.length > 1, "Please specify a modifier name");
+                return new DoubleVariable("temp", getModifier(args[1]));
 
             // Skill source location
             case "source":
