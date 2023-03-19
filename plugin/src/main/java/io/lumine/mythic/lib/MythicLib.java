@@ -47,6 +47,8 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -70,7 +72,7 @@ public class MythicLib extends JavaPlugin {
     private final FlagHandler flagHandler = new FlagHandler();
     private final IndicatorManager indicatorManager = new IndicatorManager();
     private final Gson gson = new Gson();
-
+    private final ScriptEngine scriptEngine=new ScriptEngineManager().getEngineByName("JavaScript");
     private AntiCheatSupport antiCheatSupport;
     private ServerVersion version;
     private AttackEffects attackEffects;
