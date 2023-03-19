@@ -319,6 +319,10 @@ public class MythicLib extends JavaPlugin {
         return antiCheatSupport;
     }
 
+    public ScriptEngine getScriptEngine() {
+        return scriptEngine;
+    }
+
     @Nullable
     public GlowModule getGlowing() {
         return glowModule;
