@@ -1,5 +1,7 @@
 package io.lumine.mythic.lib;
 
+import bsh.EvalError;
+import bsh.Interpreter;
 import com.google.gson.Gson;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.MegaWorkbenchMapping;
@@ -45,10 +47,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -72,7 +71,7 @@ public class MythicLib extends JavaPlugin {
     private final FlagHandler flagHandler = new FlagHandler();
     private final IndicatorManager indicatorManager = new IndicatorManager();
     private final Gson gson = new Gson();
-    private final ScriptEngine scriptEngine=new ScriptEngineManager().getEngineByName("JavaScript");
+    private Interpreter interpreter;
     private AntiCheatSupport antiCheatSupport;
     private ServerVersion version;
     private AttackEffects attackEffects;
@@ -118,6 +117,12 @@ public class MythicLib extends JavaPlugin {
             getLogger().warning("(Your config version: '" + configVersion + "' | Expected config version: '" + defConfigVersion + "')");
         }
 
+        interpreter= new Interpreter();
+        try {
+            interpreter.eval("import java.lang.Math;");
+        } catch (EvalError e) {
+            throw new RuntimeException(e);
+        }
         // Hologram provider
         Bukkit.getServicesManager().register(HologramFactory.class, new BukkitHologramFactory(), this, ServicePriority.Low);
 
@@ -319,8 +324,8 @@ public class MythicLib extends JavaPlugin {
         return antiCheatSupport;
     }
 
-    public ScriptEngine getScriptEngine() {
-        return scriptEngine;
+    public Interpreter getInterpreter() {
+        return interpreter;
     }
 
     @Nullable
