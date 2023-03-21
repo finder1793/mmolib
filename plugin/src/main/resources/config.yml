@@ -257,3 +257,14 @@ pvp_interaction_rules:
       party_member: false
       guild_ally: false
       guild_neutral: true
+
+abilities:
+
+  # Custom MM skills, by default, work
+  # similar to the command /mm test cast
+  #
+  # If the Trigger of the skill does not come naturally
+  # with a target (RIGHT CLICK does not), and the player
+  # is looking at an enemy, this enemy will be set as the
+  # target of the skill.
+  mythic-skill-autotarget: true

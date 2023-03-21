@@ -36,7 +36,7 @@ public class SkillTriggers implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void attack(PlayerAttackEvent event) {
-        event.getAttacker().getData().triggerSkills(TriggerType.ATTACK, event.getAttacker(), event.getEntity());
+        event.getAttacker().getData().triggerSkills(TriggerType.ATTACK, event.getAttacker(), event.getAttack(), event.getEntity());
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
