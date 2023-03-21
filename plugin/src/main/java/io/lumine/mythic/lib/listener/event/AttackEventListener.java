@@ -6,6 +6,7 @@ import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.event.PlayerKillEntityEvent;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -43,13 +44,16 @@ public class AttackEventListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void registerEvents(EntityDamageEvent event) {
-
         // Ignore fake events from RDW/mcMMO/...
         if (!(event.getEntity() instanceof LivingEntity) || event.getDamage() == 0)
             return;
 
         // Call the Bukkit event with the attack meta found
         final @NotNull AttackMetadata attack = MythicLib.plugin.getDamage().findAttack(event);
+        if (attack.isPlayer() && attack.getPlayer().getGameMode() == GameMode.SPECTATOR) {
+            event.setCancelled(true);
+            return;
+        }
         final AttackEvent attackEvent = attack.isPlayer() ? new PlayerAttackEvent(event, attack) : new AttackEvent(event, attack);
         Bukkit.getPluginManager().callEvent(attackEvent);
         if (attackEvent.isCancelled())
