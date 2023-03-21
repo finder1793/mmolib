@@ -127,29 +127,7 @@ public class DamagePacket implements Cloneable {
             damageAppended = true;
 
             // Color
-            switch (type) {
-                case WEAPON:
-                    damageTypes.append("\u00a77");
-                    break;
-                case PHYSICAL:
-                    damageTypes.append("\u00a78");
-                    break;
-                case PROJECTILE:
-                    damageTypes.append("\u00a7a");
-                    break;
-                case MAGIC:
-                    damageTypes.append("\u00a79");
-                    break;
-                case SKILL:
-                    damageTypes.append("\u00a7f");
-                    break;
-                default:
-                    damageTypes.append("\u00a7c");
-                    break;
-            }
-
-            // Damage Type
-            damageTypes.append(type);
+            damageTypes.append(type.getColor()).append(type);
 
             if (element != null)
                 damageTypes.append(",El=").append(element.getId());
