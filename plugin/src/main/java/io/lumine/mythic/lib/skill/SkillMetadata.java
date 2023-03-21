@@ -122,13 +122,14 @@ public class SkillMetadata {
     /**
      * Retrieves a specific skill modifier using
      * the cached instance of {@link Skill}
+     * Also applies all the skill buffs for this specific skill.
      *
      * @param path Modifier path
      * @return Modifier value
      */
     public double getModifier(String path) {
-        return cast.getModifier(path);
-    }
+        return caster.getData().getSkillBuffMap().getSkillInstance(cast.getHandler().getId())
+                .getSkillModifier(path).getTotal(cast);}
 
     @NotNull
     public Entity getTargetEntity() {
