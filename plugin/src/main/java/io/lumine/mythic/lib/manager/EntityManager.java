@@ -112,6 +112,10 @@ public class EntityManager {
                 return false;
         }
 
+        // PvE Interaction Rules
+        else if (!interactionType.isOffense() && !MythicLib.plugin.getMMOConfig().interactionRules.supportSkillsOnMobs)
+            return false;
+
         return true;
     }
 
@@ -126,7 +130,7 @@ public class EntityManager {
      */
     public boolean checkPvpInteractionRules(@NotNull Player source, @NotNull Player target, @NotNull InteractionType interactionType, @NotNull boolean pvpEnabled) {
         for (RelationshipHandler relHandler : relHandlers)
-            if (!MythicLib.plugin.getMMOConfig().pvpInteractionRules.isEnabled(pvpEnabled, interactionType, relHandler.getRelationship(source, target)))
+            if (!MythicLib.plugin.getMMOConfig().interactionRules.isEnabled(pvpEnabled, interactionType, relHandler.getRelationship(source, target)))
                 return false;
         return true;
     }

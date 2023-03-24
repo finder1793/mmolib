@@ -13,12 +13,15 @@ import java.util.Map;
  * @author jules
  * @see {@url https://gitlab.com/phoenix-dvpmt/mythiclib/-/wikis/Combat/}
  */
-public class PvPInteractionRules {
+public class InteractionRules {
     private final Map<Triplet<Boolean, Boolean, Relationship>, Boolean> rules = new HashMap<>();
+    public final boolean supportSkillsOnMobs;
 
-    public PvPInteractionRules(@Nullable ConfigurationSection config) {
-        if (config == null)
+    public InteractionRules(@Nullable ConfigurationSection config) {
+        if (config == null) {
+            supportSkillsOnMobs = true;
             return;
+        }
 
         for (Relationship rel : Relationship.values()) {
             Triplet<Boolean, Boolean, Relationship> triplet = Triplet.of(true, true, rel);
@@ -39,6 +42,9 @@ public class PvPInteractionRules {
             rules.put(Triplet.of(false, true, rel), false);
         rules.put(Triplet.of(true, true, Relationship.PARTY_OTHER), true);
         rules.put(Triplet.of(true, true, Relationship.GUILD_ENEMY), true);
+
+        // Other options
+        supportSkillsOnMobs = config.getBoolean("support_skills_on_mobs");
     }
 
     /**

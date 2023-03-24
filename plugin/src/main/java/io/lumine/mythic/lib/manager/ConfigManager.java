@@ -2,7 +2,7 @@ package io.lumine.mythic.lib.manager;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.comp.interaction.relation.EmptyPvPInteractionRules;
-import io.lumine.mythic.lib.comp.interaction.relation.PvPInteractionRules;
+import io.lumine.mythic.lib.comp.interaction.relation.InteractionRules;
 import io.lumine.mythic.lib.skill.SimpleSkill;
 import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.handler.MythicLibSkillHandler;
@@ -24,7 +24,7 @@ public class ConfigManager {
     public int maxSyncTries;
 
     @NotNull
-    public PvPInteractionRules pvpInteractionRules;
+    public InteractionRules interactionRules;
 
     @Nullable
     public Skill skillCastScript, skillCancelScript;
@@ -38,7 +38,7 @@ public class ConfigManager {
         decimals = newDecimalFormat("0.##");
 
         // Combat
-        pvpInteractionRules = config.getBoolean("pvp_interaction_rules.enabled") ? new PvPInteractionRules(config.getConfigurationSection("pvp_interaction_rules")) : new EmptyPvPInteractionRules();
+        interactionRules = config.getBoolean("interaction_rules.enabled") ? new InteractionRules(config.getConfigurationSection("interaction_rules")) : new EmptyPvPInteractionRules();
 
         // Other options
         playerAbilityDamage = config.getBoolean("player-ability-damage");
