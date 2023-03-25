@@ -4,6 +4,7 @@ import io.lumine.mythic.lib.api.MMOLineConfig;
 import io.lumine.mythic.lib.api.condition.RegionCondition;
 import io.lumine.mythic.lib.api.condition.type.MMOCondition;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
@@ -14,6 +15,7 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -22,10 +24,8 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.logging.Level;
 
 public class UtilityMethods {
     /**
@@ -48,10 +48,10 @@ public class UtilityMethods {
     /**
      * @param loc Where we are looking for nearby entities
      * @return List of all entities surrounding a location. This method loops
-     *         through the 9 surrounding chunks and collect all entities from
-     *         them. This list can be cached and used multiple times in the same
-     *         tick for projectile based spells which need to run entity
-     *         checkups
+     * through the 9 surrounding chunks and collect all entities from
+     * them. This list can be cached and used multiple times in the same
+     * tick for projectile based spells which need to run entity
+     * checkups
      */
     public static List<Entity> getNearbyChunkEntities(Location loc) {
         List<Entity> entities = new ArrayList<>();
@@ -266,7 +266,7 @@ public class UtilityMethods {
      *
      * @param event Some damage event
      * @return The player, if this event is due to him. It is the player which
-     *         is taken into account when PvP is toggled on.
+     * is taken into account when PvP is toggled on.
      */
     @Nullable
     public static Player getPlayerDamager(EntityDamageByEntityEvent event) {
@@ -308,10 +308,38 @@ public class UtilityMethods {
     }
 
     public static double getAltitude(Location loc) {
-        Location moving = loc.clone();
+        final Location moving = loc.clone();
         while (!moving.getBlock().getType().isSolid())
             moving.add(0, -1, 0);
 
         return loc.getY() - moving.getBlockY() - 1;
+    }
+
+    private static final Map<String, String> DEBUG_COLOR_PREFIX = new HashMap<>();
+
+    static {
+        DEBUG_COLOR_PREFIX.put("MythicLib", "§a");
+        DEBUG_COLOR_PREFIX.put("MMOItems", "§c");
+        DEBUG_COLOR_PREFIX.put("MMOCore", "§6");
+        DEBUG_COLOR_PREFIX.put("RPGInventory", "§e");
+    }
+
+    /**
+     * Sends a debug message. All plugins depending on MythicLib must use this
+     * function to send debug message, which is more convenient for users.
+     * MMOInventory has its own option, because it's standalone.
+     *
+     * @param plugin  Plugin that needs debug
+     * @param prefix  What's being debugged
+     * @param message Debug message
+     */
+    public static void debug(@NotNull JavaPlugin plugin, @Nullable String prefix, @NotNull String message) {
+        Validate.notNull(plugin, "Plugin cannot be null");
+        Validate.notNull(message, "Message cannot be null");
+
+        final String colorPrefix = DEBUG_COLOR_PREFIX.getOrDefault(plugin.getName(), "");
+
+        if (MythicLib.plugin.getMMOConfig().debugMode)
+            plugin.getLogger().log(Level.INFO, colorPrefix + "[Debug" + (prefix == null ? "" : ": " + prefix) + "] " + message);
     }
 }

@@ -325,7 +325,7 @@ public class SkillManager {
         mechanics.put(name, mechanic);
 
         for (String alias : aliases)
-            mechanics.put(alias, mechanic);
+            registerMechanic(alias, mechanic);
     }
 
     @NotNull

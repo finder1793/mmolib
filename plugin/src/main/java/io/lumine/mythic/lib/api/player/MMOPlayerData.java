@@ -18,6 +18,7 @@ import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.apache.commons.lang.Validate;
+import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -76,8 +77,8 @@ public class MMOPlayerData {
 
     /**
      * @return The player's StatMap which can be used by any other plugins to
-     *         apply stat modifiers to ANY MMOItems/MMOCore/external stats,
-     *         calculate stat values, etc.
+     * apply stat modifiers to ANY MMOItems/MMOCore/external stats,
+     * calculate stat values, etc.
      */
     public StatMap getStatMap() {
         return statMap;
@@ -170,7 +171,8 @@ public class MMOPlayerData {
      * @param skills      The list of skills currently active for the player
      */
     public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable Entity target, @NotNull Iterable<PassiveSkill> skills) {
-        if (!MythicLib.plugin.getFlags().isFlagAllowed(getPlayer(), CustomFlag.MMO_ABILITIES))
+        if (!MythicLib.plugin.getFlags().isFlagAllowed(getPlayer(), CustomFlag.MMO_ABILITIES)
+                || getPlayer().getGameMode() == GameMode.SPECTATOR)
             return;
 
         final TriggerMetadata triggerMeta = new TriggerMetadata(caster, target);
@@ -390,9 +392,9 @@ public class MMOPlayerData {
 
     /**
      * @return Currently loaded MMOPlayerData instances. This can be used to
-     *         apply things like resource regeneration or other runnable based
-     *         tasks instead of looping through online players and having to
-     *         resort to a map-lookup-based get(Player) call
+     * apply things like resource regeneration or other runnable based
+     * tasks instead of looping through online players and having to
+     * resort to a map-lookup-based get(Player) call
      */
     public static Collection<MMOPlayerData> getLoaded() {
         return data.values();

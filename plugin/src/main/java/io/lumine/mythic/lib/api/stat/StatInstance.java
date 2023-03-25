@@ -8,13 +8,14 @@ import io.lumine.mythic.lib.player.modifier.ModifierType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class StatInstance {
     private final StatMap map;
     private final String stat;
-    private final Map<String, StatModifier> modifiers = new HashMap<>();
+    private final Map<String, StatModifier> modifiers = new ConcurrentHashMap<>();
 
     public StatInstance(StatMap map, String stat) {
         this.map = map;

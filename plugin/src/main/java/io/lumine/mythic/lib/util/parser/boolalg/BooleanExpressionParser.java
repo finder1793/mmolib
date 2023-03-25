@@ -28,7 +28,7 @@ public class BooleanExpressionParser {
             return true;
 
         if (input.equals("false"))
-            return true;
+            return false;
 
         OperatorNode current = new OperatorNode(null);
 
