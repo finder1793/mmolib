@@ -171,15 +171,14 @@ public class MMOPlayerData {
      * @param skills      The list of skills currently active for the player
      */
     public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable Entity target, @NotNull Iterable<PassiveSkill> skills) {
-        if (!MythicLib.plugin.getFlags().isFlagAllowed(getPlayer(), CustomFlag.MMO_ABILITIES)
-                || getPlayer().getGameMode() == GameMode.SPECTATOR)
+        if (getPlayer().getGameMode() == GameMode.SPECTATOR || !MythicLib.plugin.getFlags().isFlagAllowed(getPlayer(), CustomFlag.MMO_ABILITIES))
             return;
 
         final TriggerMetadata triggerMeta = new TriggerMetadata(caster, target);
 
         for (PassiveSkill skill : skills) {
             final SkillHandler handler = skill.getTriggeredSkill().getHandler();
-            if (skill.getType().equals(triggerType) && handler.isTriggerable())
+            if (handler.isTriggerable() && skill.getType().equals(triggerType))
                 skill.getTriggeredSkill().cast(triggerMeta);
         }
     }
