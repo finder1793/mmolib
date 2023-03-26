@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.skill.handler;
 
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.player.Unlockable;
 import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.def.passive.Backstab;
