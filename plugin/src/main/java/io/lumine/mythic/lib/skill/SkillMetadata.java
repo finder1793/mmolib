@@ -257,7 +257,8 @@ public class SkillMetadata {
             // Access modifiers
             case "modifier":
                 Validate.isTrue(args.length > 1, "Please specify a modifier name");
-                return new DoubleVariable("temp", getModifier(args[1]));
+                var = new DoubleVariable("temp", getModifier(args[i++]));
+                break;
 
             // Skill source location
             case "source":
