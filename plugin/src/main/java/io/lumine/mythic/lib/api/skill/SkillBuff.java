@@ -5,7 +5,6 @@ import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.api.InstanceModifier;
 import io.lumine.mythic.lib.player.modifier.ModifierSource;
 import io.lumine.mythic.lib.player.modifier.ModifierType;
-import io.lumine.mythic.lib.player.modifier.PlayerModifier;
 
 public class SkillBuff extends InstanceModifier {
     private final String skill, modifier;
