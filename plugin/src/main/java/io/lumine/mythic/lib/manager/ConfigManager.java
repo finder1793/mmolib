@@ -18,6 +18,7 @@ public class ConfigManager {
     public final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
 
     public DecimalFormat decimal, decimals;
+    public int decimalPlaces;
     public boolean playerAbilityDamage, castingDelayCancelOnMove, enableCastingDelayBossbar, fixTooLargePackets, debugMode;
     public String naturalDefenseFormula, elementalDefenseFormula, castingDelayBossbarFormat;
     public double castingDelaySlowness;
@@ -33,6 +34,7 @@ public class ConfigManager {
         final ConfigurationSection config = MythicLib.plugin.getConfig();
 
         // Decimal formatting
+        this.decimalPlaces = config.getInt("number-format.decimal-places", 1);
         formatSymbols.setDecimalSeparator(getFirstChar(config.getString("number-format.decimal-separator")));
         decimal = newDecimalFormat("0.#");
         decimals = newDecimalFormat("0.##");
@@ -74,10 +76,17 @@ public class ConfigManager {
      *
      * @param pattern Something like "0.#"
      * @return New decimal format with the decimal separator given in the MythicLib
-     *         main plugin config.
+     * main plugin config.
      */
     public DecimalFormat newDecimalFormat(String pattern) {
         return new DecimalFormat(pattern, formatSymbols);
+    }
+
+    public DecimalFormat getDefaultDecimalFormat() {
+        StringBuilder pattern = new StringBuilder("0.");
+        for (int i = 0; i < decimalPlaces; i++)
+            pattern.append("#");
+        return newDecimalFormat(pattern.toString());
     }
 
     private char getFirstChar(String str) {

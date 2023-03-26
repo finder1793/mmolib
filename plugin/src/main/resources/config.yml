@@ -17,6 +17,7 @@ max-sync-tries: 5
 # Edit general plugin number formatting here.
 # Restart your server when changing this so that MMOItems and MMOCore update as well
 number-format:
+  decimal-places: 1
   decimal-separator: .
 
 # Defines how defense behaves. The formula should return the

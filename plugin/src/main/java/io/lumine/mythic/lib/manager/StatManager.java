@@ -48,7 +48,7 @@ public class StatManager {
             UtilityMethods.loadDefaultFile("", "stats.yml");
 
         // Load decimal formats
-        defaultDecimalFormat = MythicLib.plugin.getMMOConfig().newDecimalFormat("0.#");
+        defaultDecimalFormat = MythicLib.plugin.getMMOConfig().getDefaultDecimalFormat();
         FileConfiguration config = new ConfigFile("stats").getConfig();
         for (String key : config.getConfigurationSection("decimal-format").getKeys(false))
             try {
