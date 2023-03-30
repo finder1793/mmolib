@@ -1,15 +1,12 @@
 package io.lumine.mythic.lib.api.player;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.event.unlocking.ItemLockedEvent;
-import io.lumine.mythic.lib.api.event.unlocking.ItemUnlockedEvent;
 import io.lumine.mythic.lib.api.skill.SkillMap;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.comp.flags.CustomFlag;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.listener.PlayerListener;
 import io.lumine.mythic.lib.player.PlayerMetadata;
-import io.lumine.mythic.lib.player.Unlockable;
 import io.lumine.mythic.lib.player.cooldown.CooldownMap;
 import io.lumine.mythic.lib.player.cooldown.CooldownType;
 import io.lumine.mythic.lib.player.particle.ParticleEffectMap;
@@ -34,7 +31,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class MMOPlayerData {
     private final UUID uuid;
@@ -56,23 +52,6 @@ public class MMOPlayerData {
     private final PassiveSkillMap passiveSkillMap = new PassiveSkillMap(this);
     private final VariableList variableList = new VariableList(VariableScope.PLAYER);
 
-    /**
-     * Saves all the items that have been unlocked so far by
-     * the player. This is used for:
-     * - mmocore:waypoints
-     * - mmocore:skills
-     * - mmoitems:skill_book
-     * <p>
-     * Each plugin that uses this map should use its own plugin identifier and have all the unlocked item keys being like
-     * plugin_id:unlocked_item_type_key:item_key
-     * <p>
-     * The storage in data of this set is not handled by MythicLib and should be implemented by all the plugins using it.
-     * Each plugin should only handle saving/loading the unlocked items it is in charge of (those with its plugin id)
-     * but can use all the unlocked items registered by other plugins.
-     *
-     * @see {@link Unlockable}
-     */
-    private final Set<String> unlockedItems = new HashSet<>();
     /**
      * Map used by other plugins to save any type of data. This
      * is typically used by MMOCore and MMOItems to store the player
