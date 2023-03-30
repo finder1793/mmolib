@@ -20,8 +20,8 @@ public class SkillModifierInstance extends ModifiedInstance<SkillBuff> {
      * The relative skill buffs are applied afterwards, onto the sum of the base value + flat
      * modifiers.
      */
-    public double getTotal(Skill skill) {
-        return getFilteredTotal(skill, EquipmentSlot.MAIN_HAND::isCompatible);
+    public double getTotal(double value) {
+        return getFilteredTotal(value, EquipmentSlot.MAIN_HAND::isCompatible);
     }
 
     /**
@@ -31,8 +31,8 @@ public class SkillModifierInstance extends ModifiedInstance<SkillBuff> {
      * applied afterwards, onto the sum of the base value + flat
      * buffs.
      */
-    public double getFilteredTotal(Skill skill, Predicate<SkillBuff> filter) {
-        return getFilteredTotal(skill, filter, mod -> mod);
+    public double getFilteredTotal(double value, Predicate<SkillBuff> filter) {
+        return getFilteredTotal(value, filter, mod -> mod);
     }
 
     /**
@@ -45,8 +45,8 @@ public class SkillModifierInstance extends ModifiedInstance<SkillBuff> {
      * The relative skill buffs are applied afterwards, onto the sum of the base value + flat
      * modifiers.
      */
-    public double getTotal(Skill skill, Function<SkillBuff, SkillBuff> modification) {
-        return getFilteredTotal(skill, EquipmentSlot.MAIN_HAND::isCompatible, modification);
+    public double getTotal(double value, Function<SkillBuff, SkillBuff> modification) {
+        return getFilteredTotal(value, EquipmentSlot.MAIN_HAND::isCompatible, modification);
     }
 
     /**
@@ -60,8 +60,8 @@ public class SkillModifierInstance extends ModifiedInstance<SkillBuff> {
      * * The relative skill buffs are applied afterwards, onto the sum of the base value + flat
      * * modifiers.
      */
-    public double getFilteredTotal(Skill skill, Predicate<SkillBuff> filter, Function<SkillBuff, SkillBuff> modification) {
-        return getFilteredTotal(skill.getModifier(skillModifier), filter, modification);
+    public double getFilteredTotal(double value, Predicate<SkillBuff> filter, Function<SkillBuff, SkillBuff> modification) {
+        return super.getFilteredTotal(value, filter, modification);
     }
 
 

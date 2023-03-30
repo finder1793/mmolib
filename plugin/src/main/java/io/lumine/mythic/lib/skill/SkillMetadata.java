@@ -129,7 +129,7 @@ public class SkillMetadata {
      */
     public double getModifier(String path) {
         return caster.getData().getSkillBuffMap().getSkillInstance(cast.getHandler().getId())
-                .getSkillModifier(path).getTotal(cast);}
+                .getSkillModifier(path).getTotal(cast.getModifier(path));}
 
     @NotNull
     public Entity getTargetEntity() {

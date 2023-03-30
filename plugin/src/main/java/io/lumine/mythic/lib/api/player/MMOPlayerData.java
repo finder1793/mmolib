@@ -1,15 +1,12 @@
 package io.lumine.mythic.lib.api.player;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.event.unlocking.ItemLockedEvent;
-import io.lumine.mythic.lib.api.event.unlocking.ItemUnlockedEvent;
 import io.lumine.mythic.lib.api.skill.SkillMap;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.comp.flags.CustomFlag;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.listener.PlayerListener;
 import io.lumine.mythic.lib.player.PlayerMetadata;
-import io.lumine.mythic.lib.player.Unlockable;
 import io.lumine.mythic.lib.player.cooldown.CooldownMap;
 import io.lumine.mythic.lib.player.cooldown.CooldownType;
 import io.lumine.mythic.lib.player.particle.ParticleEffectMap;
@@ -22,7 +19,6 @@ import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -33,7 +29,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class MMOPlayerData {
     private final UUID uuid;
@@ -55,23 +50,6 @@ public class MMOPlayerData {
     private final PassiveSkillMap passiveSkillMap = new PassiveSkillMap(this);
     private final VariableList variableList = new VariableList(VariableScope.PLAYER);
 
-    /**
-     * Saves all the items that have been unlocked so far by
-     * the player. This is used for:
-     * - mmocore:waypoints
-     * - mmocore:skills
-     * - mmoitems:skill_book
-     * <p>
-     * Each plugin that uses this map should use its own plugin identifier and have all the unlocked item keys being like
-     * plugin_id:unlocked_item_type_key:item_key
-     * <p>
-     * The storage in data of this set is not handled by MythicLib and should be implemented by all the plugins using it.
-     * Each plugin should only handle saving/loading the unlocked items it is in charge of (those with its plugin id)
-     * but can use all the unlocked items registered by other plugins.
-     *
-     * @see {@link Unlockable}
-     */
-    private final Set<String> unlockedItems = new HashSet<>();
     /**
      * Map used by other plugins to save any type of data. This
      * is typically used by MMOCore and MMOItems to store the player
@@ -246,59 +224,6 @@ public class MMOPlayerData {
 
     public boolean isTimedOut() {
         return !isOnline() && lastLogActivity + CACHE_TIME_OUT < System.currentTimeMillis();
-    }
-
-    /**
-     * @return If the item is unlocked by the player
-     * This is used for skills that can be locked & unlocked.
-     * <p>
-     * Looks at the real value and thus remove the plugin identifier
-     */
-    public boolean hasUnlocked(Unlockable unlockable) {
-        String unlockableKey = unlockable.getUnlockNamespacedKey().substring(unlockable.getUnlockNamespacedKey().indexOf(":"));
-        return unlockedItems
-                .stream()
-                .filter(key -> key.substring(key.indexOf(":")).equals(unlockableKey))
-                .collect(Collectors.toList()).size() != 0;
-    }
-
-
-    /**
-     * Unlocks an item for the player. This is mainly used to unlock skills.
-     *
-     * @return If the item was locked when calling this method.
-     */
-    public boolean unlock(Unlockable unlockable) {
-        boolean wasLocked = unlockedItems.add(unlockable.getUnlockNamespacedKey());
-        if (wasLocked)
-            //Calls the event synchronously
-            Bukkit.getScheduler().runTask(MythicLib.plugin,
-                    () -> Bukkit.getPluginManager().callEvent(new ItemUnlockedEvent(this, unlockable.getUnlockNamespacedKey())));
-
-        return wasLocked;
-    }
-
-    /**
-     * Locks an item for the player by removing it from the unlocked items map if it is present.
-     * This is mainly used to remove unlocked items when changing class or reallocating a skill tree.
-     *
-     * @return If the item was unlocked when calling this method.
-     */
-    public boolean lock(Unlockable unlockable) {
-        boolean wasUnlocked = unlockedItems.remove(unlockable.getUnlockNamespacedKey());
-        if (wasUnlocked)
-            //Calls the event synchronously
-            Bukkit.getScheduler().runTask(MythicLib.plugin, () -> Bukkit.getPluginManager().callEvent(new ItemLockedEvent(this, unlockable.getUnlockNamespacedKey())));
-        return wasUnlocked;
-    }
-
-    public Set<String> getUnlockedItems() {
-        return new HashSet<>(unlockedItems);
-    }
-
-    public void setUnlockedItems(Set<String> unlockedItems) {
-        this.unlockedItems.clear();
-        this.unlockedItems.addAll(unlockedItems);
     }
 
     /**
