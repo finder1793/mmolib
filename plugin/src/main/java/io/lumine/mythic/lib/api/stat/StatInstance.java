@@ -16,7 +16,6 @@ import java.util.function.Predicate;
 public class StatInstance extends ModifiedInstance<StatModifier> {
     private final StatMap map;
     private final String stat;
-    private final Map<String, StatModifier> modifiers = new ConcurrentHashMap<>();
 
     public StatInstance(StatMap map, String stat) {
         this.map = map;
