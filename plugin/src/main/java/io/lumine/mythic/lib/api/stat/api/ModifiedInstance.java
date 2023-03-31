@@ -6,11 +6,12 @@ import io.lumine.mythic.lib.player.modifier.ModifierType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public abstract class ModifiedInstance<T extends InstanceModifier> {
-    protected final Map<String, T> modifiers = new HashMap<>();
+    protected final Map<String, T> modifiers = new ConcurrentHashMap<>();
 
     /**
      * @return The final stat value taking into account the default stat value
