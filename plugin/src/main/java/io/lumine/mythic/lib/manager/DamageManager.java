@@ -155,6 +155,7 @@ public class DamageManager implements Listener {
 
             // Just damage entity
         } else {
+            Validate.isTrue(damage > 0, "Damage must be strictly positive");
             if (damager == null)
                 target.damage(damage);
             else

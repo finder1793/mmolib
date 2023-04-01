@@ -64,7 +64,7 @@ public class DamageIndicators extends GameIndicators {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void a(AttackEvent event) {
         Entity entity = event.getEntity();
-        if (!(entity instanceof LivingEntity) || event.getEntity() instanceof ArmorStand)
+        if (!(entity instanceof LivingEntity) || event.getEntity() instanceof ArmorStand || event.getDamage().getDamage() < 2 * DamageMetadata.MINIMAL_DAMAGE)
             return;
 
         // Display no indicator around vanished player
