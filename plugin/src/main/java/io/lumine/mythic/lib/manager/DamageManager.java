@@ -280,7 +280,9 @@ public class DamageManager implements Listener {
      * @param attackMeta Attack metadata being registered
      */
     public void markAsMetadata(AttackMetadata attackMeta) {
-        attackMetadatas.put(attackMeta.getTarget().getUniqueId(), attackMeta);
+        final @Nullable AttackMetadata found = attackMetadatas.put(attackMeta.getTarget().getUniqueId(), attackMeta);
+        if (found != null)
+            MythicLib.plugin.getLogger().log(Level.WARNING, "Please report this issue to the developper: persistent attack metadata was found.");
     }
 
     /**

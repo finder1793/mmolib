@@ -15,6 +15,7 @@ import io.lumine.mythic.lib.command.HealthScaleCommand;
 import io.lumine.mythic.lib.command.MMOTempStatCommand;
 import io.lumine.mythic.lib.command.mythiclib.MythicLibCommand;
 import io.lumine.mythic.lib.comp.McMMOAttackHandler;
+import io.lumine.mythic.lib.comp.SkillAPIAttackHandler;
 import io.lumine.mythic.lib.comp.adventure.AdventureParser;
 import io.lumine.mythic.lib.comp.anticheat.AntiCheatSupport;
 import io.lumine.mythic.lib.comp.anticheat.SpartanPlugin;
@@ -182,8 +183,13 @@ public class MythicLib extends JavaPlugin {
         }
 
         if (Bukkit.getPluginManager().getPlugin("mcMMO") != null) {
-            getDamage().registerHandler(new McMMOAttackHandler());
+            Bukkit.getPluginManager().registerEvents(new McMMOAttackHandler(), this);
             getLogger().log(Level.INFO, "Hooked onto mcMMO");
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("SkillAPI") != null) {
+            Bukkit.getPluginManager().registerEvents(new SkillAPIAttackHandler(), this);
+            getLogger().log(Level.INFO, "Hooked onto SkillAPI");
         }
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
