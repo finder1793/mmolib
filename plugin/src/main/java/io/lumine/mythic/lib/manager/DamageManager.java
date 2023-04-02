@@ -391,11 +391,8 @@ public class DamageManager implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void unregisterCustomAttacks(EntityDamageEvent event) {
 
-        // Ignore fake events from RDW/mcMMO/...
-        if (!(event.getEntity() instanceof LivingEntity) || event.getDamage() == 0)
-            return;
-
-        attackMetadatas.remove(event.getEntity().getUniqueId());
+        if (event.getEntity() instanceof LivingEntity)
+            attackMetadatas.remove(event.getEntity().getUniqueId());
     }
 
     // Purely arbitrary but works decently
