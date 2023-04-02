@@ -58,6 +58,22 @@ public class SkillBuff extends InstanceModifier {
         return modifier;
     }
 
+
+    /**
+     * Used to register the skillBuff for only 1 specific skill.
+     */
+    public void register(MMOPlayerData playerData, String skill) {
+        playerData.getSkillBuffMap().addSkillBuff(this);
+        playerData.getSkillBuffMap().getSkillInstance(skill).getSkillModifier(modifier).addModifier(this);
+    }
+    /**
+     * Used to unregister the skillBuff for only 1 specific skill.
+     */
+    public void unregister(MMOPlayerData playerData, String skill) {
+        playerData.getSkillBuffMap().removeSkillBuff(getKey());
+        playerData.getSkillBuffMap().getSkillInstance(skill).getSkillModifier(modifier).remove(getKey());
+    }
+
     @Override
     public void register(MMOPlayerData playerData) {
         playerData.getSkillBuffMap().addSkillBuff(this);
