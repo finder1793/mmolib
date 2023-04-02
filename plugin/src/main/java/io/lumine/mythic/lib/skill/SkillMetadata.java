@@ -111,7 +111,7 @@ public class SkillMetadata {
     }
 
     public Location getSourceLocation() {
-        return source;
+        return source.clone();
     }
 
     @Deprecated
@@ -146,12 +146,12 @@ public class SkillMetadata {
 
     @NotNull
     public Location getTargetLocation() {
-        return Objects.requireNonNull(targetLocation, "Skill has no target location");
+        return Objects.requireNonNull(targetLocation, "Skill has no target location").clone();
     }
 
     @Nullable
     public Location getTargetLocationOrNull() {
-        return targetLocation;
+        return targetLocation == null ? null : targetLocation.clone();
     }
 
     public boolean hasTargetLocation() {
@@ -181,7 +181,7 @@ public class SkillMetadata {
      */
     @NotNull
     public Location getSkillLocation(boolean sourceLocation) {
-        return sourceLocation ? source : targetLocation != null ? targetLocation : targetEntity != null ? EntityLocationType.BODY.getLocation(targetEntity) : source;
+        return sourceLocation ? source.clone() : targetLocation != null ? targetLocation.clone() : targetEntity != null ? EntityLocationType.BODY.getLocation(targetEntity) : source.clone();
     }
 
     /**
