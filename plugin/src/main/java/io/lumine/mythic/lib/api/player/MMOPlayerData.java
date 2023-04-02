@@ -19,6 +19,7 @@ import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.apache.commons.lang.Validate;
+import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -180,14 +181,14 @@ public class MMOPlayerData {
      * @param skills      The list of skills currently active for the player
      */
     public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable Entity target, @NotNull Iterable<PassiveSkill> skills) {
-        if (!MythicLib.plugin.getFlags().isFlagAllowed(getPlayer(), CustomFlag.MMO_ABILITIES))
+        if (getPlayer().getGameMode() == GameMode.SPECTATOR || !MythicLib.plugin.getFlags().isFlagAllowed(getPlayer(), CustomFlag.MMO_ABILITIES))
             return;
 
         final TriggerMetadata triggerMeta = new TriggerMetadata(caster, target);
 
         for (PassiveSkill skill : skills) {
             final SkillHandler handler = skill.getTriggeredSkill().getHandler();
-            if (skill.getType().equals(triggerType) && handler.isTriggerable())
+            if (handler.isTriggerable() && skill.getType().equals(triggerType))
                 skill.getTriggeredSkill().cast(triggerMeta);
         }
     }

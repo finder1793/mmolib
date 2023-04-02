@@ -68,8 +68,8 @@ public class PassiveSkillMap extends ModifierMap<PassiveSkill> {
                 if (lastCast + passive.getTimerPeriod(getPlayerData()) > System.currentTimeMillis())
                     continue;
 
-                this.lastCast.put(key, System.currentTimeMillis());
-                passive.getTriggeredSkill().cast(triggerMeta != null ? triggerMeta : (triggerMeta = new TriggerMetadata(getPlayerData().getStatMap().cache(EquipmentSlot.MAIN_HAND), null)));
-            }
+            this.lastCast.put(key, System.currentTimeMillis());
+            passive.getTriggeredSkill().cast(triggerMeta != null ? triggerMeta : (triggerMeta = new TriggerMetadata(getPlayerData().getStatMap().cache(EquipmentSlot.MAIN_HAND), null)));
+        }
     }
 }

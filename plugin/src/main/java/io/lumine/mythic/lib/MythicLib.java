@@ -15,6 +15,7 @@ import io.lumine.mythic.lib.command.HealthScaleCommand;
 import io.lumine.mythic.lib.command.MMOTempStatCommand;
 import io.lumine.mythic.lib.command.mythiclib.MythicLibCommand;
 import io.lumine.mythic.lib.comp.McMMOAttackHandler;
+import io.lumine.mythic.lib.comp.SkillAPIAttackHandler;
 import io.lumine.mythic.lib.comp.adventure.AdventureParser;
 import io.lumine.mythic.lib.comp.anticheat.AntiCheatSupport;
 import io.lumine.mythic.lib.comp.anticheat.SpartanPlugin;
@@ -39,6 +40,8 @@ import io.lumine.mythic.lib.listener.event.AttackEventListener;
 import io.lumine.mythic.lib.listener.option.FixMovementSpeed;
 import io.lumine.mythic.lib.listener.option.HealthScale;
 import io.lumine.mythic.lib.manager.*;
+import io.lumine.mythic.lib.util.loadingorder.DependencyCycleCheck;
+import io.lumine.mythic.lib.util.loadingorder.DependencyNode;
 import io.lumine.mythic.lib.version.ServerVersion;
 import io.lumine.mythic.lib.version.SpigotPlugin;
 import lombok.Getter;
@@ -53,6 +56,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 import java.util.logging.Level;
 
 public class MythicLib extends JavaPlugin {
@@ -117,7 +121,7 @@ public class MythicLib extends JavaPlugin {
             getLogger().warning("(Your config version: '" + configVersion + "' | Expected config version: '" + defConfigVersion + "')");
         }
 
-        interpreter= new Interpreter();
+        interpreter = new Interpreter();
         try {
             interpreter.eval("import java.lang.Math;");
         } catch (EvalError e) {
@@ -179,8 +183,13 @@ public class MythicLib extends JavaPlugin {
         }
 
         if (Bukkit.getPluginManager().getPlugin("mcMMO") != null) {
-            getDamage().registerHandler(new McMMOAttackHandler());
+            Bukkit.getPluginManager().registerEvents(new McMMOAttackHandler(), this);
             getLogger().log(Level.INFO, "Hooked onto mcMMO");
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("SkillAPI") != null) {
+            Bukkit.getPluginManager().registerEvents(new SkillAPIAttackHandler(), this);
+            getLogger().log(Level.INFO, "Hooked onto SkillAPI");
         }
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
@@ -201,9 +210,15 @@ public class MythicLib extends JavaPlugin {
             getLogger().log(Level.INFO, "Hooked onto DualWield");
         }
 
+        // Look for plugin dependency cycles
+        final Stack<DependencyNode> dependencyCycle = new DependencyCycleCheck().checkCycle();
+        if (dependencyCycle != null) {
+            getLogger().log(Level.WARNING, "Found a dependency cycle! Please make sure that the plugins involved load with no errors.");
+            getLogger().log(Level.WARNING, "Plugin dependency cycle: " + dependencyCycle);
+        }
+
         // Regen and damage indicators
         this.indicatorManager.load(getConfig());
-
 
 //		if (Bukkit.getPluginManager().getPlugin("ShopKeepers") != null)
 //			entityManager.registerHandler(new ShopKeepersEntityHandler());
