@@ -257,7 +257,8 @@ public class SkillMetadata {
             // Access modifiers
             case "modifier":
                 Validate.isTrue(args.length > 1, "Please specify a modifier name");
-                return new DoubleVariable("temp", getModifier(args[1]));
+                var = new DoubleVariable("temp", getModifier(args[i++]));
+                break;
 
             // Skill source location
             case "source":
@@ -364,15 +365,11 @@ public class SkillMetadata {
      * @param damage Damage dealt
      * @param types  Type of target
      * @return The (modified) attack metadata
+     * @deprecated Use {@link PlayerMetadata#attack(LivingEntity, double, DamageType...)} instead
      */
     @NotNull
+    @Deprecated
     public AttackMetadata attack(@NotNull LivingEntity target, double damage, DamageType... types) {
-        final @Nullable AttackMetadata opt = MythicLib.plugin.getDamage().getRegisteredAttackMetadata(targetEntity);
-        if (opt != null) {
-            opt.getDamage().add(damage, types);
-            return opt;
-        }
-
         return caster.attack(target, damage, types);
     }
 }

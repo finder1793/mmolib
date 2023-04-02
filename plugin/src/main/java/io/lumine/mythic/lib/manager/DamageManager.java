@@ -155,6 +155,7 @@ public class DamageManager implements Listener {
 
             // Just damage entity
         } else {
+            Validate.isTrue(damage > 0, "Damage must be strictly positive");
             if (damager == null)
                 target.damage(damage);
             else
@@ -279,7 +280,9 @@ public class DamageManager implements Listener {
      * @param attackMeta Attack metadata being registered
      */
     public void markAsMetadata(AttackMetadata attackMeta) {
-        attackMetadatas.put(attackMeta.getTarget().getUniqueId(), attackMeta);
+        final @Nullable AttackMetadata found = attackMetadatas.put(attackMeta.getTarget().getUniqueId(), attackMeta);
+        if (found != null)
+            MythicLib.plugin.getLogger().log(Level.WARNING, "Please report this issue to the developper: persistent attack metadata was found.");
     }
 
     /**
@@ -390,11 +393,8 @@ public class DamageManager implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void unregisterCustomAttacks(EntityDamageEvent event) {
 
-        // Ignore fake events from RDW/mcMMO/...
-        if (!(event.getEntity() instanceof LivingEntity) || event.getDamage() == 0)
-            return;
-
-        attackMetadatas.remove(event.getEntity().getUniqueId());
+        if (event.getEntity() instanceof LivingEntity)
+            attackMetadatas.remove(event.getEntity().getUniqueId());
     }
 
     // Purely arbitrary but works decently

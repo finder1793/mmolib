@@ -108,7 +108,8 @@ public class ProjectileMechanic extends DirectionMechanic {
                     onHitEntity.cast(meta.clone(source, result.getHitPosition().toLocation(current.getWorld()), result.getHitEntity(), null));
 
                     // Check for entity hits
-                    if (entityHits++ >= hitLimit)
+                    entityHits++;
+                    if (entityHits >= hitLimit)
                         cancel();
                 }
             }
