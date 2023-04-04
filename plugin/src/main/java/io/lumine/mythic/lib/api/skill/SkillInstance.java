@@ -21,4 +21,8 @@ public class SkillInstance {
         return skillModifierMap.get(skillModifier);
     }
 
+    public boolean hasModifier(String modifier){
+        return skillModifierMap.containsKey(modifier);
+    }
+
 }
