@@ -64,28 +64,38 @@ public class SkillBuff extends InstanceModifier {
      */
     public void register(MMOPlayerData playerData, String skill) {
         playerData.getSkillBuffMap().addSkillBuff(this);
-        playerData.getSkillBuffMap().getSkillInstance(skill).getSkillModifier(modifier).addModifier(this);
+        SkillInstance skillInstance = playerData.getSkillBuffMap().getSkillInstance(skill);
+        if (skillInstance.hasModifier(modifier))
+            skillInstance.getSkillModifier(modifier).addModifier(this);
     }
+
     /**
      * Used to unregister the skillBuff for only 1 specific skill.
      */
     public void unregister(MMOPlayerData playerData, String skill) {
         playerData.getSkillBuffMap().removeSkillBuff(getKey());
-        playerData.getSkillBuffMap().getSkillInstance(skill).getSkillModifier(modifier).remove(getKey());
+        SkillInstance skillInstance = playerData.getSkillBuffMap().getSkillInstance(skill);
+        if (skillInstance.hasModifier(modifier))
+            skillInstance.getSkillModifier(modifier).remove(getKey());
     }
 
     @Override
     public void register(MMOPlayerData playerData) {
         playerData.getSkillBuffMap().addSkillBuff(this);
-        for (String skill : skills)
-            playerData.getSkillBuffMap().getSkillInstance(skill).getSkillModifier(modifier).addModifier(this);
+        for (String skill : skills) {
+            SkillInstance skillInstance = playerData.getSkillBuffMap().getSkillInstance(skill);
+            if (skillInstance.hasModifier(modifier))
+                skillInstance.getSkillModifier(modifier).addModifier(this);
+        }
     }
-
 
     @Override
     public void unregister(MMOPlayerData playerData) {
         playerData.getSkillBuffMap().removeSkillBuff(getKey());
-        for (String skill : skills)
-            playerData.getSkillBuffMap().getSkillInstance(skill).getSkillModifier(modifier).remove(getKey());
+        for (String skill : skills) {
+            SkillInstance skillInstance = playerData.getSkillBuffMap().getSkillInstance(skill);
+            if (skillInstance.hasModifier(modifier))
+                skillInstance.getSkillModifier(modifier).remove(getKey());
+        }
     }
 }
