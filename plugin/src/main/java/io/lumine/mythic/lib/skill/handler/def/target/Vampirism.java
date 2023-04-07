@@ -1,26 +1,23 @@
-package io.lumine.mythic.lib.skill.handler.def.passive;
+package io.lumine.mythic.lib.skill.handler.def.target;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
-import io.lumine.mythic.lib.damage.DamageType;
-import io.lumine.mythic.lib.player.skill.PassiveSkill;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.AttackSkillResult;
 import io.lumine.mythic.lib.skill.result.def.TargetSkillResult;
-import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
-import org.bukkit.*;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class Vampirism extends SkillHandler<AttackSkillResult> implements Listener {
+public class Vampirism extends SkillHandler<AttackSkillResult> {
     public Vampirism() {
-        super(false);
+        super();
+
         registerModifiers("drain");
     }
 
@@ -55,18 +52,5 @@ public class Vampirism extends SkillHandler<AttackSkillResult> implements Listen
         }.runTaskTimer(MythicLib.plugin, 0, 1);
         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_WITCH_DRINK, 1, 2);
         UtilityMethods.heal(caster, skillMeta.getAttack().getDamage().getDamage() * skillMeta.getModifier("drain") / 100);
-    }
-
-
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void a(PlayerAttackEvent event) {
-        if (!event.getAttack().getDamage().hasType(DamageType.WEAPON))
-            return;
-
-        PassiveSkill skill = event.getAttacker().getData().getPassiveSkillMap().getSkill(this);
-        if (skill == null)
-            return;
-
-        skill.getTriggeredSkill().cast(new TriggerMetadata(event.getAttacker(), event.getEntity()));
     }
 }
