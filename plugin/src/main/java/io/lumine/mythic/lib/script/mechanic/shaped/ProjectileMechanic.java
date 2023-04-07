@@ -109,8 +109,7 @@ public class ProjectileMechanic extends DirectionMechanic {
 
                     // Check for entity hits
                     entityHits++;
-                    if (entityHits >= hitLimit)
-                        cancel();
+                    if (entityHits >= hitLimit) cancel();
                 }
             }
         }.runTaskTimer(MythicLib.plugin, 0, 1);

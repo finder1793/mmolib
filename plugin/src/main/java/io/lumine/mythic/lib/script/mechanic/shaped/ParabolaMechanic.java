@@ -22,7 +22,7 @@ public class ParabolaMechanic extends Mechanic {
 
     private final LocationTargeter sourceLocation, targetLocation;
 
-    private final Script onTick, onEnd;
+    private final Script onStart, onTick, onEnd;
 
     public ParabolaMechanic(ConfigObject config) {
         sourceLocation = config.contains("source") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("source")) : new SourceLocationTargeter();
@@ -30,6 +30,7 @@ public class ParabolaMechanic extends Mechanic {
 
         config.validateKeys("tick");
 
+        onStart = config.contains("start") ? MythicLib.plugin.getSkills().getScriptOrThrow(config.getString("start")) : null;
         onTick = MythicLib.plugin.getSkills().getScriptOrThrow(config.getString("tick"));
         onEnd = config.contains("end") ? MythicLib.plugin.getSkills().getScriptOrThrow(config.getString("end")) : null;
 
@@ -76,9 +77,9 @@ public class ParabolaMechanic extends Mechanic {
          * coordinate of source and target location. This also
          * looks better in game and makes a little more sense.
          */
-        double height = this.height + Math.max(0, dir.getY());
-        double a = (2 * dir.getY() - 4 * height) / (xzLength * xzLength);
-        double b = xzLength - dir.getY() / (a * xzLength);
+        final double height = this.height + Math.max(0, dir.getY());
+        final double a = (2 * dir.getY() - 4 * height) / (xzLength * xzLength);
+        final double b = xzLength - dir.getY() / (a * xzLength);
 
         new BukkitRunnable() {
             double x = 0;
@@ -94,29 +95,29 @@ public class ParabolaMechanic extends Mechanic {
             public void run() {
 
                 // Distance traveled along the x axis
-                double dx = speed * DT;
+                final double dx = speed * DT;
 
                 // Distance traveled along the parabola
-                double dy = getLength(a, b, x, x + dx);
+                final double dy = getLength(a, b, x, x + dx);
 
                 // Amount of particles to display this tick
-                int displayed = (int) (dy / STEP);
-                double xStep = dx / (double) displayed;
+                final int displayed = (int) (dy / STEP);
+                final double xStep = dx / (double) displayed;
+                final boolean ending = x + dx >= xzLength;
+                final Script cast = x == 0 ? onStart : (ending ? onEnd : onTick);
 
                 for (int i = 0; i < displayed; i++) {
 
                     // Intermediate x value and corresponding location
                     double x_i = x + i * xStep;
                     Location loc_i = source.clone().add(axis.multiply(x_i)).add(0, y(a, b, x_i), 0);
-                    onTick.cast(meta.clone(source, loc_i, null, null));
+                    cast.cast(meta.clone(source, loc_i, null, null));
                 }
 
                 // Propagate through x axis
                 x += dx;
-                if (x >= xzLength) {
+                if (ending)
                     cancel();
-                    onEnd.cast(meta.clone(source, source.clone().add(dir), null, null));
-                }
             }
         }.runTaskTimer(MythicLib.plugin, 0, 1);
     }

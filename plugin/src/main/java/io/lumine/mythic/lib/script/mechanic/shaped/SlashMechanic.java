@@ -23,7 +23,7 @@ public class SlashMechanic extends Mechanic {
 
     private final LocationTargeter sourceLocation, targetLocation;
 
-    private final Script onTick, onEnd;
+    private final Script onStart, onTick, onEnd;
 
     public SlashMechanic(ConfigObject config) {
         sourceLocation = config.contains("source") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("source")) : new DefaultLocationTargeter();
@@ -31,6 +31,7 @@ public class SlashMechanic extends Mechanic {
 
         config.validateKeys("tick");
 
+        onStart = config.contains("start") ? MythicLib.plugin.getSkills().getScriptOrThrow(config.getString("start")) : null;
         onTick = MythicLib.plugin.getSkills().getScriptOrThrow(config.getString("tick"));
         onEnd = config.contains("end") ? MythicLib.plugin.getSkills().getScriptOrThrow(config.getString("end")) : null;
 
@@ -61,16 +62,16 @@ public class SlashMechanic extends Mechanic {
     public void cast(SkillMetadata meta, Location source, Vector dir) {
         Validate.isTrue(dir.lengthSquared() > 0, "Direction cannot be zero");
 
-        Vector radialAxis = dir.clone().normalize();
-        Vector slashDirection = dir.clone().setY(0).rotateAroundY(-Math.PI / 2).rotateAroundAxis(radialAxis, Math.toRadians(angle)).normalize();
+        final Vector radialAxis = dir.clone().normalize();
+        final Vector slashDirection = dir.clone().setY(0).rotateAroundY(-Math.PI / 2).rotateAroundAxis(radialAxis, Math.toRadians(angle)).normalize();
 
         new BukkitRunnable() {
 
             // Tick counter
             int counter = 0;
 
-            Location current = source.clone().add(slashDirection.clone().multiply(-length / 2));
-            Vector incremented = slashDirection.clone().multiply(length / points);
+            final Location current = source.clone().add(slashDirection.clone().multiply(-length / 2));
+            final Vector incremented = slashDirection.clone().multiply(length / points);
 
             public void run() {
                 for (int i = 0; i < pointsPerTick; i++) {
@@ -79,16 +80,14 @@ public class SlashMechanic extends Mechanic {
                     current.add(incremented);
 
                     // Add some curvature using f(x) = sqrt(1 - x²) to find the real location
-                    double x = Math.abs(counter - points / 2) * 2d / points;
+                    final double x = Math.abs(counter - points / 2) * 2d / points;
+                    final boolean ending = counter + 1 >= points;
+                    final Script cast = counter == 0 ? onStart : (ending ? onEnd : onTick);
                     Location intermediate = current.clone().add(dir.clone().multiply(distance * Math.sqrt(1 - x * x)));
-                    onTick.cast(meta.clone(source, intermediate, null, null));
+                    cast.cast(meta.clone(source, intermediate, null, null));
 
-                    if (counter++ >= points) {
-                        cancel();
-                        if (onEnd != null)
-                            onEnd.cast(meta.clone(source, intermediate, null, null));
-                        return;
-                    }
+                    counter++;
+                    if (ending) cancel();
                 }
             }
         }.runTaskTimer(MythicLib.plugin, 0, timeInterval);
