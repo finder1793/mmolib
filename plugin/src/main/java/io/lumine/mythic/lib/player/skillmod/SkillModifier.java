@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.api.skill;
+package io.lumine.mythic.lib.player.skillmod;
 
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
@@ -9,34 +9,44 @@ import io.lumine.mythic.lib.player.modifier.ModifierType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SkillBuff extends InstanceModifier {
+/**
+ * A skill "modifier" modifies a specific parameter of a skill,
+ * in the same way that a stat modifier modifies a stat for a player.
+ * It can also be given a boolean formula, which determines which
+ * skills the modifier will apply onto.
+ *
+ * @author Guillaume, Jules
+ */
+public class SkillModifier extends InstanceModifier {
+
     /**
-     * The list of all the skills this buff will be applied to.
-     * A skill buff can target one skill or a set of skills like giving
-     * for example +10% damage to all the passive skills.
+     * The list of all the skills this modifier will be applied to.
+     * A skill modifier can target one skill or a set of skills like
+     * giving for example +10% damage to all the passive skills.
      */
     private final List<String> skills;
-    private final String modifier;
+    private final String parameter;
 
     /**
      * Flat skill buff (simplest modifier you can think about)
      */
-    public SkillBuff(String key, String modifier, List<String> skills, double value) {
-        this(key, modifier, skills, value, ModifierType.FLAT, EquipmentSlot.OTHER, ModifierSource.OTHER);
+    public SkillModifier(String key, String parameter, List<String> skills, double value) {
+        this(key, parameter, skills, value, ModifierType.FLAT, EquipmentSlot.OTHER, ModifierSource.OTHER);
     }
 
     /**
      * skill buff given by an external mechanic, like a party buff, item set bonuses,
      * skills or abilities... Anything apart from items and armor.
      */
-    public SkillBuff(String key, String modifier, List<String> skills, double value, ModifierType type) {
-        this(key, modifier, skills, value, type, EquipmentSlot.OTHER, ModifierSource.OTHER);
+    public SkillModifier(String key, String parameter, List<String> skills, double value, ModifierType type) {
+        this(key, parameter, skills, value, type, EquipmentSlot.OTHER, ModifierSource.OTHER);
     }
 
-    public SkillBuff(String key, String modifier, List<String> skills, double value, ModifierType type, EquipmentSlot slot, ModifierSource source) {
+    public SkillModifier(String key, String parameter, List<String> skills, double value, ModifierType type, EquipmentSlot slot, ModifierSource source) {
         super(key, slot, source, value, type);
+
         this.skills = skills;
-        this.modifier = modifier;
+        this.parameter = parameter;
     }
 
     /**
@@ -46,18 +56,17 @@ public class SkillBuff extends InstanceModifier {
      * @param offset The offset added.
      * @return A new instance of SkillBuff with modified value
      */
-    public SkillBuff add(double offset) {
-        return new SkillBuff(getKey(), modifier, new ArrayList(skills), value + offset, type, getSlot(), getSource());
+    public SkillModifier add(double offset) {
+        return new SkillModifier(getKey(), parameter, new ArrayList(skills), value + offset, type, getSlot(), getSource());
     }
 
     public List<String> getSkills() {
         return skills;
     }
 
-    public String getModifier() {
-        return modifier;
+    public String getParameter() {
+        return parameter;
     }
-
 
     /**
      * Used to register the skillBuff for only 1 specific skill.
@@ -65,8 +74,8 @@ public class SkillBuff extends InstanceModifier {
     public void register(MMOPlayerData playerData, String skill) {
         playerData.getSkillBuffMap().addSkillBuff(this);
         SkillInstance skillInstance = playerData.getSkillBuffMap().getSkillInstance(skill);
-        if (skillInstance.hasModifier(modifier))
-            skillInstance.getSkillModifier(modifier).addModifier(this);
+        if (skillInstance.hasModifier(parameter))
+            skillInstance.getSkillModifier(parameter).addModifier(this);
     }
 
     /**
@@ -75,8 +84,8 @@ public class SkillBuff extends InstanceModifier {
     public void unregister(MMOPlayerData playerData, String skill) {
         playerData.getSkillBuffMap().removeSkillBuff(getKey());
         SkillInstance skillInstance = playerData.getSkillBuffMap().getSkillInstance(skill);
-        if (skillInstance.hasModifier(modifier))
-            skillInstance.getSkillModifier(modifier).remove(getKey());
+        if (skillInstance.hasModifier(parameter))
+            skillInstance.getSkillModifier(parameter).remove(getKey());
     }
 
     @Override
@@ -84,8 +93,8 @@ public class SkillBuff extends InstanceModifier {
         playerData.getSkillBuffMap().addSkillBuff(this);
         for (String skill : skills) {
             SkillInstance skillInstance = playerData.getSkillBuffMap().getSkillInstance(skill);
-            if (skillInstance.hasModifier(modifier))
-                skillInstance.getSkillModifier(modifier).addModifier(this);
+            if (skillInstance.hasModifier(parameter))
+                skillInstance.getSkillModifier(parameter).addModifier(this);
         }
     }
 
@@ -94,8 +103,8 @@ public class SkillBuff extends InstanceModifier {
         playerData.getSkillBuffMap().removeSkillBuff(getKey());
         for (String skill : skills) {
             SkillInstance skillInstance = playerData.getSkillBuffMap().getSkillInstance(skill);
-            if (skillInstance.hasModifier(modifier))
-                skillInstance.getSkillModifier(modifier).remove(getKey());
+            if (skillInstance.hasModifier(parameter))
+                skillInstance.getSkillModifier(parameter).remove(getKey());
         }
     }
 }

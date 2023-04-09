@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.api.skill;
+package io.lumine.mythic.lib.player.skillmod;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
@@ -9,6 +9,7 @@ import java.util.Map;
 
 public class SkillMap {
     private final MMOPlayerData mmoData;
+
     /**
      * This map enables to calculate the skill buffs associated to a particular skill and a particular skillModifier
      * without having to parse other modifers. In particular this is done every time a skill is cast.
@@ -19,7 +20,7 @@ public class SkillMap {
      * This map is used to access directly the skill buffs to remove them or modify them.
      * SkillBuff triggers can then access and modify the value of a trigger in O(1).
      */
-    private final Map<String, SkillBuff> skillBuffMap = new HashMap<>();
+    private final Map<String, SkillModifier> skillBuffMap = new HashMap<>();
 
     public SkillMap(MMOPlayerData mmoData) {
         this.mmoData = mmoData;
@@ -42,12 +43,12 @@ public class SkillMap {
         return skillBuffMap.containsKey(key);
     }
 
-    public SkillBuff getSkillBuff(String key) {
+    public SkillModifier getSkillBuff(String key) {
         return skillBuffMap.get(key);
     }
 
-    public void addSkillBuff(SkillBuff skillBuff) {
-        skillBuffMap.put(skillBuff.getKey(), skillBuff);
+    public void addSkillBuff(SkillModifier skillModifier) {
+        skillBuffMap.put(skillModifier.getKey(), skillModifier);
     }
 
     public void removeSkillBuff(String key) {

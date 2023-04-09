@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.api.player;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.skill.SkillMap;
+import io.lumine.mythic.lib.player.skillmod.SkillMap;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.comp.flags.CustomFlag;
 import io.lumine.mythic.lib.damage.AttackMetadata;
@@ -78,7 +78,7 @@ public class MMOPlayerData {
     }
 
     /**
-     * @return The player's StatMap which can be used by any other plugins to
+     * @return The player's stat map which can be used by any other plugins to
      * apply stat modifiers to ANY MMOItems/MMOCore/external stats,
      * calculate stat values, etc.
      */
@@ -87,8 +87,8 @@ public class MMOPlayerData {
     }
 
     /**
-     * @return The player Skill Buff Map. This map applies buffs/nerfs to skill modifiers.
-     * It can be used by any other plugin to apply modifications to skill modifier.
+     * @return The player's skill buff Map. This map applies modifications
+     * to numerical skill parameters (damage, cooldown...)
      */
     public SkillMap getSkillBuffMap() {
         return skillMap;

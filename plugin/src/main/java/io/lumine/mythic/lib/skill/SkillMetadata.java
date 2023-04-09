@@ -80,7 +80,7 @@ public class SkillMetadata {
     }
 
     /**
-     * @param cast           Initial skill being cast. It's used to retrieve skill modifiers
+     * @param cast           Initial skill being cast. It's used to retrieve skill parameter values
      * @param caster         Cached statistics of the skill caster
      * @param vars           Skill variable list if it already exists
      * @param source         The location at which the skill/mechanic was cast
@@ -120,14 +120,21 @@ public class SkillMetadata {
     }
 
     /**
-     * Retrieves a specific skill modifier using
-     * the cached instance of {@link Skill}
-     *
-     * @param path Modifier path
-     * @return Modifier value
+     * @deprecated Skill modifiers are now called "parameters"
      */
+    @Deprecated
     public double getModifier(String path) {
-        return cast.getModifier(path,caster.getData());
+        return getParameter(path);
+    }
+
+    /**
+     * Retrieves a specific skill parameter value
+     *
+     * @param path Skill parameter path
+     * @return Skill parameter final value, taking into account skill mods
+     */
+    public double getParameter(String path) {
+        return caster.getData().getSkillBuffMap().getSkillInstance(cast.getHandler().getId()).getSkillModifier(path).getTotal(cast.getParameter(path));
     }
 
     @NotNull
