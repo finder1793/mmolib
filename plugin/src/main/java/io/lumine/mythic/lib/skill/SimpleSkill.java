@@ -1,6 +1,5 @@
 package io.lumine.mythic.lib.skill;
 
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.jetbrains.annotations.NotNull;
@@ -37,12 +36,6 @@ public class SimpleSkill extends Skill {
     @Override
     public SkillHandler<?> getHandler() {
         return handler;
-    }
-
-    @Override
-    public double getModifier(String path, MMOPlayerData playerData) {
-        return playerData.getSkillBuffMap().getSkillInstance(getHandler().getId())
-                .getSkillModifier(path).getTotal(modifiers.getOrDefault(path, 0d));
     }
 
     public void registerModifier(String path, double value) {
