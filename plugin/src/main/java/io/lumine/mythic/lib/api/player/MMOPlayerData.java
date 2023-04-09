@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.api.player;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.api.skill.SkillMap;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.comp.flags.CustomFlag;
 import io.lumine.mythic.lib.damage.AttackMetadata;
@@ -44,6 +45,7 @@ public class MMOPlayerData {
     // Temporary player data
     private final CooldownMap cooldownMap = new CooldownMap();
     private final StatMap statMap = new StatMap(this);
+    private final SkillMap skillMap = new SkillMap(this);
     private final PermanentPotionEffectMap permEffectMap = new PermanentPotionEffectMap(this);
     private final ParticleEffectMap particleEffectMap = new ParticleEffectMap(this);
     private final PassiveSkillMap passiveSkillMap = new PassiveSkillMap(this);
@@ -82,6 +84,14 @@ public class MMOPlayerData {
      */
     public StatMap getStatMap() {
         return statMap;
+    }
+
+    /**
+     * @return The player Skill Buff Map. This map applies buffs/nerfs to skill modifiers.
+     * It can be used by any other plugin to apply modifications to skill modifier.
+     */
+    public SkillMap getSkillBuffMap() {
+        return skillMap;
     }
 
     /**
@@ -216,7 +226,6 @@ public class MMOPlayerData {
     public boolean isTimedOut() {
         return !isOnline() && lastLogActivity + CACHE_TIME_OUT < System.currentTimeMillis();
     }
-
 
     /**
      * This method simply checks if the cached Player instance is null

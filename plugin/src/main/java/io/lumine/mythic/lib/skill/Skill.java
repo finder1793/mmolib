@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.skill;
 
 import io.lumine.mythic.lib.api.event.skill.PlayerCastSkillEvent;
 import io.lumine.mythic.lib.api.event.skill.SkillCastEvent;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.player.cooldown.CooldownObject;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.SkillResult;
@@ -117,7 +118,7 @@ public abstract class Skill implements CooldownObject {
         return trigger;
     }
 
-    public abstract double getModifier(String path);
+    public abstract double getModifier(String path, MMOPlayerData playerData);
 
     @Override
     public String getCooldownPath() {

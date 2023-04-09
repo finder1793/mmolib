@@ -2,20 +2,20 @@ package io.lumine.mythic.lib.api.stat;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
+import io.lumine.mythic.lib.api.stat.api.ModifiedInstance;
 import io.lumine.mythic.lib.api.stat.modifier.StatModifier;
 import io.lumine.mythic.lib.player.modifier.Closeable;
-import io.lumine.mythic.lib.player.modifier.ModifierType;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class StatInstance {
+public class StatInstance extends ModifiedInstance<StatModifier> {
     private final StatMap map;
     private final String stat;
-    private final Map<String, StatModifier> modifiers = new ConcurrentHashMap<>();
 
     public StatInstance(StatMap map, String stat) {
         this.map = map;
@@ -81,17 +81,7 @@ public class StatInstance {
      *         modifiers.
      */
     public double getFilteredTotal(Predicate<StatModifier> filter, Function<StatModifier, StatModifier> modification) {
-        double d = getBase();
-
-        for (StatModifier attr : modifiers.values())
-            if (attr.getType() == ModifierType.FLAT && filter.test(attr))
-                d += modification.apply(attr).getValue();
-
-        for (StatModifier attr : modifiers.values())
-            if (attr.getType() == ModifierType.RELATIVE && filter.test(attr))
-                d *= 1 + modification.apply(attr).getValue() / 100;
-
-        return d;
+        return getFilteredTotal(getBase(), filter, modification);
     }
 
     /**
@@ -108,25 +98,13 @@ public class StatInstance {
      *
      * @param modifier The stat modifier being registered
      */
+    @Override
     public void addModifier(StatModifier modifier) {
         ModifierPacket packet = new ModifierPacket();
         packet.addModifier(modifier);
         packet.runUpdate();
     }
 
-    /**
-     * @return All registered stat modifiers
-     */
-    public Collection<StatModifier> getModifiers() {
-        return modifiers.values();
-    }
-
-    /**
-     * @return All string keys of currently registered stat modifiers
-     */
-    public Set<String> getKeys() {
-        return modifiers.keySet();
-    }
 
     /**
      * Iterates through registered stat modifiers and unregisters them if a
@@ -135,25 +113,20 @@ public class StatInstance {
      * @param condition Condition on the modifier key, if it should be unregistered or
      *                  not
      */
+    @Override
     public void removeIf(Predicate<String> condition) {
         ModifierPacket packet = new ModifierPacket();
         packet.removeIf(condition);
         packet.runUpdate();
     }
 
-    /**
-     * @param key The string key of the external stat modifier source or plugin
-     * @return If a stat modifier is registered with this key
-     */
-    public boolean contains(String key) {
-        return modifiers.containsKey(key);
-    }
 
     /**
      * Removes a stat modifier with a specific key
      *
      * @param key The string key of the external stat modifier source or plugin
      */
+    @Override
     public void remove(String key) {
         ModifierPacket packet = new ModifierPacket();
         packet.remove(key);
