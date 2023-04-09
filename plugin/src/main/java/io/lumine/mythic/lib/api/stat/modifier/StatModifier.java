@@ -1,16 +1,11 @@
 package io.lumine.mythic.lib.api.stat.modifier;
 
-import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.api.InstanceModifier;
 import io.lumine.mythic.lib.player.modifier.ModifierSource;
 import io.lumine.mythic.lib.player.modifier.ModifierType;
-import io.lumine.mythic.lib.player.modifier.PlayerModifier;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
-import org.apache.commons.lang.Validate;
-
-import java.text.DecimalFormat;
 
 /**
  * Stat modifiers do NOT utilize the player modifier UUID
@@ -71,7 +66,6 @@ public class StatModifier extends InstanceModifier {
     public String getStat() {
         return stat;
     }
-
 
     /**
      * Used to add a constant to some existing stat modifier, usually an

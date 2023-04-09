@@ -130,11 +130,11 @@ public class SkillMetadata {
     /**
      * Retrieves a specific skill parameter value
      *
-     * @param path Skill parameter path
+     * @param param Skill parameter path
      * @return Skill parameter final value, taking into account skill mods
      */
-    public double getParameter(String path) {
-        return caster.getData().getSkillBuffMap().getSkillInstance(cast.getHandler().getId()).getSkillModifier(path).getTotal(cast.getParameter(path));
+    public double getParameter(String param) {
+        return caster.getData().getSkillModifierMap().getInstance(cast.getHandler(), param).getTotal(cast.getParameter(param));
     }
 
     @NotNull
