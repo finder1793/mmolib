@@ -1,4 +1,4 @@
-package io.lumine.mythic.lib.api.skill;
+package io.lumine.mythic.lib.player.skillmod;
 
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 
@@ -12,7 +12,7 @@ public class SkillInstance {
 
     public SkillInstance(SkillHandler skillHandler) {
         this.skillHandler = skillHandler;
-        Set<String> modifiers=skillHandler.getModifiers();
+        Set<String> modifiers=skillHandler.getParameters();
         for(String mod: modifiers)
             skillModifierMap.put(mod,new SkillModifierInstance(mod));
     }

@@ -18,7 +18,6 @@ import java.text.DecimalFormat;
 public class StatModifier extends InstanceModifier {
     private final String stat;
 
-
     /**
      * Flat stat modifier (simplest modifier you can think about)
      */
@@ -106,6 +105,5 @@ public class StatModifier extends InstanceModifier {
     public void unregister(MMOPlayerData playerData) {
         playerData.getStatMap().getInstance(stat).remove(getKey());
     }
-
 }
 

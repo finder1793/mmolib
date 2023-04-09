@@ -36,23 +36,23 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
 
     /**
      * @return The final stat value taking into account the default stat value
-     *         as well as the stat modifiers. The relative stat modifiers are
-     *         applied afterwards, onto the sum of the base value + flat
-     *         modifiers.
+     * as well as the stat modifiers. The relative stat modifiers are
+     * applied afterwards, onto the sum of the base value + flat
+     * modifiers.
      */
     public double getTotal() {
-        return getFilteredTotal(EquipmentSlot.MAIN_HAND::isCompatible);
+        return getFilteredTotal(getBase(), EquipmentSlot.MAIN_HAND::isCompatible, mod -> mod);
     }
 
     /**
      * @param filter Filters stat modifications taken into account for the calculation
      * @return The final stat value taking into account the default stat value
-     *         as well as the stat modifiers. The relative stat modifiers are
-     *         applied afterwards, onto the sum of the base value + flat
-     *         modifiers.
+     * as well as the stat modifiers. The relative stat modifiers are
+     * applied afterwards, onto the sum of the base value + flat
+     * modifiers.
      */
     public double getFilteredTotal(Predicate<StatModifier> filter) {
-        return getFilteredTotal(filter, mod -> mod);
+        return getFilteredTotal(getBase(), filter, mod -> mod);
     }
 
     /**
@@ -61,12 +61,12 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
      *                     reduce debuffs, by checking if a stat modifier has a negative
      *                     value and returning a modifier with a reduced absolute value
      * @return The final stat value taking into account the default stat value
-     *         as well as the stat modifiers. The relative stat modifiers are
-     *         applied afterwards, onto the sum of the base value + flat
-     *         modifiers.
+     * as well as the stat modifiers. The relative stat modifiers are
+     * applied afterwards, onto the sum of the base value + flat
+     * modifiers.
      */
     public double getTotal(Function<StatModifier, StatModifier> modification) {
-        return getFilteredTotal(EquipmentSlot.MAIN_HAND::isCompatible, modification);
+        return getFilteredTotal(getBase(), EquipmentSlot.MAIN_HAND::isCompatible, modification);
     }
 
     /**
@@ -76,9 +76,9 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
      *                     reduce debuffs, by checking if a stat modifier has a negative
      *                     value and returning a modifier with a reduced absolute value
      * @return The final stat value taking into account the default stat value
-     *         as well as the stat modifiers. The relative stat modifiers are
-     *         applied afterwards, onto the sum of the base value + flat
-     *         modifiers.
+     * as well as the stat modifiers. The relative stat modifiers are
+     * applied afterwards, onto the sum of the base value + flat
+     * modifiers.
      */
     public double getFilteredTotal(Predicate<StatModifier> filter, Function<StatModifier, StatModifier> modification) {
         return getFilteredTotal(getBase(), filter, modification);
@@ -100,11 +100,10 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
      */
     @Override
     public void addModifier(StatModifier modifier) {
-        ModifierPacket packet = new ModifierPacket();
+        final ModifierPacket packet = new ModifierPacket();
         packet.addModifier(modifier);
         packet.runUpdate();
     }
-
 
     /**
      * Iterates through registered stat modifiers and unregisters them if a
@@ -115,11 +114,10 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
      */
     @Override
     public void removeIf(Predicate<String> condition) {
-        ModifierPacket packet = new ModifierPacket();
+        final ModifierPacket packet = new ModifierPacket();
         packet.removeIf(condition);
         packet.runUpdate();
     }
-
 
     /**
      * Removes a stat modifier with a specific key
@@ -128,7 +126,7 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
      */
     @Override
     public void remove(String key) {
-        ModifierPacket packet = new ModifierPacket();
+        final ModifierPacket packet = new ModifierPacket();
         packet.remove(key);
         packet.runUpdate();
     }
@@ -163,7 +161,7 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
          * @param modifier The stat modifier being registered
          */
         public void addModifier(StatModifier modifier) {
-            StatModifier current = modifiers.put(modifier.getKey(), modifier);
+            final StatModifier current = modifiers.put(modifier.getKey(), modifier);
             if (current != null && current instanceof Closeable)
                 ((Closeable) current).close();
             updateRequired = true;
@@ -177,7 +175,7 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
         public void remove(String key) {
 
             // Find and remove current value
-            StatModifier mod = modifiers.remove(key);
+            final StatModifier mod = modifiers.remove(key);
             if (mod == null)
                 return;
 
@@ -200,10 +198,10 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
          */
         public void removeIf(Predicate<String> condition) {
             for (Iterator<Map.Entry<String, StatModifier>> iterator = modifiers.entrySet().iterator(); iterator.hasNext(); ) {
-                Map.Entry<String, StatModifier> entry = iterator.next();
+                final Map.Entry<String, StatModifier> entry = iterator.next();
                 if (condition.test(entry.getKey())) {
 
-                    StatModifier modifier = entry.getValue();
+                    final StatModifier modifier = entry.getValue();
                     if (modifier instanceof Closeable)
                         ((Closeable) modifier).close();
 

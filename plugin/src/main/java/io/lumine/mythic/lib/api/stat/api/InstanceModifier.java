@@ -14,9 +14,6 @@ public abstract class InstanceModifier extends PlayerModifier {
     protected final double value;
     protected final ModifierType type;
 
-    private static final DecimalFormat oneDigit = MythicLib.plugin.getMMOConfig().newDecimalFormat("0.#");
-
-
     public InstanceModifier(String key, EquipmentSlot slot, ModifierSource source, double value, ModifierType type) {
         super(key, slot, source);
         this.value = value;
@@ -49,6 +46,6 @@ public abstract class InstanceModifier extends PlayerModifier {
 
     @Override
     public String toString() {
-        return oneDigit.format(value) + (type == ModifierType.RELATIVE ? "%" : "");
+        return MythicLib.plugin.getMMOConfig().decimal.format(value) + (type == ModifierType.RELATIVE ? "%" : "");
     }
 }

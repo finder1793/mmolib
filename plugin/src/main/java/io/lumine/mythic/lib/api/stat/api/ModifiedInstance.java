@@ -14,50 +14,48 @@ public abstract class ModifiedInstance<T extends InstanceModifier> {
     protected final Map<String, T> modifiers = new ConcurrentHashMap<>();
 
     /**
-     * @return The final stat value taking into account the default stat value
-     * as well as the stat modifiers. The relative stat modifiers are
-     * applied afterwards, onto the sum of the base value + flat
-     * modifiers.
+     * @return The final modified value taking, into account the default value
+     * as well as all of the modifiers. %-based modifiers are applied
+     * afterwards, onto the sum of the base value + flat modifiers.
      */
     public double getTotal(double base) {
-        return getFilteredTotal(base, EquipmentSlot.MAIN_HAND::isCompatible);
+        return getFilteredTotal(base, EquipmentSlot.MAIN_HAND::isCompatible, mod -> mod);
     }
 
     /**
-     * @param filter Filters stat modifications taken into account for the calculation
-     * @return The final stat value taking into account the default stat value
-     * as well as the stat modifiers. The relative stat modifiers are
-     * applied afterwards, onto the sum of the base value + flat
-     * modifiers.
+     * @param filter Filters modifiers taken into account for the final value computation
+     * @return The final modified value taking, into account the default value
+     * as well as all of the modifiers. %-based modifiers are applied
+     * afterwards, onto the sum of the base value + flat modifiers.
      */
     public double getFilteredTotal(double base, Predicate<T> filter) {
         return getFilteredTotal(base, filter, mod -> mod);
     }
 
     /**
-     * @param modification A modification to any stat modifier before taking it into
-     *                     account in stat calculation. This can be used for instance to
-     *                     reduce debuffs, by checking if a stat modifier has a negative
-     *                     value and returning a modifier with a reduced absolute value
-     * @return The final stat value taking into account the default stat value
-     * as well as the stat modifiers. The relative stat modifiers are
-     * applied afterwards, onto the sum of the base value + flat
-     * modifiers.
+     * @param modification A modification to any modifier before taking it into account
+     *                     in the final calculation.
+     *                     This can be used for instance to reduce debuffs, by checking if
+     *                     a stat modifier has a negative value and returning a modifier
+     *                     with a reduced absolute value.
+     * @return The final modified value taking, into account the default value
+     * as well as all of the modifiers. %-based modifiers are applied
+     * afterwards, onto the sum of the base value + flat modifiers.
      */
     public double getTotal(double base, Function<T, T> modification) {
         return getFilteredTotal(base, EquipmentSlot.MAIN_HAND::isCompatible, modification);
     }
 
     /**
-     * @param filter       Filters stat modifications taken into account for the calculation
-     * @param modification A modification to any stat modifier before taking it into
-     *                     account in stat calculation. This can be used for instance to
-     *                     reduce debuffs, by checking if a stat modifier has a negative
-     *                     value and returning a modifier with a reduced absolute value
-     * @return The final stat value taking into account the default stat value
-     * as well as the stat modifiers. The relative stat modifiers are
-     * applied afterwards, onto the sum of the base value + flat
-     * modifiers.
+     * @param filter       Filters modifiers taken into account for the final value computation
+     * @param modification A modification to any modifier before taking it into account
+     *                     in the final calculation.
+     *                     This can be used for instance to reduce debuffs, by checking if
+     *                     a stat modifier has a negative value and returning a modifier
+     *                     with a reduced absolute value.
+     * @return The final modified value taking, into account the default value
+     * as well as all of the modifiers. %-based modifiers are applied
+     * afterwards, onto the sum of the base value + flat modifiers.
      */
     public double getFilteredTotal(double d, Predicate<T> filter, Function<T, T> modification) {
 
@@ -94,10 +92,9 @@ public abstract class ModifiedInstance<T extends InstanceModifier> {
 
     /**
      * Iterates through registered modifiers and unregisters them if a
-     * certain condition based on their string key is met
+     * certain condition based on their string key is met.
      *
-     * @param condition Condition on the modifier key, if it should be unregistered or
-     *                  not
+     * @param condition Condition on the modifier key
      */
     public void removeIf(Predicate<String> condition) {
         for (Iterator<Map.Entry<String, T>> iterator = modifiers.entrySet().iterator(); iterator.hasNext(); ) {
@@ -134,5 +131,4 @@ public abstract class ModifiedInstance<T extends InstanceModifier> {
     public boolean contains(String key) {
         return modifiers.containsKey(key);
     }
-
 }

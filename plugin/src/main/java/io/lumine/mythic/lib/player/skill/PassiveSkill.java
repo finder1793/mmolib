@@ -36,7 +36,6 @@ public class PassiveSkill extends PlayerModifier {
      */
     private final Skill triggered;
 
-
     @Deprecated
     public PassiveSkill(String key, TriggerType type, Skill triggered, EquipmentSlot equipmentSlot, ModifierSource modifierSource) {
         this(key, triggered, equipmentSlot, modifierSource);
@@ -78,7 +77,7 @@ public class PassiveSkill extends PlayerModifier {
      * it in ticks but that field is expressed in milliseconds
      */
     public long getTimerPeriod(MMOPlayerData playerData) {
-        return Math.max(1, (long) triggered.getModifier("timer",playerData)) * 50;
+        return Math.max(1, (long) triggered.getParameter("timer")) * 50;
     }
 
     @NotNull

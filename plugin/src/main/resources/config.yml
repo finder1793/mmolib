@@ -54,7 +54,7 @@ critical-strikes:
     max-chance: 80
 
 # What happens when the player is waiting for his skill to cast
-# Does not apply if skill delay (it is a skill modifier) is set to 0
+# Does not apply if skill delay (it is a skill parameter) is set to 0
 casting-delay:
   slowness: 60 # A % based speed reduction when casting
   cancel-on-move: false # If the casting should cancel if the player moves
