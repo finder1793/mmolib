@@ -134,7 +134,7 @@ public class SkillMetadata {
      * @return Skill parameter final value, taking into account skill mods
      */
     public double getParameter(String param) {
-        return caster.getData().getSkillModifierMap().getInstance(cast.getHandler(), param).getTotal(cast.getParameter(param));
+        return caster.getData().getSkillModifierMap().getInstance(cast.getHandler(), param).getTotal(cast.getModifier(param));
     }
 
     @NotNull
@@ -220,12 +220,12 @@ public class SkillMetadata {
      * to potentially orient locations.
      *
      * @return Skill orientation if not null. If it is, it tries to create
-     * one using the skill target and source location if it is not null.
-     * Throws a NPE if the metadata has neither an orientation nor a target location.
+     *         one using the skill target and source location if it is not null.
+     *         Throws a NPE if the metadata has neither an orientation nor a target location.
      */
     @NotNull
     public SkillOrientation getSkillOrientation() {
-        return orientation != null ? orientation : new SkillOrientation(Objects.requireNonNull(targetLocation, "Skill has no orientation"), targetLocation.subtract(source).toVector());
+        return orientation != null ? orientation : new SkillOrientation(Objects.requireNonNull(targetLocation, "Skill has no orientation").clone(), targetLocation.clone().subtract(source).toVector());
     }
 
     /**
@@ -269,7 +269,7 @@ public class SkillMetadata {
 
             // Skill source location
             case "source":
-                var = new PositionVariable("temp", source);
+                var = new PositionVariable("temp", source.clone());
                 break;
 
             // Skill target location

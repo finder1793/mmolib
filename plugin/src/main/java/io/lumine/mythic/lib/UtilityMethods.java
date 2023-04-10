@@ -6,7 +6,9 @@ import io.lumine.mythic.lib.api.condition.type.MMOCondition;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -37,21 +39,31 @@ public class UtilityMethods {
         String key = config.getKey().toLowerCase();
         switch (key) {
             case "region":
-                if (!Bukkit.getPluginManager().isPluginEnabled("WorldGuard"))
-                    return null;
+                if (!Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) return null;
                 return new RegionCondition(config);
         }
 
         return null;
     }
 
+    private static final int PTS_PER_BLOCK = 10;
+
+    public static void drawVector(Vector vec, Location source, Color color) {
+
+        final double step = 1d / ((double) PTS_PER_BLOCK) / vec.length();
+        for (double d = 0; d < 1; d += step) {
+            Location inter = source.clone().add(vec.clone().multiply(d));
+            inter.getWorld().spawnParticle(Particle.REDSTONE, inter, 0, new Particle.DustOptions(color, .6f));
+        }
+    }
+
     /**
      * @param loc Where we are looking for nearby entities
      * @return List of all entities surrounding a location. This method loops
-     * through the 9 surrounding chunks and collect all entities from
-     * them. This list can be cached and used multiple times in the same
-     * tick for projectile based spells which need to run entity
-     * checkups
+     *         through the 9 surrounding chunks and collect all entities from
+     *         them. This list can be cached and used multiple times in the same
+     *         tick for projectile based spells which need to run entity
+     *         checkups
      */
     public static List<Entity> getNearbyChunkEntities(Location loc) {
         List<Entity> entities = new ArrayList<>();
@@ -121,8 +133,7 @@ public class UtilityMethods {
             return false;
 
         // Interaction type check
-        if (!MythicLib.plugin.getEntities().canInteract(source, target, interaction))
-            return false;
+        if (!MythicLib.plugin.getEntities().canInteract(source, target, interaction)) return false;
 
         return true;
     }
@@ -201,8 +212,7 @@ public class UtilityMethods {
         for (int x = -1; x < 2; x++)
             for (int z = -1; z < 2; z++)
                 for (Entity target : loc.getWorld().getChunkAt(cx + x, cz + z).getEntities())
-                    if (target instanceof Player)
-                        players.add((Player) target);
+                    if (target instanceof Player) players.add((Player) target);
 
         return players;
     }
@@ -228,8 +238,7 @@ public class UtilityMethods {
      */
     public static boolean isVanished(Player player) {
         for (MetadataValue meta : player.getMetadata("vanished"))
-            if (meta.asBoolean())
-                return true;
+            if (meta.asBoolean()) return true;
         return false;
     }
 
@@ -249,8 +258,7 @@ public class UtilityMethods {
         double x = axis.getX();
         double z = axis.getZ();
 
-        if (x == 0 && z == 0)
-            return new double[]{0, axis.getY() > 0 ? -90 : 90};
+        if (x == 0 && z == 0) return new double[]{0, axis.getY() > 0 ? -90 : 90};
         else {
             double theta = Math.atan2(-x, z);
             double yaw = (float) Math.toDegrees((theta + _2PI) % _2PI);
@@ -266,17 +274,15 @@ public class UtilityMethods {
      *
      * @param event Some damage event
      * @return The player, if this event is due to him. It is the player which
-     * is taken into account when PvP is toggled on.
+     *         is taken into account when PvP is toggled on.
      */
     @Nullable
     public static Player getPlayerDamager(EntityDamageByEntityEvent event) {
-        if (isRealPlayer(event.getDamager()))
-            return (Player) event.getDamager();
+        if (isRealPlayer(event.getDamager())) return (Player) event.getDamager();
 
         if (event.getDamager() instanceof Projectile) {
             final ProjectileSource shooter = ((Projectile) event.getDamager()).getShooter();
-            if (shooter instanceof Entity && isRealPlayer((Entity) shooter))
-                return (Player) shooter;
+            if (shooter instanceof Entity && isRealPlayer((Entity) shooter)) return (Player) shooter;
         }
 
         return null;
@@ -309,8 +315,7 @@ public class UtilityMethods {
 
     public static double getAltitude(Location loc) {
         final Location moving = loc.clone();
-        while (!moving.getBlock().getType().isSolid())
-            moving.add(0, -1, 0);
+        while (!moving.getBlock().getType().isSolid()) moving.add(0, -1, 0);
 
         return loc.getY() - moving.getBlockY() - 1;
     }

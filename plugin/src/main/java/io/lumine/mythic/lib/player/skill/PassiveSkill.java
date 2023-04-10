@@ -76,7 +76,7 @@ public class PassiveSkill extends PlayerModifier {
      * Zero when skill does not use a timer. The user inputs
      * it in ticks but that field is expressed in milliseconds
      */
-    public long getTimerPeriod(MMOPlayerData playerData) {
+    public long getTimerPeriod() {
         return Math.max(1, (long) triggered.getParameter("timer")) * 50;
     }
 

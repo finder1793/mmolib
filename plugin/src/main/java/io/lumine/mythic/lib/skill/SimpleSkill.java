@@ -34,6 +34,11 @@ public class SimpleSkill extends Skill {
     }
 
     @Override
+    public double getParameter(String path) {
+        return modifiers.getOrDefault(path, 0d);
+    }
+
+    @Override
     public SkillHandler<?> getHandler() {
         return handler;
     }
