@@ -64,8 +64,9 @@ public class PassiveSkillMap extends ModifierMap<PassiveSkill> {
         for (PassiveSkill passive : getModifiers()) {
             if (!passive.getType().equals(TriggerType.TIMER) || getPlayerData().getPlayer().getGameMode() == GameMode.SPECTATOR)
                 continue;
-            String key = passive.getTriggeredSkill().getHandler().getId();
-            final Long mapValue = this.lastCast.get(key);
+
+            final String key = passive.getTriggeredSkill().getHandler().getId();
+            final @Nullable Long mapValue = this.lastCast.get(key);
             final long lastCast = mapValue == null ? 0 : mapValue; // Avoids one map checkup taking advantage of non null values
             if (lastCast + passive.getTimerPeriod() > System.currentTimeMillis())
                 continue;
