@@ -79,8 +79,10 @@ public class ProjectileMechanic extends DirectionMechanic {
             int entityHits = 0;
 
             public void run() {
-                if (counter++ >= projLifeSpan)
+                if (counter++ >= projLifeSpan) {
                     cancel();
+                    return;
+                }
 
                 current.add(dr);
 

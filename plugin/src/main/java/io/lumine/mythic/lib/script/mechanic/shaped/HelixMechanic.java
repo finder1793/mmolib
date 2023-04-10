@@ -74,19 +74,23 @@ public class HelixMechanic extends Mechanic {
             public void run() {
                 for (int i = 0; i < pointsPerTick; i++) {
 
+                    /* Always on start otherwise an error in the
+                     * code will makethe runnable loop forever.
+                     */
+                    if (counter++ >= points) {
+                        cancel();
+                        return;
+                    }
+
                     final double yaw = Math.toRadians(yaw_i + ((double) counter / points) * yawSpread);
                     final double y = ((double) counter / points) * height, r = radius.evaluate(meta);
-                    final boolean ending = counter + 1 >= points;
-                    final Script cast = ending ? onEnd : (counter == 0 ? onStart : onTick);
+                    final Script cast = onEnd != null && counter >= points ? onEnd : (onStart != null && counter == 1 ? onStart : onTick);
 
                     for (int j = 0; j < helixes; j++) {
                         final double angle = yaw + Math.PI * 2 / helixes * j;
                         Location loc = source.clone().add(r * Math.cos(angle), y, r * Math.sin(angle));
                         cast.cast(meta.clone(source, loc, null, null));
                     }
-
-                    counter++;
-                    if (counter++ >= points) cancel();
                 }
             }
         }.runTaskTimer(MythicLib.plugin, 0, timeInterval);
