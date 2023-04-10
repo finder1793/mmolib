@@ -345,7 +345,7 @@ public class SkillMetadata {
         return Objects.requireNonNull(SERVER_VARIABLE_LIST.getVariable(name), "Could not find custom variable with name '" + name + "'");
     }
 
-    private static final Pattern INTERNAL_PLACEHOLDER_PATTERN = Pattern.compile("<^<>|&\\s*?>");
+    private static final Pattern INTERNAL_PLACEHOLDER_PATTERN = Pattern.compile("<[^&|<>]*?>");
 
     public String parseString(String str) {
 
