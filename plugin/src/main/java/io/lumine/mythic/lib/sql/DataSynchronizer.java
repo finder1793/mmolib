@@ -45,7 +45,7 @@ public abstract class DataSynchronizer {
 
         // Does nothing if player is offline
         if (!mmoPlayerData.isOnline()) {
-            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Stopped data retrieval for '" + mmoPlayerData.getUniqueId() + "' as they went offline");
+            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Stopped data retrieval for '" + mmoPlayerData.getProfileId() + "' as they went offline");
             return;
         }
 
@@ -56,10 +56,10 @@ public abstract class DataSynchronizer {
             try {
                 final Connection connection = dataSource.getConnection();
                 final PreparedStatement prepared = connection.prepareStatement("SELECT * FROM `" + tableName + "` WHERE `" + uuidFieldName + "` = ?;");
-                prepared.setString(1, mmoPlayerData.getUniqueId().toString());
+                prepared.setString(1, mmoPlayerData.getProfileId().toString());
 
                 try {
-                    UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Trying to load data of " + mmoPlayerData.getUniqueId());
+                    UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Trying to load data of " + mmoPlayerData.getProfileId());
                     final ResultSet result = prepared.executeQuery();
 
                     // Load data if found
@@ -67,21 +67,21 @@ public abstract class DataSynchronizer {
                         if (tries > MythicLib.plugin.getMMOConfig().maxSyncTries || result.getInt("is_saved") == 1) {
                             confirmReception(connection);
                             loadData(result);
-                            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Found and loaded data of '" + mmoPlayerData.getUniqueId() + "'");
+                            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Found and loaded data of '" + mmoPlayerData.getProfileId() + "'");
                             UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Time taken: " + (System.currentTimeMillis() - start) + "ms");
                         } else {
-                            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Did not load data of '" + mmoPlayerData.getUniqueId() + "' as 'is_saved' is set to 0, trying again in 1s");
+                            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Did not load data of '" + mmoPlayerData.getProfileId() + "' as 'is_saved' is set to 0, trying again in 1s");
                             Bukkit.getScheduler().runTaskLater(MythicLib.plugin, this::fetch, 20);
                         }
                     } else {
                         // Empty player data
                         confirmReception(connection);
                         loadEmptyData();
-                        UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Found empty data for '" + mmoPlayerData.getUniqueId() + "', loading default...");
+                        UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Found empty data for '" + mmoPlayerData.getProfileId() + "', loading default...");
                     }
 
                 } catch (Throwable throwable) {
-                    MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load player data of " + mmoPlayerData.getUniqueId());
+                    MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load player data of " + mmoPlayerData.getProfileId());
                     throwable.printStackTrace();
                 } finally {
 
@@ -91,7 +91,7 @@ public abstract class DataSynchronizer {
                 }
 
             } catch (SQLException throwable) {
-                MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load player data of " + mmoPlayerData.getUniqueId());
+                MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load player data of " + mmoPlayerData.getProfileId());
                 throwable.printStackTrace();
             }
         });
@@ -115,11 +115,11 @@ public abstract class DataSynchronizer {
 
         // Confirm reception of inventory
         final PreparedStatement prepared1 = connection.prepareStatement("INSERT INTO " + tableName + "(`uuid`, `is_saved`) VALUES(?, 0) ON DUPLICATE KEY UPDATE `is_saved` = 0;");
-        prepared1.setString(1, mmoPlayerData.getUniqueId().toString());
+        prepared1.setString(1, mmoPlayerData.getProfileId().toString());
         try {
             prepared1.executeUpdate();
         } catch (Exception exception) {
-            MythicLib.plugin.getLogger().log(Level.WARNING, "Could not confirm data sync of " + mmoPlayerData.getUniqueId());
+            MythicLib.plugin.getLogger().log(Level.WARNING, "Could not confirm data sync of " + mmoPlayerData.getProfileId());
             exception.printStackTrace();
         } finally {
             prepared1.close();

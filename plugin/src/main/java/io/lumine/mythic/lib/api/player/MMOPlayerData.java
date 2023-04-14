@@ -19,7 +19,6 @@ import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
@@ -33,7 +32,15 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class MMOPlayerData {
-    private final UUID uuid;
+
+    /**
+     * This is the ID of the current player's profile. If no
+     * profile plugin (like MMOProfiles) is installed, it is just
+     * the player's unique ID.
+     */
+    private final UUID profileId;
+
+    private final UUID playerUniqueId;
 
     @Nullable
     private Player player;
@@ -59,32 +66,48 @@ public class MMOPlayerData {
      */
     private final Map<String, Object> externalData = new HashMap<>();
 
-    private MMOPlayerData(Player player) {
-        this.uuid = player.getUniqueId();
+    /**
+     * @param player    Player logging in. Original UUID is taken from that player
+     * @param profileId The profile chosen by the player on login
+     */
+    private MMOPlayerData(@NotNull Player player, @NotNull UUID profileId) {
+        this.profileId = profileId;
         this.player = player;
+        this.playerUniqueId = player.getUniqueId();
+    }
+
+    public MMOPlayerData(@NotNull UUID uuid) {
+        this.profileId = uuid;
+        this.playerUniqueId = uuid;
     }
 
     /**
-     * Method used by MMOProfiles to create a MMOPlayerData corresponding to a profile.
-     * This means that the profile UUID is not necessarily the same as the player UUID.
+     * @return The original player's UUID.
+     * @see {@link #getProfileId()}
      */
-    private MMOPlayerData(Player player, UUID profileUUID) {
-        this.uuid = profileUUID;
-        this.player = player;
-    }
-
-    /**
-     * MMOPlayerData for offline players
-     *
-     * @param uuid Player UUID
-     */
-    public MMOPlayerData(UUID uuid) {
-        this.uuid = uuid;
-        this.player = null;
-    }
-
+    @NotNull
     public UUID getUniqueId() {
-        return uuid;
+        return playerUniqueId;
+    }
+
+    /**
+     * There is a strong difference with the {@link #getUniqueId()} method.
+     * This method should be using to store data that is relative to the
+     * Bukkit player and not the current player's profile.
+     * <p>
+     * Typically, SQL methods shall use this method over {@link #getUniqueId()}
+     * as it provides a simple way to differentiate between the multiple
+     * profiles of the same player.
+     *
+     * @return The current player's profile ID. If no profile plugin
+     *         is installed, it just matches the player's UUID.
+     * @implNote This method does not override {@link #getUniqueId()} as to
+     *         maintain backwards compatibility.
+     * @see {@link #getUniqueId()}
+     */
+    @NotNull
+    public UUID getProfileId() {
+        return profileId;
     }
 
     /**
@@ -321,15 +344,19 @@ public class MMOPlayerData {
         if (!(o instanceof MMOPlayerData)) return false;
 
         MMOPlayerData that = (MMOPlayerData) o;
-        return uuid.equals(that.uuid);
+        return playerUniqueId.equals(that.playerUniqueId);
     }
 
     @Override
     public int hashCode() {
-        return uuid.hashCode();
+        return playerUniqueId.hashCode();
     }
 
-    private static final Map<UUID, MMOPlayerData> data = new HashMap<>();
+    private static final Map<UUID, MMOPlayerData> PLAYER_DATA = new WeakHashMap<>();
+
+    public static MMOPlayerData setup(Player player) {
+        return setup(player, player.getUniqueId());
+    }
 
     /**
      * Called everytime a player enters the server. If the
@@ -339,36 +366,22 @@ public class MMOPlayerData {
      * not provide a Player instance, meaning the cached Player instance is NOT
      * loaded yet. It is only loaded when the player logs in using {@link PlayerJoinEvent}
      *
-     * @param player Player whose data should be initialized
+     * @param player    Player whose data should be initialized
+     * @param profileId The ID of the profile the player chose
      */
-    public static MMOPlayerData setup(Player player) {
-        final @Nullable MMOPlayerData found = data.get(player.getUniqueId());
+    public static MMOPlayerData setup(@NotNull Player player, @NotNull UUID profileId) {
+        final @Nullable MMOPlayerData found = PLAYER_DATA.get(profileId);
 
         // Not loaded yet, checks for temporary data
         if (found == null) {
-            final MMOPlayerData playerData = new MMOPlayerData(player);
-            data.put(player.getUniqueId(), playerData);
+            final MMOPlayerData playerData = new MMOPlayerData(player, profileId);
+            PLAYER_DATA.put(profileId, playerData);
             return playerData;
         }
 
         found.updatePlayer(player);
         return found;
     }
-
-    public static MMOPlayerData setup(Player player, UUID profileUUID) {
-        final @Nullable MMOPlayerData found = data.get(profileUUID);
-
-        // Not loaded yet, checks for temporary data
-        if (found == null) {
-            final MMOPlayerData playerData = new MMOPlayerData(player, profileUUID);
-            data.put(profileUUID, playerData);
-            return playerData;
-        }
-
-        found.updatePlayer(player);
-        return found;
-    }
-
 
     /**
      * This essentially checks if a player logged in since the last time the
@@ -385,12 +398,12 @@ public class MMOPlayerData {
 
     @NotNull
     public static MMOPlayerData get(@NotNull OfflinePlayer player) {
-        return get(MythicLib.plugin.getProfileModule().getUUID(player));
+        return get(MythicLib.plugin.getProfileModule().getCurrentId(player));
     }
 
     @NotNull
     public static MMOPlayerData get(UUID uuid) {
-        return Objects.requireNonNull(data.get(uuid), "Player data not loaded");
+        return Objects.requireNonNull(PLAYER_DATA.get(uuid), "Player data not loaded");
     }
 
     /**
@@ -398,7 +411,7 @@ public class MMOPlayerData {
      */
     @Nullable
     public static MMOPlayerData getOrNull(UUID uuid) {
-        return data.get(uuid);
+        return PLAYER_DATA.get(uuid);
     }
 
     /**
@@ -406,7 +419,7 @@ public class MMOPlayerData {
      */
     @Nullable
     public static MMOPlayerData getOrNull(Player player) {
-        return getOrNull(MythicLib.plugin.getProfileModule().getUUID(player));
+        return getOrNull(MythicLib.plugin.getProfileModule().getCurrentId(player));
     }
 
     /**
@@ -428,7 +441,7 @@ public class MMOPlayerData {
      * @return Checks if plater data is loaded for a specific player UID
      */
     public static boolean has(UUID uuid) {
-        return data.containsKey(uuid);
+        return PLAYER_DATA.containsKey(uuid);
     }
 
     /**
@@ -438,7 +451,7 @@ public class MMOPlayerData {
      *         resort to a map-lookup-based get(Player) call
      */
     public static Collection<MMOPlayerData> getLoaded() {
-        return data.values();
+        return PLAYER_DATA.values();
     }
 
     /**
@@ -450,9 +463,8 @@ public class MMOPlayerData {
      * <code>Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.get(player)......);</code>
      */
     public static void forEachOnline(Consumer<MMOPlayerData> action) {
-        for (MMOPlayerData registered : data.values())
-            if (registered.isOnline())
-                action.accept(registered);
+        for (MMOPlayerData registered : PLAYER_DATA.values())
+            if (registered.isOnline()) action.accept(registered);
     }
 
     /**
@@ -460,11 +472,10 @@ public class MMOPlayerData {
      * checked once an hour to make sure not to cause memory leaks.
      */
     public static void flushOfflinePlayerData() {
-        Iterator<MMOPlayerData> iterator = data.values().iterator();
+        Iterator<MMOPlayerData> iterator = PLAYER_DATA.values().iterator();
         while (iterator.hasNext()) {
             MMOPlayerData tempData = iterator.next();
-            if (tempData.isTimedOut())
-                iterator.remove();
+            if (tempData.isTimedOut()) iterator.remove();
         }
     }
 }

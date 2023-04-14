@@ -4,23 +4,25 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
 /**
- * This is the default implementation of the profile module.
- * MMOProfiles extends this module to make itself compatible with MythicLib.
+ * MMOProfiles extends this module to support MythicLib.
+ * <p>
+ * Every profile owned by a player is associated to an UUID, it doesn't
+ * have to have anything in common with the original player's UUID.
  */
 public abstract class ProfileModule {
 
     public abstract boolean canLoadPlayerData();
 
-    public abstract UUID getUUID(Player player);
+    public abstract UUID getCurrentId(Player player);
 
-    public UUID getUUID(OfflinePlayer offlinePlayer) {
-        if(offlinePlayer instanceof Player)
-            return getUUID((Player) offlinePlayer);
-        return offlinePlayer.getUniqueId();
+    @NotNull
+    public UUID getCurrentId(OfflinePlayer offlinePlayer) {
+        return offlinePlayer.isOnline() ? getCurrentId(offlinePlayer.getPlayer()) : offlinePlayer.getUniqueId();
     }
 
     public void loadProfileData(Player player, UUID uuid) {
@@ -28,5 +30,4 @@ public abstract class ProfileModule {
         // Run stat updates on login
         MythicLib.plugin.getStats().runUpdates(data.getStatMap());
     }
-
 }
