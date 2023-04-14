@@ -65,6 +65,15 @@ public class MMOPlayerData {
     }
 
     /**
+     * Method used by MMOProfiles to create a MMOPlayerData corresponding to a profile.
+     * This means that the profile UUID is not necessarily the same as the player UUID.
+     */
+    private MMOPlayerData(Player player, UUID profileUUID) {
+        this.uuid = profileUUID;
+        this.player = player;
+    }
+
+    /**
      * MMOPlayerData for offline players
      *
      * @param uuid Player UUID
@@ -346,6 +355,21 @@ public class MMOPlayerData {
         return found;
     }
 
+    public static MMOPlayerData setup(Player player, UUID profileUUID) {
+        final @Nullable MMOPlayerData found = data.get(profileUUID);
+
+        // Not loaded yet, checks for temporary data
+        if (found == null) {
+            final MMOPlayerData playerData = new MMOPlayerData(player, profileUUID);
+            data.put(profileUUID, playerData);
+            return playerData;
+        }
+
+        found.updatePlayer(player);
+        return found;
+    }
+
+
     /**
      * This essentially checks if a player logged in since the last time the
      * server started/was reloaded.
@@ -361,7 +385,7 @@ public class MMOPlayerData {
 
     @NotNull
     public static MMOPlayerData get(@NotNull OfflinePlayer player) {
-        return get(player.getUniqueId());
+        return get(MythicLib.plugin.getProfileModule().getUUID(player));
     }
 
     @NotNull
@@ -375,6 +399,14 @@ public class MMOPlayerData {
     @Nullable
     public static MMOPlayerData getOrNull(UUID uuid) {
         return data.get(uuid);
+    }
+
+    /**
+     * Use it at your own risk! Player data might not be loaded
+     */
+    @Nullable
+    public static MMOPlayerData getOrNull(Player player) {
+        return getOrNull(MythicLib.plugin.getProfileModule().getUUID(player));
     }
 
     /**

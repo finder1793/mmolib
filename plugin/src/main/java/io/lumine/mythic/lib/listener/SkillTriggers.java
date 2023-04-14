@@ -47,7 +47,7 @@ public class SkillTriggers implements Listener {
             return;
 
         final MMOPlayerData caster;
-        if (event.getEntity() instanceof Player && (caster = MMOPlayerData.getOrNull(event.getEntity().getUniqueId())) != null
+        if (event.getEntity() instanceof Player && (caster = MMOPlayerData.getOrNull((Player) event.getEntity())) != null
                 && MythicLib.plugin.getEntities().canInteract((Player) event.getEntity(), event.getDamager(), InteractionType.OFFENSE_SKILL))
             caster.triggerSkills(TriggerType.DAMAGED_BY_ENTITY, event.getDamager());
     }
@@ -55,27 +55,29 @@ public class SkillTriggers implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void damaged(EntityDamageEvent event) {
         final MMOPlayerData caster;
-        if (event.getEntity() instanceof Player && (caster = MMOPlayerData.getOrNull(event.getEntity().getUniqueId())) != null)
+        if (event.getEntity() instanceof Player && (caster = MMOPlayerData.getOrNull((Player) event.getEntity())) != null)
             caster.triggerSkills(TriggerType.DAMAGED, null);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void death(PlayerDeathEvent event) {
         final MMOPlayerData caster;
-        if ((caster = MMOPlayerData.getOrNull(event.getEntity().getUniqueId())) != null && caster.isOnline())
+        if ((caster = MMOPlayerData.getOrNull(event.getEntity())) != null && caster.isOnline())
             // Check if caster is online as DeluxeCombat calls this event while the player has already logged off
             caster.triggerSkills(TriggerType.DEATH, null);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void login(PlayerJoinEvent event) {
-        MMOPlayerData.get(event.getPlayer()).triggerSkills(TriggerType.LOGIN, null);
+        //If there is a profiles module this needs to be done later
+        if (MythicLib.plugin.getProfileModule().canLoadPlayerData())
+            MMOPlayerData.get(event.getPlayer()).triggerSkills(TriggerType.LOGIN, null);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void shootBow(EntityShootBowEvent event) {
         final MMOPlayerData caster;
-        if (event.getEntity() instanceof Player && (caster = MMOPlayerData.getOrNull(event.getEntity().getUniqueId())) != null) {
+        if (event.getEntity() instanceof Player && (caster = MMOPlayerData.getOrNull((Player) event.getEntity())) != null) {
             final EquipmentSlot actionHand = getShootHand(((Player) event.getEntity()).getInventory());
             caster.triggerSkills(TriggerType.SHOOT_BOW, actionHand, event.getProjectile());
 
@@ -87,7 +89,7 @@ public class SkillTriggers implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void shootTrident(ProjectileLaunchEvent event) {
         final MMOPlayerData caster;
-        if (event.getEntity() instanceof Trident && event.getEntity().getShooter() instanceof Player && (caster = MMOPlayerData.getOrNull(event.getEntity().getUniqueId())) != null) {
+        if (event.getEntity() instanceof Trident && event.getEntity().getShooter() instanceof Player && (caster = MMOPlayerData.getOrNull((Player) event.getEntity())) != null) {
             final Player shooter = (Player) event.getEntity().getShooter();
             final EquipmentSlot actionHand = getShootHand(shooter.getInventory());
             caster.triggerSkills(TriggerType.SHOOT_TRIDENT, actionHand, event.getEntity());

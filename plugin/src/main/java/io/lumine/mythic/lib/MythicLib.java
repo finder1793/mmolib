@@ -28,6 +28,8 @@ import io.lumine.mythic.lib.comp.flags.WorldGuardFlags;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
 import io.lumine.mythic.lib.comp.placeholder.*;
+import io.lumine.mythic.lib.comp.profiles.DefaultProfileModule;
+import io.lumine.mythic.lib.comp.profiles.ProfileModule;
 import io.lumine.mythic.lib.comp.protocollib.DamageParticleCap;
 import io.lumine.mythic.lib.glow.GlowModule;
 import io.lumine.mythic.lib.glow.provided.MythicGlowModule;
@@ -62,8 +64,6 @@ import java.util.logging.Level;
 public class MythicLib extends JavaPlugin {
     public static MythicLib plugin;
 
-    //@Getter private ProfileManager profileManager;
-
     private final DamageManager damageManager = new DamageManager();
     private final EntityManager entityManager = new EntityManager();
     private final StatManager statManager = new StatManager();
@@ -81,6 +81,7 @@ public class MythicLib extends JavaPlugin {
     private AttackEffects attackEffects;
     private MitigationMechanics mitigationMechanics;
     private AdventureParser adventureParser;
+    private ProfileModule profileModule = new DefaultProfileModule();
     @Getter
     private PlaceholderParser placeholderParser;
     private GlowModule glowModule;
@@ -127,6 +128,7 @@ public class MythicLib extends JavaPlugin {
         } catch (EvalError e) {
             throw new RuntimeException(e);
         }
+
         // Hologram provider
         Bukkit.getServicesManager().register(HologramFactory.class, new BukkitHologramFactory(), this, ServicePriority.Low);
 
@@ -346,6 +348,14 @@ public class MythicLib extends JavaPlugin {
     @Nullable
     public GlowModule getGlowing() {
         return glowModule;
+    }
+
+    public ProfileModule getProfileModule() {
+        return profileModule;
+    }
+
+    public void setProfileModule(ProfileModule profileModule) {
+        this.profileModule = profileModule;
     }
 
     @Deprecated
