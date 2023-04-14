@@ -70,7 +70,7 @@ public class SkillTriggers implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void login(PlayerJoinEvent event) {
         //If there is a profiles module this needs to be done later
-        if (MythicLib.plugin.getProfileModule().canLoadPlayerData())
+        if (MythicLib.plugin.getProfileModule().loadsDataOnLogin())
             MMOPlayerData.get(event.getPlayer()).triggerSkills(TriggerType.LOGIN, null);
     }
 

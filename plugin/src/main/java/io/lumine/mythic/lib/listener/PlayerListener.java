@@ -20,7 +20,7 @@ public class PlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void loadData(PlayerJoinEvent event) {
-        if(MythicLib.plugin.getProfileModule().canLoadPlayerData()) {
+        if(MythicLib.plugin.getProfileModule().loadsDataOnLogin()) {
             Player player = event.getPlayer();
             MMOPlayerData data = MMOPlayerData.setup(player);
             // Run stat updates on login

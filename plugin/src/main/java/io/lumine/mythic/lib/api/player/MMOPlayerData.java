@@ -354,6 +354,7 @@ public class MMOPlayerData {
 
     private static final Map<UUID, MMOPlayerData> PLAYER_DATA = new WeakHashMap<>();
 
+    @Deprecated
     public static MMOPlayerData setup(Player player) {
         return setup(player, player.getUniqueId());
     }
@@ -402,7 +403,7 @@ public class MMOPlayerData {
     }
 
     @NotNull
-    public static MMOPlayerData get(UUID uuid) {
+    public static MMOPlayerData get(@NotNull UUID uuid) {
         return Objects.requireNonNull(PLAYER_DATA.get(uuid), "Player data not loaded");
     }
 
@@ -410,16 +411,16 @@ public class MMOPlayerData {
      * Use it at your own risk! Player data might not be loaded
      */
     @Nullable
-    public static MMOPlayerData getOrNull(UUID uuid) {
-        return PLAYER_DATA.get(uuid);
+    public static MMOPlayerData getOrNull(@NotNull OfflinePlayer player) {
+        return getOrNull(MythicLib.plugin.getProfileModule().getCurrentId(player));
     }
 
     /**
      * Use it at your own risk! Player data might not be loaded
      */
     @Nullable
-    public static MMOPlayerData getOrNull(Player player) {
-        return getOrNull(MythicLib.plugin.getProfileModule().getCurrentId(player));
+    public static MMOPlayerData getOrNull(@NotNull UUID uuid) {
+        return PLAYER_DATA.get(uuid);
     }
 
     /**
@@ -427,20 +428,20 @@ public class MMOPlayerData {
      * a real player or a Citizens NPC. Citizens NPCs do not have any player
      * data associated to them
      *
-     * @return Checks if plater data is loaded for a specific player UID
+     * @return Checks if player data is loaded for a specific player
      */
-    public static boolean has(Player player) {
-        return has(player.getUniqueId());
+    public static boolean has(@NotNull OfflinePlayer player) {
+        return has(MythicLib.plugin.getProfileModule().getCurrentId(player));
     }
 
     /**
      * This is being used to easily check if an online player corresponds to
-     * a real player or a Citizens NPC. Citizens NPCs do not have any player
+     * a real player/profile or a Citizens NPC. Citizens NPCs do not have any player
      * data associated to them
      *
-     * @return Checks if plater data is loaded for a specific player UID
+     * @return Checks if plater data is loaded for a specific profile UUID
      */
-    public static boolean has(UUID uuid) {
+    public static boolean has(@NotNull UUID uuid) {
         return PLAYER_DATA.containsKey(uuid);
     }
 
@@ -472,9 +473,9 @@ public class MMOPlayerData {
      * checked once an hour to make sure not to cause memory leaks.
      */
     public static void flushOfflinePlayerData() {
-        Iterator<MMOPlayerData> iterator = PLAYER_DATA.values().iterator();
+        final Iterator<MMOPlayerData> iterator = PLAYER_DATA.values().iterator();
         while (iterator.hasNext()) {
-            MMOPlayerData tempData = iterator.next();
+            final MMOPlayerData tempData = iterator.next();
             if (tempData.isTimedOut()) iterator.remove();
         }
     }

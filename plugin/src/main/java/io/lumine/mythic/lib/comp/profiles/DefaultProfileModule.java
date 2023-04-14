@@ -12,7 +12,7 @@ import java.util.UUID;
 public class DefaultProfileModule extends ProfileModule {
 
     @Override
-    public boolean canLoadPlayerData() {
+    public boolean loadsDataOnLogin() {
         return true;
     }
 

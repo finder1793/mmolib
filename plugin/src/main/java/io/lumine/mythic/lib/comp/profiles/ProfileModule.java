@@ -16,7 +16,7 @@ import java.util.UUID;
  */
 public abstract class ProfileModule {
 
-    public abstract boolean canLoadPlayerData();
+    public abstract boolean loadsDataOnLogin();
 
     public abstract UUID getCurrentId(Player player);
 
