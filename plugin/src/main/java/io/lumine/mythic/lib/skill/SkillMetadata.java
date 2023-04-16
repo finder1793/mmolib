@@ -80,7 +80,7 @@ public class SkillMetadata {
     }
 
     /**
-     * @param cast           Initial skill being cast. It's used to retrieve skill modifiers
+     * @param cast           Initial skill being cast. It's used to retrieve skill parameter values
      * @param caster         Cached statistics of the skill caster
      * @param vars           Skill variable list if it already exists
      * @param source         The location at which the skill/mechanic was cast
@@ -111,7 +111,7 @@ public class SkillMetadata {
     }
 
     public Location getSourceLocation() {
-        return source;
+        return source.clone();
     }
 
     @Deprecated
@@ -120,14 +120,21 @@ public class SkillMetadata {
     }
 
     /**
-     * Retrieves a specific skill modifier using
-     * the cached instance of {@link Skill}
-     *
-     * @param path Modifier path
-     * @return Modifier value
+     * @deprecated Skill modifiers are now called "parameters"
      */
+    @Deprecated
     public double getModifier(String path) {
-        return cast.getModifier(path);
+        return getParameter(path);
+    }
+
+    /**
+     * Retrieves a specific skill parameter value
+     *
+     * @param param Skill parameter path
+     * @return Skill parameter final value, taking into account skill mods
+     */
+    public double getParameter(String param) {
+        return caster.getData().getSkillModifierMap().getInstance(cast.getHandler(), param).getTotal(cast.getModifier(param));
     }
 
     @NotNull
@@ -146,12 +153,12 @@ public class SkillMetadata {
 
     @NotNull
     public Location getTargetLocation() {
-        return Objects.requireNonNull(targetLocation, "Skill has no target location");
+        return Objects.requireNonNull(targetLocation, "Skill has no target location").clone();
     }
 
     @Nullable
     public Location getTargetLocationOrNull() {
-        return targetLocation;
+        return targetLocation == null ? null : targetLocation.clone();
     }
 
     public boolean hasTargetLocation() {
@@ -181,7 +188,7 @@ public class SkillMetadata {
      */
     @NotNull
     public Location getSkillLocation(boolean sourceLocation) {
-        return sourceLocation ? source : targetLocation != null ? targetLocation : targetEntity != null ? EntityLocationType.BODY.getLocation(targetEntity) : source;
+        return sourceLocation ? source.clone() : targetLocation != null ? targetLocation.clone() : targetEntity != null ? EntityLocationType.BODY.getLocation(targetEntity) : source.clone();
     }
 
     /**
@@ -213,12 +220,12 @@ public class SkillMetadata {
      * to potentially orient locations.
      *
      * @return Skill orientation if not null. If it is, it tries to create
-     * one using the skill target and source location if it is not null.
-     * Throws a NPE if the metadata has neither an orientation nor a target location.
+     *         one using the skill target and source location if it is not null.
+     *         Throws a NPE if the metadata has neither an orientation nor a target location.
      */
     @NotNull
     public SkillOrientation getSkillOrientation() {
-        return orientation != null ? orientation : new SkillOrientation(Objects.requireNonNull(targetLocation, "Skill has no orientation"), targetLocation.subtract(source).toVector());
+        return orientation != null ? orientation : new SkillOrientation(Objects.requireNonNull(targetLocation, "Skill has no orientation").clone(), targetLocation.clone().subtract(source).toVector());
     }
 
     /**
@@ -262,7 +269,7 @@ public class SkillMetadata {
 
             // Skill source location
             case "source":
-                var = new PositionVariable("temp", source);
+                var = new PositionVariable("temp", source.clone());
                 break;
 
             // Skill target location
@@ -338,7 +345,7 @@ public class SkillMetadata {
         return Objects.requireNonNull(SERVER_VARIABLE_LIST.getVariable(name), "Could not find custom variable with name '" + name + "'");
     }
 
-    private static final Pattern INTERNAL_PLACEHOLDER_PATTERN = Pattern.compile("<^<>|&\\s*?>");
+    private static final Pattern INTERNAL_PLACEHOLDER_PATTERN = Pattern.compile("<[^&|<>]*?>");
 
     public String parseString(String str) {
 

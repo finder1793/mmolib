@@ -79,8 +79,10 @@ public class ProjectileMechanic extends DirectionMechanic {
             int entityHits = 0;
 
             public void run() {
-                if (counter++ >= projLifeSpan)
+                if (counter++ >= projLifeSpan) {
                     cancel();
+                    return;
+                }
 
                 current.add(dr);
 
@@ -109,8 +111,7 @@ public class ProjectileMechanic extends DirectionMechanic {
 
                     // Check for entity hits
                     entityHits++;
-                    if (entityHits >= hitLimit)
-                        cancel();
+                    if (entityHits >= hitLimit) cancel();
                 }
             }
         }.runTaskTimer(MythicLib.plugin, 0, 1);
