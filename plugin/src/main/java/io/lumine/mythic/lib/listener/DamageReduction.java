@@ -42,7 +42,7 @@ public class DamageReduction implements Listener {
 
         // Applies damage reduction for existing damage types
         for (DamageType damageType : DamageType.values())
-            event.getDamage().multiplicativeModifier(1 - data.getStatMap().getStat(damageType + "_DAMAGE_REDUCTION") / 100, damageType);
+            event.getDamage().multiplicativeModifier(Math.max(0, 1 - data.getStatMap().getStat(damageType + "_DAMAGE_REDUCTION") / 100), damageType);
 
         // Applies the Defense stat
         final double defense = data.getStatMap().getStat("DEFENSE");
