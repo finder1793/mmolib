@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.api.player;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.player.skillmod.SkillMap;
+import io.lumine.mythic.lib.player.skillmod.SkillModifierMap;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.comp.flags.CustomFlag;
 import io.lumine.mythic.lib.damage.AttackMetadata;
@@ -19,6 +19,7 @@ import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
@@ -45,7 +46,7 @@ public class MMOPlayerData {
     // Temporary player data
     private final CooldownMap cooldownMap = new CooldownMap();
     private final StatMap statMap = new StatMap(this);
-    private final SkillMap skillMap = new SkillMap(this);
+    private final SkillModifierMap skillModifierMap = new SkillModifierMap(this);
     private final PermanentPotionEffectMap permEffectMap = new PermanentPotionEffectMap(this);
     private final ParticleEffectMap particleEffectMap = new ParticleEffectMap(this);
     private final PassiveSkillMap passiveSkillMap = new PassiveSkillMap(this);
@@ -79,19 +80,19 @@ public class MMOPlayerData {
 
     /**
      * @return The player's stat map which can be used by any other plugins to
-     * apply stat modifiers to ANY MMOItems/MMOCore/external stats,
-     * calculate stat values, etc.
+     *         apply stat modifiers to ANY MMOItems/MMOCore/external stats,
+     *         calculate stat values, etc.
      */
     public StatMap getStatMap() {
         return statMap;
     }
 
     /**
-     * @return The player's skill buff Map. This map applies modifications
-     * to numerical skill parameters (damage, cooldown...)
+     * @return The player's skill modifier map. This map applies modifications
+     *         to numerical skill parameters (damage, cooldown...)
      */
-    public SkillMap getSkillBuffMap() {
-        return skillMap;
+    public SkillModifierMap getSkillModifierMap() {
+        return skillModifierMap;
     }
 
     /**
@@ -400,9 +401,9 @@ public class MMOPlayerData {
 
     /**
      * @return Currently loaded MMOPlayerData instances. This can be used to
-     * apply things like resource regeneration or other runnable based
-     * tasks instead of looping through online players and having to
-     * resort to a map-lookup-based get(Player) call
+     *         apply things like resource regeneration or other runnable based
+     *         tasks instead of looping through online players and having to
+     *         resort to a map-lookup-based get(Player) call
      */
     public static Collection<MMOPlayerData> getLoaded() {
         return data.values();

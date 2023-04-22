@@ -35,7 +35,6 @@ public abstract class InstanceModifier extends PlayerModifier {
         type = object.getBoolean("multiplicative", false) ? ModifierType.RELATIVE : ModifierType.FLAT;
     }
 
-
     public ModifierType getType() {
         return type;
     }

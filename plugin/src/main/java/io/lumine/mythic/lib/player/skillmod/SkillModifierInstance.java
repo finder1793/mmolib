@@ -1,15 +1,22 @@
 package io.lumine.mythic.lib.player.skillmod;
 
 import io.lumine.mythic.lib.api.stat.api.ModifiedInstance;
+import io.lumine.mythic.lib.skill.handler.SkillHandler;
 
 public class SkillModifierInstance extends ModifiedInstance<SkillModifier> {
-    private final String skillModifier;
+    private final SkillHandler<?> handler;
+    private final String parameter;
 
-    public SkillModifierInstance(String skillModifier) {
-        this.skillModifier = skillModifier;
+    public SkillModifierInstance(SkillHandler<?> handler, String parameter) {
+        this.handler = handler;
+        this.parameter = parameter;
     }
 
-    public String getSkillModifier() {
-        return skillModifier;
+    public SkillHandler<?> getSkill() {
+        return handler;
+    }
+
+    public String getParameter() {
+        return parameter;
     }
 }
