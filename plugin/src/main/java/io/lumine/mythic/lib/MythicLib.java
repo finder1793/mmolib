@@ -250,7 +250,7 @@ public class MythicLib extends JavaPlugin {
         elementManager.reload(false);
 
         // Load player data of online players
-        Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.setup(player));
+        Bukkit.getOnlinePlayers().forEach(MMOPlayerData::setup);
 
         // Loop for flushing temporary player data
         Bukkit.getScheduler().runTaskTimer(this, MMOPlayerData::flushOfflinePlayerData, 20 * 60 * 60, 20 * 60 * 60);

@@ -33,14 +33,7 @@ import java.util.function.Consumer;
 
 public class MMOPlayerData {
 
-    /**
-     * This is the ID of the current player's profile. If no
-     * profile plugin (like MMOProfiles) is installed, it is just
-     * the player's unique ID.
-     */
-    private final UUID profileId;
-
-    private final UUID playerUniqueId;
+    private final UUID playerId;
 
     @Nullable
     private Player player;
@@ -67,47 +60,25 @@ public class MMOPlayerData {
     private final Map<String, Object> externalData = new HashMap<>();
 
     /**
-     * @param player    Player logging in. Original UUID is taken from that player
-     * @param profileId The profile chosen by the player on login
+     * @param player Player logging in. Original UUID is taken from that player
      */
-    private MMOPlayerData(@NotNull Player player, @NotNull UUID profileId) {
-        this.profileId = profileId;
+    private MMOPlayerData(@NotNull Player player) {
+        this.playerId = player.getUniqueId();
         this.player = player;
-        this.playerUniqueId = player.getUniqueId();
     }
 
-    public MMOPlayerData(@NotNull UUID uuid) {
-        this.profileId = uuid;
-        this.playerUniqueId = uuid;
+    public MMOPlayerData(@NotNull UUID playerId) {
+        this.playerId = playerId;
     }
 
-    /**
-     * @return The original player's UUID.
-     * @see {@link #getProfileId()}
-     */
     @NotNull
     public UUID getUniqueId() {
-        return playerUniqueId;
+        return playerId;
     }
 
-    /**
-     * There is a strong difference with the {@link #getUniqueId()} method.
-     * This method should be using to store data that is relative to the
-     * Bukkit player and not the current player's profile.
-     * <p>
-     * Typically, SQL methods shall use this method over {@link #getUniqueId()}
-     * as it provides a simple way to differentiate between the multiple
-     * profiles of the same player.
-     *
-     * @return The current player's profile ID. If no profile plugin
-     *         is installed, it just matches the player's UUID.
-     * @implNote This method does not override {@link #getUniqueId()} as to
-     *         maintain backwards compatibility.
-     * @see {@link #getUniqueId()}
-     */
     @NotNull
     public UUID getProfileId() {
-        return profileId;
+        return MythicLib.plugin.getProfileModule().getCurrentId(playerId);
     }
 
     /**
@@ -344,20 +315,15 @@ public class MMOPlayerData {
         if (!(o instanceof MMOPlayerData)) return false;
 
         MMOPlayerData that = (MMOPlayerData) o;
-        return playerUniqueId.equals(that.playerUniqueId);
+        return getUniqueId().equals(that.getUniqueId());
     }
 
     @Override
     public int hashCode() {
-        return playerUniqueId.hashCode();
+        return getUniqueId().hashCode();
     }
 
     private static final Map<UUID, MMOPlayerData> PLAYER_DATA = new WeakHashMap<>();
-
-    @Deprecated
-    public static MMOPlayerData setup(Player player) {
-        return setup(player, player.getUniqueId());
-    }
 
     /**
      * Called everytime a player enters the server. If the
@@ -367,16 +333,15 @@ public class MMOPlayerData {
      * not provide a Player instance, meaning the cached Player instance is NOT
      * loaded yet. It is only loaded when the player logs in using {@link PlayerJoinEvent}
      *
-     * @param player    Player whose data should be initialized
-     * @param profileId The ID of the profile the player chose
+     * @param player Player whose data should be initialized
      */
-    public static MMOPlayerData setup(@NotNull Player player, @NotNull UUID profileId) {
-        final @Nullable MMOPlayerData found = PLAYER_DATA.get(profileId);
+    public static MMOPlayerData setup(@NotNull Player player) {
+        final @Nullable MMOPlayerData found = PLAYER_DATA.get(player.getUniqueId());
 
         // Not loaded yet, checks for temporary data
         if (found == null) {
-            final MMOPlayerData playerData = new MMOPlayerData(player, profileId);
-            PLAYER_DATA.put(profileId, playerData);
+            final MMOPlayerData playerData = new MMOPlayerData(player);
+            PLAYER_DATA.put(player.getUniqueId(), playerData);
             return playerData;
         }
 
@@ -399,7 +364,7 @@ public class MMOPlayerData {
 
     @NotNull
     public static MMOPlayerData get(@NotNull OfflinePlayer player) {
-        return get(MythicLib.plugin.getProfileModule().getCurrentId(player));
+        return get(player.getUniqueId());
     }
 
     @NotNull
@@ -412,7 +377,7 @@ public class MMOPlayerData {
      */
     @Nullable
     public static MMOPlayerData getOrNull(@NotNull OfflinePlayer player) {
-        return getOrNull(MythicLib.plugin.getProfileModule().getCurrentId(player));
+        return getOrNull(player.getUniqueId());
     }
 
     /**
@@ -431,7 +396,7 @@ public class MMOPlayerData {
      * @return Checks if player data is loaded for a specific player
      */
     public static boolean has(@NotNull OfflinePlayer player) {
-        return has(MythicLib.plugin.getProfileModule().getCurrentId(player));
+        return has(player.getUniqueId());
     }
 
     /**

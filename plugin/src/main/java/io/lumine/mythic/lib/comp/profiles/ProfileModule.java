@@ -1,9 +1,5 @@
 package io.lumine.mythic.lib.comp.profiles;
 
-import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
@@ -14,20 +10,27 @@ import java.util.UUID;
  * Every profile owned by a player is associated to an UUID, it doesn't
  * have to have anything in common with the original player's UUID.
  */
-public abstract class ProfileModule {
+public interface ProfileModule {
 
-    public abstract boolean loadsDataOnLogin();
+    /**
+     * @return Should MythicLib load player data when a player logs in.
+     */
+    public boolean loadsDataOnLogin();
 
-    public abstract UUID getCurrentId(Player player);
+    /**
+     * This option is very useful when using the /reload command
+     * while players are still online when the server restarts.
+     *
+     * @return Should MythicLib load player data when the server starts up.
+     */
+    public boolean loadsDataOnStartup();
 
+    /**
+     * Should throw an exception if the player is not online.
+     *
+     * @param playerId UUID of online player
+     * @return The player's current profile ID of an online player.
+     */
     @NotNull
-    public UUID getCurrentId(OfflinePlayer offlinePlayer) {
-        return offlinePlayer.isOnline() ? getCurrentId(offlinePlayer.getPlayer()) : offlinePlayer.getUniqueId();
-    }
-
-    public void loadProfileData(Player player, UUID uuid) {
-        MMOPlayerData data = MMOPlayerData.setup(player, uuid);
-        // Run stat updates on login
-        MythicLib.plugin.getStats().runUpdates(data.getStatMap());
-    }
+    public UUID getCurrentId(UUID playerId);
 }

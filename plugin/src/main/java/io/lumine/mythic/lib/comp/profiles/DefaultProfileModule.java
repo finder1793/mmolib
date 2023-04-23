@@ -1,7 +1,5 @@
 package io.lumine.mythic.lib.comp.profiles;
 
-import org.bukkit.entity.Player;
-
 import java.util.UUID;
 
 /**
@@ -9,7 +7,7 @@ import java.util.UUID;
  * Every player only has one profile, it's the default one
  * and the corresponding UUID is just the player's UUID.
  */
-public class DefaultProfileModule extends ProfileModule {
+public class DefaultProfileModule implements ProfileModule {
 
     @Override
     public boolean loadsDataOnLogin() {
@@ -17,7 +15,12 @@ public class DefaultProfileModule extends ProfileModule {
     }
 
     @Override
-    public UUID getCurrentId(Player player) {
-        return player.getUniqueId();
+    public boolean loadsDataOnStartup() {
+        return true;
+    }
+
+    @Override
+    public UUID getCurrentId(UUID uuid) {
+        return uuid;
     }
 }
