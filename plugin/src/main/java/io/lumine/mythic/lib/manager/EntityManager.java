@@ -99,9 +99,13 @@ public class EntityManager {
         // Pvp Interaction Rules
         if (target instanceof Player) {
 
-            final DamageCheckEvent damageCheckEvent = new DamageCheckEvent(source, target, interactionType);
-            Bukkit.getPluginManager().callEvent(damageCheckEvent);
-            final boolean pvpEnabled = !damageCheckEvent.isCancelled();
+            // PvP value check
+            boolean pvpEnabled = target.getWorld().getPVP();
+            if (pvpEnabled) {
+                final DamageCheckEvent damageCheckEvent = new DamageCheckEvent(source, target, interactionType);
+                Bukkit.getPluginManager().callEvent(damageCheckEvent);
+                pvpEnabled = !damageCheckEvent.isCancelled();
+            }
 
             // If offense, just cancel if PvP is disabled
             if (interactionType.isOffense() && !pvpEnabled)
