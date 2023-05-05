@@ -13,20 +13,17 @@ import java.util.UUID;
 public interface ProfileModule {
 
     /**
+     * In practice, this option is also used when reloading the server.
+     * Also, it's most likely set to false for PROFILE plugins, and set
+     * to true when NOT using any profile plugin.
+     *
      * @return Should MythicLib load player data when a player logs in.
      */
     public boolean loadsDataOnLogin();
 
     /**
-     * This option is very useful when using the /reload command
-     * while players are still online when the server restarts.
-     *
-     * @return Should MythicLib load player data when the server starts up.
-     */
-    public boolean loadsDataOnStartup();
-
-    /**
-     * Should throw an exception if the player is not online.
+     * Should throw an exception if the player is not online or
+     * if he has not chosen a profile yet.
      *
      * @param playerId UUID of online player
      * @return The player's current profile ID of an online player.

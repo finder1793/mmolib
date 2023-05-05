@@ -2,7 +2,10 @@ package io.lumine.mythic.lib.data.sql;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.data.SynchronizedDataHandler;
 import io.lumine.mythic.lib.data.SynchronizedDataHolder;
+import io.lumine.mythic.lib.data.SynchronizedDataManager;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -10,26 +13,40 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
- * This class is used to syncronize player data between
+ * This class is used to synchronize player data between
  * servers. This fixes the issue of player data being
  * lost when teleporting to another server.
  */
 public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
     private final SQLDataSource dataSource;
     private final H data;
+    private final UUID effectiveUUID;
     private final String tableName, uuidFieldName;
     private final long start = System.currentTimeMillis();
 
     private int tries;
 
     public SQLDataSynchronizer(String tableName, String uuidFieldName, SQLDataSource dataSource, H data) {
+        this(tableName, uuidFieldName, dataSource, data, false);
+    }
+
+    /**
+     * @param tableName     Table name for player data storage
+     * @param uuidFieldName UUID field name in table
+     * @param dataSource    SQL connection being used
+     * @param data          Player data being synchronized
+     * @param profilePlugin See {@link SynchronizedDataManager#SynchronizedDataManager(Plugin, SynchronizedDataHandler, boolean)}
+     */
+    public SQLDataSynchronizer(String tableName, String uuidFieldName, SQLDataSource dataSource, H data, boolean profilePlugin) {
         this.tableName = tableName;
         this.uuidFieldName = uuidFieldName;
         this.data = data;
         this.dataSource = dataSource;
+        this.effectiveUUID = profilePlugin ? data.getUniqueId() : data.getProfileId();
     }
 
     public H getData() {
@@ -49,7 +66,7 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
 
         // Cancel if player is offline
         if (!data.getMMOPlayerData().isOnline()) {
-            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Stopped data retrieval for '" + data.getProfileId() + "' as they went offline");
+            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Stopped data retrieval for '" + effectiveUUID + "' as they went offline");
             return;
         }
 
@@ -64,9 +81,9 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
         try {
             connection = dataSource.getConnection();
             prepared = connection.prepareStatement("SELECT * FROM `" + tableName + "` WHERE `" + uuidFieldName + "` = ?;");
-            prepared.setString(1, data.getProfileId().toString());
+            prepared.setString(1, effectiveUUID.toString());
 
-            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Trying to load data of " + data.getProfileId());
+            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Trying to load data of " + effectiveUUID);
             result = prepared.executeQuery();
 
             // Load data if found
@@ -76,10 +93,10 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
                     loadData(result);
                     if (tries > MythicLib.plugin.getMMOConfig().maxSyncTries)
                         UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Maximum number of tries reached.");
-                    UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Found and loaded data of '" + data.getProfileId() + "'");
+                    UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Found and loaded data of '" + effectiveUUID + "'");
                     UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Time taken: " + (System.currentTimeMillis() - start) + "ms");
                 } else {
-                    UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Did not load data of '" + data.getProfileId() + "' as 'is_saved' is set to 0, trying again in " + PERIOD + "ms");
+                    UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Did not load data of '" + effectiveUUID + "' as 'is_saved' is set to 0, trying again in " + PERIOD + "ms");
                     retry = true;
                     Thread.sleep(PERIOD);
                 }
@@ -88,11 +105,11 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
                 // Empty player data
                 confirmReception(connection);
                 loadEmptyData();
-                UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Found empty data for '" + data.getProfileId() + "', loading default...");
+                UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Found empty data for '" + effectiveUUID + "', loading default...");
             }
 
         } catch (Exception throwable) {
-            dataSource.getPlugin().getLogger().log(Level.WARNING, "Could not load player data of '" + data.getProfileId() + "':");
+            dataSource.getPlugin().getLogger().log(Level.WARNING, "Could not load player data of '" + effectiveUUID + "':");
             throwable.printStackTrace();
         } finally {
 
@@ -102,7 +119,7 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
                 if (prepared != null) prepared.close();
                 if (connection != null) connection.close();
             } catch (SQLException exception) {
-                dataSource.getPlugin().getLogger().log(Level.WARNING, "Could not load player data of '" + data.getProfileId() + "':");
+                dataSource.getPlugin().getLogger().log(Level.WARNING, "Could not load player data of '" + effectiveUUID + "':");
                 exception.printStackTrace();
             }
         }
@@ -121,11 +138,11 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
 
         // Confirm reception of inventory
         final PreparedStatement prepared1 = connection.prepareStatement("INSERT INTO " + tableName + "(`uuid`, `is_saved`) VALUES(?, 0) ON DUPLICATE KEY UPDATE `is_saved` = 0;");
-        prepared1.setString(1, data.getProfileId().toString());
+        prepared1.setString(1, effectiveUUID.toString());
         try {
             prepared1.executeUpdate();
         } catch (Exception exception) {
-            dataSource.getPlugin().getLogger().log(Level.WARNING, "Could not confirm data sync of " + data.getProfileId());
+            dataSource.getPlugin().getLogger().log(Level.WARNING, "Could not confirm data sync of " + effectiveUUID);
             exception.printStackTrace();
         } finally {
             prepared1.close();

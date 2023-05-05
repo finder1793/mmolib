@@ -15,11 +15,6 @@ public class DefaultProfileModule implements ProfileModule {
     }
 
     @Override
-    public boolean loadsDataOnStartup() {
-        return true;
-    }
-
-    @Override
     public UUID getCurrentId(UUID uuid) {
         return uuid;
     }

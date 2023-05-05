@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.data.yaml;
 import io.lumine.mythic.lib.data.OfflineDataHolder;
 import io.lumine.mythic.lib.data.SynchronizedDataHandler;
 import io.lumine.mythic.lib.data.SynchronizedDataHolder;
+import io.lumine.mythic.lib.data.SynchronizedDataManager;
 import io.lumine.mythic.lib.util.ConfigFile;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
@@ -12,9 +13,19 @@ import java.util.concurrent.CompletableFuture;
 
 public abstract class YAMLSynchronizedDataHandler<H extends SynchronizedDataHolder, O extends OfflineDataHolder> implements SynchronizedDataHandler<H, O> {
     private final Plugin owning;
+    private final boolean profilePlugin;
 
     public YAMLSynchronizedDataHandler(Plugin owning) {
+        this(owning, false);
+    }
+
+    /**
+     * @param owning        Plugin saving data
+     * @param profilePlugin See {@link SynchronizedDataManager#SynchronizedDataManager(Plugin, SynchronizedDataHandler, boolean)}
+     */
+    public YAMLSynchronizedDataHandler(Plugin owning, boolean profilePlugin) {
         this.owning = Objects.requireNonNull(owning, "Plugin cannot be null");
+        this.profilePlugin = profilePlugin;
     }
 
     @Override
@@ -40,6 +51,6 @@ public abstract class YAMLSynchronizedDataHandler<H extends SynchronizedDataHold
     public abstract void loadFromSection(H playerData, ConfigurationSection config);
 
     private ConfigFile getUserFile(H playerData) {
-        return new ConfigFile(owning, "/userdata", playerData.getProfileId().toString());
+        return new ConfigFile(owning, "/userdata", (profilePlugin ? playerData.getUniqueId() : playerData.getProfileId()).toString());
     }
 }

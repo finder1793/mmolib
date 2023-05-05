@@ -1,8 +1,11 @@
 package io.lumine.mythic.lib.data;
 
+import fr.phoenixdevt.profile.event.ProfileChooseEvent;
+import fr.phoenixdevt.profile.event.ProfileUnloadEvent;
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.AsyncSynchronizedDataLoadEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.player.modifier.Closeable;
+import io.lumine.mythic.lib.util.Closeable;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -15,18 +18,30 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.Consumer;
+import java.util.logging.Level;
 
 public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, O extends OfflineDataHolder> {
     private final Plugin owning;
     private final Map<UUID, H> activeData = Collections.synchronizedMap(new HashMap<>());
 
+    /**
+     * Profile plugins behave differently on data storage:
+     * - they use the player UUID directly instead of using profile IDs
+     * - this option has to be passed to all of the data handlers
+     */
+    private final boolean profilePlugin;
+
     @NotNull
     private SynchronizedDataHandler<H, O> dataHandler;
 
     public SynchronizedDataManager(@NotNull Plugin owning, @NotNull SynchronizedDataHandler<H, O> dataHandler) {
+        this(owning, dataHandler, false);
+    }
+
+    public SynchronizedDataManager(@NotNull Plugin owning, @NotNull SynchronizedDataHandler<H, O> dataHandler, boolean profilePlugin) {
         this.owning = Objects.requireNonNull(owning, "Plugin cannot be null");
         this.dataHandler = Objects.requireNonNull(dataHandler, "Data handler cannot be null");
+        this.profilePlugin = profilePlugin;
     }
 
     public void setDataHandler(@NotNull SynchronizedDataHandler<H, O> dataHandler) {
@@ -124,10 +139,11 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
 
         // Initialize player data and schedule loading
         final H newData = newPlayerData(MMOPlayerData.get(player.getUniqueId()));
-        dataHandler.loadData(newData).thenAccept(unused -> {
-            newData.markAsSynchronized();
-            Bukkit.getPluginManager().callEvent(new AsyncSynchronizedDataLoadEvent(this, newData));
-        });
+        if (profilePlugin || MythicLib.plugin.getProfileModule().loadsDataOnLogin())
+            dataHandler.loadData(newData).thenAccept(unused -> {
+                newData.markAsSynchronized();
+                Bukkit.getPluginManager().callEvent(new AsyncSynchronizedDataLoadEvent(this, newData));
+            });
 
         // Update data map and return
         activeData.put(player.getUniqueId(), newData);
@@ -149,7 +165,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
 
         // Close and unregister data instantly if no error occured
         if (playerData instanceof Closeable) ((Closeable) playerData).close();
-        activeData.remove(playerData.getProfileId());
+        activeData.remove(playerData.getUniqueId());
     }
 
     /**
@@ -166,11 +182,8 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         return activeData.values();
     }
 
-    public void registerEvents(@NotNull EventPriority joinEventPriority) {
-        registerEvents(joinEventPriority, EventPriority.NORMAL, unused -> {
-        }, unused -> {
-        });
-    }
+    private static final Listener FICTIVE_LISTENER = new Listener() {
+    };
 
     /**
      * This method registers the join and quit events which are required in order
@@ -181,24 +194,31 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
      *
      * @param joinEventPriority Event priority when logging in
      * @param quitEventPriority Event priority when logging off
-     * @param onLogin           Consumed when the player logs in
-     * @param onQuit            Consumed when the player logs off
      */
-    public void registerEvents(@NotNull EventPriority joinEventPriority, @NotNull EventPriority quitEventPriority, @NotNull Consumer<H> onLogin, @NotNull Consumer<H> onQuit) {
-        final Listener fictiveListener = new Listener() {
-        };
+    public void registerEvents(@NotNull EventPriority joinEventPriority, @NotNull EventPriority quitEventPriority) {
 
-        // Join event
-        Bukkit.getPluginManager().registerEvent(PlayerJoinEvent.class, fictiveListener, joinEventPriority, (listener, event) -> {
-            final @NotNull H data = setup(((PlayerJoinEvent) event).getPlayer());
-            onLogin.accept(data);
-        }, owning);
+        // Load data on login
+        Bukkit.getPluginManager().registerEvent(PlayerJoinEvent.class, FICTIVE_LISTENER, joinEventPriority, (listener, event) -> setup(((PlayerJoinEvent) event).getPlayer()), owning);
 
-        // Quit event
-        Bukkit.getPluginManager().registerEvent(PlayerQuitEvent.class, fictiveListener, quitEventPriority, (listener, event) -> {
-            final @NotNull H data = get(((PlayerQuitEvent) event).getPlayer());
-            unregisterSafely(data);
-            onQuit.accept(data);
-        }, owning);
+        // Profile event if profile module is installed
+        if (!profilePlugin && !MythicLib.plugin.getProfileModule().loadsDataOnLogin()) {
+
+            // Load data on profile select
+            Bukkit.getPluginManager().registerEvent(ProfileChooseEvent.class, FICTIVE_LISTENER, joinEventPriority, (listener, event) -> {
+                final ProfileChooseEvent ev = (ProfileChooseEvent) event;
+                final @NotNull H data = get(ev.getPlayer());
+                dataHandler.loadData(data).thenAccept(unused -> {
+                    data.markAsSynchronized();
+                    ev.markAsLoaded(getOwningPlugin());
+                    Bukkit.getPluginManager().callEvent(new AsyncSynchronizedDataLoadEvent(this, data));
+                });
+            }, owning);
+
+            // Save data on profile unload
+            Bukkit.getPluginManager().registerEvent(ProfileUnloadEvent.class, FICTIVE_LISTENER, quitEventPriority, (listener, event) -> unregisterSafely(get(((ProfileUnloadEvent) event).getPlayer())), owning);
+        } else
+
+            // Save data on logout
+            Bukkit.getPluginManager().registerEvent(PlayerQuitEvent.class, FICTIVE_LISTENER, quitEventPriority, (listener, event) -> unregisterSafely(get(((PlayerQuitEvent) event).getPlayer())), owning);
     }
 }

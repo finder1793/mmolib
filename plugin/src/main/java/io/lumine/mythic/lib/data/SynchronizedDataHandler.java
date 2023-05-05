@@ -1,6 +1,6 @@
 package io.lumine.mythic.lib.data;
 
-import io.lumine.mythic.lib.player.modifier.Closeable;
+import io.lumine.mythic.lib.util.Closeable;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
