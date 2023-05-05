@@ -25,6 +25,7 @@ import io.lumine.mythic.lib.comp.flags.FlagHandler;
 import io.lumine.mythic.lib.comp.flags.FlagPlugin;
 import io.lumine.mythic.lib.comp.flags.ResidenceFlags;
 import io.lumine.mythic.lib.comp.flags.WorldGuardFlags;
+import io.lumine.mythic.lib.comp.formula.FormulaParser;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
 import io.lumine.mythic.lib.comp.placeholder.*;
@@ -75,7 +76,7 @@ public class MythicLib extends JavaPlugin {
     private final FlagHandler flagHandler = new FlagHandler();
     private final IndicatorManager indicatorManager = new IndicatorManager();
     private final Gson gson = new Gson();
-    private Interpreter interpreter;
+    private FormulaParser formulaParser;
     private AntiCheatSupport antiCheatSupport;
     private ServerVersion version;
     private AttackEffects attackEffects;
@@ -121,12 +122,6 @@ public class MythicLib extends JavaPlugin {
             getLogger().warning("(Your config version: '" + configVersion + "' | Expected config version: '" + defConfigVersion + "')");
         }
 
-        interpreter = new Interpreter();
-        try {
-            interpreter.eval("import java.lang.Math;");
-        } catch (EvalError e) {
-            throw new RuntimeException(e);
-        }
         // Hologram provider
         Bukkit.getServicesManager().register(HologramFactory.class, new BukkitHologramFactory(), this, ServicePriority.Low);
 
@@ -339,8 +334,8 @@ public class MythicLib extends JavaPlugin {
         return antiCheatSupport;
     }
 
-    public Interpreter getInterpreter() {
-        return interpreter;
+    public FormulaParser getFormulaParser() {
+        return formulaParser;
     }
 
     @Nullable
