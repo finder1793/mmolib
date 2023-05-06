@@ -10,8 +10,7 @@ import java.util.List;
 
 public class FormulaParser {
     private final Interpreter interpreter;
-    private final List<String> mathFunctions = Arrays.asList("pow", "sqrt", "sin", "cos", "tan", "exp", "log", "random", "abs", "max", "min");
-
+    private final List<String> mathFunctions = Arrays.asList("pow", "sqrt", "sin", "cos", "tan", "asin", "acos", "atan", "atan2", "exp", "log", "random", "abs", "max", "min");
 
     public FormulaParser() {
 
