@@ -24,6 +24,12 @@ public class JsonFile extends ConfigFile<JsonObject> {
     public JsonFile(@NotNull Plugin plugin, @NotNull String folder, @NotNull String name) {
         super(plugin, new File(plugin.getDataFolder() + folder, name + ".json"));
 
+        // File does not exist
+        if (!getFile().exists()) {
+            setContent(new JsonObject());
+            return;
+        }
+
         // Read object
         try {
             final FileReader reader = new FileReader(getFile());
@@ -37,6 +43,11 @@ public class JsonFile extends ConfigFile<JsonObject> {
 
     public void save() {
         try {
+
+            // Create file
+            if (!getFile().exists()) getFile().getParentFile().mkdir();
+
+            // Save object
             final FileWriter writer = new FileWriter(getFile());
             writer.write(getContent().toString());
             writer.close();
