@@ -76,7 +76,7 @@ public class MythicLib extends JavaPlugin {
     private final FlagHandler flagHandler = new FlagHandler();
     private final IndicatorManager indicatorManager = new IndicatorManager();
     private final Gson gson = new Gson();
-    private FormulaParser formulaParser;
+    private FormulaParser formulaParser= new FormulaParser();
     private AntiCheatSupport antiCheatSupport;
     private ServerVersion version;
     private AttackEffects attackEffects;
