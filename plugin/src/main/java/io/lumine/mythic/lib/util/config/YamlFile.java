@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.util.config;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,19 +12,15 @@ import java.io.File;
  * @deprecated Not implemented
  */
 @Deprecated
-public class YamlFile extends ConfigFile {
+public class YamlFile extends ConfigFile<ConfigurationSection> {
     public YamlFile(Plugin plugin, File file) {
         super(plugin, file);
-    }
 
-    @NotNull
-    @Override
-    public Object getContent() {
-        return null;
+        throw new RuntimeException();
     }
 
     @Override
     public void save() {
-
+        throw new RuntimeException();
     }
 }

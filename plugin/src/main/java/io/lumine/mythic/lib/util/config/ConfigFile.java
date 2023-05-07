@@ -5,11 +5,14 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.logging.Level;
 
 public abstract class ConfigFile<T> {
     private final Plugin plugin;
     private final File file;
+
+    private T content;
 
     public ConfigFile(@NotNull Plugin plugin, @NotNull File file) {
         this.plugin = plugin;
@@ -17,7 +20,17 @@ public abstract class ConfigFile<T> {
     }
 
     @NotNull
-    public abstract T getContent();
+    public T getContent() {
+        return content;
+    }
+
+    public boolean hasContent() {
+        return content != null;
+    }
+
+    public void setContent(T t) {
+        this.content = Objects.requireNonNull(t, "Content cannot be null");
+    }
 
     @NotNull
     public Plugin getPlugin() {
@@ -27,10 +40,6 @@ public abstract class ConfigFile<T> {
     @NotNull
     public File getFile() {
         return file;
-    }
-
-    public boolean exists() {
-        return file.exists();
     }
 
     public void delete() {

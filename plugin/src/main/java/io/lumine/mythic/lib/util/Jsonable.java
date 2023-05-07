@@ -1,10 +1,10 @@
 package io.lumine.mythic.lib.util;
 
-import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
 public interface Jsonable {
 
     @NotNull
-    public JsonElement toJson();
+    public JsonObject toJson();
 }

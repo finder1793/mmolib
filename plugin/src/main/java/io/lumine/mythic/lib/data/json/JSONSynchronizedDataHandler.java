@@ -1,18 +1,26 @@
 package io.lumine.mythic.lib.data.json;
 
 import com.google.gson.JsonObject;
+import com.sk89q.worldguard.util.profile.cache.MySQLCache;
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.data.OfflineDataHolder;
 import io.lumine.mythic.lib.data.SynchronizedDataHandler;
 import io.lumine.mythic.lib.data.SynchronizedDataHolder;
 import io.lumine.mythic.lib.data.SynchronizedDataManager;
+import io.lumine.mythic.lib.util.Jsonable;
 import io.lumine.mythic.lib.util.config.JsonFile;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 
-public abstract class JSONSynchronizedDataHandler<H extends SynchronizedDataHolder, O extends OfflineDataHolder> implements SynchronizedDataHandler<H, O> {
+public abstract class JSONSynchronizedDataHandler<H extends SynchronizedDataHolder & Jsonable, O extends OfflineDataHolder> implements SynchronizedDataHandler<H, O> {
     private final Plugin owning;
     private final boolean profilePlugin;
 
@@ -31,12 +39,11 @@ public abstract class JSONSynchronizedDataHandler<H extends SynchronizedDataHold
 
     @Override
     public void saveData(H playerData, boolean autosave) {
-        final JsonFile configFile = getUserFile(playerData);
-        saveInObject(playerData, configFile.getContent());
-        configFile.save();
+        // TODO json object is uselessly loaded into memory
+        final JsonFile file = getUserFile(playerData);
+        file.setContent(playerData.toJson());
+        file.save();
     }
-
-    public abstract void saveInObject(H playerData, JsonObject json);
 
     @Override
     public CompletableFuture<Void> loadData(H playerData) {
