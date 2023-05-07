@@ -16,6 +16,6 @@ public class DefaultOfflineDataHolder implements OfflineDataHolder {
 
     @Override
     public @NotNull UUID getUniqueId() {
-        return null;
+        return uuid;
     }
 }

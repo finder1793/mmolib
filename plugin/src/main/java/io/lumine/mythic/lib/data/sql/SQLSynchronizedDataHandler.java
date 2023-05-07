@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.data.sql;
 import io.lumine.mythic.lib.data.OfflineDataHolder;
 import io.lumine.mythic.lib.data.SynchronizedDataHandler;
 import io.lumine.mythic.lib.data.SynchronizedDataHolder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -27,6 +28,13 @@ public abstract class SQLSynchronizedDataHandler<H extends SynchronizedDataHolde
             }
         });
     }
+
+    /**
+     * @deprecated Not implemented yet
+     */
+    @Deprecated
+    @Override
+    public abstract void saveData(@NotNull H playerData, boolean autosave);
 
     @Override
     public void close() {

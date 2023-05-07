@@ -5,15 +5,13 @@ import io.lumine.mythic.lib.data.SynchronizedDataManager;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class AsyncSynchronizedDataLoadEvent extends Event {
+public class SynchronizedDataLoadEvent extends Event {
     private final SynchronizedDataManager<?, ?> manager;
     private final SynchronizedDataHolder holder;
 
     private static final HandlerList HANDLERS = new HandlerList();
 
-    public AsyncSynchronizedDataLoadEvent(SynchronizedDataManager<?, ?> manager, SynchronizedDataHolder holder) {
-        super(true);
-
+    public SynchronizedDataLoadEvent(SynchronizedDataManager<?, ?> manager, SynchronizedDataHolder holder) {
         this.holder = holder;
         this.manager = manager;
     }

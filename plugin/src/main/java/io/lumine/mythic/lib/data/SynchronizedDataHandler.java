@@ -1,18 +1,25 @@
 package io.lumine.mythic.lib.data;
 
 import io.lumine.mythic.lib.util.Closeable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * A data handles "handles" data, it decides what happens when
+ * A data handler "handles" data, it decides what happens when
  * data is either saved OR loaded from either SQL or YAML. Remember
- * that {@link SynchronizedDataManager} does not know if we are using
- * SQL or YAML.
+ * that a {@link SynchronizedDataManager} does not know if it is
+ * using SQL or YAML.
+ *
+ * @author jules
  */
 public interface SynchronizedDataHandler<H extends SynchronizedDataHolder, O extends OfflineDataHolder> extends Closeable {
 
+    /**
+     * Called once on server startup. This can be used for SQL support
+     * to initialize database tables, and make sure they are up to date.
+     */
     public void setup();
 
     /**
@@ -25,7 +32,7 @@ public interface SynchronizedDataHandler<H extends SynchronizedDataHolder, O ext
      *                   must be skipped when autosaving otherwise this will mess with
      *                   the database.
      */
-    public void saveData(H playerData, boolean autosave);
+    public void saveData(@NotNull H playerData, boolean autosave);
 
     /**
      * This method is always called async, therefore it may send
@@ -34,7 +41,7 @@ public interface SynchronizedDataHandler<H extends SynchronizedDataHolder, O ext
      *
      * @param playerData Player data to load
      */
-    public CompletableFuture<Void> loadData(H playerData);
+    public CompletableFuture<Void> loadData(@NotNull H playerData);
 
-    public O getOffline(UUID uuid);
+    public O getOffline(@NotNull UUID profileId);
 }

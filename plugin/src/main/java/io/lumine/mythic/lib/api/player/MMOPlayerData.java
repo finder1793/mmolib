@@ -35,6 +35,13 @@ public class MMOPlayerData {
 
     private final UUID playerId;
 
+    /**
+     * MythicLib caches the UUID of the last profile used as
+     * it cannot be accessed by plugins with profile-based data
+     * when saving their data async.
+     */
+    private UUID profileId;
+
     @Nullable
     private Player player;
 
@@ -69,6 +76,7 @@ public class MMOPlayerData {
 
     public MMOPlayerData(@NotNull UUID playerId) {
         this.playerId = playerId;
+        setProfileId(playerId);
     }
 
     @NotNull
@@ -76,9 +84,23 @@ public class MMOPlayerData {
         return playerId;
     }
 
+    /**
+     * If support for the Profile API has been enabled, this returns the
+     * current player's profile ID. This method will throw an error if they
+     * have not chosen a profile yet.
+     * <p>
+     * Otherwise, if no profile plugin is installed, this will simply return
+     * the player's UUID.
+     *
+     * @return The UUID used to fetch and store player data.
+     */
     @NotNull
     public UUID getProfileId() {
-        return MythicLib.plugin.getProfileModule().getCurrentId(playerId);
+        return MythicLib.plugin.hasProfiles() ? Objects.requireNonNull(profileId, "No profile has been chosen yet") : playerId;
+    }
+
+    public void setProfileId(@NotNull UUID profileId) {
+        this.profileId = Objects.requireNonNull(profileId, "Profile ID cannot be null");
     }
 
     /**

@@ -35,6 +35,17 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
     }
 
     /**
+     * The SQL data synchronizer will find the column in the database with
+     * the given UUID. It may use either the profile or direct player UUID.
+     * <p>
+     * As general rule, profile plugins use the player UUID and other plugins
+     * supporting profile-based data saving use the profile UUID.
+     * <p>
+     * One exception is when trying to access data from an offline player.
+     * Their profile UUID is not clearly defined, and therefore the synchronizer
+     * will directly use the player UUID. This is used for placeholder requests
+     * in MMOProfiles and in the /exportdata command.
+     *
      * @param tableName     Table name for player data storage
      * @param uuidFieldName UUID field name in table
      * @param dataSource    SQL connection being used

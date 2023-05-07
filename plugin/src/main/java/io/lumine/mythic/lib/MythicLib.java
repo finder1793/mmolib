@@ -28,8 +28,7 @@ import io.lumine.mythic.lib.comp.flags.WorldGuardFlags;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
 import io.lumine.mythic.lib.comp.placeholder.*;
-import io.lumine.mythic.lib.comp.profiles.DefaultProfileModule;
-import io.lumine.mythic.lib.comp.profiles.ProfileModule;
+import io.lumine.mythic.lib.comp.profile.ProfilePluginListener;
 import io.lumine.mythic.lib.comp.protocollib.DamageParticleCap;
 import io.lumine.mythic.lib.glow.GlowModule;
 import io.lumine.mythic.lib.glow.provided.MythicGlowModule;
@@ -42,11 +41,13 @@ import io.lumine.mythic.lib.listener.event.AttackEventListener;
 import io.lumine.mythic.lib.listener.option.FixMovementSpeed;
 import io.lumine.mythic.lib.listener.option.HealthScale;
 import io.lumine.mythic.lib.manager.*;
+import io.lumine.mythic.lib.util.gson.MythicLibGson;
 import io.lumine.mythic.lib.util.loadingorder.DependencyCycleCheck;
 import io.lumine.mythic.lib.util.loadingorder.DependencyNode;
 import io.lumine.mythic.lib.version.ServerVersion;
 import io.lumine.mythic.lib.version.SpigotPlugin;
 import lombok.Getter;
+import org.apache.commons.lang.Validate;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -74,21 +75,22 @@ public class MythicLib extends JavaPlugin {
     private final ModifierManager modifierManager = new ModifierManager();
     private final FlagHandler flagHandler = new FlagHandler();
     private final IndicatorManager indicatorManager = new IndicatorManager();
-    private final Gson gson = new Gson();
+    private Gson gson;
     private Interpreter interpreter;
     private AntiCheatSupport antiCheatSupport;
     private ServerVersion version;
     private AttackEffects attackEffects;
     private MitigationMechanics mitigationMechanics;
     private AdventureParser adventureParser;
-    private ProfileModule profileModule = new DefaultProfileModule();
     @Getter
     private PlaceholderParser placeholderParser;
     private GlowModule glowModule;
+    private @Nullable Boolean hasProfiles;
 
     @Override
     public void onLoad() {
         plugin = this;
+        getLogger().log(Level.INFO, "Plugin file is called '" + getFile().getName() + "'");
 
         try {
             version = new ServerVersion(Bukkit.getServer().getClass());
@@ -111,7 +113,7 @@ public class MythicLib extends JavaPlugin {
     @Override
     public void onEnable() {
         new Metrics(this);
-
+        gson = MythicLibGson.build();
         new SpigotPlugin(90306, this).checkForUpdate();
         saveDefaultConfig();
 
@@ -153,13 +155,12 @@ public class MythicLib extends JavaPlugin {
 
         // Custom hologram providers
         for (HologramFactoryList custom : HologramFactoryList.values())
-            if (custom.isInstalled(getServer().getPluginManager()))
-                try {
-                    Bukkit.getServicesManager().register(HologramFactory.class, custom.generateFactory(), this, custom.getServicePriority());
-                    getLogger().log(Level.INFO, "Hooked onto " + custom.getPluginName());
-                } catch (Exception exception) {
-                    getLogger().log(Level.WARNING, "Could not hook onto " + custom.getPluginName() + ": " + exception.getMessage());
-                }
+            if (custom.isInstalled(getServer().getPluginManager())) try {
+                Bukkit.getServicesManager().register(HologramFactory.class, custom.generateFactory(), this, custom.getServicePriority());
+                getLogger().log(Level.INFO, "Hooked onto " + custom.getPluginName());
+            } catch (Exception exception) {
+                getLogger().log(Level.WARNING, "Could not hook onto " + custom.getPluginName() + ": " + exception.getMessage());
+            }
 
         if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null) {
             damageManager.registerHandler(new MythicMobsAttackHandler());
@@ -199,8 +200,7 @@ public class MythicLib extends JavaPlugin {
             new PlaceholderAPIHook().register();
             placeholderParser = new PlaceholderAPIParser();
             getLogger().log(Level.INFO, "Hooked onto PlaceholderAPI");
-        } else
-            placeholderParser = new DefaultPlaceholderParser();
+        } else placeholderParser = new DefaultPlaceholderParser();
 
         if (Bukkit.getPluginManager().getPlugin("RealDualWield") != null) {
             Bukkit.getPluginManager().registerEvents(new RealDualWieldHook(), this);
@@ -224,6 +224,13 @@ public class MythicLib extends JavaPlugin {
 
 //		if (Bukkit.getPluginManager().getPlugin("ShopKeepers") != null)
 //			entityManager.registerHandler(new ShopKeepersEntityHandler());
+
+        // Profiles
+        if (hasProfiles == null) hasProfiles = false;
+        else if (hasProfiles) {
+            Bukkit.getPluginManager().registerEvents(new ProfilePluginListener(), this);
+            getLogger().log(Level.INFO, "Hooked onto ProfileAPI");
+        }
 
         // Glowing module
         if (glowModule == null) {
@@ -350,12 +357,19 @@ public class MythicLib extends JavaPlugin {
         return glowModule;
     }
 
-    public ProfileModule getProfileModule() {
-        return profileModule;
+    /**
+     * Enables support for the Profile API. This will work for any
+     * profile plugin that implements that API, including MMOProfiles.
+     *
+     * @author Jules
+     */
+    public void enableProfiles() {
+        Validate.isTrue(hasProfiles == null, "Profiles have already been enabled");
+        hasProfiles = true;
     }
 
-    public void setProfileModule(ProfileModule profileModule) {
-        this.profileModule = profileModule;
+    public boolean hasProfiles() {
+        return hasProfiles;
     }
 
     @Deprecated

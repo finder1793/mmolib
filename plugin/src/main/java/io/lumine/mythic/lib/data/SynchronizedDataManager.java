@@ -1,10 +1,10 @@
 package io.lumine.mythic.lib.data;
 
-import fr.phoenixdevt.profile.event.ProfileChooseEvent;
-import fr.phoenixdevt.profile.event.ProfileUnloadEvent;
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.event.AsyncSynchronizedDataLoadEvent;
+import io.lumine.mythic.lib.api.event.SynchronizedDataLoadEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.comp.profile.ProfileDataModuleImpl;
+import io.lumine.mythic.lib.comp.profile.ProfilePluginHook;
 import io.lumine.mythic.lib.util.Closeable;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -18,8 +18,19 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.logging.Level;
 
+/**
+ * A general player data manager which implements
+ * - player data caching on login
+ * - support for both YAML and SQL
+ * - better SQL data synchronization between servers
+ * - profile-based data saving for MMOProfiles
+ *
+ * @param <H> Type of player data being cached on login
+ * @param <O> This is used to manipulate player data when players
+ *            are offline
+ * @author jules
+ */
 public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, O extends OfflineDataHolder> {
     private final Plugin owning;
     private final Map<UUID, H> activeData = Collections.synchronizedMap(new HashMap<>());
@@ -82,7 +93,6 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         return getOrNull(player.getUniqueId());
     }
 
-
     @Nullable
     public H getOrNull(UUID uuid) {
         return activeData.get(uuid);
@@ -129,25 +139,20 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
      *
      * @param player Player UUID (not profile)
      * @return The empty player data, which will be loaded in a near future.
-     * @deprecated
      */
     public H setup(@NotNull Player player) {
 
-        // Load player data if it already exists (should never happen)
-        final @Nullable H current = activeData.get(player.getUniqueId());
-        if (current != null) return current;
+        // Get data or compute it if non existent (more resilient)
+        final @Nullable H playerData = activeData.computeIfAbsent(player.getUniqueId(), uuid -> newPlayerData(MMOPlayerData.get(player.getUniqueId())));
 
-        // Initialize player data and schedule loading
-        final H newData = newPlayerData(MMOPlayerData.get(player.getUniqueId()));
-        if (profilePlugin || MythicLib.plugin.getProfileModule().loadsDataOnLogin())
-            dataHandler.loadData(newData).thenAccept(unused -> {
-                newData.markAsSynchronized();
-                Bukkit.getPluginManager().callEvent(new AsyncSynchronizedDataLoadEvent(this, newData));
-            });
+        // Schedule data loading
+        if (!playerData.isSynchronized() && (profilePlugin || !MythicLib.plugin.hasProfiles()))
+            dataHandler.loadData(playerData).thenRun(() -> Bukkit.getScheduler().runTask(owning, () -> {
+                playerData.markAsSynchronized();
+                Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(this, playerData));
+            }));
 
-        // Update data map and return
-        activeData.put(player.getUniqueId(), newData);
-        return newData;
+        return playerData;
     }
 
     /**
@@ -173,6 +178,8 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
      * @return A new instance of player data
      */
     public abstract H newPlayerData(@NotNull MMOPlayerData playerData);
+
+    public abstract ProfileDataModuleImpl newProfileDataModule();
 
     public boolean isLoaded(UUID uuid) {
         return activeData.containsKey(uuid);
@@ -200,25 +207,12 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         // Load data on login
         Bukkit.getPluginManager().registerEvent(PlayerJoinEvent.class, FICTIVE_LISTENER, joinEventPriority, (listener, event) -> setup(((PlayerJoinEvent) event).getPlayer()), owning);
 
-        // Profile event if profile module is installed
-        if (!profilePlugin && !MythicLib.plugin.getProfileModule().loadsDataOnLogin()) {
-
-            // Load data on profile select
-            Bukkit.getPluginManager().registerEvent(ProfileChooseEvent.class, FICTIVE_LISTENER, joinEventPriority, (listener, event) -> {
-                final ProfileChooseEvent ev = (ProfileChooseEvent) event;
-                final @NotNull H data = get(ev.getPlayer());
-                dataHandler.loadData(data).thenAccept(unused -> {
-                    data.markAsSynchronized();
-                    ev.markAsLoaded(getOwningPlugin());
-                    Bukkit.getPluginManager().callEvent(new AsyncSynchronizedDataLoadEvent(this, data));
-                });
-            }, owning);
-
-            // Save data on profile unload
-            Bukkit.getPluginManager().registerEvent(ProfileUnloadEvent.class, FICTIVE_LISTENER, quitEventPriority, (listener, event) -> unregisterSafely(get(((ProfileUnloadEvent) event).getPlayer())), owning);
-        } else
+        // Profile events if profile module is installed
+        if (!profilePlugin && MythicLib.plugin.hasProfiles())
+            new ProfilePluginHook(this, FICTIVE_LISTENER, joinEventPriority, quitEventPriority);
 
             // Save data on logout
+        else
             Bukkit.getPluginManager().registerEvent(PlayerQuitEvent.class, FICTIVE_LISTENER, quitEventPriority, (listener, event) -> unregisterSafely(get(((PlayerQuitEvent) event).getPlayer())), owning);
     }
 }

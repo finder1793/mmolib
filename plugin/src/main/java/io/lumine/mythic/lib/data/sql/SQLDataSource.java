@@ -15,9 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
-/**
- * TODO clear methods and implement completablefutures
- */
+// TODO clear methods and implement CompletableFutures
 public class SQLDataSource {
     private final JavaPlugin plugin;
     private final HikariDataSource dataSource;

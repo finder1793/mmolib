@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
+@Deprecated
 public interface OfflineDataHolder {
 
     /**
