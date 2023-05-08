@@ -179,7 +179,11 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
      */
     public abstract H newPlayerData(@NotNull MMOPlayerData playerData);
 
-    public abstract ProfileDataModuleImpl newProfileDataModule();
+    /**
+     * @return An object of type {@link ProfileDataModuleImpl} which is an object
+     * that cannot be referenced inside of that class to avoid import issues.
+     */
+    public abstract Object newProfileDataModule();
 
     public boolean isLoaded(UUID uuid) {
         return activeData.containsKey(uuid);

@@ -8,7 +8,6 @@ import io.lumine.mythic.lib.api.event.SynchronizedDataLoadEvent;
 import io.lumine.mythic.lib.data.SynchronizedDataHolder;
 import io.lumine.mythic.lib.data.SynchronizedDataManager;
 import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +32,7 @@ public class ProfilePluginHook {
 
         // Register data holder
         final ProfileProvider profilePlugin = Bukkit.getServicesManager().getRegistration(ProfileProvider.class).getProvider();
-        final ProfileDataModule module = manager.newProfileDataModule();
+        final ProfileDataModule module = (ProfileDataModule) manager.newProfileDataModule();
         profilePlugin.registerModule(module);
         manager.getOwningPlugin().getLogger().log(Level.INFO, "Hooked onto Profiles");
 
