@@ -119,7 +119,10 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
      */
     public void saveAll(boolean autosave) {
         for (H holder : getLoaded())
-            if (holder.isSynchronized()) getDataHandler().saveData(holder, autosave);
+            if (holder.isSynchronized()) {
+                if (!autosave && holder instanceof Closeable) ((Closeable) holder).close();
+                getDataHandler().saveData(holder, autosave);
+            }
     }
 
     /**
