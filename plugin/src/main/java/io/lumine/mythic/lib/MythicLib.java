@@ -1,7 +1,5 @@
 package io.lumine.mythic.lib;
 
-import bsh.EvalError;
-import bsh.Interpreter;
 import com.google.gson.Gson;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.MegaWorkbenchMapping;
@@ -25,6 +23,7 @@ import io.lumine.mythic.lib.comp.flags.FlagHandler;
 import io.lumine.mythic.lib.comp.flags.FlagPlugin;
 import io.lumine.mythic.lib.comp.flags.ResidenceFlags;
 import io.lumine.mythic.lib.comp.flags.WorldGuardFlags;
+import io.lumine.mythic.lib.comp.formula.FormulaParser;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
 import io.lumine.mythic.lib.comp.placeholder.*;
@@ -75,8 +74,8 @@ public class MythicLib extends JavaPlugin {
     private final ModifierManager modifierManager = new ModifierManager();
     private final FlagHandler flagHandler = new FlagHandler();
     private final IndicatorManager indicatorManager = new IndicatorManager();
+    private FormulaParser formulaParser= new FormulaParser();
     private Gson gson;
-    private Interpreter interpreter;
     private AntiCheatSupport antiCheatSupport;
     private ServerVersion version;
     private AttackEffects attackEffects;
@@ -122,13 +121,6 @@ public class MythicLib extends JavaPlugin {
         if (configVersion != defConfigVersion) {
             getLogger().warning("You may be using an outdated config.yml!");
             getLogger().warning("(Your config version: '" + configVersion + "' | Expected config version: '" + defConfigVersion + "')");
-        }
-
-        interpreter = new Interpreter();
-        try {
-            interpreter.eval("import java.lang.Math;");
-        } catch (EvalError e) {
-            throw new RuntimeException(e);
         }
 
         // Hologram provider
@@ -348,8 +340,8 @@ public class MythicLib extends JavaPlugin {
         return antiCheatSupport;
     }
 
-    public Interpreter getInterpreter() {
-        return interpreter;
+    public FormulaParser getFormulaParser() {
+        return formulaParser;
     }
 
     @Nullable
