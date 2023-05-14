@@ -2,7 +2,7 @@ package io.lumine.mythic.lib.comp.profile;
 
 import fr.phoenixdevt.profile.ProfileDataModule;
 import fr.phoenixdevt.profile.ProfileProvider;
-import fr.phoenixdevt.profile.event.ProfileChooseEvent;
+import fr.phoenixdevt.profile.event.ProfileSelectEvent;
 import fr.phoenixdevt.profile.event.ProfileUnloadEvent;
 import io.lumine.mythic.lib.api.event.SynchronizedDataLoadEvent;
 import io.lumine.mythic.lib.data.SynchronizedDataHolder;
@@ -36,20 +36,16 @@ public class ProfilePluginHook {
         profilePlugin.registerModule(module);
         manager.getOwningPlugin().getLogger().log(Level.INFO, "Hooked onto Profiles");
 
-        // Load plugin-specific listeners
-        if (module instanceof Listener)
-            Bukkit.getPluginManager().registerEvents((Listener) module, manager.getOwningPlugin());
-
         // Load data on profile select
-        Bukkit.getPluginManager().registerEvent(ProfileChooseEvent.class, fictiveListener, joinEventPriority, (listener, evt) -> {
-            final ProfileChooseEvent event = (ProfileChooseEvent) evt;
+        Bukkit.getPluginManager().registerEvent(ProfileSelectEvent.class, fictiveListener, joinEventPriority, (listener, evt) -> {
+            final ProfileSelectEvent event = (ProfileSelectEvent) evt;
             final @NotNull H data = manager.get(event.getPlayer());
             if (data.isSynchronized()) event.validate(module); // More resilience
             else
-                manager.getDataHandler().loadData(data).thenRun(() -> Bukkit.getScheduler().runTask(manager.getOwningPlugin(), () -> {
+                manager.getDataHandler().loadData(data).thenAccept(v -> Bukkit.getScheduler().runTask(manager.getOwningPlugin(), () -> {
                     event.validate(module);
                     data.markAsSynchronized();
-                    Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(manager, data));
+                    Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(manager, data, event));
                 }));
         }, manager.getOwningPlugin());
 

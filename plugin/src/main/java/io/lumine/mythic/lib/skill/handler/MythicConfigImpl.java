@@ -6,30 +6,21 @@ import io.lumine.mythic.api.skills.placeholders.PlaceholderInt;
 import io.lumine.mythic.api.skills.placeholders.PlaceholderString;
 import io.lumine.mythic.bukkit.utils.config.MemorySection;
 import io.lumine.mythic.bukkit.utils.config.file.FileConfiguration;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import io.lumine.mythic.core.config.GenericConfig;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+
+import java.io.File;
+import java.util.*;
 
 public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig {
     private String configName;
-    private File file;
     private ConfigurationSection fc;
 
     public MythicConfigImpl(String name, ConfigurationSection fc) {
         this.configName = name;
-        this.file = null;
         this.fc = fc;
     }
 
@@ -51,8 +42,13 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
     }
 
     public void deleteNodeAndSave() {
-        this.fc.set(this.getNode(), (Object)null);
+        this.fc.set(this.getNode(), null);
         this.save();
+    }
+
+    @Override
+    public String getFileName() {
+        throw new RuntimeException("Not supported");
     }
 
     public boolean isSet(String field) {
@@ -71,7 +67,7 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
     }
 
     public void unset(String key) {
-        this.fc.set(this.getNode() + key, (Object)null);
+        this.fc.set(this.getNode() + key, (Object) null);
     }
 
     public void unsetSave(String key) {
@@ -80,7 +76,7 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
     }
 
     public void load() {
-        this.fc = YamlConfiguration.loadConfiguration(this.file);
+        throw new RuntimeException("Not supported");
     }
 
     public void save() {
@@ -98,8 +94,8 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
         } else {
             Iterator var3 = this.getKeys(key).iterator();
 
-            while(var3.hasNext()) {
-                String k = (String)var3.next();
+            while (var3.hasNext()) {
+                String k = (String) var3.next();
                 map.put(k, new MythicConfigImpl(this.getNode() + key + "." + k, this.fc));
             }
 
@@ -114,7 +110,7 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
     }
 
     public String getString(String[] key) {
-        return this.getString(key, (String)null);
+        return this.getString(key, (String) null);
     }
 
     public String getString(String field, String def) {
@@ -130,9 +126,9 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
 
         int var7;
         String a;
-        for(var7 = 0; var7 < var6; ++var7) {
+        for (var7 = 0; var7 < var6; ++var7) {
             a = var5[var7];
-            s = this.getString(a, (String)null);
+            s = this.getString(a, (String) null);
             if (s != null) {
                 return s;
             }
@@ -141,7 +137,7 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
         var5 = args;
         var6 = args.length;
 
-        for(var7 = 0; var7 < var6; ++var7) {
+        for (var7 = 0; var7 < var6; ++var7) {
             a = var5[var7];
             if (a != null) {
                 return a;
@@ -215,7 +211,7 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
         String[] var3 = keys;
         int var4 = keys.length;
 
-        for(int var5 = 0; var5 < var4; ++var5) {
+        for (int var5 = 0; var5 < var4; ++var5) {
             String key = var3[var5];
             String var10000 = this.getNode();
             key = var10000 + key;
@@ -227,7 +223,9 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
         return def;
     }
 
-    /** @deprecated */
+    /**
+     * @deprecated
+     */
     @Deprecated
     public int getInt(String field) {
         String var10000 = this.getNode();
@@ -237,7 +235,9 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
         return var3.getInt(var10001 + field);
     }
 
-    /** @deprecated */
+    /**
+     * @deprecated
+     */
     @Deprecated
     public int getInt(String field, int def) {
         String var10000 = this.getNode();
@@ -277,8 +277,8 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
         if (list != null) {
             Iterator var5 = list.iterator();
 
-            while(var5.hasNext()) {
-                String str = (String)var5.next();
+            while (var5.hasNext()) {
+                String str = (String) var5.next();
                 parsed.add(ChatColor.translateAlternateColorCodes('&', str));
             }
         }
@@ -296,8 +296,8 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
         if (list != null) {
             Iterator var5 = list.iterator();
 
-            while(var5.hasNext()) {
-                String str = (String)var5.next();
+            while (var5.hasNext()) {
+                String str = (String) var5.next();
                 parsed.add(PlaceholderString.of(str));
             }
         }
@@ -378,6 +378,12 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
         return s == null ? null : PlaceholderInt.of(s);
     }
 
+    @Override
+    public PlaceholderInt getPlaceholderInt(String[] key, String def) {
+        String s = this.getString(key, def);
+        return s == null ? null : PlaceholderInt.of(s);
+    }
+
     public PlaceholderInt getPlaceholderInt(String[] key, String def, String... args) {
         String s = this.getString(key, def, args);
         return s == null ? null : PlaceholderInt.of(s);
@@ -414,8 +420,8 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
         String tmplMob = tmplConfig.getKey();
         Iterator var7 = tmplConfig.getKeys("").iterator();
 
-        while(var7.hasNext()) {
-            String k = (String)var7.next();
+        while (var7.hasNext()) {
+            String k = (String) var7.next();
             if (!keysToIgnore.contains(k)) {
                 if (this.getStringList(k).size() > 0) {
                     List<String> currentStringList = this.getStringList(k);
@@ -424,8 +430,8 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
                 } else if (!this.isSet(k)) {
                     this.set(k, tmplFile.get(tmplMob + "." + k));
                 } else if (thisFile.get(thisMob + "." + k) instanceof MemorySection) {
-                    MemorySection memSec = (MemorySection)thisFile.get(thisMob + "." + k);
-                    Set<String> templateMemSec = ((MemorySection)tmplFile.get(tmplMob + "." + k)).getKeys(false);
+                    MemorySection memSec = (MemorySection) thisFile.get(thisMob + "." + k);
+                    Set<String> templateMemSec = ((MemorySection) tmplFile.get(tmplMob + "." + k)).getKeys(false);
                     templateMemSec.forEach((m) -> {
                         if (!memSec.isSet(m)) {
                             memSec.set(k, tmplFile.get(tmplMob + "." + k + "." + m));
@@ -439,6 +445,6 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
     }
 
     public File getFile() {
-        return this.file;
+        throw new RuntimeException("Not supported");
     }
 }

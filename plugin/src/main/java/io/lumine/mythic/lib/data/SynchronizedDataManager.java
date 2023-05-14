@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.data;
 
+import fr.phoenixdevt.profile.ProfileDataModule;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.SynchronizedDataLoadEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
@@ -217,7 +218,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
     public abstract H newPlayerData(@NotNull MMOPlayerData playerData);
 
     /**
-     * @return An object of type {@link ProfileDataModuleImpl} which is an object
+     * @return An object of type {@link ProfileDataModule} which is an object
      *         that cannot be referenced inside of that class to avoid import issues.
      */
     public abstract Object newProfileDataModule();
