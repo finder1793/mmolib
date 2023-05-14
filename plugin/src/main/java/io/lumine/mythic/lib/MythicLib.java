@@ -364,7 +364,7 @@ public class MythicLib extends JavaPlugin {
      * @author Jules
      */
     public void enableProfiles() {
-        Validate.isTrue(hasProfiles == null, "Profiles have already been enabled");
+        Validate.isTrue(hasProfiles == null, "Profiles have already been enabled/disabled");
         hasProfiles = true;
     }
 

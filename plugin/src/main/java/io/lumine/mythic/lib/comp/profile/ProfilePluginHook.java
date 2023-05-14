@@ -36,6 +36,10 @@ public class ProfilePluginHook {
         profilePlugin.registerModule(module);
         manager.getOwningPlugin().getLogger().log(Level.INFO, "Hooked onto Profiles");
 
+        // Load plugin-specific listeners
+        if (module instanceof Listener)
+            Bukkit.getPluginManager().registerEvents((Listener) module, manager.getOwningPlugin());
+
         // Load data on profile select
         Bukkit.getPluginManager().registerEvent(ProfileChooseEvent.class, fictiveListener, joinEventPriority, (listener, evt) -> {
             final ProfileChooseEvent event = (ProfileChooseEvent) evt;
@@ -52,6 +56,10 @@ public class ProfilePluginHook {
         // TODO Remove data on profile removal
 
         // Save data on profile unload
-        Bukkit.getPluginManager().registerEvent(ProfileUnloadEvent.class, fictiveListener, quitEventPriority, (listener, event) -> manager.unregisterSafely(manager.get(((ProfileUnloadEvent) event).getPlayer())), manager.getOwningPlugin());
+        Bukkit.getPluginManager().registerEvent(ProfileUnloadEvent.class, fictiveListener, quitEventPriority, (listener, evt) -> {
+            final ProfileUnloadEvent event = (ProfileUnloadEvent) evt;
+            manager.unregisterSafely(manager.get(event.getPlayer()));
+            event.validate(module);
+        }, manager.getOwningPlugin());
     }
 }

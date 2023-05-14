@@ -35,9 +35,9 @@ public interface SynchronizedDataHandler<H extends SynchronizedDataHolder, O ext
     public void saveData(@NotNull H playerData, boolean autosave);
 
     /**
-     * This method is always called async, therefore it may send
-     * HTTP or SQL requests without having to wrap them up
-     * with async runnables.
+     * This method is always called SYNC, and therefore must wrap HTTP
+     * or SQL requests inside of async CompletableFutures. This completable
+     * future should be completed when the data is finished loading.
      *
      * @param playerData Player data to load
      */

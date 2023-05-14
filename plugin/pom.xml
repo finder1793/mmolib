@@ -366,6 +366,7 @@
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
+            <optional>true</optional>
         </dependency>
 
         <!-- JUnit 5 Engine -->
@@ -374,6 +375,7 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
+            <optional>true</optional>
         </dependency>
 
     </dependencies>

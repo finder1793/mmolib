@@ -5,7 +5,7 @@ import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.data.SynchronizedDataHandler;
 import io.lumine.mythic.lib.data.SynchronizedDataHolder;
 import io.lumine.mythic.lib.data.SynchronizedDataManager;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -50,7 +50,7 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
      * @param uuidFieldName UUID field name in table
      * @param dataSource    SQL connection being used
      * @param data          Player data being synchronized
-     * @param profilePlugin See {@link SynchronizedDataManager#SynchronizedDataManager(Plugin, SynchronizedDataHandler, boolean)}
+     * @param profilePlugin See {@link SynchronizedDataManager#SynchronizedDataManager(JavaPlugin, SynchronizedDataHandler, boolean)}
      */
     public SQLDataSynchronizer(String tableName, String uuidFieldName, SQLDataSource dataSource, H data, boolean profilePlugin) {
         this.tableName = tableName;
@@ -109,7 +109,6 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
                 } else {
                     UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Did not load data of '" + effectiveUUID + "' as 'is_saved' is set to 0, trying again in " + PERIOD + "ms");
                     retry = true;
-                    Thread.sleep(PERIOD);
                 }
             } else {
 
@@ -136,7 +135,14 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
         }
 
         // Synchronize after closing resources
-        if (retry) synchronize();
+        if (retry) {
+            try {
+                Thread.sleep(PERIOD);
+            } catch (InterruptedException exception) {
+                throw new RuntimeException(exception);
+            }
+            synchronize();
+        }
     }
 
     /**
