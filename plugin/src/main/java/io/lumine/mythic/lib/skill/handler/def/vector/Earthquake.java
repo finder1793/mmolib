@@ -56,7 +56,7 @@ public class Earthquake extends SkillHandler<VectorSkillResult> {
                 loc.getWorld().playSound(loc, Sound.BLOCK_GRAVEL_BREAK, 2, 1);
 
                 for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
-                    if (UtilityMethods.canTarget(caster, entity) && loc.distanceSquared(entity.getLocation()) < 2 && !hit.contains(entity.getEntityId())) {
+                    if (UtilityMethods.canTarget(caster,loc, entity) && loc.distanceSquared(entity.getLocation()) < 2 && !hit.contains(entity.getEntityId())) {
                         hit.add(entity.getEntityId());
                         skillMeta.getCaster().attack((LivingEntity) entity, damage, DamageType.SKILL, DamageType.MAGIC);
                         ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (slowDuration * 20), (int) slowAmplifier));
