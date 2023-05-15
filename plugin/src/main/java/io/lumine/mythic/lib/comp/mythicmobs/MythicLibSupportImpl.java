@@ -9,7 +9,6 @@ import io.lumine.mythic.bukkit.events.MythicConditionLoadEvent;
 import io.lumine.mythic.bukkit.events.MythicMechanicLoadEvent;
 import io.lumine.mythic.bukkit.events.MythicReloadedEvent;
 import io.lumine.mythic.bukkit.utils.Events;
-import io.lumine.mythic.bukkit.utils.Schedulers;
 import io.lumine.mythic.bukkit.utils.plugin.ReloadableModule;
 import io.lumine.mythic.core.skills.placeholders.Placeholder;
 import io.lumine.mythic.core.skills.variables.Variable;
@@ -65,7 +64,7 @@ public class MythicLibSupportImpl extends ReloadableModule<MythicBukkit> impleme
         Events.subscribe(MythicReloadedEvent.class).handler(event -> registerPlaceholders());
 
         // Register skill placeholders
-        Schedulers.sync().runLater(this::registerPlaceholders, 1);
+        registerPlaceholders();
     }
 
     @Override
