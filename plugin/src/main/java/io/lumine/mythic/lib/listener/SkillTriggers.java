@@ -24,6 +24,8 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import java.util.Objects;
+
 public class SkillTriggers implements Listener {
     public SkillTriggers() {
         Bukkit.getScheduler().runTaskTimer(MythicLib.plugin, () -> MMOPlayerData.forEachOnline(online -> online.getPassiveSkillMap().tickTimerSkills()), 0, 1);
@@ -41,7 +43,6 @@ public class SkillTriggers implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void damagedByEntity(EntityDamageByEntityEvent event) {
-
         // Ignore fake events
         if (event.getDamage() == 0) return;
 
@@ -118,8 +119,14 @@ public class SkillTriggers implements Listener {
         // || event.useItemInHand() == Event.Result.DENY
         if (event.getAction() == Action.PHYSICAL) return;
 
-        final MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
-        final boolean left = event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK, sneaking = event.getPlayer().isSneaking();
+        final Player player = event.getPlayer();
+
+        if ((player.getInventory().getItemInMainHand().getType().isAir() && Objects.equals(event.getHand(), org.bukkit.inventory.EquipmentSlot.HAND))
+                || (player.getInventory().getItemInOffHand().getType().isAir() && Objects.equals(event.getHand(), org.bukkit.inventory.EquipmentSlot.OFF_HAND)))
+            return;
+
+        final MMOPlayerData caster = MMOPlayerData.get(player);
+        final boolean left = event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK, sneaking = player.isSneaking();
         final TriggerType type = sneaking ? (left ? TriggerType.SHIFT_LEFT_CLICK : TriggerType.SHIFT_RIGHT_CLICK) : (left ? TriggerType.LEFT_CLICK : TriggerType.RIGHT_CLICK);
         caster.triggerSkills(type, EquipmentSlot.fromBukkit(event.getHand()), null);
     }
