@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -56,31 +55,20 @@ public class MythicPacketSniffer extends LightInjector {
 
     @Override
     protected @Nullable Object onPacketReceiveAsync(@Nullable Player sender, @NotNull Channel channel, @NotNull Object packet) {
-        if (!packet.getClass().getSimpleName().equals("PacketPlayInArmAnimation"))
+        if (sender == null)
             return packet;
-        if (IS_1_17) {
+        final String packetName = packet.getClass().getSimpleName();
+
+        if (packetName.equals("PacketPlayInArmAnimation")) {
             Object hand = getField(packet, "a");
             if (hand == null || !hand.toString().equals("MAIN_HAND"))
                 return packet;
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    Entity entity = getTarget(sender);
-                    if (entity == null)
-                        return;
-                    PlayerInteractEvent event = new PlayerInteractEvent(sender, Action.LEFT_CLICK_AIR, sender.getInventory().getItemInMainHand(), null, BlockFace.EAST, EquipmentSlot.HAND);
-                    Bukkit.getPluginManager().callEvent(event);
-                    System.out.println("Entity: " + entity.getType().name());
-                }
-            }.runTask(getPlugin());
-        } else {
-            Object entity = getField(packet, "a");
-            if (entity != null)
-                System.out.println("Entity: " + entity);
-            Object type = getField(packet, "b");
-            if (type != null)
-                System.out.println("Type: " + type);
+            Entity entity = getTarget(sender);
+            if (entity == null)
+                return packet;
+            triggerEvent(sender);
         }
+        
         return packet;
     }
 
@@ -107,11 +95,15 @@ public class MythicPacketSniffer extends LightInjector {
         return result != null && result.getHitEntity() == targetEntity;
     }
 
-    @Nullable
-    private Object getField(Class<?> clazz, String field) {
-        return getField(null, clazz, field);
+    private void triggerEvent(Player player) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                PlayerInteractEvent event = new PlayerInteractEvent(player, Action.LEFT_CLICK_AIR, player.getInventory().getItemInMainHand(), null, BlockFace.EAST, EquipmentSlot.HAND);
+                Bukkit.getPluginManager().callEvent(event);
+            }
+        }.runTask(getPlugin());
     }
-
 
     @Nullable
     private Object getField(Object object, String field) {
@@ -163,33 +155,5 @@ public class MythicPacketSniffer extends LightInjector {
             return null;
         }
 
-    }
-
-    @Nullable
-    private Object invoke(Object object, String method, Object... parameters) {
-        Class<?>[] classes = new Class<?>[parameters.length];
-
-        for (int i = 0; i < parameters.length; i++) {
-            classes[i] = parameters[i].getClass();
-        }
-
-        Method m;
-        try {
-            m = object.getClass().getDeclaredMethod(method, classes);
-        } catch (ReflectiveOperationException e) {
-            e.printStackTrace();
-            return null;
-        }
-        Object o1;
-        try {
-            boolean b = m.isAccessible();
-            m.setAccessible(true);
-            o1 = m.invoke(object, parameters);
-            m.setAccessible(b);
-        } catch (ReflectiveOperationException e) {
-            e.printStackTrace();
-            return null;
-        }
-        return o1;
     }
 }
