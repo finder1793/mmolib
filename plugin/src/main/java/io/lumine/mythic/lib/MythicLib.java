@@ -43,6 +43,7 @@ import io.lumine.mythic.lib.manager.*;
 import io.lumine.mythic.lib.util.gson.MythicLibGson;
 import io.lumine.mythic.lib.util.loadingorder.DependencyCycleCheck;
 import io.lumine.mythic.lib.util.loadingorder.DependencyNode;
+import io.lumine.mythic.lib.util.network.TinyProtocol;
 import io.lumine.mythic.lib.version.ServerVersion;
 import io.lumine.mythic.lib.version.SpigotPlugin;
 import lombok.Getter;
@@ -63,6 +64,7 @@ import java.util.logging.Level;
 
 public class MythicLib extends JavaPlugin {
     public static MythicLib plugin;
+
 
     private final DamageManager damageManager = new DamageManager();
     private final EntityManager entityManager = new EntityManager();
@@ -85,6 +87,7 @@ public class MythicLib extends JavaPlugin {
     private PlaceholderParser placeholderParser;
     private GlowModule glowModule;
     private @Nullable Boolean hasProfiles;
+    private TinyProtocol tinyProtocol;
 
     @Override
     public void onLoad() {
@@ -122,6 +125,9 @@ public class MythicLib extends JavaPlugin {
             getLogger().warning("You may be using an outdated config.yml!");
             getLogger().warning("(Your config version: '" + configVersion + "' | Expected config version: '" + defConfigVersion + "')");
         }
+
+        // TinyProtocol
+        this.tinyProtocol = new TinyProtocol(this);
 
         // Hologram provider
         Bukkit.getServicesManager().register(HologramFactory.class, new BukkitHologramFactory(), this, ServicePriority.Low);
@@ -395,5 +401,9 @@ public class MythicLib extends JavaPlugin {
 
     public File getJarFile() {
         return plugin.getFile();
+    }
+
+    public TinyProtocol tinyProtocol() {
+        return tinyProtocol;
     }
 }
