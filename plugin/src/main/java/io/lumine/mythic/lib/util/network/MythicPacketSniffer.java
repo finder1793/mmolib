@@ -2,6 +2,8 @@ package io.lumine.mythic.lib.util.network;
 
 import io.netty.channel.Channel;
 import org.bukkit.Bukkit;
+import org.bukkit.FluidCollisionMode;
+import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -11,6 +13,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -87,21 +90,21 @@ public class MythicPacketSniffer extends LightInjector {
     }
 
     private @Nullable Entity getTarget(Player player) {
-        double range = 3;
+        double range = 3.5;
         return player.getNearbyEntities(range, range, range)
                 .stream()
                 .filter(entity -> !(entity instanceof Player && ((Player) entity).getGameMode().ordinal() == 3))
                 .filter(entity -> entity instanceof LivingEntity)
-                .filter(entity -> isLookingAt(player, (LivingEntity) entity))
+                .filter(entity -> isLineOfSight(player, entity))
                 .min((a, b) -> (int) (a.getLocation().distanceSquared(player.getLocation()) - b.getLocation().distanceSquared(player.getLocation())))
                 .orElse(null);
     }
 
-    private boolean isLookingAt(Player player, LivingEntity livingEntity) {
-        Vector playerDirection = player.getEyeLocation().getDirection();
-        Vector entityDirection = livingEntity.getLocation().subtract(player.getLocation()).toVector().normalize();
-        double dotProduct = playerDirection.dot(entityDirection);
-        return dotProduct >= 0.99;
+    private boolean isLineOfSight(Player player, Entity targetEntity) {
+        Location eyeLocation = player.getEyeLocation();
+        Vector playerDirection = eyeLocation.getDirection();
+        RayTraceResult result = player.getWorld().rayTrace(eyeLocation, playerDirection, 100, FluidCollisionMode.NEVER, true, 0.1, entity -> entity.equals(targetEntity));
+        return result != null && result.getHitEntity() == targetEntity;
     }
 
     @Nullable
