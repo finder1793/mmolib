@@ -43,7 +43,7 @@ import io.lumine.mythic.lib.manager.*;
 import io.lumine.mythic.lib.util.gson.MythicLibGson;
 import io.lumine.mythic.lib.util.loadingorder.DependencyCycleCheck;
 import io.lumine.mythic.lib.util.loadingorder.DependencyNode;
-import io.lumine.mythic.lib.util.network.TinyProtocol;
+import io.lumine.mythic.lib.util.network.MythicPacketSniffer;
 import io.lumine.mythic.lib.version.ServerVersion;
 import io.lumine.mythic.lib.version.SpigotPlugin;
 import lombok.Getter;
@@ -87,7 +87,6 @@ public class MythicLib extends JavaPlugin {
     private PlaceholderParser placeholderParser;
     private GlowModule glowModule;
     private @Nullable Boolean hasProfiles;
-    private TinyProtocol tinyProtocol;
 
     @Override
     public void onLoad() {
@@ -126,8 +125,8 @@ public class MythicLib extends JavaPlugin {
             getLogger().warning("(Your config version: '" + configVersion + "' | Expected config version: '" + defConfigVersion + "')");
         }
 
-        // TinyProtocol
-        this.tinyProtocol = new TinyProtocol(this);
+        // Packet interceptor
+        new MythicPacketSniffer(this);
 
         // Hologram provider
         Bukkit.getServicesManager().register(HologramFactory.class, new BukkitHologramFactory(), this, ServicePriority.Low);
@@ -403,7 +402,4 @@ public class MythicLib extends JavaPlugin {
         return plugin.getFile();
     }
 
-    public TinyProtocol tinyProtocol() {
-        return tinyProtocol;
-    }
 }
