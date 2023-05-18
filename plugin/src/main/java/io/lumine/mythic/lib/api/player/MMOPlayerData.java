@@ -1,7 +1,6 @@
 package io.lumine.mythic.lib.api.player;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.player.skillmod.SkillModifierMap;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.comp.flags.CustomFlag;
 import io.lumine.mythic.lib.damage.AttackMetadata;
@@ -13,6 +12,7 @@ import io.lumine.mythic.lib.player.particle.ParticleEffectMap;
 import io.lumine.mythic.lib.player.potion.PermanentPotionEffectMap;
 import io.lumine.mythic.lib.player.skill.PassiveSkill;
 import io.lumine.mythic.lib.player.skill.PassiveSkillMap;
+import io.lumine.mythic.lib.player.skillmod.SkillModifierMap;
 import io.lumine.mythic.lib.script.variable.VariableList;
 import io.lumine.mythic.lib.script.variable.VariableScope;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
@@ -105,8 +105,8 @@ public class MMOPlayerData {
 
     /**
      * @return The player's stat map which can be used by any other plugins to
-     *         apply stat modifiers to ANY MMOItems/MMOCore/external stats,
-     *         calculate stat values, etc.
+     * apply stat modifiers to ANY MMOItems/MMOCore/external stats,
+     * calculate stat values, etc.
      */
     public StatMap getStatMap() {
         return statMap;
@@ -114,7 +114,7 @@ public class MMOPlayerData {
 
     /**
      * @return The player's skill modifier map. This map applies modifications
-     *         to numerical skill parameters (damage, cooldown...)
+     * to numerical skill parameters (damage, cooldown...)
      */
     public SkillModifierMap getSkillModifierMap() {
         return skillModifierMap;
@@ -184,6 +184,13 @@ public class MMOPlayerData {
      * @param target      The potential target to cast the skill onto
      */
     public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable Entity target) {
+        System.out.println("Triggering skills | " + triggerType.name() + " | Hand: " + caster.getActionHand().name() + " | handSpecific: " + triggerType.isActionHandSpecific());
+        System.out.println("Compatible skills:");
+        for (PassiveSkill skill : passiveSkillMap.getModifiers()) {
+            if (caster.getActionHand().isCompatible(skill))
+                System.out.println(" - " + skill.getTriggeredSkill().getHandler().getId());
+        }
+        System.out.println("==================================");
         final Iterable<PassiveSkill> cast = triggerType.isActionHandSpecific() ? passiveSkillMap.isolateModifiers(caster.getActionHand()) : passiveSkillMap.getModifiers();
         triggerSkills(triggerType, caster, target, cast);
     }
@@ -434,9 +441,9 @@ public class MMOPlayerData {
 
     /**
      * @return Currently loaded MMOPlayerData instances. This can be used to
-     *         apply things like resource regeneration or other runnable based
-     *         tasks instead of looping through online players and having to
-     *         resort to a map-lookup-based get(Player) call
+     * apply things like resource regeneration or other runnable based
+     * tasks instead of looping through online players and having to
+     * resort to a map-lookup-based get(Player) call
      */
     public static Collection<MMOPlayerData> getLoaded() {
         return PLAYER_DATA.values();

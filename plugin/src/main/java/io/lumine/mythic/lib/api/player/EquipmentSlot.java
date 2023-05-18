@@ -96,7 +96,6 @@ public enum EquipmentSlot {
 
         if (equipmentSlot == OTHER)
             return true;
-
         switch (modifierSource) {
 
             // Simple rules
