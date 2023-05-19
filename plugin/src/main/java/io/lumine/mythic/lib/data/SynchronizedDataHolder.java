@@ -48,6 +48,13 @@ public abstract class SynchronizedDataHolder implements OfflineDataHolder {
     }
 
     /**
+     * @return If the player data should be saved when the player quits.
+     */
+    public boolean shouldBeSaved() {
+        return true;
+    }
+
+    /**
      * @return If the synchronized data has already been loaded.
      */
     public boolean isSynchronized() {

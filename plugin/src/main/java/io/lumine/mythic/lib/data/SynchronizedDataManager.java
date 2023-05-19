@@ -203,7 +203,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
     public void unregisterSafely(H playerData) {
 
         // Save data async if required
-        if (playerData.isSynchronized())
+        if (playerData.isSynchronized() && playerData.shouldBeSaved())
             Bukkit.getScheduler().runTaskAsynchronously(owning, () -> dataHandler.saveData(playerData, false));
 
         // Close and unregister data instantly if no error occured
@@ -219,7 +219,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
 
     /**
      * @return An object of type {@link ProfileDataModule} which is an object
-     *         that cannot be referenced inside of that class to avoid import issues.
+     * that cannot be referenced inside of that class to avoid import issues.
      */
     public abstract Object newProfileDataModule();
 
