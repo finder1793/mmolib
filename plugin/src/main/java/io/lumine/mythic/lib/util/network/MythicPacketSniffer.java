@@ -30,12 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MythicPacketSniffer extends LightInjector {
 
-    public static final String COMPLETE_VERSION = Bukkit.getServer().getClass().getName().split("\\.")[3];
-    public static final int VERSION = Integer.parseInt(COMPLETE_VERSION.split("_")[1]);
-    public static final int RELEASE = Integer.parseInt(COMPLETE_VERSION.split("R")[1]);
-
     private static final Map<String, Map<String, Field>> fields = new ConcurrentHashMap<>();
-    private static final boolean IS_1_17 = VERSION >= 17;
 
 
     /**
@@ -63,12 +58,15 @@ public class MythicPacketSniffer extends LightInjector {
             Object hand = getField(packet, "a");
             if (hand == null || !hand.toString().equals("MAIN_HAND"))
                 return packet;
-            Entity entity = getTarget(sender);
-            if (entity == null)
-                return packet;
-            triggerEvent(sender);
+
+            // We need to run this synchronously because bukkit sucks
+            Bukkit.getScheduler().runTask(getPlugin(), () -> {
+                Entity entity = getTarget(sender);
+                if (entity != null)
+                    triggerEvent(sender);
+            });
         }
-        
+
         return packet;
     }
 
