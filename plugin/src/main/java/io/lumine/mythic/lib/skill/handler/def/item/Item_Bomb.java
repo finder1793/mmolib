@@ -46,10 +46,10 @@ public class Item_Bomb extends SkillHandler<ItemSkillResult> {
 
             public void run() {
                 if (j++ > 40) {
-                    double radius = skillMeta.getModifier("radius");
-                    double damage = skillMeta.getModifier("damage");
-                    double slowDuration = skillMeta.getModifier("slow-duration");
-                    double slowAmplifier = skillMeta.getModifier("slow-amplifier");
+                    double radius = skillMeta.getParameter("radius");
+                    double damage = skillMeta.getParameter("damage");
+                    double slowDuration = skillMeta.getParameter("slow-duration");
+                    double slowAmplifier = skillMeta.getParameter("slow-amplifier");
 
                     for (Entity entity : item.getEntity().getNearbyEntities(radius, radius, radius))
                         if (UtilityMethods.canTarget(caster, entity)) {

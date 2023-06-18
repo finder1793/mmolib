@@ -123,8 +123,8 @@ public class SkillMetadata {
      * @deprecated Skill modifiers are now called "parameters"
      */
     @Deprecated
-    public double getModifier(String path) {
-        return getParameter(path);
+    public double getModifier(String param) {
+        return getParameter(param);
     }
 
     /**
@@ -134,7 +134,7 @@ public class SkillMetadata {
      * @return Skill parameter final value, taking into account skill mods
      */
     public double getParameter(String param) {
-        return caster.getData().getSkillModifierMap().getInstance(cast.getHandler(), param).getTotal(cast.getModifier(param));
+        return caster.getData().getSkillModifierMap().getInstance(cast.getHandler(), param).getTotal(cast.getParameter(param));
     }
 
     @NotNull
@@ -220,8 +220,8 @@ public class SkillMetadata {
      * to potentially orient locations.
      *
      * @return Skill orientation if not null. If it is, it tries to create
-     *         one using the skill target and source location if it is not null.
-     *         Throws a NPE if the metadata has neither an orientation nor a target location.
+     * one using the skill target and source location if it is not null.
+     * Throws a NPE if the metadata has neither an orientation nor a target location.
      */
     @NotNull
     public SkillOrientation getSkillOrientation() {
@@ -264,7 +264,7 @@ public class SkillMetadata {
             // Access modifiers
             case "modifier":
                 Validate.isTrue(args.length > 1, "Please specify a modifier name");
-                var = new DoubleVariable("temp", getModifier(args[i++]));
+                var = new DoubleVariable("temp", getParameter(args[i++]));
                 break;
 
             // Skill source location
@@ -333,13 +333,11 @@ public class SkillMetadata {
 
         // Prioritize SKILL scope
         Variable var = vars.getVariable(name);
-        if (var != null)
-            return var;
+        if (var != null) return var;
 
         // Check for PLAYER scope
         var = getCaster().getData().getVariableList().getVariable(name);
-        if (var != null)
-            return var;
+        if (var != null) return var;
 
         // Check for SERVER scope
         return Objects.requireNonNull(SERVER_VARIABLE_LIST.getVariable(name), "Could not find custom variable with name '" + name + "'");

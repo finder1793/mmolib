@@ -25,7 +25,7 @@ public class Fire_Berserker extends SkillHandler<AttackSkillResult> implements L
 
     @Override
     public void whenCast(AttackSkillResult result, SkillMetadata skillMeta) {
-        skillMeta.getAttack().getDamage().multiplicativeModifier(1 + skillMeta.getModifier("extra") / 100);
+        skillMeta.getAttack().getDamage().multiplicativeModifier(1 + skillMeta.getParameter("extra") / 100);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
