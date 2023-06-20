@@ -6,6 +6,7 @@ import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
+import io.lumine.mythic.lib.element.Element;
 import io.lumine.mythic.lib.util.DefenseFormula;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.LivingEntity;
@@ -44,12 +45,11 @@ public class DamageReduction implements Listener {
         for (DamageType damageType : DamageType.values())
             event.getDamage().multiplicativeModifier(Math.max(0, 1 - data.getStatMap().getStat(damageType + "_DAMAGE_REDUCTION") / 100), damageType);
 
-        // Applies the Defense stat
-        final double defense = data.getStatMap().getStat("DEFENSE");
-        final double initialDamage = event.getDamage().getDamage();
-        if (defense > 0 && initialDamage > 0) {
-            final double ratio = Math.max(0, new DefenseFormula(false).getAppliedDamage(defense, initialDamage)) / initialDamage;
-            event.getDamage().multiplicativeModifier(ratio);
+        // Applies the Defense stat to neutral damage
+        final double defense = data.getStatMap().getStat("DEFENSE"), neutralDamage;
+        if (defense > 0 && (neutralDamage = event.getDamage().getDamage((Element) null)) > 0) {
+            final double ratio = Math.max(0, new DefenseFormula(false).getAppliedDamage(defense, neutralDamage)) / neutralDamage;
+            event.getDamage().multiplicativeModifier(ratio, (Element) null);
         }
     }
 
