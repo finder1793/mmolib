@@ -86,7 +86,7 @@ public class SkillTriggers implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void shootTrident(ProjectileLaunchEvent event) {
         final MMOPlayerData caster;
-        if (event.getEntity() instanceof Trident && event.getEntity().getShooter() instanceof Player && (caster = MMOPlayerData.getOrNull((Player) event.getEntity())) != null) {
+        if (event.getEntity() instanceof Trident && event.getEntity().getShooter() instanceof Player && (caster = MMOPlayerData.getOrNull((Player) event.getEntity().getShooter())) != null) {
             final Player shooter = (Player) event.getEntity().getShooter();
             final EquipmentSlot actionHand = getShootHand(shooter.getInventory());
             caster.triggerSkills(TriggerType.SHOOT_TRIDENT, actionHand, event.getEntity());
