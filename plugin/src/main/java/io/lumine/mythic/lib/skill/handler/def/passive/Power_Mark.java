@@ -49,7 +49,7 @@ public class Power_Mark extends SkillHandler<AttackSkillResult> implements Liste
         if (skill == null)
             return;
 
-        skill.getTriggeredSkill().cast(new TriggerMetadata(event.getAttacker(), event.getEntity()));
+        skill.getTriggeredSkill().cast(new TriggerMetadata(event.getAttacker(), event.getEntity(), event.getAttack()));
     }
 
     public class PowerMark extends BukkitRunnable implements Listener {

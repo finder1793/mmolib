@@ -48,7 +48,7 @@ public class DamageManager implements Listener {
      * I switched back to using a weak hash map to save the current attack
      * metadata for a mob. Weak hash maps are great for garbage collection.
      */
-    private final WeakHashMap<UUID, AttackMetadata> attackMetadatas = new WeakHashMap<>();
+    private final Map<UUID, AttackMetadata> attackMetadatas = new WeakHashMap<>();
 
     private static final AttributeModifier NO_KNOCKBACK = new AttributeModifier(UUID.randomUUID(), "noKnockback", 100, AttributeModifier.Operation.ADD_NUMBER);
 
@@ -108,10 +108,6 @@ public class DamageManager implements Listener {
      * @param ignoreImmunity The attack will not produce immunity frames.
      */
     public void registerAttack(@NotNull AttackMetadata attack, boolean knockback, boolean ignoreImmunity) {
-        final double damage = attack.getDamage().getDamage();
-        if (damage <= 0)
-            return;
-
         Validate.notNull(attack.getTarget(), "Target cannot be null"); // BW compatibility check
         markAsMetadata(attack);
 
@@ -282,7 +278,7 @@ public class DamageManager implements Listener {
     public void markAsMetadata(AttackMetadata attackMeta) {
         final @Nullable AttackMetadata found = attackMetadatas.put(attackMeta.getTarget().getUniqueId(), attackMeta);
         if (found != null)
-            MythicLib.plugin.getLogger().log(Level.WARNING, "Please report this issue to the developper: persistent attack metadata was found.");
+            MythicLib.plugin.getLogger().log(Level.WARNING, "Please report this issue to the developer: persistent attack metadata was found.");
     }
 
     /**
@@ -392,7 +388,6 @@ public class DamageManager implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void unregisterCustomAttacks(EntityDamageEvent event) {
-
         if (event.getEntity() instanceof LivingEntity)
             attackMetadatas.remove(event.getEntity().getUniqueId());
     }

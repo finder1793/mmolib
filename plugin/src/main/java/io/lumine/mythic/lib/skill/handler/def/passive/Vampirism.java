@@ -53,7 +53,7 @@ public class Vampirism extends SkillHandler<AttackSkillResult> implements Listen
             }
         }.runTaskTimer(MythicLib.plugin, 0, 1);
         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_WITCH_DRINK, 1, 2);
-        UtilityMethods.heal(caster, skillMeta.getAttack().getDamage().getDamage() * skillMeta.getParameter("drain") / 100);
+        UtilityMethods.heal(caster, skillMeta.getAttackSource().getDamage().getDamage() * skillMeta.getParameter("drain") / 100);
     }
 
 
@@ -66,6 +66,6 @@ public class Vampirism extends SkillHandler<AttackSkillResult> implements Listen
         if (skill == null)
             return;
 
-        skill.getTriggeredSkill().cast(new TriggerMetadata(event.getAttacker(), event.getEntity()));
+        skill.getTriggeredSkill().cast(new TriggerMetadata(event));
     }
 }
