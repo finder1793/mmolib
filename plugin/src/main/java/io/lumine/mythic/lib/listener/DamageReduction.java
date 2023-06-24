@@ -99,7 +99,7 @@ public class DamageReduction implements Listener {
 
         public void applyReduction(StatMap statMap, DamageMetadata damageMeta, EntityDamageEvent event) {
             if (apply.test(event))
-                damageMeta.multiplicativeModifier(1 - statMap.getStat(stat) / 100);
+                damageMeta.multiplicativeModifier(1 - Math.min(statMap.getStat(stat) / 100, 1));
         }
     }
 
