@@ -1,12 +1,14 @@
 package io.lumine.mythic.lib.manager;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.api.event.AttackUnregisteredEvent;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.damage.*;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.util.CustomProjectile;
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -152,10 +154,8 @@ public class DamageManager implements Listener {
             // Just damage entity
         } else {
             Validate.isTrue(damage > 0, "Damage must be strictly positive");
-            if (damager == null)
-                target.damage(damage);
-            else
-                target.damage(damage, damager);
+            if (damager == null) target.damage(damage);
+            else target.damage(damage, damager);
         }
     }
 
@@ -194,8 +194,7 @@ public class DamageManager implements Listener {
 
         // MythicLib attack registry
         @Nullable AttackMetadata found = getRegisteredAttackMetadata(entity);
-        if (found != null)
-            return found;
+        if (found != null) return found;
 
         // Attack registries from other plugins
         for (AttackHandler handler : handlers) {
@@ -245,8 +244,7 @@ public class DamageManager implements Listener {
                 final Projectile projectile = (Projectile) damager;
                 final @Nullable CustomProjectile projectileData = CustomProjectile.getCustomData(projectile);
                 if (projectileData != null) {
-                    final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
-                            (LivingEntity) event.getEntity(), projectileData.getCaster(), projectile);
+                    final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE), (LivingEntity) event.getEntity(), projectileData.getCaster(), projectile);
                     markAsMetadata(attackMeta);
                     return attackMeta;
                 }
@@ -255,8 +253,7 @@ public class DamageManager implements Listener {
                 final ProjectileSource source = projectile.getShooter();
                 if (source != null && !source.equals(event.getEntity()) && source instanceof LivingEntity) {
                     final StatProvider attacker = StatProvider.get((LivingEntity) source, EquipmentSlot.MAIN_HAND, true);
-                    final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE),
-                            (LivingEntity) event.getEntity(), attacker, projectile);
+                    final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE), (LivingEntity) event.getEntity(), attacker, projectile);
                     markAsMetadata(attackMeta);
                     return attackMeta;
                 }
@@ -388,8 +385,11 @@ public class DamageManager implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void unregisterCustomAttacks(EntityDamageEvent event) {
-        if (event.getEntity() instanceof LivingEntity)
-            attackMetadatas.remove(event.getEntity().getUniqueId());
+        if (event.getEntity() instanceof LivingEntity) {
+            final @Nullable AttackMetadata attack = attackMetadatas.remove(event.getEntity().getUniqueId());
+            if (attack != null && !event.isCancelled() && event.getFinalDamage() > 0)
+                Bukkit.getPluginManager().callEvent(new AttackUnregisteredEvent(event, attack));
+        }
     }
 
     // Purely arbitrary but works decently

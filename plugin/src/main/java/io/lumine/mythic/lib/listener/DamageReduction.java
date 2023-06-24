@@ -27,10 +27,6 @@ import java.util.function.Predicate;
 
 public class DamageReduction implements Listener {
 
-    /**
-     * Since MythicMobs is a soft depend, this event triggers
-     * correctly, fixing a bug with MythicMobs skill mechanics.
-     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void damageMitigation(AttackEvent event) {
         if (!UtilityMethods.isRealPlayer(event.getEntity()))
