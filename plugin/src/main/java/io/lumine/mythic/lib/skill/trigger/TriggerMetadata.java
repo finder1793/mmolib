@@ -27,11 +27,11 @@ public class TriggerMetadata extends PlayerMetadata {
         this((PlayerMetadata) attack.getAttacker(), target, attack);
     }
 
-    public TriggerMetadata(PlayerAttackEvent attackEvent) {
+    public TriggerMetadata(@NotNull PlayerAttackEvent attackEvent) {
         this(attackEvent.getAttacker(), attackEvent.getEntity(), attackEvent.getAttack());
     }
 
-    public TriggerMetadata(PlayerMetadata caster) {
+    public TriggerMetadata(@NotNull PlayerMetadata caster) {
         this(caster, null, null);
     }
 
@@ -42,6 +42,7 @@ public class TriggerMetadata extends PlayerMetadata {
      *
      * @param caster Player triggering the skills
      * @param target Potential skill target
+     * @param attack Attack which triggered the skill
      */
     public TriggerMetadata(@NotNull PlayerMetadata caster, @Nullable Entity target, @Nullable AttackMetadata attack) {
         super(caster);
