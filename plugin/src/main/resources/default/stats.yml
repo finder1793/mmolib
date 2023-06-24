@@ -50,7 +50,7 @@ min-max-values:
 
   # Other
   MOVEMENT_SPEED: '0 = .3'
-  DEFENSE: '= 10000'
+  DEFENSE: '0 = 10000'
   SPEED_MALUS_REDUCTION: '0=80'
 
   # Add as many as you want.
