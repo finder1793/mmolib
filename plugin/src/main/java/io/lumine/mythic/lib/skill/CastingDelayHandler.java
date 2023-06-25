@@ -131,7 +131,7 @@ public class CastingDelayHandler extends TemporaryListener {
     public void whenClosed() {
         if (!runnable.isCancelled())
             runnable.cancel();
-
+        bossbar.removeAll();
         // Clear slowness
         if (slowness > 0)
             getCaster().getStatMap().getInstance("MOVEMENT_SPEED").remove(MOVEMENT_SPEED_MODIFIER_KEY);
