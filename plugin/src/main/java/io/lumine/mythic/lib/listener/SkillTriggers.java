@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.listener;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.event.PlayerKillEntityEvent;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
@@ -43,7 +44,7 @@ public class SkillTriggers implements Listener {
     public void damagedByEntity(EntityDamageByEntityEvent event) {
 
         // Ignore fake events
-        if (event.getDamage() == 0) return;
+        if (UtilityMethods.isFakeEvent(event)) return;
 
         final MMOPlayerData caster;
         if (event.getEntity() instanceof Player && (caster = MMOPlayerData.getOrNull((Player) event.getEntity())) != null && MythicLib.plugin.getEntities().canInteract((Player) event.getEntity(), event.getDamager(), InteractionType.OFFENSE_SKILL))
