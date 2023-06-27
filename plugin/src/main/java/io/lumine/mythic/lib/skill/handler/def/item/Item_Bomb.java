@@ -10,6 +10,7 @@ import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.ItemSkillResult;
 import io.lumine.mythic.lib.util.NoClipItem;
 import io.lumine.mythic.lib.version.VersionSound;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
@@ -29,7 +30,7 @@ public class Item_Bomb extends SkillHandler<ItemSkillResult> {
 
     @Override
     public ItemSkillResult getResult(SkillMetadata meta) {
-        return new ItemSkillResult(meta);
+        return new ItemSkillResult(meta, Material.COAL_BLOCK);
     }
 
     @Override
