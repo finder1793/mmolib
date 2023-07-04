@@ -64,10 +64,13 @@
                                     <pattern>org.bstats</pattern>
                                     <shadedPattern>io.lumine.mythic.lib.metrics</shadedPattern>
                                 </relocation>
-                                <relocation>
+                                <!-- <relocation>
                                     <pattern>bsh</pattern>
                                     <shadedPattern>io.lumine.mythic.lib.bsh</shadedPattern>
-                                </relocation>
+                                    <includes>
+                                        <include>bsh.*</include>
+                                    </includes>
+                                </relocation> -->
                             </relocations>
                             <minimizeJar>false</minimizeJar>
                         </configuration>
