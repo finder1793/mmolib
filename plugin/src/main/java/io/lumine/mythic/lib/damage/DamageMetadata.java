@@ -1,7 +1,6 @@
 package io.lumine.mythic.lib.damage;
 
 import io.lumine.mythic.lib.element.Element;
-import org.apache.commons.lang.Validate;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -11,8 +10,8 @@ import java.util.*;
  * Contains all the information about damage being dealt
  * during a specific attack.
  * <p>
- * TODO Merge damage types and elements
- * TODO Turn damage types into strings for external compatibility
+ * TODO Merge damage types and elements??
+ * TODO Turn damage types into strings for external compatibility??
  */
 public class DamageMetadata implements Cloneable {
     private final List<DamagePacket> packets = new ArrayList<>();
@@ -74,22 +73,31 @@ public class DamageMetadata implements Cloneable {
         elementalCrit.add(el);
     }
 
+    /**
+     * You cannot deal less than 0.01 damage. This is an arbitrary
+     * positive constant, as MythicLib and other plugins consider
+     * 0-damage events to be fake damage events used to check for
+     * the PvP/PvE flag.
+     */
+    public static final double MINIMAL_DAMAGE = .01;
+
     public double getDamage() {
         double d = 0;
 
         for (DamagePacket packet : packets)
             d += packet.getFinalValue();
 
-        return d;
+        return Math.max(MINIMAL_DAMAGE, d);
     }
 
-    public double getDamage(Element element) {
-        Validate.notNull(element, "Element cannot be null");
+    /**
+     * @param element If null, non-elemental damage will be returned.
+     */
+    public double getDamage(@Nullable Element element) {
         double d = 0;
 
         for (DamagePacket packet : packets)
-            if (element.equals(packet.getElement()))
-                d += packet.getFinalValue();
+            if (Objects.equals(packet.getElement(), element)) d += packet.getFinalValue();
 
         return d;
     }
@@ -98,12 +106,12 @@ public class DamageMetadata implements Cloneable {
         double d = 0;
 
         for (DamagePacket packet : packets)
-            if (packet.hasType(type))
-                d += packet.getFinalValue();
+            if (packet.hasType(type)) d += packet.getFinalValue();
 
         return d;
     }
 
+    @NotNull
     public Map<Element, Double> mapElementalDamage() {
         final Map<Element, Double> mapped = new HashMap<>();
 
@@ -114,6 +122,7 @@ public class DamageMetadata implements Cloneable {
         return mapped;
     }
 
+    @NotNull
     public List<DamagePacket> getPackets() {
         return packets;
     }
@@ -122,6 +131,7 @@ public class DamageMetadata implements Cloneable {
      * @return Set containing all the damage types found
      *         in all the different damage packets.
      */
+    @NotNull
     public Set<DamageType> collectTypes() {
         final Set<DamageType> collected = new HashSet<>();
 
@@ -136,12 +146,12 @@ public class DamageMetadata implements Cloneable {
      * @return Set containing all the elements found
      *         in all the different damage packets.
      */
+    @NotNull
     public Set<Element> collectElements() {
         final Set<Element> collected = new HashSet<>();
 
         for (DamagePacket packet : packets)
-            if (packet.getElement() != null)
-                collected.add(packet.getElement());
+            if (packet.getElement() != null) collected.add(packet.getElement());
 
         return collected;
     }
@@ -151,24 +161,20 @@ public class DamageMetadata implements Cloneable {
      *         see if any has this damage type.
      */
     public boolean hasType(DamageType type) {
-
         for (DamagePacket packet : packets)
-            if (packet.hasType(type))
-                return true;
+            if (packet.hasType(type)) return true;
 
         return false;
     }
 
     /**
+     * @param element If null, will return true if it has non-elemental damage.
      * @return Iterates through all registered damage packets and
      *         see if any has this element.
      */
-    public boolean hasElement(@NotNull Element element) {
-        Validate.notNull(element, "Element cannot be null");
-
+    public boolean hasElement(@Nullable Element element) {
         for (DamagePacket packet : packets)
-            if (element.equals(packet.getElement()))
-                return true;
+            if (Objects.equals(packet.getElement(), element)) return true;
 
         return false;
     }
@@ -181,6 +187,7 @@ public class DamageMetadata implements Cloneable {
      * @param types The damage types of the packet being registered
      * @return The same modified damage metadata
      */
+    @NotNull
     public DamageMetadata add(double value, @NotNull DamageType... types) {
         packets.add(new DamagePacket(value, types));
         return this;
@@ -195,6 +202,7 @@ public class DamageMetadata implements Cloneable {
      * @param types   The damage types of the packet being registered
      * @return The same modified damage metadata
      */
+    @NotNull
     public DamageMetadata add(double value, @Nullable Element element, @NotNull DamageType... types) {
         packets.add(new DamagePacket(value, element, types));
         return this;
@@ -210,6 +218,7 @@ public class DamageMetadata implements Cloneable {
      *                    increase final damage by 50%
      * @return The same damage metadata
      */
+    @NotNull
     public DamageMetadata multiplicativeModifier(double coefficient) {
         for (DamagePacket packet : packets)
             packet.multiplicativeModifier(coefficient);
@@ -224,6 +233,7 @@ public class DamageMetadata implements Cloneable {
      *                   This can be negative as well
      * @return The same damage metadata
      */
+    @NotNull
     public DamageMetadata additiveModifier(double multiplier) {
         for (DamagePacket packet : packets)
             packet.additiveModifier(multiplier);
@@ -235,13 +245,13 @@ public class DamageMetadata implements Cloneable {
      *
      * @param coefficient Multiplicative coefficient. 1.5 will
      *                    increase final damage by 50%
-     * @param concerned   Concerned damage type
+     * @param damageType  Specific damage type
      * @return The same damage metadata
      */
-    public DamageMetadata multiplicativeModifier(double coefficient, @NotNull DamageType concerned) {
+    @NotNull
+    public DamageMetadata multiplicativeModifier(double coefficient, @NotNull DamageType damageType) {
         for (DamagePacket packet : packets)
-            if (packet.hasType(concerned))
-                packet.multiplicativeModifier(coefficient);
+            if (packet.hasType(damageType)) packet.multiplicativeModifier(coefficient);
         return this;
     }
 
@@ -250,14 +260,13 @@ public class DamageMetadata implements Cloneable {
      *
      * @param coefficient Multiplicative coefficient. 1.5 will
      *                    increase final damage by 50%
-     * @param concerned   Concerned damage type
+     * @param element     If null, non-elemental damage will be considered
      * @return The same damage metadata
      */
-    public DamageMetadata multiplicativeModifier(double coefficient, @NotNull Element concerned) {
-        Validate.notNull(concerned, "Element cannot be null");
+    @NotNull
+    public DamageMetadata multiplicativeModifier(double coefficient, @Nullable Element element) {
         for (DamagePacket packet : packets)
-            if (concerned.equals(packet.getElement()))
-                packet.multiplicativeModifier(coefficient);
+            if (Objects.equals(packet.getElement(), element)) packet.multiplicativeModifier(coefficient);
         return this;
     }
 
@@ -267,13 +276,13 @@ public class DamageMetadata implements Cloneable {
      *
      * @param multiplier From 0 to infinity, 1 increases damage by 100%.
      *                   This can be negative as well
-     * @param concerned  Specific damage type
+     * @param damageType Specific damage type
      * @return The same damage metadata
      */
-    public DamageMetadata additiveModifier(double multiplier, @NotNull DamageType concerned) {
+    @NotNull
+    public DamageMetadata additiveModifier(double multiplier, @NotNull DamageType damageType) {
         for (DamagePacket packet : packets)
-            if (packet.hasType(concerned))
-                packet.additiveModifier(multiplier);
+            if (packet.hasType(damageType)) packet.additiveModifier(multiplier);
         return this;
     }
 
@@ -282,14 +291,13 @@ public class DamageMetadata implements Cloneable {
      *
      * @param coefficient Multiplicative coefficient. 1.5 will
      *                    increase final damage by 50%
-     * @param concerned   Concerned damage type
+     * @param element     If null, non-elemental damage will be considered
      * @return The same damage metadata
      */
-    public DamageMetadata additiveModifier(double coefficient, @NotNull Element concerned) {
-        Validate.notNull(concerned, "Element cannot be null");
+    @NotNull
+    public DamageMetadata additiveModifier(double coefficient, @NotNull Element element) {
         for (DamagePacket packet : packets)
-            if (concerned.equals(packet.getElement()))
-                packet.additiveModifier(coefficient);
+            if (Objects.equals(packet.getElement(), element)) packet.additiveModifier(coefficient);
         return this;
     }
 

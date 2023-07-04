@@ -3,7 +3,6 @@ package io.lumine.mythic.lib.listener;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.gui.PluginInventory;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -20,19 +19,12 @@ public class PlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void loadData(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        MMOPlayerData data = MMOPlayerData.setup(player);
-
-        // Run stat updates on login
+        MMOPlayerData data = MMOPlayerData.setup(event.getPlayer());
         MythicLib.plugin.getStats().runUpdates(data.getStatMap());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void registerOfflinePlayers(PlayerQuitEvent event) {
-
-        /**
-         * See {@link MMOPlayerData#isOnline()}
-         */
         MMOPlayerData.get(event.getPlayer()).updatePlayer(null);
     }
 

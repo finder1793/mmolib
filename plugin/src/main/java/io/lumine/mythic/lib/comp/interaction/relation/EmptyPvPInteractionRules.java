@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
  * @author jules
  * @see {@url https://gitlab.com/phoenix-dvpmt/mythiclib/-/wikis/Combat/}
  */
-public class EmptyPvPInteractionRules extends PvPInteractionRules {
+public class EmptyPvPInteractionRules extends InteractionRules {
     public EmptyPvPInteractionRules() {
         super(null);
     }

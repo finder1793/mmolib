@@ -7,7 +7,6 @@ import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -29,8 +28,8 @@ public class Shockwave extends SkillHandler<SimpleSkillResult> {
 
     @Override
     public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
-        double knockUp = skillMeta.getModifier("knock-up");
-        double length = skillMeta.getModifier("length");
+        double knockUp = skillMeta.getParameter("knock-up");
+        double length = skillMeta.getParameter("length");
 
         Player caster = skillMeta.getCaster().getPlayer();
 
@@ -51,8 +50,7 @@ public class Shockwave extends SkillHandler<SimpleSkillResult> {
                 loc.getWorld().spawnParticle(Particle.BLOCK_CRACK, loc, 12, .5, 0, .5, 0, Material.DIRT.createBlockData());
 
                 for (Entity ent : UtilityMethods.getNearbyChunkEntities(loc))
-                    if (ent.getLocation().distance(loc) < 1.1 && ent instanceof LivingEntity && !ent.equals(caster)
-                            && !hit.contains(ent.getEntityId())) {
+                    if (ent.getLocation().distanceSquared(loc) < 1.1 * 1.1 && UtilityMethods.canTarget(caster, ent) && !hit.contains(ent.getEntityId())) {
                         hit.add(ent.getEntityId());
                         ent.playEffect(EntityEffect.HURT);
                         ent.setVelocity(ent.getVelocity().setY(.4 * knockUp));

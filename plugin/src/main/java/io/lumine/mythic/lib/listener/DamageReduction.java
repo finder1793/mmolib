@@ -1,10 +1,12 @@
 package io.lumine.mythic.lib.listener;
 
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.AttackEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
+import io.lumine.mythic.lib.element.Element;
 import io.lumine.mythic.lib.util.DefenseFormula;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.LivingEntity;
@@ -25,13 +27,9 @@ import java.util.function.Predicate;
 
 public class DamageReduction implements Listener {
 
-    /**
-     * Since MythicMobs is a soft depend, this event triggers
-     * correctly, fixing a bug with MythicMobs skill mechanics.
-     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void damageMitigation(AttackEvent event) {
-        if (!(event.getEntity() instanceof Player) || event.getEntity().hasMetadata("NPC"))
+        if (!UtilityMethods.isRealPlayer(event.getEntity()))
             return;
 
         // Applies specific damage reduction
@@ -41,14 +39,13 @@ public class DamageReduction implements Listener {
 
         // Applies damage reduction for existing damage types
         for (DamageType damageType : DamageType.values())
-            event.getDamage().multiplicativeModifier(1 - data.getStatMap().getStat(damageType + "_DAMAGE_REDUCTION") / 100, damageType);
+            event.getDamage().multiplicativeModifier(Math.max(0, 1 - data.getStatMap().getStat(damageType + "_DAMAGE_REDUCTION") / 100), damageType);
 
-        // Applies the Defense stat
-        final double defense = data.getStatMap().getStat("DEFENSE");
-        if (defense > 0) {
-            final double initialDamage = event.getDamage().getDamage();
-            final double ratio = new DefenseFormula(false).getAppliedDamage(defense, initialDamage) / initialDamage;
-            event.getDamage().multiplicativeModifier(ratio);
+        // Applies the Defense stat to neutral damage
+        final double defense = data.getStatMap().getStat("DEFENSE"), neutralDamage;
+        if (defense > 0 && (neutralDamage = event.getDamage().getDamage((Element) null)) > 0) {
+            final double ratio = Math.max(0, new DefenseFormula(false).getAppliedDamage(defense, neutralDamage)) / neutralDamage;
+            event.getDamage().multiplicativeModifier(ratio, (Element) null);
         }
     }
 
@@ -98,7 +95,7 @@ public class DamageReduction implements Listener {
 
         public void applyReduction(StatMap statMap, DamageMetadata damageMeta, EntityDamageEvent event) {
             if (apply.test(event))
-                damageMeta.multiplicativeModifier(1 - statMap.getStat(stat) / 100);
+                damageMeta.multiplicativeModifier(1 - Math.min(statMap.getStat(stat) / 100, 1));
         }
     }
 

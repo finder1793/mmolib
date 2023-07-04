@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.api.player;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.player.skillmod.SkillModifierMap;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.comp.flags.CustomFlag;
 import io.lumine.mythic.lib.damage.AttackMetadata;
@@ -18,6 +19,7 @@ import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.apache.commons.lang.Validate;
+import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -30,7 +32,15 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class MMOPlayerData {
-    private final UUID uuid;
+
+    private final UUID playerId;
+
+    /**
+     * MythicLib caches the UUID of the last profile used as
+     * it cannot be accessed by plugins with profile-based data
+     * when saving their data async.
+     */
+    private UUID profileId;
 
     @Nullable
     private Player player;
@@ -43,6 +53,7 @@ public class MMOPlayerData {
     // Temporary player data
     private final CooldownMap cooldownMap = new CooldownMap();
     private final StatMap statMap = new StatMap(this);
+    private final SkillModifierMap skillModifierMap = new SkillModifierMap(this);
     private final PermanentPotionEffectMap permEffectMap = new PermanentPotionEffectMap(this);
     private final ParticleEffectMap particleEffectMap = new ParticleEffectMap(this);
     private final PassiveSkillMap passiveSkillMap = new PassiveSkillMap(this);
@@ -55,32 +66,58 @@ public class MMOPlayerData {
      */
     private final Map<String, Object> externalData = new HashMap<>();
 
-    private MMOPlayerData(Player player) {
-        this.uuid = player.getUniqueId();
+    /**
+     * @param player Player logging in. Original UUID is taken from that player
+     */
+    private MMOPlayerData(@NotNull Player player) {
+        this.playerId = player.getUniqueId();
         this.player = player;
     }
 
-    /**
-     * MMOPlayerData for offline players
-     *
-     * @param uuid Player UUID
-     */
-    public MMOPlayerData(UUID uuid) {
-        this.uuid = uuid;
-        this.player = null;
+    public MMOPlayerData(@NotNull UUID playerId) {
+        this.playerId = playerId;
+        setProfileId(playerId);
     }
 
+    @NotNull
     public UUID getUniqueId() {
-        return uuid;
+        return playerId;
     }
 
     /**
-     * @return The player's StatMap which can be used by any other plugins to
+     * If support for the Profile API has been enabled, this returns the
+     * current player's profile ID. This method will throw an error if they
+     * have not chosen a profile yet.
+     * <p>
+     * Otherwise, if no profile plugin is installed, this will simply return
+     * the player's UUID.
+     *
+     * @return The UUID used to fetch and store player data.
+     */
+    @NotNull
+    public UUID getProfileId() {
+        return MythicLib.plugin.hasProfiles() ? Objects.requireNonNull(profileId, "No profile has been chosen yet") : playerId;
+    }
+
+    public void setProfileId(@NotNull UUID profileId) {
+        this.profileId = Objects.requireNonNull(profileId, "Profile ID cannot be null");
+    }
+
+    /**
+     * @return The player's stat map which can be used by any other plugins to
      *         apply stat modifiers to ANY MMOItems/MMOCore/external stats,
      *         calculate stat values, etc.
      */
     public StatMap getStatMap() {
         return statMap;
+    }
+
+    /**
+     * @return The player's skill modifier map. This map applies modifications
+     *         to numerical skill parameters (damage, cooldown...)
+     */
+    public SkillModifierMap getSkillModifierMap() {
+        return skillModifierMap;
     }
 
     /**
@@ -106,57 +143,33 @@ public class MMOPlayerData {
         return passiveSkillMap;
     }
 
-    /**
-     * Used to trigger skills with no attack metadata. This caches
-     * the player statistics and create an attack metadata.
-     *
-     * @param triggerType Action performed to trigger the skills
-     * @param target      The potential target to cast the skill onto
-     */
     public void triggerSkills(@NotNull TriggerType triggerType, @Nullable Entity target) {
         Validate.isTrue(!triggerType.isActionHandSpecific(), "You must provide an action hand");
         triggerSkills(triggerType, EquipmentSlot.MAIN_HAND, target);
     }
 
-    /**
-     * Used to trigger skills with no attack metadata. This caches
-     * the player statistics and create an attack metadata.
-     *
-     * @param triggerType Action performed to trigger the skills
-     * @param actionHand  Hand used to perform action
-     * @param target      The potential target to cast the skill onto
-     */
     public void triggerSkills(@NotNull TriggerType triggerType, @NotNull EquipmentSlot actionHand, @Nullable Entity target) {
         Validate.notNull(actionHand, "Action hand cannot be null");
         triggerSkills(triggerType, statMap.cache(actionHand), target);
     }
 
-    /**
-     * @deprecated It is now useless to store AttackMetadatas in SkillMetadatas
-     */
     @Deprecated
     public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable AttackMetadata attackMetadata, @Nullable Entity target) {
-        final Iterable<PassiveSkill> cast = triggerType.isActionHandSpecific() ? passiveSkillMap.isolateModifiers(caster.getActionHand()) : passiveSkillMap.getModifiers();
-        triggerSkills(triggerType, caster, target, cast);
+        triggerSkills(triggerType, caster, target, attackMetadata);
     }
 
-    /**
-     * Trigger skills with an attack metadata and target entity.
-     *
-     * @param triggerType Action performed to trigger the skills
-     * @param target      The potential target to cast the skill onto
-     */
+    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable Entity target, @Nullable AttackMetadata attackMetadata) {
+        final Iterable<PassiveSkill> cast = triggerType.isActionHandSpecific() ? passiveSkillMap.isolateModifiers(caster.getActionHand()) : passiveSkillMap.getModifiers();
+        triggerSkills(triggerType, caster, cast, target, attackMetadata);
+    }
+
     public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable Entity target) {
         final Iterable<PassiveSkill> cast = triggerType.isActionHandSpecific() ? passiveSkillMap.isolateModifiers(caster.getActionHand()) : passiveSkillMap.getModifiers();
-        triggerSkills(triggerType, caster, target, cast);
+        triggerSkills(triggerType, caster, cast, target, null);
     }
 
-    /**
-     * @deprecated It is now useless to store AttackMetadatas in SkillMetadatas
-     */
-    @Deprecated
-    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable AttackMetadata attackMetadata, @Nullable Entity target, @NotNull Iterable<PassiveSkill> skills) {
-        triggerSkills(triggerType, caster, target, skills);
+    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @NotNull Iterable<PassiveSkill> skills, @Nullable Entity target) {
+        triggerSkills(triggerType, caster, skills, target, null);
     }
 
     /**
@@ -169,15 +182,15 @@ public class MMOPlayerData {
      * @param target      The potential target to cast the skill onto
      * @param skills      The list of skills currently active for the player
      */
-    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @Nullable Entity target, @NotNull Iterable<PassiveSkill> skills) {
-        if (!MythicLib.plugin.getFlags().isFlagAllowed(getPlayer(), CustomFlag.MMO_ABILITIES))
+    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull PlayerMetadata caster, @NotNull Iterable<PassiveSkill> skills, @Nullable Entity target, @Nullable AttackMetadata attack) {
+        if (getPlayer().getGameMode() == GameMode.SPECTATOR || !MythicLib.plugin.getFlags().isFlagAllowed(getPlayer(), CustomFlag.MMO_ABILITIES))
             return;
 
-        final TriggerMetadata triggerMeta = new TriggerMetadata(caster, target);
+        final TriggerMetadata triggerMeta = new TriggerMetadata(caster, target, attack);
 
         for (PassiveSkill skill : skills) {
             final SkillHandler handler = skill.getTriggeredSkill().getHandler();
-            if (skill.getType().equals(triggerType) && handler.isTriggerable())
+            if (handler.isTriggerable() && skill.getType().equals(triggerType))
                 skill.getTriggeredSkill().cast(triggerMeta);
         }
     }
@@ -215,7 +228,6 @@ public class MMOPlayerData {
     public boolean isTimedOut() {
         return !isOnline() && lastLogActivity + CACHE_TIME_OUT < System.currentTimeMillis();
     }
-
 
     /**
      * This method simply checks if the cached Player instance is null
@@ -301,15 +313,15 @@ public class MMOPlayerData {
         if (!(o instanceof MMOPlayerData)) return false;
 
         MMOPlayerData that = (MMOPlayerData) o;
-        return uuid.equals(that.uuid);
+        return getUniqueId().equals(that.getUniqueId());
     }
 
     @Override
     public int hashCode() {
-        return uuid.hashCode();
+        return getUniqueId().hashCode();
     }
 
-    private static final Map<UUID, MMOPlayerData> data = new HashMap<>();
+    private static final Map<UUID, MMOPlayerData> PLAYER_DATA = new WeakHashMap<>();
 
     /**
      * Called everytime a player enters the server. If the
@@ -321,13 +333,13 @@ public class MMOPlayerData {
      *
      * @param player Player whose data should be initialized
      */
-    public static MMOPlayerData setup(Player player) {
-        final @Nullable MMOPlayerData found = data.get(player.getUniqueId());
+    public static MMOPlayerData setup(@NotNull Player player) {
+        final @Nullable MMOPlayerData found = PLAYER_DATA.get(player.getUniqueId());
 
         // Not loaded yet, checks for temporary data
         if (found == null) {
             final MMOPlayerData playerData = new MMOPlayerData(player);
-            data.put(player.getUniqueId(), playerData);
+            PLAYER_DATA.put(player.getUniqueId(), playerData);
             return playerData;
         }
 
@@ -354,16 +366,24 @@ public class MMOPlayerData {
     }
 
     @NotNull
-    public static MMOPlayerData get(UUID uuid) {
-        return Objects.requireNonNull(data.get(uuid), "Player data not loaded");
+    public static MMOPlayerData get(@NotNull UUID uuid) {
+        return Objects.requireNonNull(PLAYER_DATA.get(uuid), "Player data not loaded");
     }
 
     /**
      * Use it at your own risk! Player data might not be loaded
      */
     @Nullable
-    public static MMOPlayerData getOrNull(UUID uuid) {
-        return data.get(uuid);
+    public static MMOPlayerData getOrNull(@NotNull OfflinePlayer player) {
+        return getOrNull(player.getUniqueId());
+    }
+
+    /**
+     * Use it at your own risk! Player data might not be loaded
+     */
+    @Nullable
+    public static MMOPlayerData getOrNull(@NotNull UUID uuid) {
+        return PLAYER_DATA.get(uuid);
     }
 
     /**
@@ -371,21 +391,21 @@ public class MMOPlayerData {
      * a real player or a Citizens NPC. Citizens NPCs do not have any player
      * data associated to them
      *
-     * @return Checks if plater data is loaded for a specific player UID
+     * @return Checks if player data is loaded for a specific player
      */
-    public static boolean has(Player player) {
+    public static boolean has(@NotNull OfflinePlayer player) {
         return has(player.getUniqueId());
     }
 
     /**
      * This is being used to easily check if an online player corresponds to
-     * a real player or a Citizens NPC. Citizens NPCs do not have any player
+     * a real player/profile or a Citizens NPC. Citizens NPCs do not have any player
      * data associated to them
      *
-     * @return Checks if plater data is loaded for a specific player UID
+     * @return Checks if plater data is loaded for a specific profile UUID
      */
-    public static boolean has(UUID uuid) {
-        return data.containsKey(uuid);
+    public static boolean has(@NotNull UUID uuid) {
+        return PLAYER_DATA.containsKey(uuid);
     }
 
     /**
@@ -395,7 +415,7 @@ public class MMOPlayerData {
      *         resort to a map-lookup-based get(Player) call
      */
     public static Collection<MMOPlayerData> getLoaded() {
-        return data.values();
+        return PLAYER_DATA.values();
     }
 
     /**
@@ -407,9 +427,8 @@ public class MMOPlayerData {
      * <code>Bukkit.getOnlinePlayers().forEach(player -> MMOPlayerData.get(player)......);</code>
      */
     public static void forEachOnline(Consumer<MMOPlayerData> action) {
-        for (MMOPlayerData registered : data.values())
-            if (registered.isOnline())
-                action.accept(registered);
+        for (MMOPlayerData registered : PLAYER_DATA.values())
+            if (registered.isOnline()) action.accept(registered);
     }
 
     /**
@@ -417,11 +436,10 @@ public class MMOPlayerData {
      * checked once an hour to make sure not to cause memory leaks.
      */
     public static void flushOfflinePlayerData() {
-        Iterator<MMOPlayerData> iterator = data.values().iterator();
+        final Iterator<MMOPlayerData> iterator = PLAYER_DATA.values().iterator();
         while (iterator.hasNext()) {
-            MMOPlayerData tempData = iterator.next();
-            if (tempData.isTimedOut())
-                iterator.remove();
+            final MMOPlayerData tempData = iterator.next();
+            if (tempData.isTimedOut()) iterator.remove();
         }
     }
 }

@@ -3,17 +3,20 @@ package io.lumine.mythic.lib;
 import io.lumine.mythic.lib.api.MMOLineConfig;
 import io.lumine.mythic.lib.api.condition.RegionCondition;
 import io.lumine.mythic.lib.api.condition.type.MMOCondition;
+import io.lumine.mythic.lib.api.event.DamageCheckEvent;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import org.apache.commons.lang.Validate;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -22,10 +25,8 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.logging.Level;
 
 public class UtilityMethods {
     /**
@@ -37,12 +38,59 @@ public class UtilityMethods {
         String key = config.getKey().toLowerCase();
         switch (key) {
             case "region":
-                if (!Bukkit.getPluginManager().isPluginEnabled("WorldGuard"))
-                    return null;
+                if (!Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) return null;
                 return new RegionCondition(config);
         }
 
         return null;
+    }
+
+    /**
+     * Fake events are used very commonly in MythicLib and other plugins.
+     * This is used to pre-check if a player is able to fight with/target
+     * another player in anticipation i.e before casting the damage method.
+     *
+     * @param event Some damage event
+     * @return If the event is a fake event, used for an interaction check
+     */
+    public static boolean isFakeEvent(@NotNull EntityDamageEvent event) {
+        return event.getDamage() == 0 || event instanceof DamageCheckEvent;
+    }
+
+    public static boolean isAir(@Nullable ItemStack item) {
+        return item == null || item.getType() == Material.AIR;
+    }
+
+    private final static char[] DELAY_CHARACTERS = {'m', 'h', 'd', 'm', 'y'};
+    private final static long[] DELAY_AMOUNTS = {60, 60 * 60, 60 * 60 * 24, 60 * 60 * 24 * 30, 60 * 60 * 24 * 30 * 365};
+
+    public static String formatDelay(long millis) {
+
+        if (millis < 1000 * 60)
+            return "1m";
+
+        String format = "";
+        for (int j = DELAY_CHARACTERS.length - 1; j >= 0; j--) {
+            long divisor = DELAY_AMOUNTS[j] * 1000;
+            if (millis < divisor)
+                continue;
+
+            format = (millis / divisor) + DELAY_CHARACTERS[j] + " " + format;
+            millis = millis % divisor;
+        }
+
+        return format;
+    }
+
+    private static final int PTS_PER_BLOCK = 10;
+
+    public static void drawVector(Vector vec, Location source, Color color) {
+
+        final double step = 1d / ((double) PTS_PER_BLOCK) / vec.length();
+        for (double d = 0; d < 1; d += step) {
+            Location inter = source.clone().add(vec.clone().multiply(d));
+            inter.getWorld().spawnParticle(Particle.REDSTONE, inter, 0, new Particle.DustOptions(color, .6f));
+        }
     }
 
     /**
@@ -121,8 +169,7 @@ public class UtilityMethods {
             return false;
 
         // Interaction type check
-        if (!MythicLib.plugin.getEntities().canInteract(source, target, interaction))
-            return false;
+        if (!MythicLib.plugin.getEntities().canInteract(source, target, interaction)) return false;
 
         return true;
     }
@@ -201,8 +248,7 @@ public class UtilityMethods {
         for (int x = -1; x < 2; x++)
             for (int z = -1; z < 2; z++)
                 for (Entity target : loc.getWorld().getChunkAt(cx + x, cz + z).getEntities())
-                    if (target instanceof Player)
-                        players.add((Player) target);
+                    if (target instanceof Player) players.add((Player) target);
 
         return players;
     }
@@ -228,8 +274,7 @@ public class UtilityMethods {
      */
     public static boolean isVanished(Player player) {
         for (MetadataValue meta : player.getMetadata("vanished"))
-            if (meta.asBoolean())
-                return true;
+            if (meta.asBoolean()) return true;
         return false;
     }
 
@@ -249,8 +294,7 @@ public class UtilityMethods {
         double x = axis.getX();
         double z = axis.getZ();
 
-        if (x == 0 && z == 0)
-            return new double[]{0, axis.getY() > 0 ? -90 : 90};
+        if (x == 0 && z == 0) return new double[]{0, axis.getY() > 0 ? -90 : 90};
         else {
             double theta = Math.atan2(-x, z);
             double yaw = (float) Math.toDegrees((theta + _2PI) % _2PI);
@@ -270,13 +314,11 @@ public class UtilityMethods {
      */
     @Nullable
     public static Player getPlayerDamager(EntityDamageByEntityEvent event) {
-        if (isRealPlayer(event.getDamager()))
-            return (Player) event.getDamager();
+        if (isRealPlayer(event.getDamager())) return (Player) event.getDamager();
 
         if (event.getDamager() instanceof Projectile) {
             final ProjectileSource shooter = ((Projectile) event.getDamager()).getShooter();
-            if (shooter instanceof Entity && isRealPlayer((Entity) shooter))
-                return (Player) shooter;
+            if (shooter instanceof Entity && isRealPlayer((Entity) shooter)) return (Player) shooter;
         }
 
         return null;
@@ -308,10 +350,37 @@ public class UtilityMethods {
     }
 
     public static double getAltitude(Location loc) {
-        Location moving = loc.clone();
-        while (!moving.getBlock().getType().isSolid())
-            moving.add(0, -1, 0);
+        final Location moving = loc.clone();
+        while (!moving.getBlock().getType().isSolid()) moving.add(0, -1, 0);
 
         return loc.getY() - moving.getBlockY() - 1;
+    }
+
+    private static final Map<String, String> DEBUG_COLOR_PREFIX = new HashMap<>();
+
+    static {
+        DEBUG_COLOR_PREFIX.put("MythicLib", "§a");
+        DEBUG_COLOR_PREFIX.put("MMOItems", "§c");
+        DEBUG_COLOR_PREFIX.put("MMOCore", "§6");
+        DEBUG_COLOR_PREFIX.put("RPGInventory", "§e");
+    }
+
+    /**
+     * Sends a debug message. All plugins depending on MythicLib must use this
+     * function to send debug message, which is more convenient for users.
+     * MMOInventory has its own option, because it's standalone.
+     *
+     * @param plugin  Plugin that needs debug
+     * @param prefix  What's being debugged
+     * @param message Debug message
+     */
+    public static void debug(@NotNull JavaPlugin plugin, @Nullable String prefix, @NotNull String message) {
+        Validate.notNull(plugin, "Plugin cannot be null");
+        Validate.notNull(message, "Message cannot be null");
+
+        final String colorPrefix = DEBUG_COLOR_PREFIX.getOrDefault(plugin.getName(), "");
+
+        if (MythicLib.plugin.getMMOConfig().debugMode)
+            plugin.getLogger().log(Level.INFO, colorPrefix + "[Debug" + (prefix == null ? "" : ": " + prefix) + "] " + message);
     }
 }

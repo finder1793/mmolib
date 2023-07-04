@@ -2,35 +2,46 @@ package io.lumine.mythic.lib.api.stat;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
+import io.lumine.mythic.lib.api.stat.api.ModifiedInstance;
+import io.lumine.mythic.lib.api.stat.handler.StatHandler;
 import io.lumine.mythic.lib.api.stat.modifier.StatModifier;
-import io.lumine.mythic.lib.player.modifier.Closeable;
-import io.lumine.mythic.lib.player.modifier.ModifierType;
+import io.lumine.mythic.lib.util.Closeable;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class StatInstance {
+public class StatInstance extends ModifiedInstance<StatModifier> {
+    @NotNull
     private final StatMap map;
+    @NotNull
     private final String stat;
-    private final Map<String, StatModifier> modifiers = new HashMap<>();
 
-    public StatInstance(StatMap map, String stat) {
+    public StatInstance(@NotNull StatMap map, @NotNull String stat) {
         this.map = map;
         this.stat = stat;
     }
 
+    @NotNull
     public StatMap getMap() {
         return map;
     }
 
+    @NotNull
     public String getStat() {
         return stat;
     }
 
     public double getBase() {
-        return MythicLib.inst().getStats().getBaseValue(stat, map);
+        return MythicLib.plugin.getStats().getBaseValue(this);
+    }
+
+    @Nullable
+    public StatHandler findHandler() {
+        return MythicLib.plugin.getStats().getStatHandler(stat);
     }
 
     /**
@@ -40,7 +51,7 @@ public class StatInstance {
      *         modifiers.
      */
     public double getTotal() {
-        return getFilteredTotal(EquipmentSlot.MAIN_HAND::isCompatible);
+        return getFilteredTotal(EquipmentSlot.MAIN_HAND::isCompatible, mod -> mod);
     }
 
     /**
@@ -80,17 +91,10 @@ public class StatInstance {
      *         modifiers.
      */
     public double getFilteredTotal(Predicate<StatModifier> filter, Function<StatModifier, StatModifier> modification) {
-        double d = getBase();
-
-        for (StatModifier attr : modifiers.values())
-            if (attr.getType() == ModifierType.FLAT && filter.test(attr))
-                d += modification.apply(attr).getValue();
-
-        for (StatModifier attr : modifiers.values())
-            if (attr.getType() == ModifierType.RELATIVE && filter.test(attr))
-                d *= 1 + modification.apply(attr).getValue() / 100;
-
-        return d;
+        final @NotNull StatHandler handler = findHandler();
+        final double base = handler == null ? 0 : handler.getBaseValue(this);
+        final double total = getFilteredTotal(base, filter, modification);
+        return handler == null ? total : handler.clampValue(total);
     }
 
     /**
@@ -107,45 +111,25 @@ public class StatInstance {
      *
      * @param modifier The stat modifier being registered
      */
+    @Override
     public void addModifier(StatModifier modifier) {
-        ModifierPacket packet = new ModifierPacket();
+        final ModifierPacket packet = new ModifierPacket(this);
         packet.addModifier(modifier);
         packet.runUpdate();
-    }
-
-    /**
-     * @return All registered stat modifiers
-     */
-    public Collection<StatModifier> getModifiers() {
-        return modifiers.values();
-    }
-
-    /**
-     * @return All string keys of currently registered stat modifiers
-     */
-    public Set<String> getKeys() {
-        return modifiers.keySet();
     }
 
     /**
      * Iterates through registered stat modifiers and unregisters them if a
      * certain condition based on their string key is met
      *
-     * @param condition Condition on the modifier key, if it should be unregistered or
-     *                  not
+     * @param condition Condition on the modifier key, if it should be
+     *                  unregistered or not
      */
+    @Override
     public void removeIf(Predicate<String> condition) {
-        ModifierPacket packet = new ModifierPacket();
+        final ModifierPacket packet = new ModifierPacket(this);
         packet.removeIf(condition);
         packet.runUpdate();
-    }
-
-    /**
-     * @param key The string key of the external stat modifier source or plugin
-     * @return If a stat modifier is registered with this key
-     */
-    public boolean contains(String key) {
-        return modifiers.containsKey(key);
     }
 
     /**
@@ -153,14 +137,15 @@ public class StatInstance {
      *
      * @param key The string key of the external stat modifier source or plugin
      */
+    @Override
     public void remove(String key) {
-        ModifierPacket packet = new ModifierPacket();
+        final ModifierPacket packet = new ModifierPacket(this);
         packet.remove(key);
         packet.runUpdate();
     }
 
     public ModifierPacket newPacket() {
-        return new ModifierPacket();
+        return new ModifierPacket(this);
     }
 
     /**
@@ -174,12 +159,17 @@ public class StatInstance {
      * @author indyuce
      */
     public class ModifierPacket {
+        private final StatInstance instance;
 
         /**
          * Set to true if some update is required. This is a small
          * performance improvement as it reduces useless stat updates.
          */
         private boolean updateRequired;
+
+        public ModifierPacket(StatInstance instance) {
+            this.instance = instance;
+        }
 
         /**
          * Registers a stat modifier and run the required player stat updates.
@@ -189,9 +179,8 @@ public class StatInstance {
          * @param modifier The stat modifier being registered
          */
         public void addModifier(StatModifier modifier) {
-            StatModifier current = modifiers.put(modifier.getKey(), modifier);
-            if (current != null && current instanceof Closeable)
-                ((Closeable) current).close();
+            final StatModifier current = modifiers.put(modifier.getKey(), modifier);
+            if (current != null && current instanceof Closeable) ((Closeable) current).close();
             updateRequired = true;
         }
 
@@ -203,17 +192,15 @@ public class StatInstance {
         public void remove(String key) {
 
             // Find and remove current value
-            StatModifier mod = modifiers.remove(key);
-            if (mod == null)
-                return;
+            final StatModifier mod = modifiers.remove(key);
+            if (mod == null) return;
 
             /*
              * Closing modifier is really important with temporary stats because
              * otherwise the runnable will try to remove the key from the map even
              * though the attribute was cancelled before hand
              */
-            if (mod instanceof Closeable)
-                ((Closeable) mod).close();
+            if (mod instanceof Closeable) ((Closeable) mod).close();
 
             updateRequired = true;
         }
@@ -226,12 +213,11 @@ public class StatInstance {
          */
         public void removeIf(Predicate<String> condition) {
             for (Iterator<Map.Entry<String, StatModifier>> iterator = modifiers.entrySet().iterator(); iterator.hasNext(); ) {
-                Map.Entry<String, StatModifier> entry = iterator.next();
+                final Map.Entry<String, StatModifier> entry = iterator.next();
                 if (condition.test(entry.getKey())) {
 
-                    StatModifier modifier = entry.getValue();
-                    if (modifier instanceof Closeable)
-                        ((Closeable) modifier).close();
+                    final StatModifier modifier = entry.getValue();
+                    if (modifier instanceof Closeable) ((Closeable) modifier).close();
 
                     iterator.remove();
                     updateRequired = true;
@@ -243,8 +229,8 @@ public class StatInstance {
          * Only runs an update if absolutely necessary
          */
         public void runUpdate() {
-            if (updateRequired)
-                MythicLib.plugin.getStats().runUpdate(map, stat);
+            final StatHandler handler;
+            if (updateRequired && (handler = findHandler()) != null) handler.runUpdate(instance);
         }
     }
 }

@@ -44,6 +44,7 @@ import io.lumine.mythic.lib.script.mechanic.visual.TellMechanic;
 import io.lumine.mythic.lib.script.targeter.EntityTargeter;
 import io.lumine.mythic.lib.script.targeter.LocationTargeter;
 import io.lumine.mythic.lib.script.targeter.entity.*;
+import io.lumine.mythic.lib.script.targeter.location.LookingAtTargeter;
 import io.lumine.mythic.lib.script.targeter.location.*;
 import io.lumine.mythic.lib.skill.handler.MythicLibSkillHandler;
 import io.lumine.mythic.lib.skill.handler.MythicMobsSkillHandler;
@@ -59,6 +60,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -178,6 +180,7 @@ public class SkillManager {
         registerEntityTargeter("nearest_entity", config -> new NearestEntityTargeter(config));
         registerEntityTargeter("target", config -> new TargetTargeter());
         registerEntityTargeter("variable", config -> new VariableEntityTargeter(config));
+        registerEntityTargeter("looking_at", config -> new io.lumine.mythic.lib.script.targeter.entity.LookingAtTargeter(config));
 
         registerLocationTargeter("caster", config -> new CasterLocationTargeter(config));
         registerLocationTargeter("circle", config -> new CircleLocationTargeter(config));
@@ -269,6 +272,11 @@ public class SkillManager {
         return handlers.values();
     }
 
+    @Nullable
+    public SkillHandler getHandler(String handlerId) {
+        return handlers.get(handlerId);
+    }
+
     public void registerScript(@NotNull Script script) {
         Validate.isTrue(!scripts.containsKey(script.getId()), "A script with the same name already exists");
 
@@ -325,7 +333,7 @@ public class SkillManager {
         mechanics.put(name, mechanic);
 
         for (String alias : aliases)
-            mechanics.put(alias, mechanic);
+            registerMechanic(alias, mechanic);
     }
 
     @NotNull
@@ -422,7 +430,8 @@ public class SkillManager {
                 }
             }
             file.close();
-        } catch (IOException | InstantiationException | IllegalAccessException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException exception) {
+        } catch (IOException | InstantiationException | IllegalAccessException | ClassNotFoundException |
+                 NoSuchMethodException | InvocationTargetException exception) {
             exception.printStackTrace();
         }
 
