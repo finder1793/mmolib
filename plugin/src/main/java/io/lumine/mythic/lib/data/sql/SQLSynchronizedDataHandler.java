@@ -23,10 +23,6 @@ public abstract class SQLSynchronizedDataHandler<H extends SynchronizedDataHolde
         newDataSynchronizer(playerData).synchronize();
     }
 
-    public void validateData(@NotNull H playerData) {
-        newDataSynchronizer(playerData).whenValidated();
-    }
-
     /**
      * @deprecated Not generalized yet
      */

@@ -45,11 +45,6 @@ public abstract class YAMLSynchronizedDataHandler<H extends SynchronizedDataHold
         loadFromSection(playerData, getUserFile(playerData).getConfig());
     }
 
-    @Override
-    public void validateData(@NotNull H playerData) {
-        // No synchronization required.
-    }
-
     public abstract void loadFromSection(H playerData, ConfigurationSection config);
 
     private ConfigFile getUserFile(H data) {

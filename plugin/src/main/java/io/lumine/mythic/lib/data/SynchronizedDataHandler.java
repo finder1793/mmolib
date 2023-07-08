@@ -41,7 +41,5 @@ public interface SynchronizedDataHandler<H extends SynchronizedDataHolder, O ext
      */
     public void loadData(@NotNull H playerData);
 
-    public void validateData(@NotNull H playerData);
-
     public O getOffline(@NotNull UUID profileId);
 }

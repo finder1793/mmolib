@@ -34,11 +34,6 @@ public abstract class JSONSynchronizedDataHandler<H extends SynchronizedDataHold
     }
 
     @Override
-    public void validateData(@NotNull H playerData) {
-        // No synchronization required.
-    }
-
-    @Override
     public void loadData(@NotNull H playerData) {
         loadFromObject(playerData, getUserFile(playerData).getContent());
     }

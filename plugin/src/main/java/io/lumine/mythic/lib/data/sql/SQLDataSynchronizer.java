@@ -103,6 +103,7 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
             // Load data if found
             if (result.next()) {
                 if (tries > MythicLib.plugin.getMMOConfig().maxSyncTries || result.getInt("is_saved") == 1) {
+                    confirmReception(connection);
                     loadData(result);
                     if (tries > MythicLib.plugin.getMMOConfig().maxSyncTries)
                         UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Maximum number of tries reached.");
@@ -115,6 +116,7 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
             } else {
 
                 // Empty player data
+                confirmReception(connection);
                 loadEmptyData();
                 UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Found empty data for '" + effectiveUUID + "', loading default...");
             }
@@ -146,30 +148,23 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
         }
     }
 
-    public void whenValidated() {
-
-        @Nullable Connection connection = null;
+    /**
+     * This confirms the loading of player and switches "is_saved" back to 0
+     *
+     * @param connection Current SQL connection
+     * @throws SQLException Any exception. When thrown, the data will not be loaded.
+     */
+    private void confirmReception(Connection connection) throws SQLException {
         @Nullable PreparedStatement prepared = null;
-
         try {
-            // Confirm reception of inventory
-            connection = dataSource.getConnection();
             prepared = connection.prepareStatement("INSERT INTO " + tableName + "(`uuid`, `is_saved`) VALUES(?, 0) ON DUPLICATE KEY UPDATE `is_saved` = 0;");
             prepared.setString(1, effectiveUUID.toString());
             prepared.executeUpdate();
-        } catch (Exception throwable) {
-            dataSource.getPlugin().getLogger().log(Level.WARNING, "Could not validate data sync of '" + effectiveUUID + "':");
-            throwable.printStackTrace();
+        } catch (Exception exception) {
+            dataSource.getPlugin().getLogger().log(Level.WARNING, "Could not confirm data sync of " + effectiveUUID);
+            exception.printStackTrace();
         } finally {
-
-            // Close resources
-            try {
-                if (prepared != null) prepared.close();
-                if (connection != null) connection.close();
-            } catch (SQLException exception) {
-                dataSource.getPlugin().getLogger().log(Level.WARNING, "Could not validate data sync data of '" + effectiveUUID + "':");
-                exception.printStackTrace();
-            }
+            if (prepared != null) prepared.close();
         }
     }
 

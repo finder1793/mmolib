@@ -202,7 +202,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         // Schedule data loading
         if (!playerData.isSynchronized() && (profilePlugin || !MythicLib.plugin.hasProfiles()))
             loadData(playerData).thenAccept(v -> Bukkit.getScheduler().runTask(owning, () -> {
-                if (!profilePlugin) playerData.markAsSynchronized();
+                playerData.markAsSynchronized();
                 Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(this, playerData));
             }));
 
