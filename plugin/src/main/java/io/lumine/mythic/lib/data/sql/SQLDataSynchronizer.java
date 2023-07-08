@@ -20,7 +20,10 @@ import java.util.logging.Level;
  * This class is used to synchronize player data between
  * servers. This fixes the issue of player data being
  * lost when teleporting to another server.
+ *
+ * @deprecated Merge with {@link SQLSynchronizedDataHandler}
  */
+@Deprecated
 public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
     private final SQLDataSource dataSource;
     private final H data;
@@ -100,7 +103,6 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
             // Load data if found
             if (result.next()) {
                 if (tries > MythicLib.plugin.getMMOConfig().maxSyncTries || result.getInt("is_saved") == 1) {
-                    confirmReception(connection);
                     loadData(result);
                     if (tries > MythicLib.plugin.getMMOConfig().maxSyncTries)
                         UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Maximum number of tries reached.");
@@ -113,7 +115,6 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
             } else {
 
                 // Empty player data
-                confirmReception(connection);
                 loadEmptyData();
                 UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Found empty data for '" + effectiveUUID + "', loading default...");
             }
@@ -145,24 +146,30 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
         }
     }
 
-    /**
-     * This confirms the loading of player and switches "is_saved" back to 0
-     *
-     * @param connection Current SQL connection
-     * @throws SQLException Any exception. When thrown, the data will not be loaded.
-     */
-    private void confirmReception(Connection connection) throws SQLException {
+    public void whenValidated() {
 
-        // Confirm reception of inventory
-        final PreparedStatement prepared1 = connection.prepareStatement("INSERT INTO " + tableName + "(`uuid`, `is_saved`) VALUES(?, 0) ON DUPLICATE KEY UPDATE `is_saved` = 0;");
-        prepared1.setString(1, effectiveUUID.toString());
+        @Nullable Connection connection = null;
+        @Nullable PreparedStatement prepared = null;
+
         try {
-            prepared1.executeUpdate();
-        } catch (Exception exception) {
-            dataSource.getPlugin().getLogger().log(Level.WARNING, "Could not confirm data sync of " + effectiveUUID);
-            exception.printStackTrace();
+            // Confirm reception of inventory
+            connection = dataSource.getConnection();
+            prepared = connection.prepareStatement("INSERT INTO " + tableName + "(`uuid`, `is_saved`) VALUES(?, 0) ON DUPLICATE KEY UPDATE `is_saved` = 0;");
+            prepared.setString(1, effectiveUUID.toString());
+            prepared.executeUpdate();
+        } catch (Exception throwable) {
+            dataSource.getPlugin().getLogger().log(Level.WARNING, "Could not validate data sync of '" + effectiveUUID + "':");
+            throwable.printStackTrace();
         } finally {
-            prepared1.close();
+
+            // Close resources
+            try {
+                if (prepared != null) prepared.close();
+                if (connection != null) connection.close();
+            } catch (SQLException exception) {
+                dataSource.getPlugin().getLogger().log(Level.WARNING, "Could not validate data sync data of '" + effectiveUUID + "':");
+                exception.printStackTrace();
+            }
         }
     }
 

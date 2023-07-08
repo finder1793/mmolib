@@ -20,11 +20,13 @@ import java.util.UUID;
  */
 public abstract class SynchronizedDataHolder implements OfflineDataHolder {
     private final MMOPlayerData playerData;
+    private final SynchronizedDataManager manager;
 
     private boolean sync;
 
-    public SynchronizedDataHolder(MMOPlayerData playerData) {
+    public SynchronizedDataHolder(MMOPlayerData playerData, SynchronizedDataManager manager) {
         this.playerData = playerData;
+        this.manager = manager;
     }
 
     public MMOPlayerData getMMOPlayerData() {
@@ -47,11 +49,9 @@ public abstract class SynchronizedDataHolder implements OfflineDataHolder {
         return playerData.getPlayer();
     }
 
-    /**
-     * @return If the player data should be saved when the player quits.
-     */
+    @Deprecated
     public boolean shouldBeSaved() {
-        return true;
+        return isSynchronized();
     }
 
     /**
@@ -64,5 +64,6 @@ public abstract class SynchronizedDataHolder implements OfflineDataHolder {
     public void markAsSynchronized() {
         Validate.isTrue(!sync, "Data holder already marked synchronized");
         sync = true;
+        manager.getDataHandler().validateData(this);
     }
 }

@@ -8,10 +8,10 @@ import io.lumine.mythic.lib.util.ConfigFile;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 public abstract class YAMLSynchronizedDataHandler<H extends SynchronizedDataHolder, O extends OfflineDataHolder> implements SynchronizedDataHandler<H, O> {
     private final Plugin owning;
@@ -41,14 +41,13 @@ public abstract class YAMLSynchronizedDataHandler<H extends SynchronizedDataHold
     public abstract void saveInSection(H playerData, ConfigurationSection config);
 
     @Override
-    public CompletableFuture<Void> loadData(H playerData) {
-        return CompletableFuture.runAsync(() -> {
-            try {
-                loadFromSection(playerData, getUserFile(playerData).getConfig());
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        });
+    public void loadData(@NotNull H playerData) {
+        loadFromSection(playerData, getUserFile(playerData).getConfig());
+    }
+
+    @Override
+    public void validateData(@NotNull H playerData) {
+        // No synchronization required.
     }
 
     public abstract void loadFromSection(H playerData, ConfigurationSection config);

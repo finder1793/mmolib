@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
-public abstract class SQLSynchronizedDataHandler<H extends SynchronizedDataHolder, O extends OfflineDataHolder, S extends SQLDataSynchronizer> implements SynchronizedDataHandler<H, O> {
+public abstract class SQLSynchronizedDataHandler<H extends SynchronizedDataHolder, O extends OfflineDataHolder> implements SynchronizedDataHandler<H, O> {
     private final SQLDataSource dataSource;
 
     public SQLSynchronizedDataHandler(SQLDataSource dataSource) {
@@ -19,18 +19,16 @@ public abstract class SQLSynchronizedDataHandler<H extends SynchronizedDataHolde
     }
 
     @Override
-    public CompletableFuture<Void> loadData(H playerData) {
-        return CompletableFuture.runAsync(() -> {
-            try {
-                newDataSynchronizer(playerData).synchronize();
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        });
+    public void loadData(@NotNull H playerData) {
+        newDataSynchronizer(playerData).synchronize();
+    }
+
+    public void validateData(@NotNull H playerData) {
+        newDataSynchronizer(playerData).whenValidated();
     }
 
     /**
-     * @deprecated Not implemented yet
+     * @deprecated Not generalized yet
      */
     @Deprecated
     @Override

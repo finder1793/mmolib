@@ -4,7 +4,6 @@ import io.lumine.mythic.lib.util.Closeable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * A data handler "handles" data, it decides what happens when
@@ -35,13 +34,14 @@ public interface SynchronizedDataHandler<H extends SynchronizedDataHolder, O ext
     public void saveData(@NotNull H playerData, boolean autosave);
 
     /**
-     * This method is always called SYNC, and therefore must wrap HTTP
-     * or SQL requests inside of async CompletableFutures. This completable
-     * future should be completed when the data is finished loading.
+     * This method is always called ASYNC inside of a newly created thread. It should
+     * run the SQL methods or local config lookups in order to load player data.
      *
-     * @param playerData Player data to load
+     * @param playerData Player data to be loaded
      */
-    public CompletableFuture<Void> loadData(@NotNull H playerData);
+    public void loadData(@NotNull H playerData);
+
+    public void validateData(@NotNull H playerData);
 
     public O getOffline(@NotNull UUID profileId);
 }

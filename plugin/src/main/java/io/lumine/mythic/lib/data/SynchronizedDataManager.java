@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * A general player data manager which implements
@@ -117,7 +118,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
      * Saves all currently loaded data. It is either used on server
      * shutdown, which requires to save all the data of currently
      * connected players, or when performing frequent autosaves.
-     *
+     * <p>
      * On server shutdown (/restart) pending async methods must be
      * completed before the program stops, otherwise data saving
      * tasks are lost, deleting the players' progressions.
@@ -178,6 +179,11 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         // Nothing by default
     }
 
+    @NotNull
+    public CompletableFuture<Void> loadData(@NotNull H playerData) {
+        return CompletableFuture.runAsync(() -> dataHandler.loadData(playerData));
+    }
+
     /**
      * Called when a player logs in, loading the player data inside the map.
      * <p>
@@ -195,8 +201,8 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
 
         // Schedule data loading
         if (!playerData.isSynchronized() && (profilePlugin || !MythicLib.plugin.hasProfiles()))
-            dataHandler.loadData(playerData).thenRun(() -> Bukkit.getScheduler().runTask(owning, () -> {
-                playerData.markAsSynchronized();
+            loadData(playerData).thenAccept(v -> Bukkit.getScheduler().runTask(owning, () -> {
+                if (!profilePlugin) playerData.markAsSynchronized();
                 Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(this, playerData));
             }));
 
@@ -212,12 +218,13 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
      */
     public void unregisterSafely(H playerData) {
 
+        // Close and unregister data instantly if no error occurred
+        if (playerData instanceof Closeable) ((Closeable) playerData).close();
+
         // Save data async if required
-        if (playerData.isSynchronized() && playerData.shouldBeSaved())
+        if (playerData.isSynchronized())
             Bukkit.getScheduler().runTaskAsynchronously(owning, () -> dataHandler.saveData(playerData, false));
 
-        // Close and unregister data instantly if no error occured
-        if (playerData instanceof Closeable) ((Closeable) playerData).close();
         activeData.remove(playerData.getUniqueId());
     }
 

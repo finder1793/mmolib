@@ -42,7 +42,7 @@ public class ProfilePluginHook {
             final @NotNull H data = manager.get(event.getPlayer());
             if (data.isSynchronized()) event.validate(module); // More resilience
             else
-                manager.getDataHandler().loadData(data).thenAccept(v -> Bukkit.getScheduler().runTask(manager.getOwningPlugin(), () -> {
+                manager.loadData(data).thenAccept(v -> Bukkit.getScheduler().runTask(manager.getOwningPlugin(), () -> {
                     event.validate(module);
                     data.markAsSynchronized();
                     Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(manager, data, event));
