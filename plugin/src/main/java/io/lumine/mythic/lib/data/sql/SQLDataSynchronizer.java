@@ -20,7 +20,10 @@ import java.util.logging.Level;
  * This class is used to synchronize player data between
  * servers. This fixes the issue of player data being
  * lost when teleporting to another server.
+ *
+ * @deprecated Merge with {@link SQLSynchronizedDataHandler}
  */
+@Deprecated
 public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
     private final SQLDataSource dataSource;
     private final H data;
@@ -152,17 +155,16 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
      * @throws SQLException Any exception. When thrown, the data will not be loaded.
      */
     private void confirmReception(Connection connection) throws SQLException {
-
-        // Confirm reception of inventory
-        final PreparedStatement prepared1 = connection.prepareStatement("INSERT INTO " + tableName + "(`uuid`, `is_saved`) VALUES(?, 0) ON DUPLICATE KEY UPDATE `is_saved` = 0;");
-        prepared1.setString(1, effectiveUUID.toString());
+        @Nullable PreparedStatement prepared = null;
         try {
-            prepared1.executeUpdate();
+            prepared = connection.prepareStatement("INSERT INTO " + tableName + "(`uuid`, `is_saved`) VALUES(?, 0) ON DUPLICATE KEY UPDATE `is_saved` = 0;");
+            prepared.setString(1, effectiveUUID.toString());
+            prepared.executeUpdate();
         } catch (Exception exception) {
             dataSource.getPlugin().getLogger().log(Level.WARNING, "Could not confirm data sync of " + effectiveUUID);
             exception.printStackTrace();
         } finally {
-            prepared1.close();
+            if (prepared != null) prepared.close();
         }
     }
 

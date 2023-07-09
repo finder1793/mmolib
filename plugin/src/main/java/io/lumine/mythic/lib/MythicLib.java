@@ -43,6 +43,7 @@ import io.lumine.mythic.lib.manager.*;
 import io.lumine.mythic.lib.util.gson.MythicLibGson;
 import io.lumine.mythic.lib.util.loadingorder.DependencyCycleCheck;
 import io.lumine.mythic.lib.util.loadingorder.DependencyNode;
+import io.lumine.mythic.lib.util.network.MythicPacketSniffer;
 import io.lumine.mythic.lib.version.ServerVersion;
 import io.lumine.mythic.lib.version.SpigotPlugin;
 import lombok.Getter;
@@ -64,6 +65,7 @@ import java.util.logging.Level;
 public class MythicLib extends JavaPlugin {
     public static MythicLib plugin;
 
+
     private final DamageManager damageManager = new DamageManager();
     private final EntityManager entityManager = new EntityManager();
     private final StatManager statManager = new StatManager();
@@ -74,7 +76,7 @@ public class MythicLib extends JavaPlugin {
     private final ModifierManager modifierManager = new ModifierManager();
     private final FlagHandler flagHandler = new FlagHandler();
     private final IndicatorManager indicatorManager = new IndicatorManager();
-    private FormulaParser formulaParser= new FormulaParser();
+    private final FormulaParser formulaParser = new FormulaParser();
     private Gson gson;
     private AntiCheatSupport antiCheatSupport;
     private ServerVersion version;
@@ -122,6 +124,9 @@ public class MythicLib extends JavaPlugin {
             getLogger().warning("You may be using an outdated config.yml!");
             getLogger().warning("(Your config version: '" + configVersion + "' | Expected config version: '" + defConfigVersion + "')");
         }
+
+        // Packet interceptor
+        new MythicPacketSniffer(this);
 
         // Hologram provider
         Bukkit.getServicesManager().register(HologramFactory.class, new BukkitHologramFactory(), this, ServicePriority.Low);
@@ -396,4 +401,5 @@ public class MythicLib extends JavaPlugin {
     public File getJarFile() {
         return plugin.getFile();
     }
+
 }

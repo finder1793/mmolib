@@ -25,12 +25,15 @@ public class Blink extends SkillHandler<SimpleSkillResult> {
         return new SimpleSkillResult();
     }
 
+    /**
+     * Lower bound to prevent the player from not teleporting at all
+     */
     private static final double MIN_RANGE = 1;
 
     @Override
     public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         final Player caster = skillMeta.getCaster().getPlayer();
-        final double range = Math.max(MIN_RANGE, skillMeta.getModifier("range"));
+        final double range = Math.max(MIN_RANGE, skillMeta.getParameter("range"));
         final Vector dir = caster.getEyeLocation().getDirection();
 
         // Effects on prev position

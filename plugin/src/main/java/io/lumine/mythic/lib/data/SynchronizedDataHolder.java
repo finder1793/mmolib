@@ -21,6 +21,10 @@ import java.util.UUID;
 public abstract class SynchronizedDataHolder implements OfflineDataHolder {
     private final MMOPlayerData playerData;
 
+    /**
+     * This boolean dictates whether the player data was loaded
+     * and if it can be saved again in the remote/local database.
+     */
     private boolean sync;
 
     public SynchronizedDataHolder(MMOPlayerData playerData) {
@@ -47,11 +51,9 @@ public abstract class SynchronizedDataHolder implements OfflineDataHolder {
         return playerData.getPlayer();
     }
 
-    /**
-     * @return If the player data should be saved when the player quits.
-     */
+    @Deprecated
     public boolean shouldBeSaved() {
-        return true;
+        return isSynchronized();
     }
 
     /**
