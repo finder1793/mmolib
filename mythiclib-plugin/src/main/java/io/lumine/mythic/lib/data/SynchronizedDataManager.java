@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 /**
  * A general player data manager which implements
@@ -131,8 +132,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
 
         // Execute pending async tasks (supports /restart and /stop)
         if (!autosave) for (BukkitTask pending : Bukkit.getScheduler().getPendingTasks())
-            if (pending.getOwner().equals(owning))
-                ((Runnable) pending).run();
+            if (pending.getOwner().equals(owning)) ((Runnable) pending).run();
     }
 
     private static final Listener FICTIVE_LISTENER = new Listener() {
@@ -180,7 +180,14 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
 
     @NotNull
     public CompletableFuture<Void> loadData(@NotNull H playerData) {
-        return CompletableFuture.runAsync(() -> dataHandler.loadData(playerData));
+        final CompletableFuture<Void> future = new CompletableFuture<>();
+
+        Executors.newCachedThreadPool().submit(() -> {
+            final boolean success = dataHandler.loadData(playerData);
+            if (success) future.complete(null);
+        });
+
+        return future;
     }
 
     /**
@@ -234,8 +241,10 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
     public abstract H newPlayerData(@NotNull MMOPlayerData playerData);
 
     /**
+     * +
+     *
      * @return An object of type {@link fr.phoenixdevt.mmoprofiles.api.ProfileDataModule} which is an object
-     * that cannot be referenced inside of that class to avoid import issues.
+     *         that cannot be referenced inside of that class to avoid import issues.
      */
     public abstract Object newProfileDataModule();
 

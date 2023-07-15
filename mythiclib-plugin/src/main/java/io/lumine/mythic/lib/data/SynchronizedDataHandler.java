@@ -38,8 +38,9 @@ public interface SynchronizedDataHandler<H extends SynchronizedDataHolder, O ext
      * run the SQL methods or local config lookups in order to load player data.
      *
      * @param playerData Player data to be loaded
+     * @return If loading was successful. If not, no event shall be called.
      */
-    public void loadData(@NotNull H playerData);
+    public boolean loadData(@NotNull H playerData);
 
     public O getOffline(@NotNull UUID profileId);
 }

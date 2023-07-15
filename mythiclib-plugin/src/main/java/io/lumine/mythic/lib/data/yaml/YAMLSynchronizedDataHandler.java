@@ -41,8 +41,10 @@ public abstract class YAMLSynchronizedDataHandler<H extends SynchronizedDataHold
     public abstract void saveInSection(H playerData, ConfigurationSection config);
 
     @Override
-    public void loadData(@NotNull H playerData) {
+    public boolean loadData(@NotNull H playerData) {
+        // TODO support true/false
         loadFromSection(playerData, getUserFile(playerData).getConfig());
+        return true;
     }
 
     public abstract void loadFromSection(H playerData, ConfigurationSection config);
