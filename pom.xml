@@ -6,13 +6,13 @@
     <packaging>pom</packaging>
     <version>1.6.2-SNAPSHOT</version>
     <modules>
-        <module>plugin</module>
-        <module>v1_17</module>
-        <module>v1_18</module>
-        <module>v1_18_r2</module>
-        <module>dist</module>
-        <module>v1_19</module>
-        <module>v1_19_r2</module>
+        <module>mythiclib-plugin</module>
+        <module>mythiclib-v1_17</module>
+        <module>mythiclib-v1_18</module>
+        <module>mythiclib-v1_18_r2</module>
+        <module>mythiclib-dist</module>
+        <module>mythiclib-v1_19</module>
+        <module>mythiclib-v1_19_r2</module>
         <module>mythiclib-v1_19_r3</module>
         <module>mythiclib-v1_20_r1</module>
     </modules>
