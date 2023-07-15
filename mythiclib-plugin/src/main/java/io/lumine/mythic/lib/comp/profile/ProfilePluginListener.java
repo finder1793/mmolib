@@ -1,6 +1,6 @@
 package io.lumine.mythic.lib.comp.profile;
 
-import fr.phoenixdevt.profile.event.ProfileSelectEvent;
+import fr.phoenixdevt.mmoprofiles.api.event.ProfileSelectEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.bukkit.event.EventHandler;

@@ -1,9 +1,9 @@
 package io.lumine.mythic.lib.comp.profile;
 
-import fr.phoenixdevt.profile.ProfileDataModule;
-import fr.phoenixdevt.profile.event.ProfileCreateEvent;
-import fr.phoenixdevt.profile.event.ProfileRemoveEvent;
-import fr.phoenixdevt.profile.placeholder.PlaceholderRequest;
+import fr.phoenixdevt.mmoprofiles.api.ProfileDataModule;
+import fr.phoenixdevt.mmoprofiles.api.event.ProfileCreateEvent;
+import fr.phoenixdevt.mmoprofiles.api.event.ProfileRemoveEvent;
+import fr.phoenixdevt.mmoprofiles.api.placeholder.PlaceholderRequest;
 import io.lumine.mythic.lib.UtilityMethods;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

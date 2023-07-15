@@ -237,8 +237,8 @@
         </dependency>
         <dependency>
             <groupId>fr.phoenixdevt</groupId>
-            <artifactId>Profile-API</artifactId>
-            <version>1.0</version>
+            <artifactId>MMOProfiles-Bukkit-API</artifactId>
+            <version>1.0.5-SNAPSHOT</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
