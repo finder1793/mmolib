@@ -90,7 +90,7 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
         @Nullable Connection connection = null;
         @Nullable PreparedStatement prepared = null;
         @Nullable ResultSet result = null;
-        boolean retry = false;
+        boolean retry = false, success = false;
 
         try {
             connection = dataSource.getConnection();
@@ -104,6 +104,7 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
             if (result.next()) {
                 if (tries > MythicLib.plugin.getMMOConfig().maxSyncTries || result.getInt("is_saved") == 1) {
                     confirmReception(connection);
+                    success = true;
                     loadData(result);
                     if (tries > MythicLib.plugin.getMMOConfig().maxSyncTries)
                         UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Maximum number of tries reached.");
@@ -117,6 +118,7 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
 
                 // Empty player data
                 confirmReception(connection);
+                success = true;
                 loadEmptyData();
                 UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Found empty data for '" + effectiveUUID + "', loading default...");
             }
@@ -147,7 +149,7 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
             return synchronize();
         }
 
-        return false;
+        return success;
     }
 
     /**
