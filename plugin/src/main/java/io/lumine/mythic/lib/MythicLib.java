@@ -39,6 +39,7 @@ import io.lumine.mythic.lib.listener.*;
 import io.lumine.mythic.lib.listener.event.AttackEventListener;
 import io.lumine.mythic.lib.listener.option.FixMovementSpeed;
 import io.lumine.mythic.lib.listener.option.HealthScale;
+import io.lumine.mythic.lib.listener.option.VanillaDamageModifiers;
 import io.lumine.mythic.lib.manager.*;
 import io.lumine.mythic.lib.util.gson.MythicLibGson;
 import io.lumine.mythic.lib.util.loadingorder.DependencyCycleCheck;
@@ -143,6 +144,9 @@ public class MythicLib extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ElementalDamage(), this);
         Bukkit.getPluginManager().registerEvents(new PvpListener(), this);
         ArmorEquipEvent.registerListener(this);
+
+        if (getConfig().getBoolean("vanilla-damage-modifiers.enabled"))
+            Bukkit.getPluginManager().registerEvents(new VanillaDamageModifiers(getConfig().getConfigurationSection("vanilla-damage-modifiers")), this);
 
         if (getConfig().getBoolean("health-scale.enabled"))
             Bukkit.getPluginManager().registerEvents(new HealthScale(getConfig().getDouble("health-scale.scale"), getConfig().getInt("health-scale.delay", 0)), this);
