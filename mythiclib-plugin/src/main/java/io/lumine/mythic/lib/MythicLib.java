@@ -48,7 +48,6 @@ import io.lumine.mythic.lib.util.loadingorder.DependencyNode;
 import io.lumine.mythic.lib.util.network.MythicPacketSniffer;
 import io.lumine.mythic.lib.version.ServerVersion;
 import io.lumine.mythic.lib.version.SpigotPlugin;
-import lombok.Getter;
 import org.apache.commons.lang.Validate;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -85,7 +84,6 @@ public class MythicLib extends JavaPlugin {
     private AttackEffects attackEffects;
     private MitigationMechanics mitigationMechanics;
     private AdventureParser adventureParser;
-    @Getter
     private PlaceholderParser placeholderParser;
     private GlowModule glowModule;
     private @Nullable Boolean hasProfiles;
