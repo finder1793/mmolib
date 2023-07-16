@@ -43,6 +43,7 @@
                                     <artifact>*:*</artifact>
                                     <excludes>
                                         <exclude>META-INF/**</exclude>
+                                        <exclude>assets/**</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
@@ -64,13 +65,13 @@
                                     <pattern>org.bstats</pattern>
                                     <shadedPattern>io.lumine.mythic.lib.metrics</shadedPattern>
                                 </relocation>
-                                <!-- <relocation>
+                                <relocation>
                                     <pattern>bsh</pattern>
                                     <shadedPattern>io.lumine.mythic.lib.bsh</shadedPattern>
                                     <includes>
                                         <include>bsh.*</include>
                                     </includes>
-                                </relocation> -->
+                                </relocation>
                             </relocations>
                             <minimizeJar>false</minimizeJar>
                         </configuration>
