@@ -163,7 +163,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         Bukkit.getPluginManager().registerEvent(PlayerJoinEvent.class, FICTIVE_LISTENER, joinEventPriority, (listener, event) -> setup(((PlayerJoinEvent) event).getPlayer()), owning);
 
         // Profile events if profile module is installed
-        if (!profilePlugin && MythicLib.plugin.hasProfiles())
+        if (!profilePlugin && MythicLib.plugin.usesProfileId())
             new ProfilePluginHook(this, FICTIVE_LISTENER, joinEventPriority, quitEventPriority);
 
             // Save data on logout
@@ -206,7 +206,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         final @Nullable H playerData = activeData.computeIfAbsent(player.getUniqueId(), uuid -> newPlayerData(MMOPlayerData.get(player.getUniqueId())));
 
         // Schedule data loading
-        if (!playerData.isSynchronized() && (profilePlugin || !MythicLib.plugin.hasProfiles()))
+        if (!playerData.isSynchronized() && (profilePlugin || !MythicLib.plugin.usesProfileId()))
             loadData(playerData).thenAccept(v -> Bukkit.getScheduler().runTask(owning, () -> {
                 playerData.markAsSynchronized();
                 Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(this, playerData));

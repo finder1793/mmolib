@@ -86,7 +86,7 @@ public class MythicLib extends JavaPlugin {
     private AdventureParser adventureParser;
     private PlaceholderParser placeholderParser;
     private GlowModule glowModule;
-    private @Nullable Boolean hasProfiles;
+    private @Nullable Boolean usesProfileId;
 
     @Override
     public void onLoad() {
@@ -354,8 +354,8 @@ public class MythicLib extends JavaPlugin {
      * Enables support for spigot-based MMOProfiles.
      */
     public void enableSpigotProfiles() {
-        Validate.isTrue(hasProfiles == null, "Profiles have already been enabled/disabled");
-        hasProfiles = true;
+        Validate.isTrue(usesProfileId == null, "Profiles have already been enabled/disabled");
+        usesProfileId = true;
 
         Bukkit.getPluginManager().registerEvents(new SpigotProfilesListener(), this);
         getLogger().log(Level.INFO, "Hooked onto spigot-based ProfileAPI");
@@ -365,15 +365,15 @@ public class MythicLib extends JavaPlugin {
      * Enables support for proxy-based MMOProfiles
      */
     public void enableProxyProfiles() {
-        Validate.isTrue(hasProfiles == null, "Profiles have already been enabled/disabled");
-        hasProfiles = false;
+        Validate.isTrue(usesProfileId == null, "Profiles have already been enabled/disabled");
+        usesProfileId = false;
 
         Bukkit.getPluginManager().registerEvents(new ProxyProfilesListener(), this);
         getLogger().log(Level.INFO, "Hooked onto proxy-based ProfileAPI");
     }
 
-    public boolean hasProfiles() {
-        return hasProfiles;
+    public boolean usesProfileId() {
+        return usesProfileId;
     }
 
     @Deprecated

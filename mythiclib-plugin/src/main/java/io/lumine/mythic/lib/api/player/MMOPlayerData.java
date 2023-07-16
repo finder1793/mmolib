@@ -111,11 +111,11 @@ public class MMOPlayerData {
      */
     @NotNull
     public UUID getProfileId() {
-        return MythicLib.plugin.hasProfiles() ? Objects.requireNonNull(profileId, "No profile has been chosen yet") : playerId;
+        return MythicLib.plugin.usesProfileId() ? Objects.requireNonNull(profileId, "No profile has been chosen yet") : playerId;
     }
 
     public void setProfileId(@NotNull UUID profileId) {
-        Validate.isTrue(MythicLib.plugin.hasProfiles(), "MythicLib profiles are not enabled");
+        Validate.isTrue(MythicLib.plugin.usesProfileId(), "MythicLib profiles are not enabled");
         this.profileId = Objects.requireNonNull(profileId, "Profile ID cannot be null");
     }
 
