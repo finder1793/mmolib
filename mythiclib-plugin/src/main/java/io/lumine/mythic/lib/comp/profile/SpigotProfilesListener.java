@@ -7,13 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-/**
- * Listener needed for MythicLib to function and
- * hook onto plugins under the Profile API.
- *
- * @author Jules
- */
-public class ProfilePluginListener implements Listener {
+public class SpigotProfilesListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onProfileChooseSkillTrigger(ProfileSelectEvent event) {

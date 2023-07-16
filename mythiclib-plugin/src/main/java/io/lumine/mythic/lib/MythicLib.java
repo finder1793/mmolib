@@ -27,7 +27,8 @@ import io.lumine.mythic.lib.comp.formula.FormulaParser;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
 import io.lumine.mythic.lib.comp.placeholder.*;
-import io.lumine.mythic.lib.comp.profile.ProfilePluginListener;
+import io.lumine.mythic.lib.comp.profile.ProxyProfilesListener;
+import io.lumine.mythic.lib.comp.profile.SpigotProfilesListener;
 import io.lumine.mythic.lib.comp.protocollib.DamageParticleCap;
 import io.lumine.mythic.lib.glow.GlowModule;
 import io.lumine.mythic.lib.glow.provided.MythicGlowModule;
@@ -226,13 +227,6 @@ public class MythicLib extends JavaPlugin {
 //		if (Bukkit.getPluginManager().getPlugin("ShopKeepers") != null)
 //			entityManager.registerHandler(new ShopKeepersEntityHandler());
 
-        // Profiles
-        if (hasProfiles == null) hasProfiles = false;
-        else if (hasProfiles) {
-            Bukkit.getPluginManager().registerEvents(new ProfilePluginListener(), this);
-            getLogger().log(Level.INFO, "Hooked onto ProfileAPI");
-        }
-
         // Glowing module
         if (glowModule == null) {
             glowModule = new MythicGlowModule();
@@ -359,14 +353,25 @@ public class MythicLib extends JavaPlugin {
     }
 
     /**
-     * Enables support for the Profile API. This will work for any
-     * profile plugin that implements that API, including MMOProfiles.
-     *
-     * @author Jules
+     * Enables support for spigot-based MMOProfiles.
      */
-    public void enableProfiles() {
+    public void enableSpigotProfiles() {
         Validate.isTrue(hasProfiles == null, "Profiles have already been enabled/disabled");
         hasProfiles = true;
+
+        Bukkit.getPluginManager().registerEvents(new SpigotProfilesListener(), this);
+        getLogger().log(Level.INFO, "Hooked onto spigot-based ProfileAPI");
+    }
+
+    /**
+     * Enables support for proxy-based MMOProfiles
+     */
+    public void enableProxyProfiles() {
+        Validate.isTrue(hasProfiles == null, "Profiles have already been enabled/disabled");
+        hasProfiles = false;
+
+        Bukkit.getPluginManager().registerEvents(new ProxyProfilesListener(), this);
+        getLogger().log(Level.INFO, "Hooked onto proxy-based ProfileAPI");
     }
 
     public boolean hasProfiles() {
@@ -405,5 +410,4 @@ public class MythicLib extends JavaPlugin {
     public File getJarFile() {
         return plugin.getFile();
     }
-
 }
