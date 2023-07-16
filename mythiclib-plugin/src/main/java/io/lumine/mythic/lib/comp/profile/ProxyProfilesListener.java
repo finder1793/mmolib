@@ -1,6 +1,6 @@
 package io.lumine.mythic.lib.comp.profile;
 
-import fr.phoenixdevt.mmoprofiles.api.event.PlayerIdDispatchEvent;
+import fr.phoenixdevt.profiles.event.PlayerIdDispatchEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

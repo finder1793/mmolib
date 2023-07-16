@@ -33,13 +33,16 @@ import java.util.function.Consumer;
 
 public class MMOPlayerData {
 
+    @NotNull
     private UUID playerId;
+    private boolean hasCustomPlayerId;
 
     /**
      * MythicLib caches the UUID of the last profile used as
      * it cannot be accessed by plugins with profile-based data
      * when saving their data async.
      */
+    @Nullable
     private UUID profileId;
 
     @Nullable
@@ -96,7 +99,12 @@ public class MMOPlayerData {
      * @param playerId The initial player's UUID
      */
     public void setUniqueId(@NotNull UUID playerId) {
+        hasCustomPlayerId = true;
         this.playerId = Objects.requireNonNull(playerId, "Player ID cannot be null");
+    }
+
+    public boolean hasCustomUniqueId() {
+        return hasCustomPlayerId;
     }
 
     /**
@@ -105,13 +113,14 @@ public class MMOPlayerData {
      * have not chosen a profile yet.
      * <p>
      * Otherwise, if no profile plugin is installed, this will simply return
-     * the player's UUID.
+     * the player's UUID. This is for convenience.
      *
      * @return The UUID used to fetch and store player data.
      */
     @NotNull
     public UUID getProfileId() {
-        return MythicLib.plugin.usesProfileId() ? Objects.requireNonNull(profileId, "No profile has been chosen yet") : playerId;
+        Validate.isTrue(MythicLib.plugin.usesProfileId(), "MythicLib profiles are not enabled");
+        return Objects.requireNonNull(profileId, "No profile has been chosen yet");
     }
 
     public void setProfileId(@NotNull UUID profileId) {

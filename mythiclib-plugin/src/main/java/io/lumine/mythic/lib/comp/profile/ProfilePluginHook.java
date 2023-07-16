@@ -1,9 +1,9 @@
 package io.lumine.mythic.lib.comp.profile;
 
-import fr.phoenixdevt.mmoprofiles.api.ProfileDataModule;
-import fr.phoenixdevt.mmoprofiles.api.ProfileProvider;
-import fr.phoenixdevt.mmoprofiles.api.event.ProfileSelectEvent;
-import fr.phoenixdevt.mmoprofiles.api.event.ProfileUnloadEvent;
+import fr.phoenixdevt.profiles.ProfileDataModule;
+import fr.phoenixdevt.profiles.ProfileProvider;
+import fr.phoenixdevt.profiles.event.ProfileSelectEvent;
+import fr.phoenixdevt.profiles.event.ProfileUnloadEvent;
 import io.lumine.mythic.lib.api.event.SynchronizedDataLoadEvent;
 import io.lumine.mythic.lib.data.SynchronizedDataHolder;
 import io.lumine.mythic.lib.data.SynchronizedDataManager;
