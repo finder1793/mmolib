@@ -11,11 +11,11 @@ public class SpigotProfilesListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onProfileChooseSkillTrigger(ProfileSelectEvent event) {
-        MMOPlayerData.get(event.getPlayer().getUniqueId()).triggerSkills(TriggerType.LOGIN, null);
+        MMOPlayerData.get(event.getPlayer()).triggerSkills(TriggerType.LOGIN, null);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void updateProfileId(ProfileSelectEvent event) {
-        MMOPlayerData.get(event.getPlayerData().getUniqueId()).setProfileId(event.getProfile().getUniqueId());
+        MMOPlayerData.get(event.getPlayer()).setProfileId(event.getProfile().getUniqueId());
     }
 }

@@ -1,7 +1,6 @@
 package io.lumine.mythic.lib.util;
 
 import io.lumine.mythic.lib.MythicLib;
-import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -21,7 +20,6 @@ import java.util.function.Supplier;
  *
  * @author Roch Blondiaux (Kiwix).
  */
-@UtilityClass
 public class AdventureUtils {
 
     /**

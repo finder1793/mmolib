@@ -3,7 +3,6 @@ package io.lumine.mythic.lib.util;
 import bsh.EvalError;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.skill.SkillMetadata;
-import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +49,6 @@ public class DoubleFormula {
         this.value = null;
     }
 
-    @SneakyThrows
     public double evaluate(SkillMetadata meta) {
         try {
             return trivial ? trivialValue : (double) MythicLib.plugin.getFormulaParser().eval(meta.parseString(value));

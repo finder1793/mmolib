@@ -35,7 +35,6 @@ public class MMOPlayerData {
 
     @NotNull
     private UUID playerId;
-    private boolean hasCustomPlayerId;
 
     /**
      * MythicLib caches the UUID of the last profile used as
@@ -79,7 +78,7 @@ public class MMOPlayerData {
 
     public MMOPlayerData(@NotNull UUID playerId) {
         this.playerId = Objects.requireNonNull(playerId, "Player ID cannot be null");
-        setProfileId(playerId);
+        this.profileId = playerId;
     }
 
     /**
@@ -91,20 +90,8 @@ public class MMOPlayerData {
         return playerId;
     }
 
-    /**
-     * This is only used by MMOProfiles when the player joins a Spigot
-     * server with a fake player UUID. This is later used by MMOProfiles
-     * to retrieve the player's profile list.
-     *
-     * @param playerId The initial player's UUID
-     */
     public void setUniqueId(@NotNull UUID playerId) {
-        hasCustomPlayerId = true;
         this.playerId = Objects.requireNonNull(playerId, "Player ID cannot be null");
-    }
-
-    public boolean hasCustomUniqueId() {
-        return hasCustomPlayerId;
     }
 
     /**
@@ -119,13 +106,11 @@ public class MMOPlayerData {
      */
     @NotNull
     public UUID getProfileId() {
-        Validate.isTrue(MythicLib.plugin.usesProfileId(), "MythicLib profiles are not enabled");
         return Objects.requireNonNull(profileId, "No profile has been chosen yet");
     }
 
-    public void setProfileId(@NotNull UUID profileId) {
-        Validate.isTrue(MythicLib.plugin.usesProfileId(), "MythicLib profiles are not enabled");
-        this.profileId = Objects.requireNonNull(profileId, "Profile ID cannot be null");
+    public void setProfileId(@Nullable UUID profileId) {
+        this.profileId = profileId;
     }
 
     public boolean hasProfile() {

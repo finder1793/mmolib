@@ -1,7 +1,6 @@
 package io.lumine.mythic.lib.comp.adventure.gradient;
 
 import com.google.common.base.Preconditions;
-import lombok.experimental.UtilityClass;
 import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +15,6 @@ import java.util.List;
  *
  * @author Roch Blondiaux (Kiwix).
  */
-@UtilityClass
 public class GradientBuilder {
 
     public static String rgbGradient(String str, Color from, Color to, double phase, Interpolator interpolator) {
