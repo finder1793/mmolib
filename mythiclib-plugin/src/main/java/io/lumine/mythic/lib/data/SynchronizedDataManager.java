@@ -5,6 +5,7 @@ import io.lumine.mythic.lib.api.event.SynchronizedDataLoadEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.comp.profile.ProfilePluginHook;
 import io.lumine.mythic.lib.util.Closeable;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -168,7 +169,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
 
             // Save data on logout
         else
-            Bukkit.getPluginManager().registerEvent(PlayerQuitEvent.class, FICTIVE_LISTENER, quitEventPriority, (listener, event) -> unregisterSafely(get(((PlayerQuitEvent) event).getPlayer())), owning);
+            Bukkit.getPluginManager().registerEvent(PlayerQuitEvent.class, FICTIVE_LISTENER, quitEventPriority, (listener, event) -> unregister(((PlayerQuitEvent) event).getPlayer()), owning);
     }
 
     /**
@@ -216,13 +217,31 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
     }
 
     /**
+     * @deprecated Use {@link #unregister(Player)} instead
+     */
+    @Deprecated
+    public void unregisterSafely(H playerData) {
+        try {
+            unregister(playerData.getPlayer());
+        } catch (Exception exception) {
+            final UUID uuid = playerData.getMMOPlayerData().hasProfile() && !MythicLib.plugin.usesProfileId() ?
+                    playerData.getMMOPlayerData().getProfileId() :
+                    playerData.getMMOPlayerData().getUniqueId();
+            final Player player = Bukkit.getPlayer(uuid);
+            unregister(player);
+        }
+    }
+
+    /**
      * Safely unregisters the player data from the map.
      * This saves the player data either through SQL or YAML,
      * then closes the player data and clears it from the data map.
      *
-     * @param playerData PLayer data to unregister
+     * @param player PLayer whose data needs to be unregistered
      */
-    public void unregisterSafely(H playerData) {
+    public void unregister(@NotNull Player player) {
+        final H playerData = activeData.remove(player.getUniqueId());
+        Validate.notNull(playerData, "Could not find player data of player '" + playerData.getUniqueId() + "'");
 
         // Close and unregister data instantly if no error occurred
         if (playerData instanceof Closeable) ((Closeable) playerData).close();
@@ -230,8 +249,6 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         // Save data async if required
         if (playerData.isSynchronized())
             Bukkit.getScheduler().runTaskAsynchronously(owning, () -> dataHandler.saveData(playerData, false));
-
-        activeData.remove(playerData.getUniqueId());
     }
 
     /**
@@ -241,9 +258,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
     public abstract H newPlayerData(@NotNull MMOPlayerData playerData);
 
     /**
-     * +
-     *
-     * @return An object of type {@link fr.phoenixdevt.mmoprofiles.api.ProfileDataModule} which is an object
+     * @return An object of type {@link fr.phoenixdevt.profiles.ProfileDataModule} which is an object
      *         that cannot be referenced inside of that class to avoid import issues.
      */
     public abstract Object newProfileDataModule();

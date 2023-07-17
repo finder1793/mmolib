@@ -54,7 +54,7 @@ public class ProfilePluginHook {
         // Save data on profile unload
         Bukkit.getPluginManager().registerEvent(ProfileUnloadEvent.class, fictiveListener, quitEventPriority, (listener, evt) -> {
             final ProfileUnloadEvent event = (ProfileUnloadEvent) evt;
-            manager.unregisterSafely(manager.get(event.getPlayer()));
+            manager.unregister(event.getPlayer());
             event.validate(module);
         }, manager.getOwningPlugin());
     }
