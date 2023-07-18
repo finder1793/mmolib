@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.data;
 
 import fr.phoenixdevt.profile.ProfileDataModule;
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.SynchronizedDataLoadEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.comp.profile.ProfilePluginHook;
@@ -181,7 +182,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
 
     @NotNull
     public CompletableFuture<Void> loadData(@NotNull H playerData) {
-        return CompletableFuture.runAsync(() -> dataHandler.loadData(playerData));
+        return CompletableFuture.runAsync(UtilityMethods.serverThreadCatch(owning, () -> dataHandler.loadData(playerData)));
     }
 
     /**
@@ -223,7 +224,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
 
         // Save data async if required
         if (playerData.isSynchronized())
-            Bukkit.getScheduler().runTaskAsynchronously(owning, () -> dataHandler.saveData(playerData, false));
+            Bukkit.getScheduler().runTaskAsynchronously(owning, UtilityMethods.serverThreadCatch(owning, () -> dataHandler.saveData(playerData, false)));
 
         activeData.remove(playerData.getUniqueId());
     }
@@ -236,7 +237,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
 
     /**
      * @return An object of type {@link ProfileDataModule} which is an object
-     * that cannot be referenced inside of that class to avoid import issues.
+     *         that cannot be referenced inside of that class to avoid import issues.
      */
     public abstract Object newProfileDataModule();
 

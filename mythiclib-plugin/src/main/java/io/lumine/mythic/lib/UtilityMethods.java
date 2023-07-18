@@ -16,6 +16,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
@@ -55,6 +56,17 @@ public class UtilityMethods {
      */
     public static boolean isFakeEvent(@NotNull EntityDamageEvent event) {
         return event.getDamage() == 0 || event instanceof DamageCheckEvent;
+    }
+
+    @NotNull
+    public static Runnable serverThreadCatch(@NotNull Plugin plugin, @NotNull Runnable runnable) {
+        return () -> {
+            try {
+                runnable.run();
+            } catch (Throwable throwable) {
+                Bukkit.getScheduler().runTask(plugin, () -> throwable.printStackTrace());
+            }
+        };
     }
 
     public static boolean isAir(@Nullable ItemStack item) {
