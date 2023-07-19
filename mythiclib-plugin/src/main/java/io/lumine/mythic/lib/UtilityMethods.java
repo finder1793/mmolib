@@ -5,9 +5,11 @@ import io.lumine.mythic.lib.api.condition.RegionCondition;
 import io.lumine.mythic.lib.api.condition.type.MMOCondition;
 import io.lumine.mythic.lib.api.event.DamageCheckEvent;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -30,6 +32,11 @@ import java.util.*;
 import java.util.logging.Level;
 
 public class UtilityMethods {
+
+    public static Location readLocation(@NotNull ConfigObject config) {
+        return new Location(Bukkit.getWorld(config.getString("world")), config.getDouble("x"), config.getDouble("y"), config.getDouble("z"), (float) config.getDouble("yaw"), (float) config.getDouble("pitch"));
+    }
+
     /**
      * NOT FINAL CODE.
      * THIS WILL BE MASSIVELY REWORKED VERY SOON!
