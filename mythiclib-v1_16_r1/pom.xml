@@ -21,6 +21,11 @@
         </repository>
     </repositories>
 
+    <repository>
+        <id>lumine</id>
+        <url>https://mvn.lumine.io/repository/maven-public/</url>
+    </repository>
+
     <dependencies>
         <dependency>
             <groupId>io.lumine</groupId>
