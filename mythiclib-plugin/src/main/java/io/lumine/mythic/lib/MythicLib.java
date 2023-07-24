@@ -373,7 +373,7 @@ public class MythicLib extends JavaPlugin {
     }
 
     public boolean usesProfileId() {
-        return usesProfileId;
+        return usesProfileId != null && usesProfileId.booleanValue();
     }
 
     @Deprecated
