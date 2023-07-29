@@ -27,7 +27,6 @@ import io.lumine.mythic.lib.comp.formula.FormulaParser;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
 import io.lumine.mythic.lib.comp.placeholder.*;
-import io.lumine.mythic.lib.comp.profile.ProxyProfilesListener;
 import io.lumine.mythic.lib.comp.profile.SpigotProfilesListener;
 import io.lumine.mythic.lib.comp.protocollib.DamageParticleCap;
 import io.lumine.mythic.lib.glow.GlowModule;
@@ -368,7 +367,6 @@ public class MythicLib extends JavaPlugin {
         Validate.isTrue(usesProfileId == null, "Profiles have already been enabled/disabled");
         usesProfileId = false;
 
-        Bukkit.getPluginManager().registerEvents(new ProxyProfilesListener(), this);
         getLogger().log(Level.INFO, "Hooked onto proxy-based ProfileAPI");
     }
 
