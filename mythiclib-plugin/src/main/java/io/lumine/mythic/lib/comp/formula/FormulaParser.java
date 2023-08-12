@@ -24,6 +24,12 @@ public class FormulaParser {
 
     @NotNull
     public Object eval(String str) throws EvalError {
+        //Enable to use val in [val1,val2,val3,...]
+        str = str.replaceAll("\"(.*?)\" in \\[(.*?)\\]", "Arrays.asList(new Object[]{$2}).contains(\"$1\")");
+
+        //Parse random(expr1,expr2) to Math.random() * (expr2 - expr1) + expr1
+        str = str.replaceAll("random\\((.*?),(.*?)\\)", "random() * ($2 - $1) + ($1)");
+
         for (String function : mathFunctions)
             str = str.replace(function + "(", "Math." + function + "(");
         return interpreter.eval(str);

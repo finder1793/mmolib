@@ -11,7 +11,6 @@ import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.command.ExploreAttributesCommand;
 import io.lumine.mythic.lib.command.HealthScaleCommand;
 import io.lumine.mythic.lib.command.MMOTempStatCommand;
-import io.lumine.mythic.lib.command.mythiclib.MythicLibCommand;
 import io.lumine.mythic.lib.comp.McMMOAttackHandler;
 import io.lumine.mythic.lib.comp.SkillAPIAttackHandler;
 import io.lumine.mythic.lib.comp.adventure.AdventureParser;
@@ -68,6 +67,8 @@ public class MythicLib extends JavaPlugin {
 
 
     private final DamageManager damageManager = new DamageManager();
+
+    private final MythicCommandManager mythicCommandManager = new MythicCommandManager();
     private final EntityManager entityManager = new EntityManager();
     private final StatManager statManager = new StatManager();
     private final JsonManager jsonManager = new JsonManager();
@@ -241,7 +242,6 @@ public class MythicLib extends JavaPlugin {
 
         // Command executors
         getCommand("exploreattributes").setExecutor(new ExploreAttributesCommand());
-        getCommand("mythiclib").setExecutor(new MythicLibCommand());
         getCommand("mmotempstat").setExecutor(new MMOTempStatCommand());
         getCommand("healthscale").setExecutor(new HealthScaleCommand());
 
@@ -250,6 +250,9 @@ public class MythicLib extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(SuperWorkbenchMapping.SWB, this);
         getCommand("megaworkbench").setExecutor(MegaWorkbenchMapping.MWB);
         Bukkit.getPluginManager().registerEvents(MegaWorkbenchMapping.MWB, this);
+
+        //Loads commands
+        mythicCommandManager.initialize(true);
 
         // Load local skills
         skillManager.initialize(false);
@@ -275,6 +278,7 @@ public class MythicLib extends JavaPlugin {
         skillManager.initialize(true);
         configManager.reload();
         elementManager.reload(true);
+        mythicCommandManager.initialize(true);
         this.indicatorManager.reload(getConfig());
     }
 
@@ -303,6 +307,10 @@ public class MythicLib extends JavaPlugin {
     @Deprecated
     public JsonManager getJson() {
         return jsonManager;
+    }
+
+    public MythicCommandManager getCommand() {
+        return mythicCommandManager;
     }
 
     public DamageManager getDamage() {

@@ -1,15 +1,20 @@
 package io.lumine.mythic.lib.command.mythiclib;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.command.api.CommandTreeRoot;
 import io.lumine.mythic.lib.command.mythiclib.debug.DebugCommand;
+import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
 
 public class MythicLibCommand extends CommandTreeRoot {
-    public MythicLibCommand() {
-        super("mythiclib", "mythiclib.admin");
-
+    public MythicLibCommand(@NotNull ConfigurationSection config) {
+        super(config, MythicLib.plugin.getCommand().MYTHIC_LIB);
         addChild(new ReloadCommand(this));
         addChild(new CastCommand(this));
         addChild(new DebugCommand(this));
         addChild(new StatModCommand(this));
     }
+
+
+
 }
