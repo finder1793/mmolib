@@ -47,20 +47,19 @@ public class PercentageStatInstance extends StatInstance {
     @Override
     public double getFilteredTotal(double d, Predicate<StatModifier> filter, Function<StatModifier, StatModifier> modification) {
         double efficiency = 1;
+        double total = 100;
 
         for (StatModifier mod : modifiers.values())
             if (mod.getType() == ModifierType.RELATIVE && filter.test(mod))
                 efficiency *= 1 + modification.apply(mod).getValue() / 100;
 
-        double threshold = 100;
-
         for (StatModifier mod : modifiers.values()) {
             if (mod.getType() == ModifierType.FLAT && filter.test(mod)) {
-                double modifier = modification.apply(mod).getValue() * efficiency * threshold / 100;
-                d += modifier;
-                threshold -= modifier;
+                double modifier = modification.apply(mod).getValue() * efficiency / 100;
+                total *= (1 - modifier);
             }
         }
+        d = 100 - total;
 
         return d;
     }
