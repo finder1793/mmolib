@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.NotNull;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.stat.modifier.StatModifier;
 import io.lumine.mythic.lib.player.modifier.ModifierType;
 
@@ -17,7 +18,7 @@ import io.lumine.mythic.lib.player.modifier.ModifierType;
  * often can cause 100% value, the total RELATIVE modifier apply independently for each FLAT modifier.
  * So, exact formula should be:
  * efficiency = relativeModifier1 + relativeModifier2 + ...
- * total = (1 - modifier1 * efficiency / 100) + (1 - modifier2 * efficiency / 100) + ...
+ * total = (1 - modifier1 * efficiency / 100) * (1 - modifier2 * efficiency / 100) + ...
  *
  * Example:
  * We have an armor set, that provides us 20% magic damage reduction for every of this parts
@@ -55,7 +56,9 @@ public class PercentageStatInstance extends StatInstance {
 
         for (StatModifier mod : modifiers.values()) {
             if (mod.getType() == ModifierType.FLAT && filter.test(mod)) {
-                d += modification.apply(mod).getValue() * efficiency * threshold / 100;
+                double modifier = modification.apply(mod).getValue() * efficiency * threshold / 100;
+                d += modifier;
+                threshold -= modifier;
             }
         }
 
