@@ -125,6 +125,13 @@ vanilla-damage-modifiers:
     LAVA: '%mythiclib_stat_max_health% * .2'
     DROWNING: '%mythiclib_stat_max_health% * .1'
 
+# Change Damage Reduction stats logic
+# Formula:
+# efficiency = Sum of all %-based modifiers
+# Received Damage = {damage} * (1 - modifier1 * efficiency / 100) * (1 - modifier2 * efficiency / 100) * ...
+# See more: https://dota2.fandom.com/wiki/Magic_Resistance
+percentage-damage-reduction: false
+
 # Displays in-game damage or heal indicators.
 # Requires a SERVER reload when changed.
 # Supported Plugins:
