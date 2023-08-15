@@ -407,7 +407,7 @@ public class VersionWrapper_1_20_R1 implements VersionWrapper {
         final ServerPlayer handle = ((CraftPlayer) player).getHandle();
         final GameProfile gameProfile = handle.getGameProfile();
         try {
-            final Field _id = handle.getGameProfile().getClass().getDeclaredField("id");
+            final Field _id = gameProfile.getClass().getDeclaredField("id");
             _id.setAccessible(true);
             _id.set(gameProfile, uniqueId);
             _id.setAccessible(false);

@@ -132,12 +132,7 @@ public interface VersionWrapper {
 
     void setSkullValue(Block block, String value);
 
-    default void setUUID(Player player, UUID uniqueId) {
-        // TODO
-    }
+    void setUUID(Player player, UUID uniqueId);
 
-    default GameProfile getGameProfile(Player player) {
-        // TODO
-        throw new NotImplementedException();
-    }
+    GameProfile getGameProfile(Player player);
 }

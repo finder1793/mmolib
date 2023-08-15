@@ -41,6 +41,7 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -398,5 +399,28 @@ public class VersionWrapper_1_19_R2 implements VersionWrapper {
         EntityType type = entity.getType();
         return type == EntityType.SKELETON || type == EntityType.STRAY || type == EntityType.WITHER_SKELETON || type == EntityType.ZOMBIE || type == EntityType.DROWNED || type == EntityType.HUSK || type.name()
                 .equals("PIG_ZOMBIE") || type == EntityType.ZOMBIE_VILLAGER || type == EntityType.PHANTOM || type == EntityType.WITHER || type == EntityType.SKELETON_HORSE || type == EntityType.ZOMBIE_HORSE;
+    }
+
+    @Override
+    public void setUUID(Player player, UUID uniqueId) {
+
+        // Update UUID inside of game profile
+        final ServerPlayer handle = ((CraftPlayer) player).getHandle();
+        final GameProfile gameProfile = handle.getGameProfile();
+        try {
+            final Field _id = gameProfile.getClass().getDeclaredField("id");
+            _id.setAccessible(true);
+            _id.set(gameProfile, uniqueId);
+            _id.setAccessible(false);
+        } catch (Exception exception) {
+            throw new RuntimeException("Could not update player UUID", exception);
+        }
+
+        handle.setUUID(uniqueId);
+    }
+
+    @Override
+    public GameProfile getGameProfile(Player player) {
+        return ((CraftPlayer) player).getProfile();
     }
 }

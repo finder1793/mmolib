@@ -412,4 +412,27 @@ public class VersionWrapper_1_16_R3 implements VersionWrapper {
                 || type == EntityType.DROWNED || type == EntityType.HUSK || type.name().equals("PIG_ZOMBIE") || type == EntityType.ZOMBIE_VILLAGER
                 || type == EntityType.PHANTOM || type == EntityType.WITHER || type == EntityType.SKELETON_HORSE || type == EntityType.ZOMBIE_HORSE;
     }
+
+    @Override
+    public void setUUID(Player player, UUID uniqueId) {
+
+        // Update UUID inside of game profile
+        final EntityPlayer handle = ((CraftPlayer) player).getHandle();
+        final GameProfile gameProfile = handle.getProfile();
+        try {
+            final Field _id = gameProfile.getClass().getDeclaredField("id");
+            _id.setAccessible(true);
+            _id.set(gameProfile, uniqueId);
+            _id.setAccessible(false);
+        } catch (Exception exception) {
+            throw new RuntimeException("Could not update player UUID", exception);
+        }
+
+        handle.setUUID(uniqueId);
+    }
+
+    @Override
+    public GameProfile getGameProfile(Player player) {
+        return ((CraftPlayer) player).getProfile();
+    }
 }
