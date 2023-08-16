@@ -401,6 +401,7 @@ public class VersionWrapper_1_17_R1 implements VersionWrapper {
 
     @Override
     public void setUUID(Player player, UUID uniqueId) {
+        if (player.getUniqueId().equals(uniqueId)) return;
 
         // Update UUID inside of game profile
         final ServerPlayer handle = ((CraftPlayer) player).getHandle();
