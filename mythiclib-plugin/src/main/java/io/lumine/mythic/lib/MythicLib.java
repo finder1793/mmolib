@@ -379,6 +379,10 @@ public class MythicLib extends JavaPlugin {
         getLogger().log(Level.INFO, "Hooked onto proxy-based ProfileAPI");
     }
 
+    public boolean hasProfiles() {
+        return profileMode != null;
+    }
+
     @Nullable
     public ProfileMode getProfileMode() {
         return profileMode;
