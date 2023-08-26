@@ -1,9 +1,9 @@
 package io.lumine.mythic.lib.comp.profile;
 
-import fr.phoenixdevt.profile.ProfileDataModule;
-import fr.phoenixdevt.profile.ProfileProvider;
-import fr.phoenixdevt.profile.event.ProfileSelectEvent;
-import fr.phoenixdevt.profile.event.ProfileUnloadEvent;
+import fr.phoenixdevt.profiles.ProfileDataModule;
+import fr.phoenixdevt.profiles.ProfileProvider;
+import fr.phoenixdevt.profiles.event.ProfileSelectEvent;
+import fr.phoenixdevt.profiles.event.ProfileUnloadEvent;
 import io.lumine.mythic.lib.api.event.SynchronizedDataLoadEvent;
 import io.lumine.mythic.lib.data.SynchronizedDataHolder;
 import io.lumine.mythic.lib.data.SynchronizedDataManager;
@@ -54,7 +54,7 @@ public class ProfilePluginHook {
         // Save data on profile unload
         Bukkit.getPluginManager().registerEvent(ProfileUnloadEvent.class, fictiveListener, quitEventPriority, (listener, evt) -> {
             final ProfileUnloadEvent event = (ProfileUnloadEvent) evt;
-            manager.unregisterSafely(manager.get(event.getPlayer()));
+            manager.unregister(event.getPlayer());
             event.validate(module);
         }, manager.getOwningPlugin());
     }

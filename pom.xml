@@ -7,14 +7,19 @@
     <version>1.6.2-SNAPSHOT</version>
     <modules>
         <module>mythiclib-plugin</module>
-        <module>mythiclib-v1_17</module>
-        <module>mythiclib-v1_18</module>
+        <module>mythiclib-v1_17_r1</module>
+        <module>mythiclib-v1_18_r1</module>
         <module>mythiclib-v1_18_r2</module>
         <module>mythiclib-dist</module>
-        <module>mythiclib-v1_19</module>
+        <module>mythiclib-v1_19_r1</module>
         <module>mythiclib-v1_19_r2</module>
         <module>mythiclib-v1_19_r3</module>
         <module>mythiclib-v1_20_r1</module>
+        <module>mythiclib-v1_14_r1</module>
+        <module>mythiclib-v1_15_r1</module>
+        <module>mythiclib-v1_16_r1</module>
+        <module>mythiclib-v1_16_r2</module>
+        <module>mythiclib-v1_16_r3</module>
     </modules>
 
     <name>MythicLib</name>
@@ -76,21 +81,6 @@
             </plugin>
         </plugins>
     </build>
-
-    <distributionManagement>
-        <repository>
-            <id>phoenixdevt-releases</id>
-            <name>PhoenixDevt Releases</name>
-            <url>https://nexus.phoenixdevt.fr/repository/maven-releases/</url>
-        </repository>
-
-        <snapshotRepository>
-            <id>phoenixdevt-snapshots</id>
-            <name>PhoenixDevt Snapshots</name>
-            <url>https://nexus.phoenixdevt.fr/repository/maven-snapshots/</url>
-        </snapshotRepository>
-
-    </distributionManagement>
 
     <dependencies>
 

@@ -1,6 +1,8 @@
 package io.lumine.mythic.lib.version.wrapper;
 
+import com.mojang.authlib.GameProfile;
 import io.lumine.mythic.lib.api.item.NBTItem;
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -13,6 +15,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
+import java.util.UUID;
 
 public interface VersionWrapper {
 
@@ -128,4 +131,8 @@ public interface VersionWrapper {
     String getSkullValue(Block block);
 
     void setSkullValue(Block block, String value);
+
+    void setUUID(Player player, UUID uniqueId);
+
+    GameProfile getGameProfile(Player player);
 }

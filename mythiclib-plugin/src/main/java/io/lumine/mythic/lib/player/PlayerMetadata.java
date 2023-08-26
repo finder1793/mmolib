@@ -20,9 +20,10 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * A class created a specific point in time. It contains information
- * about a player like its cached player stats and the hand used
- * to perform the action, called "action hand".
+ * A class representing a player at a specific point in time. It is
+ * instanced when the player performs an action, and saves both the
+ * hand which is performing the action (action hand) and a snapshot
+ * of the full player stat map.
  *
  * @author jules
  */

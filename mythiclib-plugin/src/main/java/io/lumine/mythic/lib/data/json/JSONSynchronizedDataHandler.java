@@ -34,8 +34,10 @@ public abstract class JSONSynchronizedDataHandler<H extends SynchronizedDataHold
     }
 
     @Override
-    public void loadData(@NotNull H playerData) {
+    public boolean loadData(@NotNull H playerData) {
+        // TODO support true/false
         loadFromObject(playerData, getUserFile(playerData).getContent());
+        return true;
     }
 
     public abstract void loadFromObject(H playerData, JsonObject json);

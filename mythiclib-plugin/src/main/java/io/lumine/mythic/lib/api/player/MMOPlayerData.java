@@ -1,7 +1,6 @@
 package io.lumine.mythic.lib.api.player;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.player.skillmod.SkillModifierMap;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.comp.flags.CustomFlag;
 import io.lumine.mythic.lib.damage.AttackMetadata;
@@ -13,6 +12,7 @@ import io.lumine.mythic.lib.player.particle.ParticleEffectMap;
 import io.lumine.mythic.lib.player.potion.PermanentPotionEffectMap;
 import io.lumine.mythic.lib.player.skill.PassiveSkill;
 import io.lumine.mythic.lib.player.skill.PassiveSkillMap;
+import io.lumine.mythic.lib.player.skillmod.SkillModifierMap;
 import io.lumine.mythic.lib.script.variable.VariableList;
 import io.lumine.mythic.lib.script.variable.VariableScope;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
@@ -33,13 +33,15 @@ import java.util.function.Consumer;
 
 public class MMOPlayerData {
 
-    private final UUID playerId;
+    @NotNull
+    private UUID playerId;
 
     /**
      * MythicLib caches the UUID of the last profile used as
      * it cannot be accessed by plugins with profile-based data
      * when saving their data async.
      */
+    @Nullable
     private UUID profileId;
 
     @Nullable
@@ -70,18 +72,26 @@ public class MMOPlayerData {
      * @param player Player logging in. Original UUID is taken from that player
      */
     private MMOPlayerData(@NotNull Player player) {
-        this.playerId = player.getUniqueId();
+        this.playerId = Objects.requireNonNull(player, "Player cannot be null").getUniqueId();
         this.player = player;
     }
 
     public MMOPlayerData(@NotNull UUID playerId) {
-        this.playerId = playerId;
-        setProfileId(playerId);
+        this.playerId = Objects.requireNonNull(playerId, "Player ID cannot be null");
+        this.profileId = playerId;
     }
 
+    /**
+     * @return The TRUE player's unique ID, which can differ from the result of
+     *         {@link Player#getUniqueId()} if MMOProfiles modified this field.
+     */
     @NotNull
     public UUID getUniqueId() {
         return playerId;
+    }
+
+    public void setUniqueId(@NotNull UUID playerId) {
+        this.playerId = Objects.requireNonNull(playerId, "Player ID cannot be null");
     }
 
     /**
@@ -90,17 +100,21 @@ public class MMOPlayerData {
      * have not chosen a profile yet.
      * <p>
      * Otherwise, if no profile plugin is installed, this will simply return
-     * the player's UUID.
+     * the player's UUID. This is for convenience.
      *
      * @return The UUID used to fetch and store player data.
      */
     @NotNull
     public UUID getProfileId() {
-        return MythicLib.plugin.hasProfiles() ? Objects.requireNonNull(profileId, "No profile has been chosen yet") : playerId;
+        return Objects.requireNonNull(profileId, "No profile has been chosen yet");
     }
 
-    public void setProfileId(@NotNull UUID profileId) {
-        this.profileId = Objects.requireNonNull(profileId, "Profile ID cannot be null");
+    public void setProfileId(@Nullable UUID profileId) {
+        this.profileId = profileId;
+    }
+
+    public boolean hasProfile() {
+        return profileId != null;
     }
 
     /**
@@ -334,15 +348,7 @@ public class MMOPlayerData {
      * @param player Player whose data should be initialized
      */
     public static MMOPlayerData setup(@NotNull Player player) {
-        final @Nullable MMOPlayerData found = PLAYER_DATA.get(player.getUniqueId());
-
-        // Not loaded yet, checks for temporary data
-        if (found == null) {
-            final MMOPlayerData playerData = new MMOPlayerData(player);
-            PLAYER_DATA.put(player.getUniqueId(), playerData);
-            return playerData;
-        }
-
+        final MMOPlayerData found = PLAYER_DATA.computeIfAbsent(player.getUniqueId(), uuid -> new MMOPlayerData(player));
         found.updatePlayer(player);
         return found;
     }

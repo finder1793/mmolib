@@ -7,7 +7,6 @@ import io.lumine.mythic.lib.api.item.ItemTag;
 import io.lumine.mythic.lib.api.item.NBTCompound;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import io.lumine.mythic.lib.api.util.NBTTypeHelper;
-import io.lumine.mythic.lib.version.wrapper.VersionWrapper;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -41,6 +40,7 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -398,5 +398,29 @@ public class VersionWrapper_1_20_R1 implements VersionWrapper {
         EntityType type = entity.getType();
         return type == EntityType.SKELETON || type == EntityType.STRAY || type == EntityType.WITHER_SKELETON || type == EntityType.ZOMBIE || type == EntityType.DROWNED || type == EntityType.HUSK || type.name()
                 .equals("PIG_ZOMBIE") || type == EntityType.ZOMBIE_VILLAGER || type == EntityType.PHANTOM || type == EntityType.WITHER || type == EntityType.SKELETON_HORSE || type == EntityType.ZOMBIE_HORSE;
+    }
+
+    @Override
+    public void setUUID(Player player, UUID uniqueId) {
+        if (player.getUniqueId().equals(uniqueId)) return;
+
+        // Update UUID inside of game profile
+        final ServerPlayer handle = ((CraftPlayer) player).getHandle();
+        final GameProfile gameProfile = handle.getGameProfile();
+        try {
+            final Field _id = gameProfile.getClass().getDeclaredField("id");
+            _id.setAccessible(true);
+            _id.set(gameProfile, uniqueId);
+            _id.setAccessible(false);
+        } catch (Exception exception) {
+            throw new RuntimeException("Could not update player UUID", exception);
+        }
+
+        handle.setUUID(uniqueId);
+    }
+
+    @Override
+    public GameProfile getGameProfile(Player player) {
+        return ((CraftPlayer) player).getProfile();
     }
 }

@@ -52,8 +52,7 @@ public class DependencyCycleCheck {
 
     @Nullable
     private DependencyNode recursiveCheck(DependencyNode plugin) {
-        // Check if node exists in the
-        // recursive stack.
+        // Check if node exists in the recursive stack.
         if (inStack[plugin.id]) return plugin;
 
         // Check if node is already visited.
@@ -62,21 +61,18 @@ public class DependencyCycleCheck {
         // Marking node as visited.
         visited[plugin.id] = true;
 
-        // Marking node to be present in
-        // recursive stack.
+        // Marking node to be present in recursive stack.
         inStack[plugin.id] = true;
         stack.add(plugin);
 
-        // Iterate for all adjacent of
-        // 'node'.
+        // Iterate for all adjacent of 'node'.
         for (DependencyNode dep : plugin.children.values()) {
             // Recurse for 'v'.
             final DependencyNode check = recursiveCheck(dep);
             if (check != null) return check;
         }
 
-        // Mark 'node' to be removed
-        // from the recursive stack.
+        // Mark 'node' to be removed from the recursive stack.
         inStack[plugin.id] = false;
         stack.pop();
 

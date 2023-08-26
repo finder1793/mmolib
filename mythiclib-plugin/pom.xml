@@ -88,6 +88,11 @@
             <id>codemc-repo</id>
             <url>https://repo.codemc.io/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>minecraft-libraries</id>
+            <name>Minecraft Libraries</name>
+            <url>https://libraries.minecraft.net/</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -137,66 +142,28 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Spigot API -->
+        <!-- Spigot API & Libs -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.18-R0.1-SNAPSHOT</version>
+            <version>1.20.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
 
-        <!-- Spigot Libraries -->
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
+            <groupId>com.mojang</groupId>
+            <artifactId>authlib</artifactId>
+            <version>1.5.21</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
 
-        <!-- Spigot NMS versions -->
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-1.16.4</artifactId>
-            <version>dev</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-1.16.2</artifactId>
-            <version>dev</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-1.16.1</artifactId>
-            <version>dev</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.inventivetalent</groupId>
-            <artifactId>glowapi</artifactId>
-            <version>1.4.8</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-1.15</artifactId>
-            <version>dev</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-1.14</artifactId>
-            <version>dev</version>
-            <scope>provided</scope>
-            <optional>true</optional>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.68.Final</version>
+            <scope>compile</scope>
         </dependency>
 
         <!-- Plugin dependencies -->
@@ -238,7 +205,7 @@
         <dependency>
             <groupId>fr.phoenixdevt</groupId>
             <artifactId>Profile-API</artifactId>
-            <version>1.0</version>
+            <version>1.0.5-SNAPSHOT</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
@@ -246,6 +213,13 @@
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
             <version>4.7.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.inventivetalent</groupId>
+            <artifactId>glowapi</artifactId>
+            <version>1.4.8</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>

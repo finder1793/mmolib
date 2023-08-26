@@ -43,6 +43,7 @@
                                     <artifact>*:*</artifact>
                                     <excludes>
                                         <exclude>META-INF/**</exclude>
+                                        <exclude>assets/**</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
@@ -64,7 +65,9 @@
                                     <pattern>org.bstats</pattern>
                                     <shadedPattern>io.lumine.mythic.lib.metrics</shadedPattern>
                                 </relocation>
-                                <!-- <relocation>
+                                <!-- BSH has an issue as it uses reflection to find one of its own
+                                classes, which makes it incompatible with a Maven shade relocation
+                                <relocation>
                                     <pattern>bsh</pattern>
                                     <shadedPattern>io.lumine.mythic.lib.bsh</shadedPattern>
                                     <includes>
@@ -90,14 +93,49 @@
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
-            <artifactId>mythiclib-v1_17</artifactId>
+            <artifactId>mythiclib-v1_14_r1</artifactId>
             <version>1.6.2-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
-            <artifactId>mythiclib-v1_18</artifactId>
+            <artifactId>mythiclib-v1_15_r1</artifactId>
+            <version>1.6.2-SNAPSHOT</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>io.lumine</groupId>
+            <artifactId>mythiclib-v1_16_r1</artifactId>
+            <version>1.6.2-SNAPSHOT</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>io.lumine</groupId>
+            <artifactId>mythiclib-v1_16_r2</artifactId>
+            <version>1.6.2-SNAPSHOT</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>io.lumine</groupId>
+            <artifactId>mythiclib-v1_16_r3</artifactId>
+            <version>1.6.2-SNAPSHOT</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>io.lumine</groupId>
+            <artifactId>mythiclib-v1_17_r1</artifactId>
+            <version>1.6.2-SNAPSHOT</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>io.lumine</groupId>
+            <artifactId>mythiclib-v1_18_r1</artifactId>
             <version>1.6.2-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
@@ -111,7 +149,7 @@
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
-            <artifactId>mythiclib-v1_19</artifactId>
+            <artifactId>mythiclib-v1_19_r1</artifactId>
             <version>1.6.2-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>

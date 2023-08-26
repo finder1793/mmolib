@@ -19,8 +19,8 @@ public abstract class SQLSynchronizedDataHandler<H extends SynchronizedDataHolde
     }
 
     @Override
-    public void loadData(@NotNull H playerData) {
-        newDataSynchronizer(playerData).synchronize();
+    public boolean loadData(@NotNull H playerData) {
+        return newDataSynchronizer(playerData).synchronize();
     }
 
     /**

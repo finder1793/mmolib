@@ -26,7 +26,8 @@ import io.lumine.mythic.lib.comp.formula.FormulaParser;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
 import io.lumine.mythic.lib.comp.placeholder.*;
-import io.lumine.mythic.lib.comp.profile.ProfilePluginListener;
+import io.lumine.mythic.lib.comp.profile.ProfileMode;
+import io.lumine.mythic.lib.comp.profile.LegacyProfilesListener;
 import io.lumine.mythic.lib.comp.protocollib.DamageParticleCap;
 import io.lumine.mythic.lib.glow.GlowModule;
 import io.lumine.mythic.lib.glow.provided.MythicGlowModule;
@@ -46,7 +47,6 @@ import io.lumine.mythic.lib.util.loadingorder.DependencyNode;
 import io.lumine.mythic.lib.util.network.MythicPacketSniffer;
 import io.lumine.mythic.lib.version.ServerVersion;
 import io.lumine.mythic.lib.version.SpigotPlugin;
-import lombok.Getter;
 import org.apache.commons.lang.Validate;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -85,10 +85,9 @@ public class MythicLib extends JavaPlugin {
     private AttackEffects attackEffects;
     private MitigationMechanics mitigationMechanics;
     private AdventureParser adventureParser;
-    @Getter
     private PlaceholderParser placeholderParser;
     private GlowModule glowModule;
-    private @Nullable Boolean hasProfiles;
+    private @Nullable ProfileMode profileMode;
 
     @Override
     public void onLoad() {
@@ -227,13 +226,6 @@ public class MythicLib extends JavaPlugin {
 //		if (Bukkit.getPluginManager().getPlugin("ShopKeepers") != null)
 //			entityManager.registerHandler(new ShopKeepersEntityHandler());
 
-        // Profiles
-        if (hasProfiles == null) hasProfiles = false;
-        else if (hasProfiles) {
-            Bukkit.getPluginManager().registerEvents(new ProfilePluginListener(), this);
-            getLogger().log(Level.INFO, "Hooked onto ProfileAPI");
-        }
-
         // Glowing module
         if (glowModule == null) {
             glowModule = new MythicGlowModule();
@@ -367,18 +359,29 @@ public class MythicLib extends JavaPlugin {
     }
 
     /**
-     * Enables support for the Profile API. This will work for any
-     * profile plugin that implements that API, including MMOProfiles.
-     *
-     * @author Jules
+     * Enables support for legacy (spigot-based) MMOProfiles.
      */
-    public void enableProfiles() {
-        Validate.isTrue(hasProfiles == null, "Profiles have already been enabled/disabled");
-        hasProfiles = true;
+    public void useLegacyProfiles() {
+        Validate.isTrue(profileMode == null, "Profiles have already been enabled/disabled");
+        profileMode = ProfileMode.LEGACY;
+
+        Bukkit.getPluginManager().registerEvents(new LegacyProfilesListener(), this);
+        getLogger().log(Level.INFO, "Hooked onto spigot-based ProfileAPI");
     }
 
-    public boolean hasProfiles() {
-        return hasProfiles;
+    /**
+     * Enables support for proxy-based MMOProfiles
+     */
+    public void useProxyProfiles() {
+        Validate.isTrue(profileMode == null, "Profiles have already been enabled/disabled");
+        profileMode = ProfileMode.PROXY;
+
+        getLogger().log(Level.INFO, "Hooked onto proxy-based ProfileAPI");
+    }
+
+    @Nullable
+    public ProfileMode getProfileMode() {
+        return profileMode;
     }
 
     @Deprecated
@@ -413,5 +416,4 @@ public class MythicLib extends JavaPlugin {
     public File getJarFile() {
         return plugin.getFile();
     }
-
 }

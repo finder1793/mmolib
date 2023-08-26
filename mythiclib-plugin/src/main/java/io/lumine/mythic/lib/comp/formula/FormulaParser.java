@@ -14,7 +14,7 @@ public class FormulaParser {
     private final List<String> mathFunctions = Arrays.asList("pow", "sqrt", "sin", "cos", "tan", "asin", "acos", "atan", "atan2", "exp", "log", "random", "abs", "max", "min");
 
     public FormulaParser() {
-        interpreter = new bsh.Interpreter();
+        interpreter = new Interpreter();
         try {
             interpreter.eval("import java.lang.Math;");
         } catch (EvalError error) {

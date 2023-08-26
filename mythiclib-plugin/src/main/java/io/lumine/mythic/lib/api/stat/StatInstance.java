@@ -113,7 +113,7 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
      */
     @Override
     public void addModifier(StatModifier modifier) {
-        final ModifierPacket packet = new ModifierPacket(this);
+        final ModifierPacket packet = new ModifierPacket();
         packet.addModifier(modifier);
         packet.runUpdate();
     }
@@ -127,7 +127,7 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
      */
     @Override
     public void removeIf(Predicate<String> condition) {
-        final ModifierPacket packet = new ModifierPacket(this);
+        final ModifierPacket packet = new ModifierPacket();
         packet.removeIf(condition);
         packet.runUpdate();
     }
@@ -139,13 +139,13 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
      */
     @Override
     public void remove(String key) {
-        final ModifierPacket packet = new ModifierPacket(this);
+        final ModifierPacket packet = new ModifierPacket();
         packet.remove(key);
         packet.runUpdate();
     }
 
     public ModifierPacket newPacket() {
-        return new ModifierPacket(this);
+        return new ModifierPacket();
     }
 
     /**
@@ -159,17 +159,12 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
      * @author indyuce
      */
     public class ModifierPacket {
-        private final StatInstance instance;
 
         /**
          * Set to true if some update is required. This is a small
          * performance improvement as it reduces useless stat updates.
          */
         private boolean updateRequired;
-
-        public ModifierPacket(StatInstance instance) {
-            this.instance = instance;
-        }
 
         /**
          * Registers a stat modifier and run the required player stat updates.
@@ -230,7 +225,7 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
          */
         public void runUpdate() {
             final StatHandler handler;
-            if (updateRequired && (handler = findHandler()) != null) handler.runUpdate(instance);
+            if (updateRequired && (handler = findHandler()) != null) handler.runUpdate(StatInstance.this);
         }
     }
 }

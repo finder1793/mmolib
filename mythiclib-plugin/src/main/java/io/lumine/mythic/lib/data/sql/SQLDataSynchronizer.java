@@ -33,6 +33,8 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
 
     private int tries;
 
+    private static final int RETRIEVAL_PERIOD = 1000;
+
     public SQLDataSynchronizer(String tableName, String uuidFieldName, SQLDataSource dataSource, H data) {
         this(tableName, uuidFieldName, dataSource, data, false);
     }
@@ -67,8 +69,6 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
         return data;
     }
 
-    private static final int PERIOD = 1000;
-
     /**
      * Tries to fetch data once. If the maximum amount of fetches
      * hasn't been reached yet, it will try again later if no up-to-date
@@ -76,12 +76,12 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
      * <p>
      * This method freezes the thread and shall be called async.
      */
-    public void synchronize() {
+    public boolean synchronize() {
 
         // Cancel if player is offline
         if (!data.getMMOPlayerData().isOnline()) {
             UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Stopped data retrieval for '" + effectiveUUID + "' as they went offline");
-            return;
+            return false;
         }
 
         tries++;
@@ -90,7 +90,7 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
         @Nullable Connection connection = null;
         @Nullable PreparedStatement prepared = null;
         @Nullable ResultSet result = null;
-        boolean retry = false;
+        boolean retry = false, success = false;
 
         try {
             connection = dataSource.getConnection();
@@ -104,19 +104,21 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
             if (result.next()) {
                 if (tries > MythicLib.plugin.getMMOConfig().maxSyncTries || result.getInt("is_saved") == 1) {
                     confirmReception(connection);
+                    success = true;
                     loadData(result);
                     if (tries > MythicLib.plugin.getMMOConfig().maxSyncTries)
                         UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Maximum number of tries reached.");
                     UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Found and loaded data of '" + effectiveUUID + "'");
                     UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Time taken: " + (System.currentTimeMillis() - start) + "ms");
                 } else {
-                    UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Did not load data of '" + effectiveUUID + "' as 'is_saved' is set to 0, trying again in " + PERIOD + "ms");
+                    UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Did not load data of '" + effectiveUUID + "' as 'is_saved' is set to 0, trying again in " + RETRIEVAL_PERIOD + "ms");
                     retry = true;
                 }
             } else {
 
                 // Empty player data
                 confirmReception(connection);
+                success = true;
                 loadEmptyData();
                 UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Found empty data for '" + effectiveUUID + "', loading default...");
             }
@@ -140,12 +142,14 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
         // Synchronize after closing resources
         if (retry) {
             try {
-                Thread.sleep(PERIOD);
+                Thread.sleep(RETRIEVAL_PERIOD);
             } catch (InterruptedException exception) {
                 throw new RuntimeException(exception);
             }
-            synchronize();
+            return synchronize();
         }
+
+        return success;
     }
 
     /**
