@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.data;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.SynchronizedDataLoadEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.comp.profile.ProfileMode;
 import io.lumine.mythic.lib.comp.profile.ProfilePluginHook;
 import io.lumine.mythic.lib.util.Closeable;
 import org.apache.commons.lang.Validate;
@@ -39,11 +40,13 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
     private final Map<UUID, H> activeData = Collections.synchronizedMap(new HashMap<>());
 
     /**
-     * Profile plugins behave differently on data storage:
-     * - they use the player UUID directly instead of using profile IDs
-     * - this option has to be passed to all of the data handlers
+     * Should data be loaded when the player joins?
+     * Should be true if any of the following is verified:
+     * - If the plugin owning the data manager is a PROFILE PLUGIN
+     * - If no profile plugin is installed
+     * - If proxy-based profiles are enabled
      */
-    private final boolean profilePlugin;
+    private final boolean loadDataOnJoin;
 
     @NotNull
     private SynchronizedDataHandler<H, O> dataHandler;
@@ -55,7 +58,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
     public SynchronizedDataManager(@NotNull JavaPlugin owning, @NotNull SynchronizedDataHandler<H, O> dataHandler, boolean profilePlugin) {
         this.owning = Objects.requireNonNull(owning, "Plugin cannot be null");
         this.dataHandler = Objects.requireNonNull(dataHandler, "Data handler cannot be null");
-        this.profilePlugin = profilePlugin;
+        loadDataOnJoin = profilePlugin || MythicLib.plugin.getProfileMode() != ProfileMode.LEGACY;
     }
 
     public void setDataHandler(@NotNull SynchronizedDataHandler<H, O> dataHandler) {
@@ -160,12 +163,11 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         // Auto-save
         if (owning.getConfig().getBoolean("auto-save.enabled")) new AutoSaveRunnable(this);
 
-        // Load data on login
+        // Setup data on login
         Bukkit.getPluginManager().registerEvent(PlayerJoinEvent.class, FICTIVE_LISTENER, joinEventPriority, (listener, event) -> setup(((PlayerJoinEvent) event).getPlayer()), owning);
 
         // Profile events if profile module is installed
-        if (!profilePlugin && MythicLib.plugin.usesProfileId())
-            new ProfilePluginHook(this, FICTIVE_LISTENER, joinEventPriority, quitEventPriority);
+        if (!loadDataOnJoin) new ProfilePluginHook(this, FICTIVE_LISTENER, joinEventPriority, quitEventPriority);
 
             // Save data on logout
         else
@@ -207,7 +209,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         final @Nullable H playerData = activeData.computeIfAbsent(player.getUniqueId(), uuid -> newPlayerData(MMOPlayerData.get(player.getUniqueId())));
 
         // Schedule data loading
-        if (!playerData.isSynchronized() && (profilePlugin || !MythicLib.plugin.usesProfileId()))
+        if (!playerData.isSynchronized() && loadDataOnJoin)
             loadData(playerData).thenAccept(v -> Bukkit.getScheduler().runTask(owning, () -> {
                 playerData.markAsSynchronized();
                 Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(this, playerData));
@@ -224,9 +226,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         try {
             unregister(playerData.getPlayer());
         } catch (Exception exception) {
-            final UUID uuid = playerData.getMMOPlayerData().hasProfile() && !MythicLib.plugin.usesProfileId() ?
-                    playerData.getMMOPlayerData().getProfileId() :
-                    playerData.getMMOPlayerData().getUniqueId();
+            final UUID uuid = playerData.getMMOPlayerData().hasProfile() && MythicLib.plugin.getProfileMode() == ProfileMode.PROXY ? playerData.getMMOPlayerData().getProfileId() : playerData.getMMOPlayerData().getUniqueId();
             final Player player = Bukkit.getPlayer(uuid);
             unregister(player);
         }

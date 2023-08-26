@@ -27,7 +27,8 @@ import io.lumine.mythic.lib.comp.formula.FormulaParser;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
 import io.lumine.mythic.lib.comp.placeholder.*;
-import io.lumine.mythic.lib.comp.profile.SpigotProfilesListener;
+import io.lumine.mythic.lib.comp.profile.ProfileMode;
+import io.lumine.mythic.lib.comp.profile.LegacyProfilesListener;
 import io.lumine.mythic.lib.comp.protocollib.DamageParticleCap;
 import io.lumine.mythic.lib.glow.GlowModule;
 import io.lumine.mythic.lib.glow.provided.MythicGlowModule;
@@ -85,7 +86,7 @@ public class MythicLib extends JavaPlugin {
     private AdventureParser adventureParser;
     private PlaceholderParser placeholderParser;
     private GlowModule glowModule;
-    private @Nullable Boolean usesProfileId;
+    private @Nullable ProfileMode profileMode;
 
     @Override
     public void onLoad() {
@@ -350,28 +351,29 @@ public class MythicLib extends JavaPlugin {
     }
 
     /**
-     * Enables support for spigot-based MMOProfiles.
+     * Enables support for legacy (spigot-based) MMOProfiles.
      */
-    public void enableSpigotProfiles() {
-        Validate.isTrue(usesProfileId == null, "Profiles have already been enabled/disabled");
-        usesProfileId = true;
+    public void useLegacyProfiles() {
+        Validate.isTrue(profileMode == null, "Profiles have already been enabled/disabled");
+        profileMode = ProfileMode.LEGACY;
 
-        Bukkit.getPluginManager().registerEvents(new SpigotProfilesListener(), this);
+        Bukkit.getPluginManager().registerEvents(new LegacyProfilesListener(), this);
         getLogger().log(Level.INFO, "Hooked onto spigot-based ProfileAPI");
     }
 
     /**
      * Enables support for proxy-based MMOProfiles
      */
-    public void enableProxyProfiles() {
-        Validate.isTrue(usesProfileId == null, "Profiles have already been enabled/disabled");
-        usesProfileId = false;
+    public void useProxyProfiles() {
+        Validate.isTrue(profileMode == null, "Profiles have already been enabled/disabled");
+        profileMode = ProfileMode.PROXY;
 
         getLogger().log(Level.INFO, "Hooked onto proxy-based ProfileAPI");
     }
 
-    public boolean usesProfileId() {
-        return usesProfileId != null && usesProfileId.booleanValue();
+    @Nullable
+    public ProfileMode getProfileMode() {
+        return profileMode;
     }
 
     @Deprecated

@@ -7,7 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-public class SpigotProfilesListener implements Listener {
+public class LegacyProfilesListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onProfileChooseSkillTrigger(ProfileSelectEvent event) {
