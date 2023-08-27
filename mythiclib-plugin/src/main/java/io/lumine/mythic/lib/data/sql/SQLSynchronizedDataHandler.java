@@ -35,5 +35,5 @@ public abstract class SQLSynchronizedDataHandler<H extends SynchronizedDataHolde
         getDataSource().close();
     }
 
-    public abstract SQLDataSynchronizer newDataSynchronizer(H playerData);
+    public abstract SQLDataSynchronizer newDataSynchronizer(@NotNull H playerData);
 }

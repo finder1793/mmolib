@@ -4,6 +4,7 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.comp.flags.CustomFlag;
 import io.lumine.mythic.lib.damage.AttackMetadata;
+import io.lumine.mythic.lib.data.SynchronizedDataHolder;
 import io.lumine.mythic.lib.listener.PlayerListener;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.player.cooldown.CooldownMap;
@@ -33,16 +34,15 @@ import java.util.function.Consumer;
 
 public class MMOPlayerData {
 
-    @NotNull
-    private UUID playerId;
-
     /**
-     * MythicLib caches the UUID of the last profile used as
-     * it cannot be accessed by plugins with profile-based data
-     * when saving their data async.
+     * UUID of the Player entity. It has to be one of the
+     * two among the profile and official player ID.
      */
+    @NotNull
+    private final UUID entityId;
+
     @Nullable
-    private UUID profileId;
+    private UUID profileId, officialId;
 
     @Nullable
     private Player player;
@@ -72,37 +72,62 @@ public class MMOPlayerData {
      * @param player Player logging in. Original UUID is taken from that player
      */
     private MMOPlayerData(@NotNull Player player) {
-        this.playerId = Objects.requireNonNull(player, "Player cannot be null").getUniqueId();
+        this.entityId = Objects.requireNonNull(player, "Player cannot be null").getUniqueId();
         this.player = player;
     }
 
-    public MMOPlayerData(@NotNull UUID playerId) {
-        this.playerId = Objects.requireNonNull(playerId, "Player ID cannot be null");
-        this.profileId = playerId;
+    public MMOPlayerData(@NotNull UUID uniqueId) {
+        this.entityId = Objects.requireNonNull(uniqueId, "UUID cannot be null");
+        this.officialId = uniqueId;
+        this.profileId = uniqueId;
     }
 
     /**
-     * @return The TRUE player's unique ID, which can differ from the result of
-     *         {@link Player#getUniqueId()} if MMOProfiles modified this field.
+     * For backwards compatibility, this returns the same value as getPlayer().getUniqueId().
+     * <p>
+     * Developers are encouraged to use this method over other getters.
+     *
+     * @return The Player entity unique ID. This may differ from the current player's
+     *         profile ID depending on the profile provider being used on the server.
+     * @see #getProfileId()
+     * @see #getOfficialId()
+     * @see SynchronizedDataHolder#getEffectiveId()
      */
     @NotNull
     public UUID getUniqueId() {
-        return playerId;
-    }
-
-    public void setUniqueId(@NotNull UUID playerId) {
-        this.playerId = Objects.requireNonNull(playerId, "Player ID cannot be null");
+        return entityId;
     }
 
     /**
-     * If support for the Profile API has been enabled, this returns the
-     * current player's profile ID. This method will throw an error if they
-     * have not chosen a profile yet.
+     * This method will throw an error if the player hasn't chosen a profile
+     * yet. It is also guaranteed to throw an error if proxy-based profiles
+     * are not enabled.
      * <p>
-     * Otherwise, if no profile plugin is installed, this will simply return
-     * the player's UUID. This is for convenience.
+     * Developers are discouraged from using this method.
      *
-     * @return The UUID used to fetch and store player data.
+     * @return The UUID Mojang would give of the player
+     */
+    @NotNull
+    public UUID getOfficialId() {
+        return Objects.requireNonNull(officialId, "No official ID provided");
+    }
+
+    public void setOfficialId(@NotNull UUID officialId) {
+        this.officialId = Objects.requireNonNull(officialId, "Official ID cannot be null");
+    }
+
+    public boolean hasOfficialId() {
+        return officialId != null;
+    }
+
+    /**
+     * If support for the Profile API is enabled, this returns the current
+     * player's profile ID. This method will throw an error if they have
+     * not chosen a profile yet.
+     * <p>
+     * Developers are discouraged from using this method.
+     *
+     * @return The UUID of the current player's profile
      */
     @NotNull
     public UUID getProfileId() {
@@ -122,6 +147,7 @@ public class MMOPlayerData {
      *         apply stat modifiers to ANY MMOItems/MMOCore/external stats,
      *         calculate stat values, etc.
      */
+    @NotNull
     public StatMap getStatMap() {
         return statMap;
     }
@@ -130,6 +156,7 @@ public class MMOPlayerData {
      * @return The player's skill modifier map. This map applies modifications
      *         to numerical skill parameters (damage, cooldown...)
      */
+    @NotNull
     public SkillModifierMap getSkillModifierMap() {
         return skillModifierMap;
     }
@@ -153,6 +180,7 @@ public class MMOPlayerData {
     /**
      * @return All active skill triggers
      */
+    @NotNull
     public PassiveSkillMap getPassiveSkillMap() {
         return passiveSkillMap;
     }
@@ -209,6 +237,7 @@ public class MMOPlayerData {
         }
     }
 
+    @NotNull
     public VariableList getVariableList() {
         return variableList;
     }
@@ -303,6 +332,7 @@ public class MMOPlayerData {
      *
      * @return The main player's cooldown map
      */
+    @NotNull
     public CooldownMap getCooldownMap() {
         return cooldownMap;
     }
@@ -420,6 +450,7 @@ public class MMOPlayerData {
      *         tasks instead of looping through online players and having to
      *         resort to a map-lookup-based get(Player) call
      */
+    @NotNull
     public static Collection<MMOPlayerData> getLoaded() {
         return PLAYER_DATA.values();
     }

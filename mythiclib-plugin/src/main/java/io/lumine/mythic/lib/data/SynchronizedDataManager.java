@@ -219,13 +219,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
      */
     @Deprecated
     public void unregisterSafely(H playerData) {
-        try {
-            unregister(playerData.getPlayer());
-        } catch (Exception exception) {
-            final UUID uuid = playerData.getMMOPlayerData().hasProfile() && MythicLib.plugin.getProfileMode() == ProfileMode.PROXY ? playerData.getMMOPlayerData().getProfileId() : playerData.getMMOPlayerData().getUniqueId();
-            final Player player = Bukkit.getPlayer(uuid);
-            unregister(player);
-        }
+        unregister(playerData.getPlayer());
     }
 
     /**
@@ -237,7 +231,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
      */
     public void unregister(@NotNull Player player) {
         final H playerData = activeData.remove(player.getUniqueId());
-        Validate.notNull(playerData, "Could not find player data of player '" + playerData.getUniqueId() + "'");
+        Validate.notNull(playerData, "Could not find player data of player '" + player.getUniqueId() + "'");
 
         // Close and unregister data instantly if no error occurred
         if (playerData instanceof Closeable) ((Closeable) playerData).close();
