@@ -22,7 +22,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 
 /**
  * A general player data manager which implements
@@ -40,14 +39,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
     private final JavaPlugin owning;
     private final Map<UUID, H> activeData = Collections.synchronizedMap(new HashMap<>());
 
-    /**
-     * Should data be loaded when the player joins?
-     * Should be true if any of the following is verified:
-     * - If the plugin owning the data manager is a PROFILE PLUGIN
-     * - If no profile plugin is installed
-     * - If proxy-based profiles are enabled
-     */
-    private final boolean loadDataOnJoin;
+    private final boolean profilePlugin;
 
     @NotNull
     private SynchronizedDataHandler<H, O> dataHandler;
@@ -59,7 +51,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
     public SynchronizedDataManager(@NotNull JavaPlugin owning, @NotNull SynchronizedDataHandler<H, O> dataHandler, boolean profilePlugin) {
         this.owning = Objects.requireNonNull(owning, "Plugin cannot be null");
         this.dataHandler = Objects.requireNonNull(dataHandler, "Data handler cannot be null");
-        loadDataOnJoin = profilePlugin || MythicLib.plugin.getProfileMode() != ProfileMode.LEGACY;
+        this.profilePlugin = profilePlugin;
     }
 
     public void setDataHandler(@NotNull SynchronizedDataHandler<H, O> dataHandler) {
@@ -140,6 +132,18 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
             if (pending.getOwner().equals(owning)) ((Runnable) pending).run();
     }
 
+    /**
+     * Should be true if any of the following is verified:
+     * - If the plugin owning the data manager is a PROFILE PLUGIN
+     * - If no profile plugin is installed
+     * - If proxy-based profiles are enabled
+     *
+     * @return Should data be loaded when the player joins?
+     */
+    private boolean loadsDataOnJoin() {
+        return profilePlugin || MythicLib.plugin.getProfileMode() != ProfileMode.LEGACY;
+    }
+
     private static final Listener FICTIVE_LISTENER = new Listener() {
     };
 
@@ -168,7 +172,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         Bukkit.getPluginManager().registerEvent(PlayerJoinEvent.class, FICTIVE_LISTENER, joinEventPriority, (listener, event) -> setup(((PlayerJoinEvent) event).getPlayer()), owning);
 
         // Profile events if profile module is installed
-        if (!loadDataOnJoin) new ProfilePluginHook(this, FICTIVE_LISTENER, joinEventPriority, quitEventPriority);
+        if (!loadsDataOnJoin()) new ProfilePluginHook(this, FICTIVE_LISTENER, joinEventPriority, quitEventPriority);
 
             // Save data on logout
         else
@@ -203,7 +207,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         final @Nullable H playerData = activeData.computeIfAbsent(player.getUniqueId(), uuid -> newPlayerData(MMOPlayerData.get(player.getUniqueId())));
 
         // Schedule data loading
-        if (!playerData.isSynchronized() && loadDataOnJoin)
+        if (!playerData.isSynchronized() && loadsDataOnJoin())
             loadData(playerData).thenAccept(v -> Bukkit.getScheduler().runTask(owning, () -> {
                 playerData.markAsSynchronized();
                 Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(this, playerData));

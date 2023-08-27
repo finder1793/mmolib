@@ -65,7 +65,6 @@ import java.util.logging.Level;
 public class MythicLib extends JavaPlugin {
     public static MythicLib plugin;
 
-
     private final DamageManager damageManager = new DamageManager();
 
     private final MythicCommandManager mythicCommandManager = new MythicCommandManager();
