@@ -5,7 +5,7 @@ import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.SynchronizedDataLoadEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.comp.profile.ProfileMode;
-import io.lumine.mythic.lib.comp.profile.ProfilePluginHook;
+import io.lumine.mythic.lib.comp.profile.LegacyProfilePluginHook;
 import io.lumine.mythic.lib.util.Closeable;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -132,18 +132,6 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
             if (pending.getOwner().equals(owning)) ((Runnable) pending).run();
     }
 
-    /**
-     * Should be true if any of the following is verified:
-     * - If the plugin owning the data manager is a PROFILE PLUGIN
-     * - If no profile plugin is installed
-     * - If proxy-based profiles are enabled
-     *
-     * @return Should data be loaded when the player joins?
-     */
-    private boolean loadsDataOnJoin() {
-        return profilePlugin || MythicLib.plugin.getProfileMode() != ProfileMode.LEGACY;
-    }
-
     private static final Listener FICTIVE_LISTENER = new Listener() {
     };
 
@@ -171,8 +159,9 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         // Setup data on login
         Bukkit.getPluginManager().registerEvent(PlayerJoinEvent.class, FICTIVE_LISTENER, joinEventPriority, (listener, event) -> setup(((PlayerJoinEvent) event).getPlayer()), owning);
 
-        // Profile events if profile module is installed
-        if (!loadsDataOnJoin()) new ProfilePluginHook(this, FICTIVE_LISTENER, joinEventPriority, quitEventPriority);
+        // Support for legacy profiles
+        if (!profilePlugin && MythicLib.plugin.getProfileMode() == ProfileMode.LEGACY)
+            new LegacyProfilePluginHook(this, FICTIVE_LISTENER, joinEventPriority, quitEventPriority);
 
             // Save data on logout
         else
@@ -204,16 +193,25 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
     public H setup(@NotNull Player player) {
 
         // Get data or compute it if non existent (more resilient)
-        final @Nullable H playerData = activeData.computeIfAbsent(player.getUniqueId(), uuid -> newPlayerData(MMOPlayerData.get(player.getUniqueId())));
+        final @NotNull H playerData = activeData.computeIfAbsent(player.getUniqueId(), uuid -> newPlayerData(MMOPlayerData.get(player.getUniqueId())));
 
         // Schedule data loading
-        if (!playerData.isSynchronized() && loadsDataOnJoin())
+        if (requiresSynchronization(playerData))
             loadData(playerData).thenAccept(v -> Bukkit.getScheduler().runTask(owning, () -> {
                 playerData.markAsSynchronized();
                 Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(this, playerData));
             }));
 
         return playerData;
+    }
+
+    private boolean requiresSynchronization(@NotNull H holder) {
+        if (holder.isSynchronized()) return false;
+        if (profilePlugin) return true;
+        if (MythicLib.plugin.getProfileMode() == null) return true;
+        if (MythicLib.plugin.getProfileMode() == ProfileMode.LEGACY) return false;
+        if (MythicLib.plugin.getProfileMode() == ProfileMode.PROXY) return holder.getMMOPlayerData().hasProfile();
+        throw new RuntimeException();
     }
 
     /**

@@ -26,9 +26,9 @@ import java.util.logging.Level;
  *
  * @author jules
  */
-public class ProfilePluginHook {
+public class LegacyProfilePluginHook {
 
-    public <H extends SynchronizedDataHolder> ProfilePluginHook(SynchronizedDataManager<H, ?> manager, Listener fictiveListener, EventPriority joinEventPriority, EventPriority quitEventPriority) {
+    public <H extends SynchronizedDataHolder> LegacyProfilePluginHook(SynchronizedDataManager<H, ?> manager, Listener fictiveListener, EventPriority joinEventPriority, EventPriority quitEventPriority) {
 
         // Register data holder
         final ProfileProvider profilePlugin = Bukkit.getServicesManager().getRegistration(ProfileProvider.class).getProvider();
