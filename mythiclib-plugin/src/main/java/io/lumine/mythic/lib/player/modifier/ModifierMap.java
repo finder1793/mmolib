@@ -27,7 +27,7 @@ public abstract class ModifierMap<T extends PlayerModifier> {
     }
 
     @NotNull
-    public Iterable<T> isolateModifiers(EquipmentSlot hand) {
+    public Iterable<T> isolateModifiers(@NotNull EquipmentSlot hand) {
         final ArrayList<T> isolated = new ArrayList<>();
 
         for (T modifier : getModifiers())
@@ -52,9 +52,8 @@ public abstract class ModifierMap<T extends PlayerModifier> {
 
     public void removeModifiers(String key) {
         final Iterator<T> iterator = modifiers.values().iterator();
-        T skill;
         while (iterator.hasNext()) {
-            skill = iterator.next();
+            final T skill = iterator.next();
             if (skill.getKey().equals(key)) {
                 iterator.remove();
                 if (skill instanceof Closeable)

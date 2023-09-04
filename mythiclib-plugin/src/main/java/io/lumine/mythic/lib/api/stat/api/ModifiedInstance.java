@@ -1,22 +1,24 @@
 package io.lumine.mythic.lib.api.stat.api;
 
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
-import io.lumine.mythic.lib.util.Closeable;
 import io.lumine.mythic.lib.player.modifier.ModifierType;
+import io.lumine.mythic.lib.util.Closeable;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public abstract class ModifiedInstance<T extends InstanceModifier> {
-    protected final Map<String, T> modifiers = new ConcurrentHashMap<>();
+    protected final Map<UUID, T> modifiers = new ConcurrentHashMap<>();
 
     /**
      * @return The final modified value taking, into account the default value
-     * as well as all of the modifiers. %-based modifiers are applied
-     * afterwards, onto the sum of the base value + flat modifiers.
+     *         as well as all of the modifiers. %-based modifiers are applied
+     *         afterwards, onto the sum of the base value + flat modifiers.
      */
     public double getTotal(double base) {
         return getFilteredTotal(base, EquipmentSlot.MAIN_HAND::isCompatible, mod -> mod);
@@ -25,8 +27,8 @@ public abstract class ModifiedInstance<T extends InstanceModifier> {
     /**
      * @param filter Filters modifiers taken into account for the final value computation
      * @return The final modified value taking, into account the default value
-     * as well as all of the modifiers. %-based modifiers are applied
-     * afterwards, onto the sum of the base value + flat modifiers.
+     *         as well as all of the modifiers. %-based modifiers are applied
+     *         afterwards, onto the sum of the base value + flat modifiers.
      */
     public double getFilteredTotal(double base, Predicate<T> filter) {
         return getFilteredTotal(base, filter, mod -> mod);
@@ -39,8 +41,8 @@ public abstract class ModifiedInstance<T extends InstanceModifier> {
      *                     a stat modifier has a negative value and returning a modifier
      *                     with a reduced absolute value.
      * @return The final modified value taking, into account the default value
-     * as well as all of the modifiers. %-based modifiers are applied
-     * afterwards, onto the sum of the base value + flat modifiers.
+     *         as well as all of the modifiers. %-based modifiers are applied
+     *         afterwards, onto the sum of the base value + flat modifiers.
      */
     public double getTotal(double base, Function<T, T> modification) {
         return getFilteredTotal(base, EquipmentSlot.MAIN_HAND::isCompatible, modification);
@@ -54,8 +56,8 @@ public abstract class ModifiedInstance<T extends InstanceModifier> {
      *                     a stat modifier has a negative value and returning a modifier
      *                     with a reduced absolute value.
      * @return The final modified value taking, into account the default value
-     * as well as all of the modifiers. %-based modifiers are applied
-     * afterwards, onto the sum of the base value + flat modifiers.
+     *         as well as all of the modifiers. %-based modifiers are applied
+     *         afterwards, onto the sum of the base value + flat modifiers.
      */
     public double getFilteredTotal(double d, Predicate<T> filter, Function<T, T> modification) {
 
@@ -70,24 +72,46 @@ public abstract class ModifiedInstance<T extends InstanceModifier> {
         return d;
     }
 
-    /**
-     * @param key The string key of the external modifier source or plugin
-     * @return Attribute with the given key, or <code>null</code> if not found
-     */
     @Nullable
-    public T getModifier(String key) {
-        return modifiers.get(key);
+    @Deprecated
+    public T getModifier(@Nullable String key) {
+        for (T modifier : modifiers.values())
+            if (modifier.getKey().equals(key)) return modifier;
+        return null;
     }
 
-    public void addModifier(T mod) {
-        modifiers.put(mod.getKey(), mod);
+    /**
+     * @param uniqueId The unique ID of the desired modifier
+     * @return Modifier with given ID, or <code>null</code> if not found
+     */
+    @Nullable
+    public T getModifier(@NotNull UUID uniqueId) {
+        return modifiers.get(uniqueId);
+    }
+
+    @Deprecated
+    public void addModifier(@NotNull T modifier) {
+        removeIf(modifier.getKey()::equals);
+        registerModifier(modifier);
+    }
+
+    public void registerModifier(@NotNull T modifier) {
+        modifiers.put(modifier.getUniqueId(), modifier);
+    }
+
+    /**
+     * Removes the modifier associated to the given unique ID.
+     */
+    public void removeModifier(@NotNull UUID uniqueId) {
+        modifiers.remove(uniqueId);
     }
 
     /**
      * Removes the modifier associated to the given key.
      */
-    public void remove(String key) {
-        modifiers.remove(key);
+    @Deprecated
+    public void remove(@NotNull String key) {
+        removeIf(key::equals);
     }
 
     /**
@@ -96,15 +120,11 @@ public abstract class ModifiedInstance<T extends InstanceModifier> {
      *
      * @param condition Condition on the modifier key
      */
-    public void removeIf(Predicate<String> condition) {
-        for (Iterator<Map.Entry<String, T>> iterator = modifiers.entrySet().iterator(); iterator.hasNext(); ) {
-            Map.Entry<String, T> entry = iterator.next();
-            if (condition.test(entry.getKey())) {
-
-                T modifier = entry.getValue();
-                if (modifier instanceof Closeable)
-                    ((Closeable) modifier).close();
-
+    public void removeIf(@NotNull Predicate<String> condition) {
+        for (Iterator<T> iterator = modifiers.values().iterator(); iterator.hasNext(); ) {
+            final T modifier = iterator.next();
+            if (condition.test(modifier.getKey())) {
+                if (modifier instanceof Closeable) ((Closeable) modifier).close();
                 iterator.remove();
             }
         }
@@ -113,15 +133,23 @@ public abstract class ModifiedInstance<T extends InstanceModifier> {
     /**
      * @return All registered modifiers
      */
+    @NotNull
     public Collection<T> getModifiers() {
         return modifiers.values();
+    }
+
+    @NotNull
+    public Set<UUID> getIds() {
+        return modifiers.keySet();
     }
 
     /**
      * @return All string keys of currently registered modifiers
      */
+    @Deprecated
+    @NotNull
     public Set<String> getKeys() {
-        return modifiers.keySet();
+        return modifiers.values().stream().map(mod -> mod.getKey()).collect(Collectors.toSet());
     }
 
     /**

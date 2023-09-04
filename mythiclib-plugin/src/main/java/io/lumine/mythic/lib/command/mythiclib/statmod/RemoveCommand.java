@@ -34,7 +34,7 @@ public class RemoveCommand extends CommandTreeNode {
         final MMOPlayerData playerData = MMOPlayerData.get(target);
         final String key = args.length > 4 ? args[4] : AddCommand.DEFAULT_KEY;
 
-        playerData.getStatMap().getInstance(statName).remove(key);
+        playerData.getStatMap().getInstance(statName).removeIf(key::equals);
         return CommandResult.SUCCESS;
     }
 }

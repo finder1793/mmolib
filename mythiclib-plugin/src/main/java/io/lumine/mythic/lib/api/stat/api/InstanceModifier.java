@@ -7,15 +7,15 @@ import io.lumine.mythic.lib.player.modifier.ModifierType;
 import io.lumine.mythic.lib.player.modifier.PlayerModifier;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
-
-import java.text.DecimalFormat;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class InstanceModifier extends PlayerModifier {
     protected final double value;
     protected final ModifierType type;
 
-    public InstanceModifier(String key, EquipmentSlot slot, ModifierSource source, double value, ModifierType type) {
+    public InstanceModifier(@NotNull String key, EquipmentSlot slot, ModifierSource source, double value, ModifierType type) {
         super(key, slot, source);
+
         this.value = value;
         this.type = type;
     }
@@ -31,10 +31,12 @@ public abstract class InstanceModifier extends PlayerModifier {
 
     public InstanceModifier(ConfigObject object) {
         super(object.getString("key"), EquipmentSlot.OTHER, ModifierSource.OTHER);
+
         value = object.getDouble("value");
         type = object.getBoolean("multiplicative", false) ? ModifierType.RELATIVE : ModifierType.FLAT;
     }
 
+    @NotNull
     public ModifierType getType() {
         return type;
     }

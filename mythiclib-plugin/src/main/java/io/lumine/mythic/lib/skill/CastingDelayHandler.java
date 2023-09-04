@@ -134,6 +134,6 @@ public class CastingDelayHandler extends TemporaryListener {
         bossbar.removeAll();
         // Clear slowness
         if (slowness > 0)
-            getCaster().getStatMap().getInstance("MOVEMENT_SPEED").remove(MOVEMENT_SPEED_MODIFIER_KEY);
+            getCaster().getStatMap().getInstance("MOVEMENT_SPEED").removeIf(MOVEMENT_SPEED_MODIFIER_KEY::equals);
     }
 }

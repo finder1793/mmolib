@@ -92,12 +92,12 @@ public class StatModifier extends InstanceModifier {
 
     @Override
     public void register(MMOPlayerData playerData) {
-        playerData.getStatMap().getInstance(stat).addModifier(this);
+        playerData.getStatMap().getInstance(stat).registerModifier(this);
     }
 
     @Override
     public void unregister(MMOPlayerData playerData) {
-        playerData.getStatMap().getInstance(stat).remove(getKey());
+        playerData.getStatMap().getInstance(stat).removeModifier(getUniqueId());
     }
 }
 

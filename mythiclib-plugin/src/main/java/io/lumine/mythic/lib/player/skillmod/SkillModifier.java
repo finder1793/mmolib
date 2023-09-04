@@ -74,7 +74,7 @@ public class SkillModifier extends InstanceModifier {
      */
     @Deprecated
     public void register(MMOPlayerData playerData, SkillHandler<?> handler) {
-        playerData.getSkillModifierMap().getInstance(handler, parameter).addModifier(this);
+        playerData.getSkillModifierMap().getInstance(handler, parameter).registerModifier(this);
     }
 
     /**
@@ -82,18 +82,18 @@ public class SkillModifier extends InstanceModifier {
      */
     @Deprecated
     public void unregister(MMOPlayerData playerData, SkillHandler<?> handler) {
-        playerData.getSkillModifierMap().getInstance(handler, parameter).remove(getKey());
+        playerData.getSkillModifierMap().getInstance(handler, parameter).removeModifier(getUniqueId());
     }
 
     @Override
     public void register(MMOPlayerData playerData) {
         for (SkillHandler<?> handler : skills)
-            playerData.getSkillModifierMap().getInstance(handler, parameter).addModifier(this);
+            playerData.getSkillModifierMap().getInstance(handler, parameter).registerModifier(this);
     }
 
     @Override
     public void unregister(MMOPlayerData playerData) {
         for (SkillHandler<?> handler : skills)
-            playerData.getSkillModifierMap().getInstance(handler, parameter).remove(getKey());
+            playerData.getSkillModifierMap().getInstance(handler, parameter).removeModifier(getUniqueId());
     }
 }
