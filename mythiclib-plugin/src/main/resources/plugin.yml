@@ -6,10 +6,6 @@ version: ${project.version}
 description: ${project.description}
 softdepend: [ WorldGuard,Residence,Factions,MythicMobs,PlaceholderAPI ]
 commands:
-  mythiclib:
-    description: MythicLib main command.
-    permission: mythiclib.reload
-    aliases: [ ml ]
   healthscale:
     description: Scales the player's health. Deprecated, use /ml debug healthscale
     permission: mythiclib.command.healthscale

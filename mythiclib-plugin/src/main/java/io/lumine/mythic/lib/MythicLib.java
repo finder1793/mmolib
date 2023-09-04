@@ -67,7 +67,7 @@ public class MythicLib extends JavaPlugin {
 
     private final DamageManager damageManager = new DamageManager();
 
-    private final MythicCommandManager mythicCommandManager = new MythicCommandManager();
+    private final MythicLibCommandManager commandManager = new MythicLibCommandManager();
     private final EntityManager entityManager = new EntityManager();
     private final StatManager statManager = new StatManager();
     private final JsonManager jsonManager = new JsonManager();
@@ -242,8 +242,8 @@ public class MythicLib extends JavaPlugin {
         getCommand("megaworkbench").setExecutor(MegaWorkbenchMapping.MWB);
         Bukkit.getPluginManager().registerEvents(MegaWorkbenchMapping.MWB, this);
 
-        //Loads commands
-        mythicCommandManager.initialize(true);
+        // Loads commands
+        commandManager.initialize(false);
 
         // Load local skills
         skillManager.initialize(false);
@@ -269,7 +269,6 @@ public class MythicLib extends JavaPlugin {
         skillManager.initialize(true);
         configManager.reload();
         elementManager.reload(true);
-        mythicCommandManager.initialize(true);
         this.indicatorManager.reload(getConfig());
     }
 
@@ -300,8 +299,13 @@ public class MythicLib extends JavaPlugin {
         return jsonManager;
     }
 
-    public MythicCommandManager getCommand() {
-        return mythicCommandManager;
+    @Deprecated
+    public MythicLibCommandManager getCommand() {
+        return getCommands();
+    }
+
+    public MythicLibCommandManager getCommands() {
+        return commandManager;
     }
 
     public DamageManager getDamage() {

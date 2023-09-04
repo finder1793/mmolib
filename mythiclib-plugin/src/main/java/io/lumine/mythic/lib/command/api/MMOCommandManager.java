@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.command.api;
 
 import io.lumine.mythic.lib.manager.MMOManager;
 import io.lumine.mythic.lib.util.ConfigFile;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -19,7 +20,8 @@ public abstract class MMOCommandManager implements MMOManager {
 
     @Override
     public void initialize(boolean clearBefore) {
-        List<ToggleableCommand> commands = getAll();
+        Validate.isTrue(!clearBefore, "Reloading this manager requires a reload");
+        final List<ToggleableCommand> commands = getAll();
 
         // Load default config file
         if (!new File(getPlugin().getDataFolder(), "commands.yml").exists()) {
@@ -36,8 +38,8 @@ public abstract class MMOCommandManager implements MMOManager {
             config.save();
         }
 
-
         try {
+
             // Find command map
             final Field commandMapField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
             commandMapField.setAccessible(true);
@@ -45,17 +47,13 @@ public abstract class MMOCommandManager implements MMOManager {
 
             // Enable commands individually
             final FileConfiguration config = new ConfigFile(getPlugin(), "", "commands").getConfig();
-            for (ToggleableCommand cmd : commands) {
-                if (cmd.isEnabled() && config.contains(cmd.getConfigPath()))
-                    commandMap.register("mythiclib", cmd.generate(config.getConfigurationSection(cmd.getConfigPath()))
-                            .getCommand());
-            }
-
+            for (ToggleableCommand toggleable : commands)
+                if (toggleable.isEnabled() && (toggleable.isForced() || config.contains(toggleable.getConfigPath())))
+                    commandMap.register(getPlugin().getName(), toggleable.toBukkit(config.getConfigurationSection(toggleable.getConfigPath())));
 
         } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException exception) {
             getPlugin().getLogger().log(Level.WARNING, "Unable to register custom commands:");
             exception.printStackTrace();
         }
     }
-
 }

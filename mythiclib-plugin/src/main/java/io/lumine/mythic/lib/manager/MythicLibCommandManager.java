@@ -9,11 +9,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.Arrays;
 import java.util.List;
 
-public class MythicCommandManager extends MMOCommandManager {
-
-    public ToggleableCommand MYTHIC_LIB = new ToggleableCommand("ml", "mythiclib.admin",
-            "MythicLib Main command", MythicLibCommand::new);
-
+public class MythicLibCommandManager extends MMOCommandManager {
+    public final ToggleableCommand MYTHICLIB = new ToggleableCommand("mythiclib", "mythiclib.admin", "Main admin command", MythicLibCommand::new, v -> true, true, "ml");
 
     @Override
     public JavaPlugin getPlugin() {
@@ -22,6 +19,6 @@ public class MythicCommandManager extends MMOCommandManager {
 
     @Override
     public List<ToggleableCommand> getAll() {
-        return Arrays.asList(MYTHIC_LIB);
+        return Arrays.asList(MYTHICLIB);
     }
 }

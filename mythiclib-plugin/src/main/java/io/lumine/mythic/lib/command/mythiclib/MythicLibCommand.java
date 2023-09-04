@@ -8,13 +8,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class MythicLibCommand extends CommandTreeRoot {
     public MythicLibCommand(@NotNull ConfigurationSection config) {
-        super(config, MythicLib.plugin.getCommand().MYTHIC_LIB);
+        super(config, MythicLib.plugin.getCommands().MYTHICLIB);
+
         addChild(new ReloadCommand(this));
         addChild(new CastCommand(this));
         addChild(new DebugCommand(this));
         addChild(new StatModCommand(this));
     }
-
-
-
 }
