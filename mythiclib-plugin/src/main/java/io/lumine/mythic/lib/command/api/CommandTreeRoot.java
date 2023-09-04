@@ -1,6 +1,5 @@
 package io.lumine.mythic.lib.command.api;
 
-import io.lumine.mythic.lib.MythicLib;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -9,10 +8,10 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public abstract class CommandTreeRoot extends CommandTreeNode implements CommandExecutor, TabCompleter {
@@ -20,21 +19,20 @@ public abstract class CommandTreeRoot extends CommandTreeNode implements Command
     private final String description;
     private final List<String> aliases = new ArrayList<>();
 
-    public CommandTreeRoot(String id, String permission) {
+    public CommandTreeRoot(@NotNull String id, @NotNull String permission) {
         super(null, id);
 
         this.permission = permission;
-        this.description = "";
+        this.description = "No description provided";
     }
 
-    public CommandTreeRoot(@NotNull ConfigurationSection config, ToggleableCommand command) {
-        super(null, config.getString("main"));
+    public CommandTreeRoot(@Nullable ConfigurationSection config, @NotNull ToggleableCommand command) {
+        super(null, config == null ? command.getName() : config.getString("main"));
 
-        this.permission = config.getString("permission", command.getPermission());
-        this.aliases.addAll(config.getStringList("aliases"));
-        description = config.getString("description", command.getDescription());
-
-        MythicLib.plugin.getLogger().log(Level.WARNING, "test: " + aliases +" " + getId());
+        this.permission = config == null ? command.getPermission() : config.getString("permission", command.getPermission());
+        description = config == null ? command.getDescription() : config.getString("description", command.getDescription());
+        if (config != null)
+            this.aliases.addAll(config.getStringList("aliases"));
     }
 
     @NotNull
