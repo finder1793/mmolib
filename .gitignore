@@ -237,3 +237,5 @@ gradle-app.setting
 
 # End of https://www.gitignore.io/api/java,code-java,intellij,eclipse,netbeans,gradle,git,maven,windows,linux,macos
 .flattened-pom.xml
+
+!**/src/**
