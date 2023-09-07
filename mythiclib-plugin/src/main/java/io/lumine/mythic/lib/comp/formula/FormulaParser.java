@@ -17,6 +17,8 @@ public class FormulaParser {
         interpreter = new Interpreter();
         try {
             interpreter.eval("import java.lang.Math;");
+            interpreter.eval("import java.util.Arrays;");
+            interpreter.eval("import java.util.List;");
         } catch (EvalError error) {
             throw new RuntimeException(error);
         }
@@ -26,6 +28,7 @@ public class FormulaParser {
     public Object eval(String str) throws EvalError {
         //Enable to use val in [val1,val2,val3,...]
         str = str.replaceAll("\"(.*?)\" in \\[(.*?)\\]", "Arrays.asList(new Object[]{$2}).contains(\"$1\")");
+        str = str.replaceAll("(\\d*?) in \\[(.*?)\\]", "Arrays.asList(new Object[]{$2}).contains($1)");
 
         //Parse random(expr1,expr2) to Math.random() * (expr2 - expr1) + expr1
         str = str.replaceAll("random\\((.*?),(.*?)\\)", "random() * ($2 - $1) + ($1)");

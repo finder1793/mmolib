@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.command.api;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -20,6 +21,11 @@ public class Parameter {
     public static final Parameter AMOUNT_OPTIONAL = new Parameter("(amount)", (explorer, list) -> {
         for (int j = 0; j <= 10; j++)
             list.add("" + j);
+    });
+
+    public static final Parameter MATERIAL = new Parameter("<material>", (explorer, list) -> {
+        for (Material material : Material.values())
+            list.add(material.name());
     });
 
     public Parameter(String key, BiConsumer<CommandTreeExplorer, List<String>> autoComplete) {

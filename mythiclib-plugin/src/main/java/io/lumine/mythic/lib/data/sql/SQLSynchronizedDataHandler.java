@@ -24,9 +24,8 @@ public abstract class SQLSynchronizedDataHandler<H extends SynchronizedDataHolde
     }
 
     /**
-     * @deprecated Not generalized yet
+     * TODO: Not generalized yet
      */
-    @Deprecated
     @Override
     public abstract void saveData(@NotNull H playerData, boolean autosave);
 

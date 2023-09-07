@@ -20,10 +20,8 @@ import java.util.logging.Level;
  * This class is used to synchronize player data between
  * servers. This fixes the issue of player data being
  * lost when teleporting to another server.
- *
- * @deprecated Merge with {@link SQLSynchronizedDataHandler}
+ TODO: Merge with {@link SQLSynchronizedDataHandler}
  */
-@Deprecated
 public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
     private final SQLDataSource dataSource;
     private final H playerData;
