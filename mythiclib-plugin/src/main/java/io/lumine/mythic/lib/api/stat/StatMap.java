@@ -47,6 +47,8 @@ public class StatMap implements StatProvider {
      */
     @NotNull
     public StatInstance getInstance(String id) {
+        if (id.endsWith("DAMAGE_REDUCTION") && MythicLib.inst().getMMOConfig().percentageDamageReduction)
+            return stats.computeIfAbsent(id, stat -> new PercentageStatInstance(this, stat));
         return stats.computeIfAbsent(id, stat -> new StatInstance(this, stat));
     }
 

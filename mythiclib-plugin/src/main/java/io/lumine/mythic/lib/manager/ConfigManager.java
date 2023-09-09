@@ -18,7 +18,7 @@ public class ConfigManager {
     public final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
 
     public DecimalFormat decimal, decimals;
-    public boolean playerAbilityDamage, castingDelayCancelOnMove, enableCastingDelayBossbar, fixTooLargePackets, debugMode;
+    public boolean playerAbilityDamage, castingDelayCancelOnMove, enableCastingDelayBossbar, fixTooLargePackets, debugMode, percentageDamageReduction;
     public String naturalDefenseFormula, elementalDefenseFormula, castingDelayBossbarFormat;
     public double castingDelaySlowness;
     public int maxSyncTries;
@@ -39,6 +39,7 @@ public class ConfigManager {
 
         // Combat
         interactionRules = config.getBoolean("interaction_rules.enabled") ? new InteractionRules(config.getConfigurationSection("interaction_rules")) : new EmptyPvPInteractionRules();
+        percentageDamageReduction = config.getBoolean("percentage-damage-reduction");
 
         // Other options
         playerAbilityDamage = config.getBoolean("player-ability-damage");
