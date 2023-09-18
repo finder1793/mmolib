@@ -56,6 +56,11 @@ public class TriggerMetadata {
         this(caster, triggerType, EquipmentSlot.MAIN_HAND, target, null, null);
     }
 
+    @Deprecated
+    public TriggerMetadata(@NotNull PlayerMetadata caster, @Nullable Entity target, @Nullable AttackMetadata attack) {
+        this(caster.getData(), TriggerType.API, caster.getActionHand(), target, attack, caster);
+    }
+
     /**
      * The player responsible for the attack is the one triggering the skill.
      */
