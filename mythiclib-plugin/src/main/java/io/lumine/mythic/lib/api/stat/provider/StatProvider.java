@@ -4,6 +4,7 @@ import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatMap;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +25,8 @@ import org.jetbrains.annotations.NotNull;
 @Deprecated
 public interface StatProvider {
     double getStat(String stat);
+
+    LivingEntity getEntity();
 
     @Deprecated
     static StatProvider get(LivingEntity living) {

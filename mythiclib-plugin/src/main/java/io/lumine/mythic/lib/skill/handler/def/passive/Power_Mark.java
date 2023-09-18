@@ -10,6 +10,7 @@ import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.AttackSkillResult;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
+import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import io.lumine.mythic.lib.util.ParabolicProjectile;
 import io.lumine.mythic.lib.version.VersionSound;
 import org.bukkit.*;
@@ -49,7 +50,7 @@ public class Power_Mark extends SkillHandler<AttackSkillResult> implements Liste
         if (skill == null)
             return;
 
-        skill.getTriggeredSkill().cast(new TriggerMetadata(event.getAttacker(), event.getEntity(), event.getAttack()));
+        skill.getTriggeredSkill().cast(new TriggerMetadata(event, TriggerType.API));
     }
 
     public class PowerMark extends BukkitRunnable implements Listener {

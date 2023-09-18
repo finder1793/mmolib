@@ -26,8 +26,10 @@ import java.util.Set;
  */
 public class EntityStatProvider implements StatProvider {
     private final Set<NBTItem> equipment = new HashSet<>();
+    private final LivingEntity entity;
 
     public EntityStatProvider(LivingEntity entity) {
+        this.entity = entity;
 
         // ModelEngine mobs have no equipment TODO support
         final @Nullable EntityEquipment equip = entity.getEquipment();
@@ -38,6 +40,11 @@ public class EntityStatProvider implements StatProvider {
             registerItem(equipped);
         registerItem(entity.getEquipment().getItemInMainHand());
         registerItem(entity.getEquipment().getItemInOffHand());
+    }
+
+    @Override
+    public LivingEntity getEntity() {
+        return entity;
     }
 
     private void registerItem(ItemStack item) {

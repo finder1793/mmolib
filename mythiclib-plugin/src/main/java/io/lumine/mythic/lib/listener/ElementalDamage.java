@@ -8,6 +8,7 @@ import io.lumine.mythic.lib.element.Element;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
+import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import io.lumine.mythic.lib.util.DefenseFormula;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -68,7 +69,7 @@ public class ElementalDamage implements Listener {
             final boolean crit = RANDOM.nextDouble() < critChanceCoef;
             final Skill skill = element.getSkill(crit);
             if (skill != null && attacker instanceof PlayerMetadata)
-                skill.cast(new TriggerMetadata((PlayerMetadata) attacker, event.getEntity(), event.getAttack()));
+                skill.cast(new TriggerMetadata((PlayerMetadata) attacker, TriggerType.API, event.getEntity(), event.getAttack()));
             if (crit)
                 event.getDamage().registerElementalCriticalStrike(element);
         }

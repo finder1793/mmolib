@@ -48,18 +48,10 @@ public class PassiveSkillMap extends ModifierMap<PassiveSkill> {
         return null;
     }
 
-    /**
-     * Keep in mind this method is called 20 times a second for
-     * every player in the server. It's pretty important to have
-     * this method properly optimize and avoid things like useless
-     * map checkups
-     *
-     * @author jules
-     */
     public void tickTimerSkills() {
 
-        // Do not initialize triggerMeta unless absolutely necessary
-        TriggerMetadata triggerMeta = null;
+        // Optimized. No huge stat map lookups done here
+        final TriggerMetadata triggerMeta = new TriggerMetadata(getPlayerData(), TriggerType.TIMER, EquipmentSlot.MAIN_HAND, null, null, null);
 
         for (PassiveSkill passive : getModifiers()) {
             if (!passive.getType().equals(TriggerType.TIMER) || getPlayerData().getPlayer().getGameMode() == GameMode.SPECTATOR)
@@ -72,7 +64,7 @@ public class PassiveSkillMap extends ModifierMap<PassiveSkill> {
                 continue;
 
             this.lastCast.put(key, System.currentTimeMillis());
-            passive.getTriggeredSkill().cast(triggerMeta != null ? triggerMeta : (triggerMeta = new TriggerMetadata(getPlayerData().getStatMap().cache(EquipmentSlot.MAIN_HAND), null, null)));
+            passive.getTriggeredSkill().cast(triggerMeta);
         }
     }
 }

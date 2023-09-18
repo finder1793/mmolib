@@ -83,6 +83,10 @@ public class AttackMetadata {
         return attacker;
     }
 
+    public boolean hasAttacker() {
+        return attacker != null;
+    }
+
     /**
      * @return If this is a player attack
      */

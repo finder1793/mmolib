@@ -64,6 +64,11 @@ public class PlayerMetadata implements StatProvider {
         return player;
     }
 
+    @Override
+    public LivingEntity getEntity() {
+        return player;
+    }
+
     public MMOPlayerData getData() {
         return playerData;
     }

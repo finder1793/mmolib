@@ -6,6 +6,8 @@ import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.handler.StatHandler;
 import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.player.PlayerMetadata;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,6 +28,11 @@ public class StatMap implements StatProvider {
      */
     public MMOPlayerData getPlayerData() {
         return data;
+    }
+
+    @Override
+    public LivingEntity getEntity() {
+        return data.getPlayer();
     }
 
     /**

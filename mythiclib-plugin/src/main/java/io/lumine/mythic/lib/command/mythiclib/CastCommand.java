@@ -1,10 +1,8 @@
 package io.lumine.mythic.lib.command.mythiclib;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.command.api.CommandTreeNode;
-import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.skill.SimpleSkill;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
@@ -41,8 +39,7 @@ public class CastCommand extends CommandTreeNode {
         }
 
         SimpleSkill castable = new SimpleSkill(TriggerType.CAST, handler);
-        PlayerMetadata caster = MMOPlayerData.get((Player) sender).getStatMap().cache(EquipmentSlot.MAIN_HAND);
-        castable.cast(new TriggerMetadata(caster, null, null));
+        castable.cast(new TriggerMetadata(MMOPlayerData.get((Player) sender), TriggerType.API));
 
         return CommandResult.SUCCESS;
     }
