@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.player.modifier;
 
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -18,6 +19,14 @@ import java.util.UUID;
  * @author Jules
  */
 public abstract class PlayerModifier {
+
+    /**
+     * Similarly to Bukkit's attribute modifiers, player modifiers have a unique
+     * ID for differentiation. However, it is easier to check the source plugin
+     * of the modifier using {@link #getKey()}
+     */
+    private final UUID uniqueId;
+
     private final ModifierSource source;
     private final EquipmentSlot slot;
 
@@ -31,33 +40,47 @@ public abstract class PlayerModifier {
      */
     private final String key;
 
-    private final UUID uniqueId = UUID.randomUUID();
+    public PlayerModifier(@NotNull String key, @NotNull EquipmentSlot slot, @NotNull ModifierSource source) {
+        this(UUID.randomUUID(), key, slot, source);
+    }
 
-    public PlayerModifier(String key, EquipmentSlot slot, ModifierSource source) {
+    public PlayerModifier(@NotNull UUID uniqueId, @NotNull String key, @NotNull EquipmentSlot slot, @NotNull ModifierSource source) {
+        this.uniqueId = uniqueId;
         this.key = key;
         this.slot = slot;
         this.source = source;
     }
 
+    @NotNull
     public UUID getUniqueId() {
         return uniqueId;
     }
 
+    /**
+     * Modifier keys are NOT unique, they help the developer
+     * to easily filter modifiers added by their plugin.
+     * UUIDs are unique though and are used for internal mapping.
+     *
+     * @return The key of the modifier.
+     */
+    @NotNull
     public String getKey() {
         return key;
     }
 
+    @NotNull
     public EquipmentSlot getSlot() {
         return slot;
     }
 
+    @NotNull
     public ModifierSource getSource() {
         return source;
     }
 
-    public abstract void register(MMOPlayerData playerData);
+    public abstract void register(@NotNull MMOPlayerData playerData);
 
-    public abstract void unregister(MMOPlayerData playerData);
+    public abstract void unregister(@NotNull MMOPlayerData playerData);
 
     @Override
     public boolean equals(Object o) {

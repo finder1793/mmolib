@@ -22,6 +22,7 @@ public abstract class InstanceModifier extends PlayerModifier {
 
     public InstanceModifier(String key, EquipmentSlot slot, ModifierSource source, String str) {
         super(key, slot, source);
+
         Validate.notNull(str, "String cannot be null");
         Validate.notEmpty(str, "String cannot be empty");
 
