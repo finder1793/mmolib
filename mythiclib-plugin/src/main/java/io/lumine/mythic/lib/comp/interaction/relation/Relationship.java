@@ -6,5 +6,7 @@ public enum Relationship {
 
     GUILD_ALLY,
     GUILD_NEUTRAL,
-    GUILD_ENEMY
+    GUILD_ENEMY,
+
+    SELF
 }

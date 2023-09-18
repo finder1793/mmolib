@@ -4,6 +4,7 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.DamageCheckEvent;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
 import io.lumine.mythic.lib.comp.interaction.TargetRestriction;
+import io.lumine.mythic.lib.comp.interaction.relation.Relationship;
 import io.lumine.mythic.lib.comp.interaction.relation.RelationshipHandler;
 import io.lumine.mythic.lib.util.CustomProjectile;
 import org.bukkit.Bukkit;
@@ -133,9 +134,16 @@ public class EntityManager {
      * @return If the two players can interact
      */
     public boolean checkPvpInteractionRules(@NotNull Player source, @NotNull Player target, @NotNull InteractionType interactionType, @NotNull boolean pvpEnabled) {
+
+        // Self harm
+        if (source.equals(target))
+            return MythicLib.plugin.getMMOConfig().interactionRules.isEnabled(pvpEnabled, interactionType, Relationship.SELF);
+
+        // Relations from other plugins
         for (RelationshipHandler relHandler : relHandlers)
             if (!MythicLib.plugin.getMMOConfig().interactionRules.isEnabled(pvpEnabled, interactionType, relHandler.getRelationship(source, target)))
                 return false;
+
         return true;
     }
 

@@ -235,27 +235,33 @@ interaction_rules:
   # When PvP is turned off
   pvp_off:
 
-    # Ability to heal other players when PvP is off
+    offense:
+      self: false # Self-friendly fire when PvP is off
+
+    # Ability to heal self/other players when PvP is off
     support:
       party_member: true
       party_other: true
       guild_ally: true
       guild_neutral: true
       guild_enemy: true
+      self: true # Ability to self-cast buffs
 
   ## When PvP is turned on
   pvp_on:
 
-    # Ability to heal other players when PvP is on
+    # Ability to heal self/other players when PvP is on
     support:
       party_member: true
       party_other: false
       guild_ally: true
       guild_neutral: true
       guild_enemy: false
+      self: true
 
     # Friendly fire for guilds/parties
     offense:
       party_member: false
       guild_ally: false
       guild_neutral: true
+      self: false  # Self-friendly fire when PvP is on
