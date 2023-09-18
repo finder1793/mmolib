@@ -5,6 +5,7 @@ import io.lumine.mythic.lib.api.condition.RegionCondition;
 import io.lumine.mythic.lib.api.condition.type.MMOCondition;
 import io.lumine.mythic.lib.api.event.DamageCheckEvent;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
+import io.lumine.mythic.lib.damage.AttackHandler;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
 import org.bukkit.*;
@@ -56,12 +57,30 @@ public class UtilityMethods {
      * Fake events are used very commonly in MythicLib and other plugins.
      * This is used to pre-check if a player is able to fight with/target
      * another player in anticipation i.e before casting the damage method.
+     * <p>
+     * This method supports the following fake events:
+     * - MythicLib
+     * - mcMMO
+     * - SkillAPI and ProSkillAPI
+     * - Any plugin that uses 0 as damage for fake events
      *
      * @param event Some damage event
      * @return If the event is a fake event, used for an interaction check
+     * @author jules
      */
     public static boolean isFakeEvent(@NotNull EntityDamageEvent event) {
-        return event.getDamage() == 0 || event instanceof DamageCheckEvent;
+
+        // Vanilla + MythicLib checks
+        if (event.getDamage() == 0 || event instanceof DamageCheckEvent)
+            return true;
+
+        // Checks from other plugins for extra compatibility.
+        for (AttackHandler handler : MythicLib.plugin.getDamage().getHandlers())
+            if (handler.isFake(event))
+                return true;
+
+        // Nothing
+        return false;
     }
 
     @NotNull

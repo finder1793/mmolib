@@ -37,4 +37,6 @@ public interface AttackHandler {
     default boolean isAttacked(Entity entity) {
         throw new RuntimeException("Unsupported operation");
     }
+
+    default boolean isFake(EntityDamageEvent event) { return false; }
 }

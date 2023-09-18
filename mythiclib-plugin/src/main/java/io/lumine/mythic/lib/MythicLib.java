@@ -186,12 +186,16 @@ public class MythicLib extends JavaPlugin {
         }
 
         if (Bukkit.getPluginManager().getPlugin("mcMMO") != null) {
-            Bukkit.getPluginManager().registerEvents(new McMMOAttackHandler(), this);
+            final McMMOAttackHandler handler = new McMMOAttackHandler();
+            damageManager.registerHandler(handler);
+            Bukkit.getPluginManager().registerEvents(handler, this);
             getLogger().log(Level.INFO, "Hooked onto mcMMO");
         }
 
         if (Bukkit.getPluginManager().getPlugin("SkillAPI") != null) {
-            Bukkit.getPluginManager().registerEvents(new SkillAPIAttackHandler(), this);
+            final SkillAPIAttackHandler handler = new SkillAPIAttackHandler();
+            damageManager.registerHandler(handler);
+            Bukkit.getPluginManager().registerEvents(handler, this);
             getLogger().log(Level.INFO, "Hooked onto SkillAPI");
         }
 

@@ -67,6 +67,11 @@ public class DamageManager implements Listener {
         handlers.add(handler);
     }
 
+    @NotNull
+    public List<AttackHandler> getHandlers() {
+        return handlers;
+    }
+
     @Deprecated
     public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target) {
         damage(metadata, target, true);

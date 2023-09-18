@@ -1,10 +1,12 @@
 package io.lumine.mythic.lib.comp;
 
+import com.gmail.nossr50.events.fake.FakeEvent;
 import com.gmail.nossr50.events.skills.rupture.McMMOEntityDamageByRuptureEvent;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.provider.StatProvider;
+import io.lumine.mythic.lib.damage.AttackHandler;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
@@ -12,6 +14,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * In recent mcMMO builds there is no longer such metadata
@@ -21,7 +25,18 @@ import org.bukkit.event.Listener;
  *
  * @author Jules
  */
-public class McMMOAttackHandler implements Listener {
+public class McMMOAttackHandler implements Listener, AttackHandler {
+
+    @Nullable
+    @Override
+    public AttackMetadata getAttack(EntityDamageEvent event) {
+        return null;
+    }
+
+    @Override
+    public boolean isFake(EntityDamageEvent event) {
+        return event instanceof FakeEvent;
+    }
 
     /**
      * Runs on priority LOW right before MythicLib's HIGHEST
