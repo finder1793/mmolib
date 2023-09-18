@@ -57,8 +57,8 @@ public class TriggerMetadata {
     }
 
     @Deprecated
-    public TriggerMetadata(@NotNull PlayerMetadata caster, @Nullable Entity target, @Nullable AttackMetadata attack) {
-        this(caster.getData(), TriggerType.API, caster.getActionHand(), target, attack, caster);
+    public TriggerMetadata(@NotNull PlayerAttackEvent attackEvent) {
+        this(attackEvent, TriggerType.API);
     }
 
     /**
@@ -66,6 +66,11 @@ public class TriggerMetadata {
      */
     public TriggerMetadata(@NotNull PlayerAttackEvent attackEvent, @NotNull TriggerType triggerType) {
         this(attackEvent.getAttacker(), triggerType, attackEvent.getEntity(), attackEvent.getAttack());
+    }
+
+    @Deprecated
+    public TriggerMetadata(@NotNull PlayerMetadata caster, @Nullable Entity target, @Nullable AttackMetadata attack) {
+        this(caster, TriggerType.API, target, attack);
     }
 
     public TriggerMetadata(@NotNull PlayerMetadata caster, @NotNull TriggerType triggerType, @Nullable Entity target, @Nullable AttackMetadata attack) {
