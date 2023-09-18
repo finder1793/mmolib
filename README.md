@@ -19,17 +19,21 @@ Then add MythicLib-dist as dependency
 ```
 
 ### Compiling MythicLib
-MythicLib centralizes all the version-dependent code for MMOItems and MMOCore, meaning it uses NMS instead of the regular spigot API. Since Minecraft server builds now use obfuscated mappings ([since 1.17](https://www.spigotmc.org/threads/spigot-bungeecord-1-17-1-17-1.510208/)) you will first need to setup your mojang-remapped spigot jars for all versions above 1.17.
+MythicLib centralizes all the version-dependent code for MMOItems and MMOCore, requiring the use of NMS instead of the regular Bukkit API. Since Spigot 1.17, you now need to run a few additional commands if you're willing to use server NMS code. I encourage you to read [this post](https://www.spigotmc.org/threads/spigot-bungeecord-1-17-1-17-1.510208/#post-4184317) first.
 
-Here are the instructions you can use to generate the four required mojang-remapped jars (using [BuildTools](https://www.spigotmc.org/wiki/buildtools/)). Since spigot 1.17 runs on Java 16 and my default Java installation is version 17, I had to redownload a Java 16 JDK and have BuildTools run on that one instead in order to build a remapped spigot 1.17.
+Here are the commands you can use to generate the required server artifacts using [BuildTools](https://www.spigotmc.org/wiki/buildtools/). Additional Note: since spigot 1.17 runs on Java 16 and my default Java installation is version 17, I had to redownload a Java 16 JDK and have BuildTools run on that one instead in order to build a remapped spigot 1.17.
 ```
 "C:\Program Files\Java\jdk-16.0.1\bin\java" -jar BuildTools.jar --rev 1.17   --remapped
 java                                        -jar BuildTools.jar --rev 1.18   --remapped
 java                                        -jar BuildTools.jar --rev 1.18.2 --remapped
 java                                        -jar BuildTools.jar --rev 1.19   --remapped
 java                                        -jar BuildTools.jar --rev 1.19.3 --remapped
+java                                        -jar BuildTools.jar --rev 1.20.1 --remapped
+// etc...
 ```
 
-Version wrappers for 1.17+ have separate Maven modules. Another option is to build your remapped spigot jar for one specific version and remove all the other modules.
+To save time, you can also keep the only version that corresponds to your server build and remove the rest.
+Version wrappers all have a different Maven modules, so just keep the one you're interested in.
+This method also allows you to directly use your server JAR as plugin dependency, simplifying dependency management.
 
-Since MythicLib 1.3.4, it is no longer required to first compile MythicLib before compiling MMOItems and MMOCore since the PhoenixDevt repo now includes MythicLib, MMOItems and MMOCore development artifacts.
+The official Phoenix repo contains MythicLib >1.5.2 builds, so you can work on a custom build of MMOItems or MMOCore without having to locally build MythicLib, if you're only considering minor edits.
