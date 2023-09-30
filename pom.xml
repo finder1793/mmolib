@@ -20,6 +20,7 @@
         <module>mythiclib-v1_19_r2</module>
         <module>mythiclib-v1_19_r3</module>
         <module>mythiclib-v1_20_r1</module>
+        <module>mythiclib-v1_20_r2</module>
     </modules>
 
     <name>MythicLib</name>
