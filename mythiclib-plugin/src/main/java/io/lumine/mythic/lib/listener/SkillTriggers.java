@@ -1,9 +1,11 @@
 package io.lumine.mythic.lib.listener;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.AttackEvent;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.event.PlayerKillEntityEvent;
+import io.lumine.mythic.lib.api.event.armorequip.ArmorEquipEvent;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
@@ -20,12 +22,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +40,8 @@ public class SkillTriggers implements Listener {
     @EventHandler
     public void killEntity(PlayerKillEntityEvent event) {
         event.getData().triggerSkills(new TriggerMetadata(event.getData(), TriggerType.KILL_ENTITY, event.getTarget()));
+        if (event.getTarget() instanceof Player)
+            event.getData().triggerSkills(new TriggerMetadata(event.getData(), TriggerType.KILL_PLAYER, event.getTarget()));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -51,10 +55,10 @@ public class SkillTriggers implements Listener {
         if (!(event.getEntity() instanceof Player) || (caster = MMOPlayerData.getOrNull((Player) event.getEntity())) == null)
             return;
 
-        TriggerMetadata triggerMetadata = new TriggerMetadata(caster, TriggerType.DAMAGED, EquipmentSlot.MAIN_HAND, null, event.getAttack(), null);
+        TriggerMetadata triggerMetadata = new TriggerMetadata(caster, TriggerType.DAMAGED, EquipmentSlot.MAIN_HAND, null, null, null, event.getAttack(), null);
         caster.triggerSkills(triggerMetadata);
         if (event.getAttack().hasAttacker() && MythicLib.plugin.getEntities().canInteract((Player) event.getEntity(), event.getAttack().getAttacker().getEntity(), InteractionType.OFFENSE_SKILL)) {
-            triggerMetadata = new TriggerMetadata(caster, TriggerType.DAMAGED_BY_ENTITY, EquipmentSlot.MAIN_HAND, event.getAttack().getAttacker().getEntity(), event.getAttack(), null);
+            triggerMetadata = new TriggerMetadata(caster, TriggerType.DAMAGED_BY_ENTITY, EquipmentSlot.MAIN_HAND, null, event.getAttack().getAttacker().getEntity(), null, event.getAttack(), null);
             caster.triggerSkills(triggerMetadata);
         }
     }
@@ -86,7 +90,7 @@ public class SkillTriggers implements Listener {
             final CustomProjectile projectile = new CustomProjectile(caster, CustomProjectile.ProjectileType.ARROW, event.getProjectile(), actionHand);
 
             // Cast on-shoot skills
-            caster.triggerSkills(new TriggerMetadata(caster, TriggerType.SHOOT_BOW, actionHand, event.getProjectile(), null, projectile.getCaster()));
+            caster.triggerSkills(new TriggerMetadata(caster, TriggerType.SHOOT_BOW, actionHand, null, event.getProjectile(), null, null, projectile.getCaster()));
         }
     }
 
@@ -101,7 +105,7 @@ public class SkillTriggers implements Listener {
             final CustomProjectile projectile = new CustomProjectile(caster, CustomProjectile.ProjectileType.TRIDENT, event.getEntity(), actionHand);
 
             // Cast on-shoot skills
-            caster.triggerSkills(new TriggerMetadata(caster, TriggerType.SHOOT_TRIDENT, actionHand, event.getEntity(), null, projectile.getCaster()));
+            caster.triggerSkills(new TriggerMetadata(caster, TriggerType.SHOOT_TRIDENT, actionHand, null, event.getEntity(), null, null, projectile.getCaster()));
         }
     }
 
@@ -111,6 +115,46 @@ public class SkillTriggers implements Listener {
 
         final MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
         caster.triggerSkills(new TriggerMetadata(caster, TriggerType.SNEAK));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void placeBlock(BlockPlaceEvent event) {
+        final MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
+        caster.triggerSkills(new TriggerMetadata(caster, TriggerType.PLACE_BLOCK, event.getBlock().getLocation().add(.5, .5, .5)));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void breakBlock(BlockBreakEvent event) {
+        final MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
+        caster.triggerSkills(new TriggerMetadata(caster, TriggerType.BREAK_BLOCK, event.getBlock().getLocation().add(.5, .5, .5)));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void dropItem(PlayerDropItemEvent event) {
+        final MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
+        final boolean sneaking = event.getPlayer().isSneaking() && !MythicLib.plugin.getMMOConfig().ignoreShiftTriggers;
+        caster.triggerSkills(new TriggerMetadata(caster, sneaking ? TriggerType.SHIFT_DROP_ITEM : TriggerType.DROP_ITEM, event.getItemDrop()));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void teleport(PlayerTeleportEvent event) {
+        final MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
+        final boolean sneaking = event.getPlayer().isSneaking() && !MythicLib.plugin.getMMOConfig().ignoreShiftTriggers;
+        caster.triggerSkills(new TriggerMetadata(caster, TriggerType.TELEPORT, event.getFrom(), event.getTo()));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void swapItems(PlayerSwapHandItemsEvent event) {
+        final MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
+        final boolean sneaking = event.getPlayer().isSneaking() && !MythicLib.plugin.getMMOConfig().ignoreShiftTriggers;
+        caster.triggerSkills(new TriggerMetadata(caster, sneaking ? TriggerType.SHIFT_SWAP_ITEMS : TriggerType.SWAP_ITEMS));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void equipArmor(ArmorEquipEvent event) {
+        final MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
+        final boolean unequip = UtilityMethods.isAir(event.getNewArmorPiece());
+        caster.triggerSkills(new TriggerMetadata(caster, unequip ? TriggerType.UNEQUIP_ARMOR : TriggerType.EQUIP_ARMOR));
     }
 
     /**
@@ -131,9 +175,10 @@ public class SkillTriggers implements Listener {
         if (event.getAction() == Action.PHYSICAL) return;
 
         final MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
-        final boolean left = event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK, sneaking = event.getPlayer().isSneaking();
+        final boolean left = event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK;
+        final boolean sneaking = event.getPlayer().isSneaking() && !MythicLib.plugin.getMMOConfig().ignoreShiftTriggers;
         final TriggerType triggerType = sneaking ? (left ? TriggerType.SHIFT_LEFT_CLICK : TriggerType.SHIFT_RIGHT_CLICK) : (left ? TriggerType.LEFT_CLICK : TriggerType.RIGHT_CLICK);
-        final TriggerMetadata triggerMetadata = new TriggerMetadata(caster, triggerType, EquipmentSlot.fromBukkit(event.getHand()), null, null, null);
+        final TriggerMetadata triggerMetadata = new TriggerMetadata(caster, triggerType, EquipmentSlot.fromBukkit(event.getHand()), null, null, null, null, null);
         caster.triggerSkills(triggerMetadata);
     }
 

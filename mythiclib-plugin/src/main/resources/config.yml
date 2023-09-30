@@ -51,6 +51,13 @@ critical-strikes:
     coefficient: 1.5 # Default = 1.5 meaning crits deal 150% of the initial damage
     cooldown: 3
 
+# When enabled, SHIFT_<RIGHT_CLICK/DROP_ITEM/...> trigger types are disabled
+# and the corresponding base triggers will trigger even when crouching.
+#
+# When using this option, the SHIFT_<...> triggers still exist but will NOT
+# trigger any skill, so just ignore them.
+ignore_shift_triggers: false
+
 # What happens when the player is waiting for his skill to cast
 # Does not apply if skill delay (it is a skill parameter) is set to 0
 casting-delay:
@@ -83,8 +90,8 @@ casting-delay:
     enabled: true
     format: 'CASTING'
 
-# Default and max. values of armor stats. These systems
-# all have a cooldown which can be reduced using the
+# Default and max. values of armor/mitigation stats. These
+# stats all have a cooldown which can be reduced using the
 # '*** Cooldown Reduction' item stat.
 mitigation:
 

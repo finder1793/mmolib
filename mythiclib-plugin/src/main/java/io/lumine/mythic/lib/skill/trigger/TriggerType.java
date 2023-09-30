@@ -22,6 +22,12 @@ public class TriggerType {
     public static TriggerType KILL_ENTITY = new TriggerType("KILL_ENTITY"),
 
     /**
+     * This is a sort-of duplicate of the {@link #KILL_ENTITY} trigger type
+     * which only triggers on players instead of any type of entity.
+     */
+    KILL_PLAYER = new TriggerType("KILL_PLAYER"),
+
+    /**
      * Called when a player attacks any other entity
      * Metadata target is the entity being attacked
      */
@@ -42,6 +48,18 @@ public class TriggerType {
      * Called when a player dies
      */
     DEATH = new TriggerType("DEATH"),
+
+    // Blocks
+
+    /**
+     * Called when a player places a block.
+     */
+    PLACE_BLOCK = new TriggerType("PLACE_BLOCK"),
+
+    /**
+     * Called when a player breaks a block.
+     */
+    BREAK_BLOCK = new TriggerType("BREAK_BLOCK"),
 
     // Bow or crossbow
 
@@ -121,6 +139,26 @@ public class TriggerType {
      */
     SHIFT_LEFT_CLICK = new TriggerType("SHIFT_LEFT_CLICK", false, true, true),
 
+    /**
+     * Called when a player drops an item by pressing Q while crouching
+     */
+    DROP_ITEM = new TriggerType("DROP_ITEM", false),
+
+    /**
+     * Called when a player drops an item by pressing Q while crouching
+     */
+    SHIFT_DROP_ITEM = new TriggerType("SHIFT_DROP_ITEM", false),
+
+    /**
+     * Called when a player swaps mainhand/offhand items
+     */
+    SWAP_ITEMS = new TriggerType("SWAP_ITEMS", false),
+
+    /**
+     * Called when a player swaps mainhand/offhand items while crouching
+     */
+    SHIFT_SWAP_ITEMS = new TriggerType("SHIFT_SWAP_ITEMS", false),
+
     // Misc
 
     /**
@@ -133,6 +171,25 @@ public class TriggerType {
      * This trigger displays cooldown/mana restriction messages.
      */
     SNEAK = new TriggerType("SNEAK", false),
+
+    /**
+     * Called when a player equips armor
+     */
+    EQUIP_ARMOR = new TriggerType("EQUIP_ARMOR", false),
+
+    /**
+     * Called when a player unequips armor
+     */
+    UNEQUIP_ARMOR = new TriggerType("UNEQUIP_ARMOR", false),
+
+    /**
+     * Called when a player teleports from one location to another.
+     * Locations can have different worlds.
+     * <p>
+     * !! WARNING !! Skill target location is the location of the player
+     * before teleportation, and skill source is the current player's location.
+     */
+    TELEPORT = new TriggerType("TELEPORT"),
 
     /**
      * Casts the skill at regular time intervals. Timer period
@@ -157,14 +214,20 @@ public class TriggerType {
      */
     API = new TriggerType("API");
 
+    // CONSUME, POTION_SPLASH, PICKUP, UNCROUCH, INTERACT
+
     private static final Map<String, TriggerType> BY_ID = new HashMap<>();
 
     static {
         register(KILL_ENTITY);
+        register(KILL_PLAYER);
         register(ATTACK);
         register(DAMAGED);
         register(DAMAGED_BY_ENTITY);
         register(DEATH);
+
+        register(PLACE_BLOCK);
+        register(BREAK_BLOCK);
 
         register(SHOOT_BOW);
         register(ARROW_TICK);
@@ -178,11 +241,17 @@ public class TriggerType {
 
         register(RIGHT_CLICK);
         register(LEFT_CLICK);
+        register(DROP_ITEM);
+        register(SWAP_ITEMS);
         register(SHIFT_RIGHT_CLICK);
         register(SHIFT_LEFT_CLICK);
+        register(SHIFT_SWAP_ITEMS);
 
         register(LOGIN);
         register(SNEAK);
+        register(TELEPORT);
+        register(EQUIP_ARMOR);
+        register(UNEQUIP_ARMOR);
         register(TIMER);
         register(CAST);
         register(API);
@@ -247,7 +316,7 @@ public class TriggerType {
     /**
      * When set to true, skills granted by the item held in the
      * secondary hand (opposite of the action hand) will not be applied.
-     *
+     * <p>
      * These triggers correspond to item interactions (clicks, attacks).
      */
     public boolean isActionHandSpecific() {

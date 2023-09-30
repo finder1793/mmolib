@@ -18,7 +18,7 @@ public class ConfigManager {
     public final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
 
     public DecimalFormat decimal, decimals;
-    public boolean playerAbilityDamage, castingDelayCancelOnMove, enableCastingDelayBossbar, fixTooLargePackets, debugMode;
+    public boolean playerAbilityDamage, castingDelayCancelOnMove, enableCastingDelayBossbar, fixTooLargePackets, debugMode, ignoreShiftTriggers;
     public String naturalDefenseFormula, elementalDefenseFormula, castingDelayBossbarFormat;
     public double castingDelaySlowness;
     public int maxSyncTries;
@@ -47,6 +47,7 @@ public class ConfigManager {
         fixTooLargePackets = config.getBoolean("fix-too-large-packets");
         debugMode = config.getBoolean("debug");
         maxSyncTries = config.getInt("max-sync-tries");
+        ignoreShiftTriggers = config.getBoolean("ignore_shift_triggers");
 
         // Casting delay
         castingDelaySlowness = config.getDouble("casting-delay.slowness");

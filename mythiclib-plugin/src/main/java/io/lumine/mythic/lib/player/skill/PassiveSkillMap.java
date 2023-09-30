@@ -51,7 +51,7 @@ public class PassiveSkillMap extends ModifierMap<PassiveSkill> {
     public void tickTimerSkills() {
 
         // Optimized. No huge stat map lookups done here
-        final TriggerMetadata triggerMeta = new TriggerMetadata(getPlayerData(), TriggerType.TIMER, EquipmentSlot.MAIN_HAND, null, null, null);
+        final TriggerMetadata triggerMeta = new TriggerMetadata(getPlayerData(), TriggerType.TIMER, EquipmentSlot.MAIN_HAND, null, null, null, null, null);
 
         for (PassiveSkill passive : getModifiers()) {
             if (!passive.getType().equals(TriggerType.TIMER) || getPlayerData().getPlayer().getGameMode() == GameMode.SPECTATOR)
