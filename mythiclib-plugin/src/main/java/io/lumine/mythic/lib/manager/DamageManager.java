@@ -318,6 +318,15 @@ public class DamageManager implements Listener {
             case FIRE_TICK:
             case MELTING:
                 return new DamageType[]{DamageType.PHYSICAL, DamageType.DOT};
+            case STARVATION:
+            case DRYOUT:
+            case FREEZE:
+                return new DamageType[]{DamageType.DOT};
+            case FIRE:
+            case LAVA:
+            case HOT_FLOOR:
+            case SONIC_BOOM:
+            case LIGHTNING:
             case FALL:
             case THORNS:
             case CONTACT:

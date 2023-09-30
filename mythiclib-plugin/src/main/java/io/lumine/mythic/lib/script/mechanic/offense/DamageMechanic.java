@@ -14,6 +14,7 @@ import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -59,17 +60,15 @@ public class DamageMechanic extends TargetMechanic {
     }
 
     @Override
-    public void cast(SkillMetadata meta, Entity target) {
+    public void cast(SkillMetadata meta, @NotNull Entity target) {
         Validate.isTrue(target instanceof LivingEntity, "Cannot damage a non living entity");
         final @Nullable Element element = elementName != null ? Objects.requireNonNull(MythicLib.plugin.getElements().get(elementName), "Could not find element with ID '" + elementName + "'") : null;
 
-        // This ignores the 'knockback' and 'ignore-immunity' options
-        if (meta.hasTargetEntity()) {
-            final @Nullable AttackMetadata opt = MythicLib.plugin.getDamage().getRegisteredAttackMetadata(meta.getTargetEntity());
-            if (opt != null) {
-                opt.getDamage().add(amount.evaluate(meta), element, types);
-                return;
-            }
+        // Look for attackMetadata
+        final @Nullable AttackMetadata opt = MythicLib.plugin.getDamage().getRegisteredAttackMetadata(target);
+        if (opt != null) {
+            opt.getDamage().add(amount.evaluate(meta), element, types);
+            return;
         }
 
         final DamageMetadata damageMetadata = element == null ? new DamageMetadata(amount.evaluate(meta), types) : new DamageMetadata(amount.evaluate(meta), element, types);
