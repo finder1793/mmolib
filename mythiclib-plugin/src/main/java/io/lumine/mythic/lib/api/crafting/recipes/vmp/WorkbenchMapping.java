@@ -50,7 +50,7 @@ public class WorkbenchMapping extends VanillaInventoryMapping {
                 return 2;
             default: break; }
 
-        throwOutOfBounds(slot); return 0;
+        throw outOfBounds(slot);
     }
     @Override
     public int getMainHeight(int slot) throws IllegalArgumentException {
@@ -69,7 +69,7 @@ public class WorkbenchMapping extends VanillaInventoryMapping {
                 return -2;
             default: break; }
 
-        throwOutOfBounds(slot); return 0;
+        throw outOfBounds(slot);
     }
     @Override
     public int getMainSlot(int width, int height) throws IllegalArgumentException {
@@ -107,12 +107,10 @@ public class WorkbenchMapping extends VanillaInventoryMapping {
                     default: break; }
             default: break; }
 
-        throwOutOfBounds(width, height); return 0;
+        throw outOfBounds(width, height);
     }
     @Override
     public int getMainInventoryStart() { return 1; }
-    @Override
-    public int getMainInventorySize() { return 9; }
     @Override
     public int getMainInventoryWidth() { return 3; }
     @Override
@@ -122,24 +120,22 @@ public class WorkbenchMapping extends VanillaInventoryMapping {
     public int getResultWidth(int slot) throws IllegalArgumentException {
         if (slot == 0) { return 0; }
 
-        throwOutOfBounds(slot); return 0;
+        throw outOfBounds(slot);
     }
     @Override
     public int getResultHeight(int slot) throws IllegalArgumentException {
         if (slot == 0) { return 0; }
 
-        throwOutOfBounds(slot); return 0;
+        throw outOfBounds(slot);
     }
     @Override
     public int getResultSlot(int width, int height) throws IllegalArgumentException {
         if (width == 0 && height == 0) { return 0; }
 
-        throwOutOfBounds(width, height); return 0;
+        throw outOfBounds(width, height);
     }
     @Override
     public int getResultInventoryStart() { return 0; }
-    @Override
-    public int getResultInventorySize() { return 1; }
     @Override
     public int getResultInventoryWidth() { return 1; }
     @Override
@@ -147,19 +143,17 @@ public class WorkbenchMapping extends VanillaInventoryMapping {
     @Override public boolean isResultSlot(int slot) { return slot == 0; }
 
     @Override
-    public int getSideWidth(@NotNull String side, int slot) throws IllegalArgumentException { throwSideInventoryException(side); return 0; }
+    public int getSideWidth(@NotNull String side, int slot) throws IllegalArgumentException { throw sideInventoryException(side); }
     @Override
-    public int getSideHeight(@NotNull String side, int slot) throws IllegalArgumentException { throwSideInventoryException(side); return 0; }
+    public int getSideHeight(@NotNull String side, int slot) throws IllegalArgumentException { throw sideInventoryException(side); }
     @Override
-    public int getSideSlot(@NotNull String side, int width, int height) throws IllegalArgumentException { throwSideInventoryException(side); return 0; }
+    public int getSideSlot(@NotNull String side, int width, int height) throws IllegalArgumentException { throw sideInventoryException(side); }
     @Override
-    public int getSideInventoryStart(@NotNull String side) throws IllegalArgumentException { throwSideInventoryException(side); return 0; }
+    public int getSideInventoryStart(@NotNull String side) throws IllegalArgumentException { throw sideInventoryException(side); }
     @Override
-    public int getSideInventorySize(@NotNull String side) throws IllegalArgumentException { throwSideInventoryException(side); return 0; }
+    public int getSideInventoryWidth(@NotNull String side) throws IllegalArgumentException { throw sideInventoryException(side); }
     @Override
-    public int getSideInventoryWidth(@NotNull String side) throws IllegalArgumentException { throwSideInventoryException(side); return 0; }
-    @Override
-    public int getSideInventoryHeight(@NotNull String side) throws IllegalArgumentException { throwSideInventoryException(side); return 0; }
+    public int getSideInventoryHeight(@NotNull String side) throws IllegalArgumentException { throw sideInventoryException(side); }
 
     @Override
     public boolean applyToSideInventory(@NotNull Inventory inventory, @NotNull MythicRecipeInventory finalSide, @NotNull String sideKeyName, boolean amountOnly) { return false; }

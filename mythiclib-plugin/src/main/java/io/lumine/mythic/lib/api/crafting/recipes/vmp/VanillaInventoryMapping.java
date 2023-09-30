@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * To easily perform operations to and fro vanilla inventories,
+ * To easily perform operations to and from vanilla inventories,
  * these mappings contain the "translation keys" from a normal
  * inventory to a {@link MythicRecipeInventory}.
  * <p></p>
@@ -83,7 +83,9 @@ public abstract class VanillaInventoryMapping {
      *         This behaves like array or list sizes, so that the first
      *         slot is <code>'0'</code> and the last slot is <code>'inventorySize() - 1'</code>
      */
-    public abstract int getMainInventorySize();
+    public int getMainInventorySize() {
+        return getMainInventoryHeight() * getMainInventoryWidth();
+    }
     /**
      * @return How wide is the Main inventory?
      *         <p></p>
@@ -130,7 +132,7 @@ public abstract class VanillaInventoryMapping {
         return main;
     }
     //endregion
-    
+
     //region Result Inventory
     /**
      * @param slot What slot you trying to read.
@@ -174,7 +176,9 @@ public abstract class VanillaInventoryMapping {
      *         This behaves like array or list sizes, so that the first
      *         slot is <code>'0'</code> and the last slot is <code>'inventorySize() - 1'</code>
      */
-    public abstract int getResultInventorySize();
+    public int getResultInventorySize() {
+        return getResultInventoryHeight() * getResultInventoryWidth();
+    }
     /**
      * @return Inventories may not start at the 0 slot;
      *         <p>Easiest example is crafting table's main inventory:
@@ -293,7 +297,9 @@ public abstract class VanillaInventoryMapping {
      * @throws IllegalArgumentException when the slot is not part of the inventory,
      *                                  or the side inventory of that name does not exist.
      */
-    public abstract int getSideInventorySize(@NotNull String side) throws IllegalArgumentException;
+    public int getSideInventorySize(@NotNull String side) throws IllegalArgumentException {
+        return getSideInventoryHeight(side) * getSideInventoryWidth(side);
+    }
     /**
      * @return How wide is the Side inventory?
      *         <p></p>
@@ -331,7 +337,7 @@ public abstract class VanillaInventoryMapping {
     @NotNull public MythicRecipeInventory getSideMythicInventory(@NotNull String side, @NotNull Inventory inventory) throws IllegalArgumentException {
 
         // No?
-        if (!getSideInventoryNames().contains(side)) { throwSideInventoryException(side); }
+        validateSide(side);
 
         // Create
         MythicRecipeInventory sideInven = new MythicRecipeInventory();
@@ -385,20 +391,37 @@ public abstract class VanillaInventoryMapping {
         // Yes
         return sides;
     }
+
+    @Deprecated
+    public void throwSideInventoryException(@NotNull String side) throws IllegalArgumentException {
+        throw sideInventoryException(side);
+    }
+
     /**
      * Shorthand to throw the exception that says "HEY! Theres no such side inventory"
      *
-     * @param name Name of the side inventory that didn't exist
-     *
+     * @param side Name of the side inventory that didn't exist
      * @throws IllegalArgumentException Always
      */
-    public void throwSideInventoryException(@NotNull String name) throws IllegalArgumentException { throw new IllegalArgumentException("No such side inventory of name '" + name + "' for mapping " + getClass().getSimpleName()); }
+    @NotNull
+    public IllegalArgumentException sideInventoryException(@NotNull String side) {
+        return new IllegalArgumentException("No such side inventory of name '" + side + "' for mapping " + getClass().getSimpleName());
+    }
+
+    @Deprecated
+    public void considerThrowingSideException(String side) {
+        validateSide(side);
+    }
+
     /**
      * Throws the 'Side Inventory not Found' Exception if the side inventory is, well if its not found.
      *
      * @param side The side inventory being requested.
      */
-    public void considerThrowingSideException(@NotNull String side) { if (!getSideInventoryNames().contains(side)) { throwSideInventoryException(side); } }
+    public void validateSide(@NotNull String side) {
+        if (!getSideInventoryNames().contains(side)) throw sideInventoryException(side);
+    }
+
     //endregion
 
     //region Apply to inventory
@@ -497,7 +520,7 @@ public abstract class VanillaInventoryMapping {
         return true;
     }
     //endregion
-    
+
     //region Mapping Instance
     /**
      * Makes use of all the get inventory methods to
@@ -653,23 +676,38 @@ public abstract class VanillaInventoryMapping {
         // Return it or air
         return ret == null ? MythicCraftingManager.AIR : ret;
     }
+
+    @Deprecated
+    public void throwOutOfBounds(int out) throws IllegalArgumentException {
+        throw outOfBounds(out);
+    }
+
     /**
      * Shorthand to throw the exception that says "HEY! Theres no such slot"
      *
      * @param out Slot number that caused the exception
-     *
-     * @throws IllegalArgumentException Always
      */
-    public void throwOutOfBounds(int out) throws IllegalArgumentException { throw new IllegalArgumentException("Mapping " + getClass().getSimpleName() + " has no data for slot '" + out + "'"); }
+    @NotNull
+    public IllegalArgumentException outOfBounds(int out) {
+        return new IllegalArgumentException("Mapping " + getClass().getSimpleName() + " has no data for slot '" + out + "'");
+    }
+
+    @Deprecated
+    public void throwOutOfBounds(int w, int h) throws IllegalArgumentException {
+        throw outOfBounds(w, h);
+    }
+
     /**
      * Shorthand to throw the exception that says "HEY! Theres no such slot"
      *
-     * @param w Horizontal number that caused the exception
-     * @param h Vertical number that caused the exception
-     *
-     * @throws IllegalArgumentException Always
+     * @param width Horizontal number that caused the exception
+     * @param height Vertical number that caused the exception
      */
-    public void throwOutOfBounds(int w, int h) throws IllegalArgumentException { throw new IllegalArgumentException("Mapping " + getClass().getSimpleName() + " has no data for slot at width '" + w + "' and height '" + h + "'"); }
+    @NotNull
+    public IllegalArgumentException outOfBounds(int width, int height) {
+        return new IllegalArgumentException("Mapping " + getClass().getSimpleName() + " has no data for slot at width '" + width + "' and height '" + height + "'");
+    }
+
     //endregion
 
     //region Managing Section
@@ -689,7 +727,9 @@ public abstract class VanillaInventoryMapping {
         vanillaMappings.put(InventoryType.FURNACE, new FurnaceMapping());
         registerCustomMapping(SuperWorkbenchMapping.SWB);
         registerCustomMapping(MegaWorkbenchMapping.MWB);
-        if (MythicLib.plugin.getVersion().isStrictlyHigher(1, 15)) { vanillaMappings.put(InventoryType.valueOf("SMITHING"), new SmithingStationMapping()); }
+        if (MythicLib.plugin.getVersion().isStrictlyHigher(1, 15))
+            vanillaMappings.put(InventoryType.valueOf("SMITHING"), new LegacySmithingStationMapping());
+        // vanillaMappings.put(InventoryType.valueOf("SMITHING"), MythicLib.plugin.getVersion().isBelowOrEqual(1, 19) ? new LegacySmithingStationMapping() : new ModernSmithingStationMapping());
     }
 
     /**

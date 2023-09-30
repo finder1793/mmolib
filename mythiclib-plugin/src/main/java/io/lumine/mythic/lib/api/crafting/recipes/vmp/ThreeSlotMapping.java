@@ -20,12 +20,12 @@ public abstract class ThreeSlotMapping extends VanillaInventoryMapping {
     @Override
     public int getMainWidth(int slot) throws IllegalArgumentException {
         if (slot == 0) { return 0; }
-        throwOutOfBounds(slot); return 0;
+        throw outOfBounds(slot);
     }
     @Override
     public int getMainHeight(int slot) throws IllegalArgumentException {
         if (slot == 0) { return 0; }
-        throwOutOfBounds(slot); return 0;
+        throw outOfBounds(slot);
     }
     @Override
     public int getMainSlot(int width, int height) throws IllegalArgumentException {
@@ -33,12 +33,10 @@ public abstract class ThreeSlotMapping extends VanillaInventoryMapping {
          * Only one slot, [0], is the MAIN
          */
         if (height == 0 && width == 0) { return 0; }
-        throwOutOfBounds(width, height); return 0;
+        throw outOfBounds(width, height);
     }
     @Override
     public int getMainInventoryStart() { return 0; }
-    @Override
-    public int getMainInventorySize() { return 1; }
     @Override
     public int getMainInventoryWidth() { return 1; }
     @Override
@@ -47,22 +45,20 @@ public abstract class ThreeSlotMapping extends VanillaInventoryMapping {
     @Override
     public int getResultWidth(int slot) throws IllegalArgumentException {
         if (slot == 2) { return 0; }
-        throwOutOfBounds(slot); return 0;
+        throw outOfBounds(slot);
     }
     @Override
     public int getResultHeight(int slot) throws IllegalArgumentException {
         if (slot == 2) { return 0; }
-        throwOutOfBounds(slot); return 0;
+        throw outOfBounds(slot);
     }
     @Override
     public int getResultSlot(int width, int height) throws IllegalArgumentException {
         if (width == 0 && height == 0) { return 2; }
-        throwOutOfBounds(width, height); return 2;
+        throw outOfBounds(width, height);
     }
     @Override
     public int getResultInventoryStart() { return 2; }
-    @Override
-    public int getResultInventorySize() { return 1; }
     @Override
     public int getResultInventoryWidth() { return 1; }
     @Override
@@ -71,30 +67,28 @@ public abstract class ThreeSlotMapping extends VanillaInventoryMapping {
 
     @Override
     public int getSideWidth(@NotNull String side, int slot) throws IllegalArgumentException {
-        considerThrowingSideException(side);
+        validateSide(side);
         if (slot == 1) { return 0; }
-        throwOutOfBounds(slot); return 0;
+        throw outOfBounds(slot);
     }
     @Override
     public int getSideHeight(@NotNull String side, int slot) throws IllegalArgumentException {
-        considerThrowingSideException(side);
+        validateSide(side);
         if (slot == 1) { return 0; }
-        throwOutOfBounds(slot); return 0;
+        throw outOfBounds(slot);
     }
     @Override
     public int getSideSlot(@NotNull String side, int width, int height) throws IllegalArgumentException {
-        considerThrowingSideException(side);
+        validateSide(side);
         if (width == 0 && height == 0) { return 1; }
-        throwOutOfBounds(width, height); return 1;
+        throw outOfBounds(width, height);
     }
     @Override
-    public int getSideInventoryStart(@NotNull String side) throws IllegalArgumentException { considerThrowingSideException(side); return 1; }
+    public int getSideInventoryStart(@NotNull String side) throws IllegalArgumentException { validateSide(side); return 1; }
     @Override
-    public int getSideInventorySize(@NotNull String side) throws IllegalArgumentException { considerThrowingSideException(side); return 1; }
+    public int getSideInventoryWidth(@NotNull String side) throws IllegalArgumentException { validateSide(side); return 1; }
     @Override
-    public int getSideInventoryWidth(@NotNull String side) throws IllegalArgumentException { considerThrowingSideException(side); return 1; }
-    @Override
-    public int getSideInventoryHeight(@NotNull String side) throws IllegalArgumentException { considerThrowingSideException(side); return 1; }
+    public int getSideInventoryHeight(@NotNull String side) throws IllegalArgumentException { validateSide(side); return 1; }
 
     @Override public boolean mainIsResult() { return false; }
 }
