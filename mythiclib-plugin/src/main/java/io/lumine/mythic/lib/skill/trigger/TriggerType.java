@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.skill.trigger;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.handler.def.passive.Backstab;
+import org.apache.commons.lang.Validate;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -245,6 +246,7 @@ public class TriggerType {
         register(SWAP_ITEMS);
         register(SHIFT_RIGHT_CLICK);
         register(SHIFT_LEFT_CLICK);
+        register(SHIFT_DROP_ITEM);
         register(SHIFT_SWAP_ITEMS);
 
         register(LOGIN);
@@ -361,8 +363,9 @@ public class TriggerType {
         return Objects.requireNonNull(BY_ID.get(id), "Could not find trigger type with ID '" + id + "'");
     }
 
-    public static void register(TriggerType trigger) {
-        BY_ID.put(Objects.requireNonNull(trigger, "Trigger type cannot be null").name(), trigger);
+    public static void register(@NotNull TriggerType trigger) {
+        Validate.notNull(trigger, "Trigger type cannot be null");
+        BY_ID.put(trigger.name(), trigger);
     }
 
     public static Collection<TriggerType> values() {
