@@ -1,10 +1,8 @@
 package io.lumine.mythic.lib.api.util;
 
 import com.google.common.collect.Lists;
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import io.lumine.mythic.lib.MythicLib;
-import net.md_5.bungee.api.chat.BaseComponent;
+import io.lumine.mythic.lib.UtilityMethods;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -16,7 +14,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.awt.*;
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
@@ -77,8 +74,8 @@ public class ItemFactory {
     public ItemFactory lore(String line) {
         return this.transformMeta((meta) -> {
             List<String> lore = meta.getLore() == null ? new ArrayList() : meta.getLore();
-            ((List)lore).add(colorize(line));
-            meta.setLore((List)lore);
+            ((List) lore).add(colorize(line));
+            meta.setLore((List) lore);
         });
     }
 
@@ -88,12 +85,12 @@ public class ItemFactory {
             String[] var3 = lines;
             int var4 = lines.length;
 
-            for(int var5 = 0; var5 < var4; ++var5) {
+            for (int var5 = 0; var5 < var4; ++var5) {
                 String line = var3[var5];
-                ((List)lore).add(colorize(line));
+                ((List) lore).add(colorize(line));
             }
 
-            meta.setLore((List)lore);
+            meta.setLore((List) lore);
         });
     }
 
@@ -102,27 +99,27 @@ public class ItemFactory {
             List<String> lore = meta.getLore() == null ? new ArrayList() : meta.getLore();
             Iterator var3 = lines.iterator();
 
-            while(var3.hasNext()) {
-                String line = (String)var3.next();
-                ((List)lore).add(colorize(line));
+            while (var3.hasNext()) {
+                String line = (String) var3.next();
+                ((List) lore).add(colorize(line));
             }
 
-            meta.setLore((List)lore);
+            meta.setLore((List) lore);
         });
     }
 
     public ItemFactory lore(Function<List<String>, Iterable<String>> linesFunc) {
-        Iterable<String> lines = (Iterable)linesFunc.apply(Lists.newArrayList());
+        Iterable<String> lines = (Iterable) linesFunc.apply(Lists.newArrayList());
         return this.transformMeta((meta) -> {
             List<String> lore = meta.getLore() == null ? new ArrayList() : meta.getLore();
             Iterator var3 = lines.iterator();
 
-            while(var3.hasNext()) {
-                String line = (String)var3.next();
-                ((List)lore).add(colorize(line));
+            while (var3.hasNext()) {
+                String line = (String) var3.next();
+                ((List) lore).add(colorize(line));
             }
 
-            meta.setLore((List)lore);
+            meta.setLore((List) lore);
         });
     }
 
@@ -134,10 +131,10 @@ public class ItemFactory {
 
     public ItemFactory durability(int durability) {
         return MythicLib.plugin.getVersion().isBelowOrEqual(1, 14) ? this.transform((itemStack) -> {
-            itemStack.setDurability((short)durability);
+            itemStack.setDurability((short) durability);
         }) : this.transformMeta((meta) -> {
             if (meta instanceof Damageable) {
-                ((Damageable)meta).setDamage(durability);
+                ((Damageable) meta).setDamage(durability);
             }
 
         });
@@ -164,7 +161,7 @@ public class ItemFactory {
             if (itemStack.getType() != Material.ENCHANTED_BOOK) {
                 itemStack.addUnsafeEnchantment(enchantment, level);
             } else {
-                EnchantmentStorageMeta esm = (EnchantmentStorageMeta)itemStack.getItemMeta();
+                EnchantmentStorageMeta esm = (EnchantmentStorageMeta) itemStack.getItemMeta();
                 esm.addStoredEnchant(enchantment, level, true);
                 itemStack.setItemMeta(esm);
             }
@@ -187,7 +184,7 @@ public class ItemFactory {
     public ItemFactory potionEffect(PotionEffectType type, int duration, int amplifier) {
         return this.transformMeta((meta) -> {
             if (meta instanceof PotionMeta) {
-                PotionMeta pMeta = (PotionMeta)meta;
+                PotionMeta pMeta = (PotionMeta) meta;
                 PotionEffect effect = new PotionEffect(type, duration, amplifier);
                 pMeta.addCustomEffect(effect, true);
             }
@@ -202,7 +199,7 @@ public class ItemFactory {
     public ItemFactory clearPotionEffects() {
         return this.transformMeta((meta) -> {
             if (meta instanceof PotionMeta) {
-                PotionMeta pMeta = (PotionMeta)meta;
+                PotionMeta pMeta = (PotionMeta) meta;
                 pMeta.clearCustomEffects();
             }
 
@@ -233,10 +230,10 @@ public class ItemFactory {
             }
 
             if (meta instanceof PotionMeta) {
-                PotionMeta pMeta = (PotionMeta)meta;
+                PotionMeta pMeta = (PotionMeta) meta;
                 pMeta.setColor(org.bukkit.Color.fromRGB(r, g, b));
             } else if (meta instanceof LeatherArmorMeta) {
-                LeatherArmorMeta pMetax = (LeatherArmorMeta)meta;
+                LeatherArmorMeta pMetax = (LeatherArmorMeta) meta;
                 pMetax.setColor(org.bukkit.Color.fromRGB(r, g, b));
             }
 
@@ -256,7 +253,7 @@ public class ItemFactory {
     }
 
     public ItemFactory hideAttributes() {
-        if ( MythicLib.plugin.getVersion().isStrictlyHigher(1, 15)) {
+        if (MythicLib.plugin.getVersion().isStrictlyHigher(1, 15)) {
             this.flag(ItemFlag.HIDE_DYE);
         }
 
@@ -275,7 +272,7 @@ public class ItemFactory {
         return this.transform((itemStack) -> {
             Material type = itemStack.getType();
             if (type == Material.LEATHER_BOOTS || type == Material.LEATHER_CHESTPLATE || type == Material.LEATHER_HELMET || type == Material.LEATHER_LEGGINGS) {
-                LeatherArmorMeta meta = (LeatherArmorMeta)itemStack.getItemMeta();
+                LeatherArmorMeta meta = (LeatherArmorMeta) itemStack.getItemMeta();
                 meta.setColor(color);
                 itemStack.setItemMeta(meta);
             }
@@ -292,7 +289,7 @@ public class ItemFactory {
     public ItemFactory skullOwner(String owner) {
         return this.transformMeta((meta) -> {
             if (meta instanceof SkullMeta) {
-                SkullMeta im = (SkullMeta)meta;
+                SkullMeta im = (SkullMeta) meta;
                 im.setOwner(owner);
             }
         });
@@ -300,34 +297,8 @@ public class ItemFactory {
 
     public ItemFactory skullTexture(String texture) {
         return this.transformMeta((meta) -> {
-            if (meta instanceof SkullMeta) {
-                SkullMeta im = (SkullMeta)meta;
-                UUID skinUUID;
-                if (im.getDisplayName() != null) {
-                    skinUUID = UUID.fromString(im.getDisplayName());
-                } else {
-                    skinUUID = UUID.randomUUID();
-                }
-
-                GameProfile profile = new GameProfile(skinUUID, (String)null);
-                profile.getProperties().put("textures", new Property("textures", texture));
-                Field profileField = null;
-
-                try {
-                    profileField = im.getClass().getDeclaredField("profile");
-                } catch (SecurityException | NoSuchFieldException var8) {
-                    var8.printStackTrace();
-                }
-
-                profileField.setAccessible(true);
-
-                try {
-                    profileField.set(im, profile);
-                } catch (IllegalAccessException | IllegalArgumentException var7) {
-                    var7.printStackTrace();
-                }
-
-            }
+            if (meta instanceof SkullMeta)
+                UtilityMethods.setTextureValue(meta, texture);
         });
     }
 

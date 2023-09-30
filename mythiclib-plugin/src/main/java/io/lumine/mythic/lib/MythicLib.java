@@ -125,8 +125,9 @@ public class MythicLib extends JavaPlugin {
             getLogger().warning("(Your config version: '" + configVersion + "' | Expected config version: '" + defConfigVersion + "')");
         }
 
-        // Packet interceptor
-        new MythicPacketSniffer(this);
+        // Fixes an issue with left clicks in the air.
+        if (version.isBelowOrEqual(1, 20, 1))
+            new MythicPacketSniffer(this);
 
         // Hologram provider
         Bukkit.getServicesManager().register(HologramFactory.class, new BukkitHologramFactory(), this, ServicePriority.Low);

@@ -34,7 +34,7 @@ public class Present_Throw extends SkillHandler<SimpleSkillResult> {
 
         try {
             ItemMeta presentMeta = present.getItemMeta();
-            GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+            GameProfile profile = new GameProfile(UUID.randomUUID(), "SkullTexture");
             profile.getProperties().put("textures", new Property("textures", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTcyNmQ5ZDA2MzJlNDBiZGE1YmNmNjU4MzliYTJjYzk4YTg3YmQ2MTljNTNhZGYwMDMxMGQ2ZmM3MWYwNDJiNSJ9fX0="));
 
             Field profileField = presentMeta.getClass().getDeclaredField("profile");

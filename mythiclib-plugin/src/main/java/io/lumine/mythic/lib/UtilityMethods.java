@@ -1,5 +1,7 @@
 package io.lumine.mythic.lib;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import io.lumine.mythic.lib.api.MMOLineConfig;
 import io.lumine.mythic.lib.api.condition.RegionCondition;
 import io.lumine.mythic.lib.api.condition.type.MMOCondition;
@@ -17,6 +19,7 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.logging.Level;
@@ -51,6 +55,19 @@ public class UtilityMethods {
         }
 
         return null;
+    }
+
+    public static void setTextureValue(@NotNull ItemMeta meta, @NotNull String textureValue) {
+        try {
+            final GameProfile profile = new GameProfile(UUID.randomUUID(), "SkullTexture");
+            profile.getProperties().put("textures", new Property("textures", textureValue));
+            final Field profileField = meta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            profileField.set(meta, profile);
+            profileField.setAccessible(false);
+        } catch (NoSuchFieldException | IllegalAccessException exception) {
+            throw new IllegalArgumentException("Could not apply skull texture '" + textureValue + "':" + exception.getMessage());
+        }
     }
 
     /**

@@ -1,3 +1,25 @@
+// MIT License
+//
+// Copyright (c) 2022 fren_gor
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
 package io.lumine.mythic.lib.util.network;
 
 import com.mojang.authlib.GameProfile;
@@ -75,7 +97,7 @@ public abstract class LightInjector {
     private static final Field NMS_CHANNEL_FROM_NM = getField(NETWORK_MANAGER_CLASS, Channel.class, 1);
     private static final Field GAME_PROFILE_FROM_PACKET = getField(PACKET_LOGIN_OUT_SUCCESS_CLASS, GameProfile.class, 1);
     private static final Field GET_PLAYER_CONNECTION = getField(ENTITY_PLAYER_CLASS, PLAYER_CONNECTION_CLASS, 1);
-    private static final Field GET_NETWORK_MANAGER = getField(PLAYER_CONNECTION_CLASS, NETWORK_MANAGER_CLASS, 1);
+    private static final Field GET_NETWORK_MANAGER = getField(PLAYER_CONNECTION_CLASS, NETWORK_MANAGER_CLASS, 1, 1);
 
     private static final Method GET_PLAYER_HANDLE = getMethod(getCBClass("entity.CraftPlayer"), "getHandle");
 
@@ -494,7 +516,6 @@ public abstract class LightInjector {
                 throw error;
             } catch (Throwable throwable) {
                 plugin.getLogger().log(Level.SEVERE, "[LightInjector] An error occurred while calling onPacketSendAsync:", throwable);
-                throwable.printStackTrace();
                 super.write(ctx, packet, promise);
                 return;
             }
@@ -512,7 +533,6 @@ public abstract class LightInjector {
                 throw error;
             } catch (Throwable throwable) {
                 plugin.getLogger().log(Level.SEVERE, "[LightInjector] An error occurred while calling onPacketReceiveAsync:", throwable);
-                throwable.printStackTrace();
                 super.channelRead(ctx, packet);
                 return;
             }
@@ -552,24 +572,45 @@ public abstract class LightInjector {
     }
 
     private static Field getField(Class<?> clazz, Class<?> type, @Range(from = 1, to = Integer.MAX_VALUE) int index) {
+        return getField(clazz, type, index, 0);
+    }
+
+    private static Field getField(Class<?> clazz, Class<?> type, @Range(from = 1, to = Integer.MAX_VALUE) int index, @Range(from = 0, to = Integer.MAX_VALUE) int superClassesToTry) {
+        final Class<?> savedClazz = clazz;
         final int savedIndex = index;
-        Field[] fields = clazz.getDeclaredFields();
-        for (Field f : fields) {
-            if (type.equals(f.getType()) && --index <= 0) {
-                f.setAccessible(true);
-                return f;
+
+        // Try to find the field for superClassesToTry super classes
+        for (int i = 0; i <= superClassesToTry; i++) {
+            Field[] fields = clazz.getDeclaredFields();
+            for (Field f : fields) {
+                if (type.equals(f.getType()) && --index <= 0) {
+                    f.setAccessible(true);
+                    return f;
+                }
             }
-        }
-        // Didn't find any field, check with isAssignableFrom
-        index = savedIndex;
-        for (Field f : fields) {
-            if (type.isAssignableFrom(f.getType()) && --index <= 0) {
-                f.setAccessible(true);
-                return f;
+            // Didn't find any field, check with isAssignableFrom
+            index = savedIndex;
+            for (Field f : fields) {
+                if (type.isAssignableFrom(f.getType()) && --index <= 0) {
+                    f.setAccessible(true);
+                    return f;
+                }
             }
+            // Didn't find any field again, try with super class
+            clazz = clazz.getSuperclass();
+            if (clazz == null || clazz == Object.class) {
+                break; // Don't continue if we arrived at Object
+            }
+            index = savedIndex; // Reset index before running the loop again
         }
 
-        throw new RuntimeException("[LightInjector] Cannot find field! (" + savedIndex + getOrdinal(savedIndex) + type.getName() + " in " + clazz.getName() + ')');
+        String errorMsg = "[LightInjector] Cannot find field! (" + savedIndex + getOrdinal(savedIndex) + type.getName() + " in " + savedClazz.getName();
+        if (superClassesToTry > 0) {
+            errorMsg += " and in its " + superClassesToTry + (superClassesToTry == 1 ? " super class" : " super classes");
+        }
+        errorMsg += ')';
+
+        throw new RuntimeException(errorMsg);
     }
 
     @Nullable
