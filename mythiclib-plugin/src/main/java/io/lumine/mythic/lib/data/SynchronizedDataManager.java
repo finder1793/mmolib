@@ -60,6 +60,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         dataHandler.setup();
     }
 
+    @NotNull
     public SynchronizedDataHandler<H, O> getDataHandler() {
         return dataHandler;
     }
@@ -175,6 +176,10 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         // Nothing by default
     }
 
+    /**
+     * @param playerData Player data to be loaded.
+     * @return Async completable future that completes when the data is loaded.
+     */
     @NotNull
     public CompletableFuture<Void> loadData(@NotNull H playerData) {
         return CompletableFuture.runAsync(UtilityMethods.serverThreadCatch(owning, () -> dataHandler.loadData(playerData)));
@@ -196,11 +201,10 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         final @NotNull H playerData = activeData.computeIfAbsent(player.getUniqueId(), uuid -> newPlayerData(MMOPlayerData.get(player.getUniqueId())));
 
         // Schedule data loading
-        if (requiresSynchronization(playerData))
-            loadData(playerData).thenAccept(UtilityMethods.sync(owning, v -> {
-                playerData.markAsSynchronized();
-                Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(this, playerData));
-            }));
+        if (requiresSynchronization(playerData)) loadData(playerData).thenAccept(UtilityMethods.sync(owning, v -> {
+            playerData.markAsSynchronized();
+            Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(this, playerData));
+        }));
 
         return playerData;
     }
@@ -239,9 +243,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         if (playerData instanceof Closeable) ((Closeable) playerData).close();
 
         // Save data async if required
-        return playerData.isSynchronized() ?
-                CompletableFuture.runAsync(UtilityMethods.serverThreadCatch(owning, () -> dataHandler.saveData(playerData, false))) :
-                CompletableFuture.completedFuture(null);
+        return playerData.isSynchronized() ? CompletableFuture.runAsync(UtilityMethods.serverThreadCatch(owning, () -> dataHandler.saveData(playerData, false))) : CompletableFuture.completedFuture(null);
     }
 
     /**
