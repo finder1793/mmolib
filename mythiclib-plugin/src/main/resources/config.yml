@@ -58,6 +58,10 @@ critical-strikes:
 # trigger any skill, so just ignore them.
 ignore_shift_triggers: false
 
+# When enabled, abilities provided by the item in the offhand will
+# not be triggered. Set to false by default.
+ignore_offhand_click_triggers: false
+
 # What happens when the player is waiting for his skill to cast
 # Does not apply if skill delay (it is a skill parameter) is set to 0
 casting-delay:

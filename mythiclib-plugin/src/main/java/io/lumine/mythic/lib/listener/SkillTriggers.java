@@ -173,6 +173,8 @@ public class SkillTriggers implements Listener {
     public void click(PlayerInteractEvent event) {
         // || event.useItemInHand() == Event.Result.DENY
         if (event.getAction() == Action.PHYSICAL) return;
+        if (MythicLib.plugin.getMMOConfig().ignoreOffhandClickTriggers && event.getHand() == org.bukkit.inventory.EquipmentSlot.OFF_HAND)
+            return;
 
         final MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
         final boolean left = event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK;
