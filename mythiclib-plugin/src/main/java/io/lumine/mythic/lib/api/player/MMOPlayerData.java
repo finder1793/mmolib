@@ -40,6 +40,7 @@ public class MMOPlayerData {
      */
     @NotNull
     private final UUID entityId;
+    private final boolean lookup;
 
     @Nullable
     private UUID profileId, officialId;
@@ -72,11 +73,20 @@ public class MMOPlayerData {
      * @param player Player logging in. Original UUID is taken from that player
      */
     private MMOPlayerData(@NotNull Player player) {
+        this.lookup = false;
         this.entityId = Objects.requireNonNull(player, "Player cannot be null").getUniqueId();
         this.player = player;
     }
 
+    /**
+     * MMOPlayerData object which can be used to lookup data in any plugin.
+     * This object will have no effect whatsoever on databases.
+     *
+     * @param uniqueId Unique ID to lookup
+     * @see {@link #isLookup()}
+     */
     public MMOPlayerData(@NotNull UUID uniqueId) {
+        this.lookup = true;
         this.entityId = Objects.requireNonNull(uniqueId, "UUID cannot be null");
         this.officialId = uniqueId;
         this.profileId = uniqueId;
@@ -105,7 +115,7 @@ public class MMOPlayerData {
      * <p>
      * Developers are discouraged from using this method.
      *
-     * @return The UUID Mojang would give of the player
+     * @return The Mojang user i.e official UUID
      */
     @NotNull
     public UUID getOfficialId() {
@@ -140,6 +150,10 @@ public class MMOPlayerData {
 
     public boolean hasProfile() {
         return profileId != null;
+    }
+
+    public boolean isLookup() {
+        return lookup;
     }
 
     /**

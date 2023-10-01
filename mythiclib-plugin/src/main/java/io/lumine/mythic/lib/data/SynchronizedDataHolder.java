@@ -6,7 +6,6 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -74,8 +73,14 @@ public abstract class SynchronizedDataHolder implements OfflineDataHolder {
      */
     @NotNull
     public UUID getEffectiveId() {
+
+        // No profiles => All IDs match
         if (MythicLib.plugin.getProfileMode() == null) return getUniqueId();
+
+        // Profile plugin => take official ID (if proxy-based profiles are enabled), unique ID otherwise (legacy profiles)
         if (profilePlugin) return playerData.hasOfficialId() ? getOfficialId() : getUniqueId();
+
+        // Otherwise, take profile ID if it exists
         return playerData.hasProfile() ? getProfileId() : getUniqueId();
     }
 

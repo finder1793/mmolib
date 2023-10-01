@@ -2,10 +2,7 @@ package io.lumine.mythic.lib.data.sql;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.data.SynchronizedDataHandler;
 import io.lumine.mythic.lib.data.SynchronizedDataHolder;
-import io.lumine.mythic.lib.data.SynchronizedDataManager;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -20,7 +17,7 @@ import java.util.logging.Level;
  * This class is used to synchronize player data between
  * servers. This fixes the issue of player data being
  * lost when teleporting to another server.
- TODO: Merge with {@link SQLSynchronizedDataHandler}
+ * TODO: Merge with {@link SQLSynchronizedDataHandler}
  */
 public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
     private final SQLDataSource dataSource;
@@ -75,13 +72,6 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
      * This method freezes the thread and shall be called async.
      */
     public boolean synchronize() {
-
-        // Cancel if player is offline
-        if (!playerData.getMMOPlayerData().isOnline()) {
-            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Stopped data retrieval for '" + effectiveId + "' as they went offline");
-            return false;
-        }
-
         tries++;
 
         // Fields that must be closed afterwards
@@ -97,6 +87,12 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
 
             UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Trying to load data of " + effectiveId);
             result = prepared.executeQuery();
+
+            // Check if player went offline
+            if (playerWentOffline()) {
+                UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Stopped data retrieval as '" + effectiveId + "' went offline");
+                return false;
+            }
 
             // Load data if found
             if (result.next()) {
@@ -150,6 +146,10 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
         return success;
     }
 
+    private boolean playerWentOffline() {
+        return !playerData.getMMOPlayerData().isLookup() && !playerData.getMMOPlayerData().isOnline();
+    }
+
     /**
      * This confirms the loading of player and switches "is_saved" back to 0
      *
@@ -157,6 +157,8 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
      * @throws SQLException Any exception. When thrown, the data will not be loaded.
      */
     private void confirmReception(Connection connection) throws SQLException {
+        if (playerData.getMMOPlayerData().isLookup()) return;
+
         @Nullable PreparedStatement prepared = null;
         try {
             prepared = connection.prepareStatement("INSERT INTO " + tableName + "(`uuid`, `is_saved`) VALUES(?, 0) ON DUPLICATE KEY UPDATE `is_saved` = 0;");
