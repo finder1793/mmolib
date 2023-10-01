@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 public class UtilityMethods {
@@ -337,6 +338,18 @@ public class UtilityMethods {
      */
     public static String enumName(String str) {
         return str.toUpperCase().replace("-", "_").replace(" ", "_");
+    }
+
+    /**
+     * Wraps a task inside of a sync block to make sure the task runs
+     * in sync. Handy util when working with completable futures.
+     *
+     * @param plugin   Plugin performing the sync task
+     * @param syncTask Task to be performed sync
+     * @return Runnable wrapping another runnable in a sync block.
+     */
+    public static <T> Consumer<T> sync(@NotNull Plugin plugin, @NotNull Consumer<T> syncTask) {
+        return t -> Bukkit.getScheduler().runTask(plugin, () -> syncTask.accept(t));
     }
 
     public static String ymlName(String str) {

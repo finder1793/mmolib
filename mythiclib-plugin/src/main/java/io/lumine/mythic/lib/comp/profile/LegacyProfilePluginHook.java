@@ -4,6 +4,7 @@ import fr.phoenixdevt.profiles.ProfileDataModule;
 import fr.phoenixdevt.profiles.ProfileProvider;
 import fr.phoenixdevt.profiles.event.ProfileSelectEvent;
 import fr.phoenixdevt.profiles.event.ProfileUnloadEvent;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.SynchronizedDataLoadEvent;
 import io.lumine.mythic.lib.data.SynchronizedDataHolder;
 import io.lumine.mythic.lib.data.SynchronizedDataManager;
@@ -28,8 +29,10 @@ import java.util.logging.Level;
  */
 public class LegacyProfilePluginHook {
 
-    public <H extends SynchronizedDataHolder> LegacyProfilePluginHook(SynchronizedDataManager<H, ?> manager, Listener fictiveListener, EventPriority joinEventPriority, EventPriority quitEventPriority) {
-
+    public <H extends SynchronizedDataHolder> LegacyProfilePluginHook(@NotNull SynchronizedDataManager<H, ?> manager,
+                                                                      @NotNull Listener fictiveListener,
+                                                                      @NotNull EventPriority joinEventPriority,
+                                                                      @NotNull EventPriority quitEventPriority) {
         // Register data holder
         final ProfileProvider profilePlugin = Bukkit.getServicesManager().getRegistration(ProfileProvider.class).getProvider();
         final ProfileDataModule module = (ProfileDataModule) manager.newProfileDataModule();
@@ -42,7 +45,7 @@ public class LegacyProfilePluginHook {
             final @NotNull H data = manager.get(event.getPlayer());
             if (data.isSynchronized()) event.validate(module); // More resilience
             else
-                manager.loadData(data).thenAccept(v -> Bukkit.getScheduler().runTask(manager.getOwningPlugin(), () -> {
+                manager.loadData(data).thenAccept(UtilityMethods.sync(manager.getOwningPlugin(), v -> {
                     event.validate(module);
                     data.markAsSynchronized();
                     Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(manager, data, event));
@@ -54,8 +57,7 @@ public class LegacyProfilePluginHook {
         // Save data on profile unload
         Bukkit.getPluginManager().registerEvent(ProfileUnloadEvent.class, fictiveListener, quitEventPriority, (listener, evt) -> {
             final ProfileUnloadEvent event = (ProfileUnloadEvent) evt;
-            manager.unregister(event.getPlayer());
-            event.validate(module);
+            manager.unregister(event.getPlayer()).thenAccept(UtilityMethods.sync(manager.getOwningPlugin(), v -> event.validate(module)));
         }, manager.getOwningPlugin());
     }
 }

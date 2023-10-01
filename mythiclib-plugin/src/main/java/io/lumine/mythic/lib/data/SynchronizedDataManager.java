@@ -197,7 +197,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
 
         // Schedule data loading
         if (requiresSynchronization(playerData))
-            loadData(playerData).thenAccept(v -> Bukkit.getScheduler().runTask(owning, () -> {
+            loadData(playerData).thenAccept(UtilityMethods.sync(owning, v -> {
                 playerData.markAsSynchronized();
                 Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(this, playerData));
             }));
@@ -227,9 +227,11 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
      * This saves the player data either through SQL or YAML,
      * then closes the player data and clears it from the data map.
      *
-     * @param player PLayer whose data needs to be unregistered
+     * @param player Player whose data needs to be unregistered
+     * @return Completable future of the data being saved
      */
-    public void unregister(@NotNull Player player) {
+    @NotNull
+    public CompletableFuture<Void> unregister(@NotNull Player player) {
         final H playerData = activeData.remove(player.getUniqueId());
         Validate.notNull(playerData, "Could not find player data of player '" + player.getUniqueId() + "'");
 
@@ -237,8 +239,9 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         if (playerData instanceof Closeable) ((Closeable) playerData).close();
 
         // Save data async if required
-        if (playerData.isSynchronized())
-            Bukkit.getScheduler().runTaskAsynchronously(owning, UtilityMethods.serverThreadCatch(owning, () -> dataHandler.saveData(playerData, false)));
+        return playerData.isSynchronized() ?
+                CompletableFuture.runAsync(UtilityMethods.serverThreadCatch(owning, () -> dataHandler.saveData(playerData, false))) :
+                CompletableFuture.completedFuture(null);
     }
 
     /**
