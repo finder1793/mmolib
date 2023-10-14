@@ -8,9 +8,8 @@ import io.lumine.mythic.lib.player.modifier.ModifierType;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Stat modifiers do NOT utilize the player modifier UUID
- */
+import java.util.UUID;
+
 public class StatModifier extends InstanceModifier {
     private final String stat;
 
@@ -40,7 +39,22 @@ public class StatModifier extends InstanceModifier {
      * @param source Type of the item granting the stat modifier
      */
     public StatModifier(@NotNull String key, @NotNull String stat, double value, @NotNull ModifierType type, @NotNull EquipmentSlot slot, @NotNull ModifierSource source) {
-        super(key, slot, source, value, type);
+        this(UUID.randomUUID(), key, stat, value, type, slot, source);
+    }
+
+    /**
+     * Stat modifier given by an item, either a weapon or an armor piece.
+     *
+     * @param uniqueId The modifier unique ID
+     * @param stat     Stat being modified
+     * @param key      Non unique modifier key
+     * @param value    Value of stat modifier
+     * @param type     Is the modifier flat or multiplicative
+     * @param slot     Slot of the item granting the stat modifier
+     * @param source   Type of the item granting the stat modifier
+     */
+    public StatModifier(@NotNull UUID uniqueId, @NotNull String key, @NotNull String stat, double value, @NotNull ModifierType type, @NotNull EquipmentSlot slot, @NotNull ModifierSource source) {
+        super(uniqueId, key, slot, source, value, type);
 
         this.stat = stat;
     }
@@ -78,7 +92,7 @@ public class StatModifier extends InstanceModifier {
      */
     @NotNull
     public StatModifier add(double offset) {
-        return new StatModifier(getKey(), stat, value + offset, type, getSlot(), getSource());
+        return new StatModifier(getUniqueId(), getKey(), stat, value + offset, type, getSlot(), getSource());
     }
 
     /**
@@ -91,7 +105,7 @@ public class StatModifier extends InstanceModifier {
      */
     @NotNull
     public StatModifier multiply(double coef) {
-        return new StatModifier(getKey(), stat, value * coef, type, getSlot(), getSource());
+        return new StatModifier(getUniqueId(), getKey(), stat, value * coef, type, getSlot(), getSource());
     }
 
     @Override

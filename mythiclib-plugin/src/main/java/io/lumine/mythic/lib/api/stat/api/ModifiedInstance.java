@@ -12,6 +12,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * @see {@link InstanceModifier}
+ */
 public abstract class ModifiedInstance<T extends InstanceModifier> {
     protected final Map<UUID, T> modifiers = new ConcurrentHashMap<>();
 

@@ -9,12 +9,31 @@ import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.UUID;
+
+/**
+ * Used anywhere where instances similar to Bukkit's attribute
+ * instances are being modified by numerical modifiers.
+ * <p>
+ * Examples:
+ * - MythicLib stat modifiers
+ * - MythicLib skill modifiers
+ * - MMOCore attribute modifiers
+ */
 public abstract class InstanceModifier extends PlayerModifier {
     protected final double value;
     protected final ModifierType type;
 
+    public InstanceModifier(@NotNull String key, double value) {
+        this(key, EquipmentSlot.OTHER, ModifierSource.OTHER, value, ModifierType.FLAT);
+    }
+
     public InstanceModifier(@NotNull String key, EquipmentSlot slot, ModifierSource source, double value, ModifierType type) {
-        super(key, slot, source);
+        this(UUID.randomUUID(), key, slot, source, value, type);
+    }
+
+    public InstanceModifier(@NotNull UUID uniqueId, @NotNull String key, EquipmentSlot slot, ModifierSource source, double value, ModifierType type) {
+        super(uniqueId, key, slot, source);
 
         this.value = value;
         this.type = type;

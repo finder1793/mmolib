@@ -16,11 +16,10 @@ import org.jetbrains.annotations.NotNull;
  * the stat map).
  * <p>
  * See {@link EntityStatProvider} for more info
- * <p>
- * TODO Transform this into EntityMetadata and merge it with PlayerMetadata
- * TODO Good for GUI script centralization
  *
  * @author indyuce
+ *
+ * @deprecated Transform this into EntityMetadata and merge it with PlayerMetadata. Good for GUI script centralization
  */
 @Deprecated
 public interface StatProvider {
