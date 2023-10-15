@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.player.skillmod;
 
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,11 +29,14 @@ public class SkillModifierMap {
         return playerData;
     }
 
+    public double calculateValue(@NotNull Skill cast, @NotNull String parameter) {
+        return getInstance(cast.getHandler(), parameter).getTotal(cast.getParameter(parameter));
+    }
 
     /**
      * @return The StatInstances that have been manipulated so far since the
-     *         player has logged in. StatInstances are completely flushed when
-     *         the server restarts
+     * player has logged in. StatInstances are completely flushed when
+     * the server restarts
      */
     public Collection<SkillModifierInstance> getInstances() {
         return instances.values();

@@ -2,13 +2,11 @@ package io.lumine.mythic.lib.skill;
 
 import io.lumine.mythic.lib.api.event.skill.PlayerCastSkillEvent;
 import io.lumine.mythic.lib.api.event.skill.SkillCastEvent;
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.player.cooldown.CooldownObject;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.SkillResult;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
-import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
@@ -128,8 +126,13 @@ public abstract class Skill implements CooldownObject {
     }
 
     /**
+     * !! WARNING !! Final skill parameter values also depend
+     * on the player's skill modifiers, and this method does NOT
+     * take them into account.
+     *
      * @param path Modifier name.
-     * @return The skill parameter value UNAFFECTED by skill modifiers.
+     * @return The skill parameter value unaffected by skill modifiers.
+     * @see {@link SkillMetadata#getParameter(String)}
      */
     public double getParameter(String path) {
         return getModifier(path);

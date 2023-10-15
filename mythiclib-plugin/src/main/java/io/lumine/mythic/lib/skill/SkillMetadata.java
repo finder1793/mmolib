@@ -172,13 +172,15 @@ public class SkillMetadata {
     }
 
     /**
-     * Retrieves a specific skill parameter value
+     * Retrieves a specific skill parameter value. This applies to the
+     * original skill being cast, which will work for most MMOCore and
+     * MMOItems uses but might cause issues when dealing with custom scripts.
      *
-     * @param param Skill parameter path
+     * @param parameter Skill parameter name
      * @return Skill parameter final value, taking into account skill mods
      */
-    public double getParameter(String param) {
-        return caster.getData().getSkillModifierMap().getInstance(cast.getHandler(), param).getTotal(cast.getParameter(param));
+    public double getParameter(@NotNull String parameter) {
+        return caster.getData().getSkillModifierMap().calculateValue(cast, parameter);
     }
 
     @NotNull
@@ -253,8 +255,8 @@ public class SkillMetadata {
      * to potentially orient locations.
      *
      * @return Skill orientation if not null. If it is, it tries to create
-     *         one using the skill target and source location if it is not null.
-     *         Throws a NPE if the metadata has neither an orientation nor a target location.
+     * one using the skill target and source location if it is not null.
+     * Throws a NPE if the metadata has neither an orientation nor a target location.
      */
     @NotNull
     public SkillOrientation getSkillOrientation() {
