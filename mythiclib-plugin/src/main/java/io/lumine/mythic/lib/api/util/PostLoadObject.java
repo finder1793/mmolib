@@ -7,6 +7,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
+/**
+ * @deprecated See {@link io.lumine.mythic.lib.util.PreloadedObject}
+ */
+@Deprecated
 public abstract class PostLoadObject {
 
     @Nullable
