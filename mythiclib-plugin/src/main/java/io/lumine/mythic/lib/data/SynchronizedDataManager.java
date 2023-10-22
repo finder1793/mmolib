@@ -2,13 +2,12 @@ package io.lumine.mythic.lib.data;
 
 import fr.phoenixdevt.profiles.ProfileDataModule;
 import fr.phoenixdevt.profiles.ProfileProvider;
-import fr.phoenixdevt.profiles.event.ProfileSelectEvent;
-import fr.phoenixdevt.profiles.event.ProfileUnloadEvent;
 import fr.phoenixdevt.profiles.placeholder.PlaceholderProcessor;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.SynchronizedDataLoadEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.comp.profile.LegacyProfiles;
 import io.lumine.mythic.lib.comp.profile.ProfileMode;
 import io.lumine.mythic.lib.util.Closeable;
 import org.apache.commons.lang.Validate;
@@ -26,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Level;
 
 /**
  * A general player data manager which implements
@@ -173,53 +171,11 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
 
         // Support for legacy profiles
         if (MythicLib.plugin.getProfileMode() == ProfileMode.LEGACY)
-            hookOnLegacyProfiles(FICTIVE_LISTENER, joinEventPriority, quitEventPriority);
+            LegacyProfiles.hook(this, FICTIVE_LISTENER, joinEventPriority, quitEventPriority);
             // Support for proxy based profiles
         else if (MythicLib.plugin.getProfileMode() == ProfileMode.PROXY) hookOnProxyProfiles();
     }
 
-    /**
-     * This is used to hook plugins which support legacy profiles:
-     * - MMOCore
-     * - MMOItems
-     * - MMOInventory
-     * <p>
-     * This class tells these plugins to load data when a profile is being
-     * selected by a player. By default, player data loads on login so this
-     * has to be changed to support profiles.
-     */
-    private void hookOnLegacyProfiles(@NotNull Listener fictiveListener,
-                                      @NotNull EventPriority joinEventPriority,
-                                      @NotNull EventPriority quitEventPriority) {
-
-        // Register data holder
-        final ProfileProvider profilePlugin = Bukkit.getServicesManager().getRegistration(ProfileProvider.class).getProvider();
-        final ProfileDataModule module = (ProfileDataModule) newProfileDataModule();
-        profilePlugin.registerModule(module);
-        if (module instanceof PlaceholderProcessor) profilePlugin.registerPlaceholders((PlaceholderProcessor) module);
-        owning.getLogger().log(Level.INFO, "Hooked onto Profiles");
-
-        // Load data on profile select
-        Bukkit.getPluginManager().registerEvent(ProfileSelectEvent.class, fictiveListener, joinEventPriority, (listener, evt) -> {
-            final ProfileSelectEvent event = (ProfileSelectEvent) evt;
-            final @NotNull H data = get(event.getPlayer());
-            if (data.isSynchronized()) event.validate(module); // More resilience
-            else
-                loadData(data).thenAccept(UtilityMethods.sync(owning, v -> {
-                    event.validate(module);
-                    data.markAsSynchronized();
-                    Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(this, data, event));
-                }));
-        }, owning);
-
-        // TODO Remove data on profile removal
-
-        // Save data on profile unload
-        Bukkit.getPluginManager().registerEvent(ProfileUnloadEvent.class, fictiveListener, quitEventPriority, (listener, evt) -> {
-            final ProfileUnloadEvent event = (ProfileUnloadEvent) evt;
-            unregister(event.getPlayer()).thenAccept(UtilityMethods.sync(owning, v -> event.validate(module)));
-        }, owning);
-    }
 
     private void hookOnProxyProfiles() {
         final ProfileProvider profilePlugin = Bukkit.getServicesManager().getRegistration(ProfileProvider.class).getProvider();
