@@ -73,21 +73,11 @@ public class TriggerMetadata {
         this(caster, triggerType, EquipmentSlot.MAIN_HAND, source, null, targetLocation, null, null);
     }
 
-    @Deprecated
-    public TriggerMetadata(@NotNull PlayerAttackEvent attackEvent) {
-        this(attackEvent, TriggerType.API);
-    }
-
     /**
      * The player responsible for the attack is the one triggering the skill.
      */
     public TriggerMetadata(@NotNull PlayerAttackEvent attackEvent, @NotNull TriggerType triggerType) {
         this(attackEvent.getAttacker(), triggerType, attackEvent.getEntity(), attackEvent.getAttack());
-    }
-
-    @Deprecated
-    public TriggerMetadata(@NotNull PlayerMetadata caster, @Nullable Entity target, @Nullable AttackMetadata attack) {
-        this(caster, TriggerType.API, target, attack);
     }
 
     public TriggerMetadata(@NotNull PlayerMetadata caster, @NotNull TriggerType triggerType, @Nullable Entity target, @Nullable AttackMetadata attack) {
@@ -103,6 +93,26 @@ public class TriggerMetadata {
         this.targetLocation = targetLocation;
         this.attack = attack;
         this.caster = caster;
+    }
+
+    @Deprecated
+    public TriggerMetadata(@NotNull PlayerAttackEvent attackEvent) {
+        this(attackEvent, TriggerType.API);
+    }
+
+    @Deprecated
+    public TriggerMetadata(@NotNull PlayerMetadata caster, @Nullable Entity target, @Nullable AttackMetadata attack) {
+        this(caster, TriggerType.API, target, attack);
+    }
+
+    @Deprecated
+    public TriggerMetadata(@NotNull AttackMetadata attack, @Nullable Entity target) {
+        this((PlayerMetadata) attack.getAttacker(), TriggerType.API, target, attack);
+    }
+
+    @Deprecated
+    public TriggerMetadata(@NotNull PlayerMetadata caster) {
+        this(caster.getData(), TriggerType.API, EquipmentSlot.MAIN_HAND, null, null, null, null, caster);
     }
 
     @NotNull
