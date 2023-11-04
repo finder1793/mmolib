@@ -34,9 +34,14 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String params) {
 
-        // All placeholders are related to players
-        if (player == null)
-            return null;
+        // Negative space
+        if (params.startsWith("space_")) {
+            final int space = Integer.parseInt(params.substring(6));
+            return UtilityMethods.getFontSpace(space);
+        }
+
+        // Player-related Placeholders
+        if (player == null) return null;
 
         if (params.startsWith("defense_damage_reduction")) {
             final double defenseStat = MMOPlayerData.get(player).getStatMap().getStat("DEFENSE");
