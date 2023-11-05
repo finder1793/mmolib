@@ -5,7 +5,7 @@ import com.mojang.authlib.properties.Property;
 import io.lumine.mythic.lib.api.MMOLineConfig;
 import io.lumine.mythic.lib.api.condition.RegionCondition;
 import io.lumine.mythic.lib.api.condition.type.MMOCondition;
-import io.lumine.mythic.lib.api.event.DamageCheckEvent;
+import io.lumine.mythic.lib.api.event.fake.DamageCheckEvent;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
 import io.lumine.mythic.lib.damage.AttackHandler;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;

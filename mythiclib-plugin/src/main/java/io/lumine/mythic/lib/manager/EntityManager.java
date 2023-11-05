@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.manager;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.api.event.DamageCheckEvent;
+import io.lumine.mythic.lib.api.event.fake.DamageCheckEvent;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
 import io.lumine.mythic.lib.comp.interaction.TargetRestriction;
 import io.lumine.mythic.lib.comp.interaction.relation.Relationship;

@@ -1,12 +1,11 @@
-package io.lumine.mythic.lib.api.event;
+package io.lumine.mythic.lib.api.event.fake;
 
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class DamageCheckEvent extends EntityDamageByEntityEvent {
+public class DamageCheckEvent extends FakeEntityDamageByEntityEvent {
     private final InteractionType interactionType;
 
     /**
@@ -22,6 +21,7 @@ public class DamageCheckEvent extends EntityDamageByEntityEvent {
         this.interactionType = interactionType;
     }
 
+    @NotNull
     public InteractionType getInteractionType() {
         return interactionType;
     }
