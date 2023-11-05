@@ -3,19 +3,19 @@ package io.lumine.mythic.lib.comp;
 import com.gmail.nossr50.events.fake.FakeEvent;
 import com.gmail.nossr50.events.skills.rupture.McMMOEntityDamageByRuptureEvent;
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.api.event.fake.FakeEventCaller;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.provider.StatProvider;
-import io.lumine.mythic.lib.damage.AttackHandler;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * In recent mcMMO builds there is no longer such metadata
@@ -25,12 +25,10 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Jules
  */
-public class McMMOAttackHandler implements Listener, AttackHandler {
-
-    @Nullable
-    @Override
-    public AttackMetadata getAttack(EntityDamageEvent event) {
-        return null;
+public class McMMOModule implements Listener, FakeEventCaller<EntityDamageEvent> {
+    public McMMOModule() {
+        MythicLib.plugin.getFakeEvents().registerFakeEventCaller(EntityDamageEvent.class, this);
+        Bukkit.getPluginManager().registerEvents(this, MythicLib.plugin);
     }
 
     @Override

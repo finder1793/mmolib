@@ -57,9 +57,4 @@ public class MythicMobsAttackHandler implements AttackHandler {
 
         return new AttackMetadata(damageMeta, (LivingEntity) event.getEntity(), damager);
     }
-
-    @Override
-    public boolean isFake(EntityDamageEvent event) {
-        return false;
-    }
 }

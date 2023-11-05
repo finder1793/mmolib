@@ -5,9 +5,7 @@ import com.mojang.authlib.properties.Property;
 import io.lumine.mythic.lib.api.MMOLineConfig;
 import io.lumine.mythic.lib.api.condition.RegionCondition;
 import io.lumine.mythic.lib.api.condition.type.MMOCondition;
-import io.lumine.mythic.lib.api.event.fake.DamageCheckEvent;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
-import io.lumine.mythic.lib.damage.AttackHandler;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
 import org.bukkit.*;
@@ -16,7 +14,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
@@ -72,38 +70,13 @@ public class UtilityMethods {
         }
     }
 
-    /**
-     * Fake events are used very commonly in MythicLib and other plugins.
-     * This is used to pre-check if a player is able to fight with/target
-     * another player in anticipation i.e before casting the damage method.
-     * <p>
-     * This method supports the following fake events:
-     * - MythicLib
-     * - mcMMO
-     * - SkillAPI and ProSkillAPI
-     * - Any plugin that uses 0 as damage for fake events
-     *
-     * @param event Some damage event
-     * @return If the event is a fake event, used for an interaction check
-     * @author jules
-     */
+    @Deprecated
     public static boolean isFakeEvent(@NotNull EntityDamageEvent event) {
-
-        // Vanilla + MythicLib checks
-        if (event.getDamage() == 0 || event instanceof DamageCheckEvent)
-            return true;
-
-        // Checks from other plugins for extra compatibility.
-        for (AttackHandler handler : MythicLib.plugin.getDamage().getHandlers())
-            if (handler.isFake(event))
-                return true;
-
-        // Nothing
-        return false;
+        return isFake(event);
     }
 
-    public static boolean isFakeEvent(@NotNull BlockBreakEvent event) {
-        return event instanceof BlockBreakEvent;
+    public static boolean isFake(@NotNull Event event) {
+        return MythicLib.plugin.getFakeEvents().isFake(event);
     }
 
     @NotNull
@@ -126,14 +99,12 @@ public class UtilityMethods {
 
     public static String formatDelay(long millis) {
 
-        if (millis < 1000 * 60)
-            return "1m";
+        if (millis < 1000 * 60) return "1m";
 
         String format = "";
         for (int j = DELAY_CHARACTERS.length - 1; j >= 0; j--) {
             long divisor = DELAY_AMOUNTS[j] * 1000;
-            if (millis < divisor)
-                continue;
+            if (millis < divisor) continue;
 
             format = (millis / divisor) + DELAY_CHARACTERS[j] + " " + format;
             millis = millis % divisor;

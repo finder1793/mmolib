@@ -11,8 +11,8 @@ import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.command.ExploreAttributesCommand;
 import io.lumine.mythic.lib.command.HealthScaleCommand;
 import io.lumine.mythic.lib.command.MMOTempStatCommand;
-import io.lumine.mythic.lib.comp.McMMOAttackHandler;
-import io.lumine.mythic.lib.comp.SkillAPIAttackHandler;
+import io.lumine.mythic.lib.comp.McMMOModule;
+import io.lumine.mythic.lib.comp.SkillAPIModule;
 import io.lumine.mythic.lib.comp.adventure.AdventureParser;
 import io.lumine.mythic.lib.comp.anticheat.AntiCheatSupport;
 import io.lumine.mythic.lib.comp.anticheat.SpartanPlugin;
@@ -78,6 +78,7 @@ public class MythicLib extends JavaPlugin {
     private final FlagHandler flagHandler = new FlagHandler();
     private final IndicatorManager indicatorManager = new IndicatorManager();
     private final FormulaParser formulaParser = new FormulaParser();
+    private final FakeEventManager fakeEventManager = new FakeEventManager();
     private Gson gson;
     private AntiCheatSupport antiCheatSupport;
     private ServerVersion version;
@@ -187,16 +188,12 @@ public class MythicLib extends JavaPlugin {
         }
 
         if (Bukkit.getPluginManager().getPlugin("mcMMO") != null) {
-            final McMMOAttackHandler handler = new McMMOAttackHandler();
-            damageManager.registerHandler(handler);
-            Bukkit.getPluginManager().registerEvents(handler, this);
+            new McMMOModule();
             getLogger().log(Level.INFO, "Hooked onto mcMMO");
         }
 
         if (Bukkit.getPluginManager().getPlugin("SkillAPI") != null) {
-            final SkillAPIAttackHandler handler = new SkillAPIAttackHandler();
-            damageManager.registerHandler(handler);
-            Bukkit.getPluginManager().registerEvents(handler, this);
+            new SkillAPIModule();
             getLogger().log(Level.INFO, "Hooked onto SkillAPI");
         }
 
@@ -302,6 +299,10 @@ public class MythicLib extends JavaPlugin {
     @Deprecated
     public JsonManager getJson() {
         return jsonManager;
+    }
+
+    public FakeEventManager getFakeEvents() {
+        return fakeEventManager;
     }
 
     @Deprecated

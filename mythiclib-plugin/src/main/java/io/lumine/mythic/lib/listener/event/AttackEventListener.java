@@ -47,7 +47,7 @@ public class AttackEventListener implements Listener {
     public void registerEvents(EntityDamageEvent event) {
 
         // Ignore fake events from RDW/mcMMO/...
-        if (!(event.getEntity() instanceof LivingEntity) || UtilityMethods.isFakeEvent(event))
+        if (!(event.getEntity() instanceof LivingEntity) || UtilityMethods.isFake(event))
             return;
 
         // Call the Bukkit event with the attack meta found
