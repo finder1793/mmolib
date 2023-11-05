@@ -16,6 +16,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
@@ -99,6 +100,10 @@ public class UtilityMethods {
 
         // Nothing
         return false;
+    }
+
+    public static boolean isFakeEvent(@NotNull BlockBreakEvent event) {
+        return event instanceof BlockBreakEvent;
     }
 
     @NotNull
