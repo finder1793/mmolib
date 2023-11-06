@@ -44,7 +44,7 @@ public class DamageReduction implements Listener {
         // Applies the Defense stat to neutral damage
         final double defense = data.getStatMap().getStat("DEFENSE"), neutralDamage;
         if (defense > 0 && (neutralDamage = event.getDamage().getDamage((Element) null)) > 0) {
-            final double ratio = Math.max(0, new DefenseFormula(false).getAppliedDamage(defense, neutralDamage)) / neutralDamage;
+            final double ratio = Math.max(0, DefenseFormula.calculateDamage(false, defense, neutralDamage)) / neutralDamage;
             event.getDamage().multiplicativeModifier(ratio, (Element) null);
         }
     }

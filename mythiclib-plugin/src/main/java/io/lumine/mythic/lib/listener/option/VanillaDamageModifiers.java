@@ -1,6 +1,5 @@
 package io.lumine.mythic.lib.listener.option;
 
-import bsh.EvalError;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import org.bukkit.configuration.ConfigurationSection;
@@ -42,9 +41,9 @@ public class VanillaDamageModifiers implements Listener {
 
         try {
             formula = applyInternalPlaceholders(formula, event);
-            final double evaluated = (double) MythicLib.plugin.getFormulaParser().eval(player, formula);
-            event.setDamage(evaluated);
-        } catch (EvalError exception) {
+            final double result = MythicLib.plugin.getFormulaParser().evaluateAsDouble(player, formula);
+            event.setDamage(result);
+        } catch (Exception exception) {
             MythicLib.plugin.getLogger().log(Level.WARNING, "Could not evaluate formula '" + formula + "' for player '" + player.getUniqueId() + "': " + exception.getMessage());
         }
     }

@@ -1,6 +1,5 @@
 package io.lumine.mythic.lib.util;
 
-import bsh.EvalError;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import org.jetbrains.annotations.NotNull;
@@ -23,16 +22,17 @@ public class DoubleFormula {
 
     public static final DoubleFormula ZERO = new DoubleFormula(0);
 
-    public DoubleFormula(@NotNull String str) {
-        this.value = str;
+    public DoubleFormula(@NotNull String value) {
+        this.value = value;
 
-        double trivialValue = 0;
+        double trivialValue;
         boolean trivial;
 
         try {
-            trivialValue = Double.valueOf(str);
+            trivialValue = Double.valueOf(value);
             trivial = true;
         } catch (IllegalArgumentException exception) {
+            trivialValue = 0;
             trivial = false;
         }
 
@@ -49,10 +49,10 @@ public class DoubleFormula {
         this.value = null;
     }
 
-    public double evaluate(SkillMetadata meta) {
+    public double evaluate(@NotNull SkillMetadata meta) {
         try {
-            return trivial ? trivialValue : (double) MythicLib.plugin.getFormulaParser().eval(meta.parseString(value));
-        } catch (EvalError exception) {
+            return trivial ? trivialValue : MythicLib.plugin.getFormulaParser().evaluateAsDouble(meta.parseString(value));
+        } catch (Exception exception) {
             MythicLib.plugin.getLogger().log(Level.WARNING, "Could not evaluate '" + value + "' while casting skill '" + meta.getCast().getHandler().getId() + "': " + exception.getMessage());
             return 0;
         }

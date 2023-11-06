@@ -62,7 +62,7 @@ public class ElementalDamage implements Listener {
             final double defense = opponent.getStat(element.getId() + "_DEFENSE") * (1 + Math.max(-1, opponent.getStat(element.getId() + "_DEFENSE_PERCENT") / 100));
             final double initialDamage = event.getDamage().getDamage(element);
             if (initialDamage == 0) continue;
-            final double finalDamage = new DefenseFormula(true).getAppliedDamage(defense, initialDamage);
+            final double finalDamage = DefenseFormula.calculateDamage(true, defense, initialDamage);
             event.getDamage().multiplicativeModifier(finalDamage / initialDamage, element);
 
             // Apply critical strikes & on-hit skill
