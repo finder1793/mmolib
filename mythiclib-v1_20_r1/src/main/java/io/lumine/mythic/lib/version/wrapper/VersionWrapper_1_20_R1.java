@@ -92,7 +92,7 @@ public class VersionWrapper_1_20_R1 implements VersionWrapper {
         return profile;
     }
 
-    private static final String URL_PREFIX = "\"url:\":\"";
+    private static final String URL_PREFIX = "\"url\":\"";
     private static final String URL_SUFFIX = "\"";
 
     private String extractUrl(String str) {
