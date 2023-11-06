@@ -2,7 +2,6 @@ package io.lumine.mythic.lib.version.wrapper;
 
 import com.mojang.authlib.GameProfile;
 import io.lumine.mythic.lib.api.item.NBTItem;
-import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -13,11 +12,35 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Map;
 import java.util.UUID;
 
 public interface VersionWrapper {
+
+    static final String PLAYER_PROFILE_NAME = "SkullTexture";
+
+    /**
+     * @return Either a GameProfile object or PlayerProfile depending on version.
+     */
+    Object getProfile(SkullMeta meta);
+
+    /**
+     * This takes in either a GameProfile object or PlayerProfile object and applies it
+     * to the target skull meta depending on server version.
+     */
+    void setProfile(SkullMeta meta, Object object);
+
+    /**
+     * Spigot 1.20 introduced an API method to manipulate skull textures
+     * without having to rely on reflection. Previous versions still
+     * rely on reflection while newer versions can switch to the API.
+     * <p>
+     * The new PlayerProfile API requires to both support PlayerProfile
+     * and GameProfile objects as reflection is no longer supported by >1.20.2
+     */
+    Object newProfile(UUID uniqueId, String textureValue);
 
     /**
      * Used by MMOItems to check if a block can be autosmelt.

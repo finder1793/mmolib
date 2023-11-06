@@ -297,8 +297,7 @@ public class ItemFactory {
 
     public ItemFactory skullTexture(String texture) {
         return this.transformMeta((meta) -> {
-            if (meta instanceof SkullMeta)
-                UtilityMethods.setTextureValue(meta, texture);
+            if (meta instanceof SkullMeta) UtilityMethods.setTextureValue((SkullMeta) meta, texture);
         });
     }
 

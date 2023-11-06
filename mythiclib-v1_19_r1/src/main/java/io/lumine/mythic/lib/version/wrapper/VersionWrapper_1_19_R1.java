@@ -40,6 +40,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -61,6 +62,38 @@ public class VersionWrapper_1_19_R1 implements VersionWrapper {
         generatorOutputs.add(Material.COBBLESTONE);
         generatorOutputs.add(Material.OBSIDIAN);
         generatorOutputs.add(Material.BASALT);
+    }
+
+    @Override
+    public Object getProfile(SkullMeta meta) {
+        try {
+            final Field profileField = meta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            final Object profile = profileField.get(meta);
+            profileField.setAccessible(false);
+            return profile;
+        } catch (NoSuchFieldException | IllegalAccessException exception) {
+            throw new IllegalArgumentException("Could not fetch skull profile:" + exception.getMessage());
+        }
+    }
+
+    @Override
+    public void setProfile(SkullMeta meta, Object object) {
+        try {
+            final Field profileField = meta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            profileField.set(meta, object);
+            profileField.setAccessible(false);
+        } catch (NoSuchFieldException | IllegalAccessException exception) {
+            throw new IllegalArgumentException("Could not apply skull profile:" + exception.getMessage());
+        }
+    }
+
+    @Override
+    public Object newProfile(UUID uniqueId, String textureValue) {
+        final GameProfile profile = new GameProfile(uniqueId, PLAYER_PROFILE_NAME);
+        profile.getProperties().put("textures", new Property("textures", textureValue));
+        return profile;
     }
 
     @Override
