@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.listener.option;
 
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.IndicatorDisplayEvent;
+import io.lumine.mythic.lib.util.CustomFont;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
@@ -11,25 +12,32 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 
 public class RegenIndicators extends GameIndicators {
+    @Nullable
+    private final CustomFont font;
+
     public RegenIndicators(ConfigurationSection config) {
         super(config);
+
+        font = config.getBoolean("custom-font.enabled") ? new CustomFont(config.getConfigurationSection("custom-font")) : null;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void a(EntityRegainHealthEvent event) {
 
         Entity entity = event.getEntity();
-        if (!(entity instanceof LivingEntity) || event.getAmount() <= 0
-                || ((LivingEntity) entity).getHealth() >= ((LivingEntity) entity).getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue())
+        if (!(entity instanceof LivingEntity) || event.getAmount() <= 0 || ((LivingEntity) entity).getHealth() >= ((LivingEntity) entity).getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue())
             return;
 
         // Display no indicator around vanished player
-        if (entity instanceof Player && UtilityMethods.isVanished((Player) entity))
-            return;
+        if (entity instanceof Player && UtilityMethods.isVanished((Player) entity)) return;
 
-        displayIndicator(entity, getRaw().replace("#", formatNumber(event.getAmount())), getIndicatorDirection(entity), IndicatorDisplayEvent.IndicatorType.REGENERATION);
+        final String formattedNumber = formatNumber(event.getAmount());
+        final String formattedDamage = font == null ? formattedNumber : font.format(formattedNumber);
+        final String indicatorMessage = getRaw().replace("#", formattedDamage);
+        displayIndicator(entity, indicatorMessage, getIndicatorDirection(entity), IndicatorDisplayEvent.IndicatorType.REGENERATION);
     }
 
     /**

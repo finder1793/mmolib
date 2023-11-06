@@ -205,6 +205,20 @@ game-indicators:
     initial-upward-velocity: 1
     entity-height-percent: 0.75
     y-offset: 0.1
+    custom-font:
+      enabled: false
+      '0': 'ᜀ'
+      '1': 'ᜁ'
+      '2': 'ᜂ'
+      '3': 'ᜃ'
+      '4': 'ᜄ'
+      '5': 'ᜅ'
+      '6': 'ᜆ'
+      '7': 'ᜇ'
+      '8': 'ᜈ'
+      '9': 'ᜉ'
+      'dot': 'ᜊ'
+      'inter': 'ᜍ'
 
 # Due to a change made in 1.1.6 related to the movement speed
 # attribute, players see their movement speed reset to .1 when logging in

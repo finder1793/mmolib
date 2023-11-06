@@ -18,7 +18,7 @@ import java.util.Random;
 
 public abstract class GameIndicators implements Listener {
     private final String format;
-    private final DecimalFormat decFormat;
+    private final DecimalFormat decimalFormat;
     private final double radialVelocity, gravity, initialUpwardVelocity, entityHeightPercentage, yOffset;
 
     protected static final Random random = new Random();
@@ -29,7 +29,7 @@ public abstract class GameIndicators implements Listener {
     private static final int HOLOGRAM_LIFE_SPAN = 7;
 
     public GameIndicators(ConfigurationSection config) {
-        decFormat = MythicLib.plugin.getMMOConfig().newDecimalFormat(config.getString("decimal-format"));
+        decimalFormat = MythicLib.plugin.getMMOConfig().newDecimalFormat(config.getString("decimal-format"));
         format = config.getString("format");
         radialVelocity = config.getDouble("radial-velocity", 1);
         gravity = config.getDouble("gravity", 1);
@@ -39,7 +39,7 @@ public abstract class GameIndicators implements Listener {
     }
 
     public String formatNumber(double d) {
-        return decFormat.format(d);
+        return decimalFormat.format(d);
     }
 
     public String getRaw() {
