@@ -1,7 +1,5 @@
 package io.lumine.mythic.lib.skill.handler.def.simple;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.damage.DamageType;
@@ -18,10 +16,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.lang.reflect.Field;
-import java.util.UUID;
 import java.util.logging.Level;
 
 public class Present_Throw extends SkillHandler<SimpleSkillResult> {
@@ -34,15 +31,9 @@ public class Present_Throw extends SkillHandler<SimpleSkillResult> {
 
         try {
             ItemMeta presentMeta = present.getItemMeta();
-            GameProfile profile = new GameProfile(UUID.randomUUID(), "SkullTexture");
-            profile.getProperties().put("textures", new Property("textures", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTcyNmQ5ZDA2MzJlNDBiZGE1YmNmNjU4MzliYTJjYzk4YTg3YmQ2MTljNTNhZGYwMDMxMGQ2ZmM3MWYwNDJiNSJ9fX0="));
-
-            Field profileField = presentMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(presentMeta, profile);
-
+            UtilityMethods.setTextureValue((SkullMeta) presentMeta, "\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTcyNmQ5ZDA2MzJlNDBiZGE1YmNmNjU4MzliYTJjYzk4YTg3YmQ2MTljNTNhZGYwMDMxMGQ2ZmM3MWYwNDJiNSJ9fX0=\"");
             present.setItemMeta(presentMeta);
-        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException exception) {
+        } catch (RuntimeException exception) {
             MythicLib.plugin.getLogger().log(Level.WARNING, "Could not apply 'Present Throw' head texture");
         }
     }
