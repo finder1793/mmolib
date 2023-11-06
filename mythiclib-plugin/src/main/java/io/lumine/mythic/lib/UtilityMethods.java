@@ -16,6 +16,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
@@ -52,6 +53,11 @@ public class UtilityMethods {
         }
 
         return null;
+    }
+
+    @Deprecated
+    public static void setTextureValue(@NotNull ItemMeta meta, @NotNull String textureValue) {
+        if (meta instanceof SkullMeta) setTextureValue((SkullMeta) meta, textureValue, UUID.randomUUID());
     }
 
     public static void setTextureValue(@NotNull SkullMeta meta, @NotNull String textureValue) {
