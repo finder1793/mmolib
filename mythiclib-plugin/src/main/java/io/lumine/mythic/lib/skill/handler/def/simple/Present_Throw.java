@@ -31,7 +31,7 @@ public class Present_Throw extends SkillHandler<SimpleSkillResult> {
 
         try {
             ItemMeta presentMeta = present.getItemMeta();
-            UtilityMethods.setTextureValue((SkullMeta) presentMeta, "\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTcyNmQ5ZDA2MzJlNDBiZGE1YmNmNjU4MzliYTJjYzk4YTg3YmQ2MTljNTNhZGYwMDMxMGQ2ZmM3MWYwNDJiNSJ9fX0=\"");
+            UtilityMethods.setTextureValue((SkullMeta) presentMeta, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTcyNmQ5ZDA2MzJlNDBiZGE1YmNmNjU4MzliYTJjYzk4YTg3YmQ2MTljNTNhZGYwMDMxMGQ2ZmM3MWYwNDJiNSJ9fX0=");
             present.setItemMeta(presentMeta);
         } catch (RuntimeException exception) {
             MythicLib.plugin.getLogger().log(Level.WARNING, "Could not apply 'Present Throw' head texture");
