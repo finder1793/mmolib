@@ -26,8 +26,8 @@ import io.lumine.mythic.lib.comp.formula.FormulaParser;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsAttackHandler;
 import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHook;
 import io.lumine.mythic.lib.comp.placeholder.*;
-import io.lumine.mythic.lib.comp.profile.ProfileMode;
 import io.lumine.mythic.lib.comp.profile.LegacyProfiles;
+import io.lumine.mythic.lib.comp.profile.ProfileMode;
 import io.lumine.mythic.lib.comp.protocollib.DamageParticleCap;
 import io.lumine.mythic.lib.glow.GlowModule;
 import io.lumine.mythic.lib.glow.provided.MythicGlowModule;
@@ -126,9 +126,8 @@ public class MythicLib extends JavaPlugin {
             getLogger().warning("(Your config version: '" + configVersion + "' | Expected config version: '" + defConfigVersion + "')");
         }
 
-        // Fixes an issue with left clicks in the air.
-        if (version.isBelowOrEqual(1, 20, 1))
-            new MythicPacketSniffer(this);
+        // Fixes left clicks
+        new MythicPacketSniffer(this, version.isBelowOrEqual(1, 20, 1) ? 3.5 : 3);
 
         // Hologram provider
         Bukkit.getServicesManager().register(HologramFactory.class, new BukkitHologramFactory(), this, ServicePriority.Low);

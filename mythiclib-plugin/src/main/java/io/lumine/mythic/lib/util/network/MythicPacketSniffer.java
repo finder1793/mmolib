@@ -3,7 +3,6 @@ package io.lumine.mythic.lib.util.network;
 import io.netty.channel.Channel;
 import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
-import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -14,7 +13,6 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,15 +21,19 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * mythiclib
- * 18/05/2023
+ * Fixes two things:
+ * - Bukkit not sending LEFT CLICK interact events on successful/missed
+ * melee hits (1.20.2+)
+ * - Bukkit not sending LEFT CLICK interact events when the hit entity
+ * is too close to be an AIR interact, too far to be a successful hit
+ * (1.14-1.20.1)
  *
- * @author Roch Blondiaux (Kiwix).
+ * @author Roch Blondiaux (Kiwix). 18/05/2023
  */
 public class MythicPacketSniffer extends LightInjector {
+    private final double range;
 
     private static final Map<String, Map<String, Field>> fields = new ConcurrentHashMap<>();
-
 
     /**
      * Initializes the injector and starts to listen to packets.
@@ -44,8 +46,10 @@ public class MythicPacketSniffer extends LightInjector {
      * @throws IllegalStateException    When <b>not</b> called from the main thread.
      * @throws IllegalArgumentException If the provided {@code plugin} is not enabled.
      */
-    public MythicPacketSniffer(@NotNull Plugin plugin) {
+    public MythicPacketSniffer(@NotNull Plugin plugin, double range) {
         super(plugin);
+
+        this.range = range;
     }
 
     @Override
@@ -75,22 +79,23 @@ public class MythicPacketSniffer extends LightInjector {
         return packet;
     }
 
+    /**
+     * Approximative re-implementation of vanilla
+     * behaviour when trying to hit an entity.
+     */
     private @Nullable Entity getTarget(Player player) {
-        double range = 3.5;
-        return player.getNearbyEntities(range, range, range)
-                .stream()
-                .filter(entity -> !(entity instanceof Player && ((Player) entity).getGameMode().ordinal() == 3))
-                .filter(entity -> entity instanceof LivingEntity)
-                .filter(entity -> isLineOfSight(player, entity))
-                .min((a, b) -> (int) (a.getLocation().distanceSquared(player.getLocation()) - b.getLocation().distanceSquared(player.getLocation())))
-                .orElse(null);
-    }
-
-    private boolean isLineOfSight(Player player, Entity targetEntity) {
-        Location eyeLocation = player.getEyeLocation();
-        Vector playerDirection = eyeLocation.getDirection();
-        RayTraceResult result = player.getWorld().rayTrace(eyeLocation, playerDirection, 100, FluidCollisionMode.NEVER, true, 0.1, entity -> entity.equals(targetEntity));
-        return result != null && result.getHitEntity() == targetEntity;
+        final RayTraceResult result = player.getWorld().rayTrace(
+                player.getEyeLocation(),
+                player.getEyeLocation().getDirection(),
+                range,
+                FluidCollisionMode.NEVER,
+                true,
+                0,
+                entity -> entity instanceof LivingEntity && !entity.equals(player));
+        if (result == null) return null;
+        final Entity entity = result.getHitEntity();
+        if (entity == null || entity instanceof Player && ((Player) entity).getGameMode().ordinal() == 3) return null;
+        return entity;
     }
 
     private void triggerEvent(Player player) {
