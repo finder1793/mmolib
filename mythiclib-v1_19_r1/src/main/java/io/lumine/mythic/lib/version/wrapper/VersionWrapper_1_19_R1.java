@@ -7,6 +7,7 @@ import io.lumine.mythic.lib.api.item.ItemTag;
 import io.lumine.mythic.lib.api.item.NBTCompound;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import io.lumine.mythic.lib.api.util.NBTTypeHelper;
+import io.lumine.mythic.lib.version.OreDrops;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
@@ -31,7 +32,6 @@ import org.bukkit.block.data.Ageable;
 import org.bukkit.craftbukkit.v1_19_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_19_R1.util.CraftMagicNumbers;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -43,22 +43,16 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class VersionWrapper_1_19_R1 implements VersionWrapper {
-    private final Map<Material, Material> oreDrops = new HashMap<>();
     private final Set<Material> generatorOutputs = new HashSet<>();
 
     public VersionWrapper_1_19_R1() {
-        oreDrops.put(Material.IRON_ORE, Material.IRON_INGOT);
-        oreDrops.put(Material.GOLD_ORE, Material.GOLD_INGOT);
-        oreDrops.put(Material.COPPER_ORE, Material.COPPER_INGOT);
-        oreDrops.put(Material.ANCIENT_DEBRIS, Material.NETHERITE_SCRAP);
-        oreDrops.put(Material.DEEPSLATE_IRON_ORE, Material.IRON_INGOT);
-        oreDrops.put(Material.DEEPSLATE_GOLD_ORE, Material.GOLD_INGOT);
-        oreDrops.put(Material.DEEPSLATE_COPPER_ORE, Material.COPPER_INGOT);
-
         generatorOutputs.add(Material.COBBLESTONE);
         generatorOutputs.add(Material.OBSIDIAN);
         generatorOutputs.add(Material.BASALT);
@@ -106,9 +100,29 @@ public class VersionWrapper_1_19_R1 implements VersionWrapper {
         return material.getEquipmentSlot() == EquipmentSlot.HEAD;
     }
 
+    private static final OreDrops
+            IRON_ORE = new OreDrops(Material.IRON_INGOT),
+            GOLD_ORE = new OreDrops(Material.GOLD_INGOT),
+            COPPER_ORE = new OreDrops(Material.COPPER_INGOT, 2, 5),
+            ANCIENT_DEBRIS = new OreDrops(Material.NETHERITE_SCRAP);
+
     @Override
-    public Map<Material, Material> getOreDrops() {
-        return oreDrops;
+    public OreDrops getOreDrops(Material material) {
+        switch (material) {
+            case IRON_ORE:
+            case DEEPSLATE_IRON_ORE:
+                return IRON_ORE;
+            case GOLD_ORE:
+            case DEEPSLATE_GOLD_ORE:
+                return GOLD_ORE;
+            case COPPER_ORE:
+            case DEEPSLATE_COPPER_ORE:
+                return COPPER_ORE;
+            case ANCIENT_DEBRIS:
+                return ANCIENT_DEBRIS;
+            default:
+                return null;
+        }
     }
 
     @Override

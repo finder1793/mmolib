@@ -7,6 +7,7 @@ import io.lumine.mythic.lib.api.item.ItemTag;
 import io.lumine.mythic.lib.api.item.NBTCompound;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import io.lumine.mythic.lib.api.util.NBTTypeHelper;
+import io.lumine.mythic.lib.version.OreDrops;
 import net.minecraft.server.v1_16_R3.*;
 import net.minecraft.server.v1_16_R3.IChatBaseComponent.ChatSerializer;
 import org.bukkit.Material;
@@ -19,7 +20,6 @@ import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_16_R3.event.CraftEventFactory;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_16_R3.util.CraftMagicNumbers.NBT;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -33,14 +33,9 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 public class VersionWrapper_1_16_R3 implements VersionWrapper {
-    private final Map<Material, Material> oreDrops = new HashMap<>();
     private final Set<Material> generatorOutputs = new HashSet<>();
 
     public VersionWrapper_1_16_R3() {
-        oreDrops.put(Material.IRON_ORE, Material.IRON_INGOT);
-        oreDrops.put(Material.GOLD_ORE, Material.GOLD_INGOT);
-        oreDrops.put(Material.ANCIENT_DEBRIS, Material.NETHERITE_SCRAP);
-
         generatorOutputs.add(Material.COBBLESTONE);
         generatorOutputs.add(Material.OBSIDIAN);
         generatorOutputs.add(Material.BASALT);
@@ -90,9 +85,23 @@ public class VersionWrapper_1_16_R3 implements VersionWrapper {
                 || material == Material.SKELETON_SKULL || material == Material.WITHER_SKELETON_SKULL;
     }
 
+    private static final OreDrops
+            IRON_ORE = new OreDrops(Material.IRON_INGOT),
+            GOLD_ORE = new OreDrops(Material.GOLD_INGOT),
+            ANCIENT_DEBRIS = new OreDrops(Material.NETHERITE_SCRAP);
+
     @Override
-    public Map<Material, Material> getOreDrops() {
-        return oreDrops;
+    public OreDrops getOreDrops(Material material) {
+        switch (material) {
+            case IRON_ORE:
+                return IRON_ORE;
+            case GOLD_ORE:
+                return GOLD_ORE;
+            case ANCIENT_DEBRIS:
+                return ANCIENT_DEBRIS;
+            default:
+                return null;
+        }
     }
 
     @Override

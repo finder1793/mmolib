@@ -7,6 +7,7 @@ import io.lumine.mythic.lib.api.item.ItemTag;
 import io.lumine.mythic.lib.api.item.NBTCompound;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import io.lumine.mythic.lib.api.util.NBTTypeHelper;
+import io.lumine.mythic.lib.version.OreDrops;
 import net.minecraft.server.v1_15_R1.*;
 import net.minecraft.server.v1_15_R1.IChatBaseComponent.ChatSerializer;
 import org.bukkit.Material;
@@ -87,9 +88,20 @@ public class VersionWrapper_1_15_R1 implements VersionWrapper {
                 || material == Material.SKELETON_SKULL || material == Material.WITHER_SKELETON_SKULL;
     }
 
+    private static final OreDrops
+            IRON_ORE = new OreDrops(Material.IRON_INGOT),
+            GOLD_ORE = new OreDrops(Material.GOLD_INGOT);
+
     @Override
-    public Map<Material, Material> getOreDrops() {
-        return oreDrops;
+    public OreDrops getOreDrops(Material material) {
+        switch (material) {
+            case IRON_ORE:
+                return IRON_ORE;
+            case GOLD_ORE:
+                return GOLD_ORE;
+            default:
+                return null;
+        }
     }
 
     @Override

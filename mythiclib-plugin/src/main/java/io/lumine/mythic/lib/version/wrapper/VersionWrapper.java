@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.version.wrapper;
 
 import com.mojang.authlib.GameProfile;
 import io.lumine.mythic.lib.api.item.NBTItem;
+import io.lumine.mythic.lib.version.OreDrops;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -14,7 +15,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.util.Map;
 import java.util.UUID;
 
 public interface VersionWrapper {
@@ -43,11 +43,13 @@ public interface VersionWrapper {
     Object newProfile(UUID uniqueId, String textureValue);
 
     /**
-     * Used by MMOItems to check if a block can be autosmelt.
+     * Used by MMOItems to check if a block can be autosmelt. Also
+     * used to apply Fortune levels for loot multiplication.
      *
-     * @return Map that maps to autosmeltable ores the corresponding drop
+     * @param material Type of broken block
+     * @return Drops of provided block if it's an ore, null otherwise
      */
-    Map<Material, Material> getOreDrops();
+    OreDrops getOreDrops(Material material);
 
     /**
      * Used by MMOItems when eating consumables the vanilla way. There is an
