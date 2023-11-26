@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.skill;
 
 import io.lumine.mythic.lib.api.event.skill.PlayerCastSkillEvent;
 import io.lumine.mythic.lib.api.event.skill.SkillCastEvent;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.player.cooldown.CooldownObject;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.SkillResult;
@@ -24,19 +25,26 @@ import java.util.Objects;
 public abstract class Skill implements CooldownObject {
     private final TriggerType trigger;
 
-    public Skill(TriggerType trigger) {
+    public Skill(@NotNull TriggerType trigger) {
         this.trigger = Objects.requireNonNull(trigger, "Trigger cannot be null");
     }
 
-    public SkillResult cast(TriggerMetadata triggerMeta) {
+    @NotNull
+    public SkillResult cast(@NotNull MMOPlayerData caster) {
+        return cast(new TriggerMetadata(caster, trigger));
+    }
+
+    @NotNull
+    public SkillResult cast(@NotNull TriggerMetadata triggerMeta) {
         return cast(triggerMeta.toSkillMetadata(this));
     }
 
-    public <T extends SkillResult> SkillResult cast(SkillMetadata meta) {
+    @NotNull
+    public <T extends SkillResult> SkillResult cast(@NotNull SkillMetadata meta) {
         final SkillHandler<T> handler = (SkillHandler<T>) getHandler();
 
         // Lower level skill restrictions
-        T result = handler.getResult(meta);
+        final T result = handler.getResult(meta);
         if (!result.isSuccessful(meta))
             return result;
 
@@ -45,17 +53,15 @@ public abstract class Skill implements CooldownObject {
             return result;
 
         // Call first Bukkit event
-        PlayerCastSkillEvent called1 = new PlayerCastSkillEvent(meta, result);
-        Bukkit.getPluginManager().callEvent(called1);
-        if (called1.isCancelled())
+        final PlayerCastSkillEvent called = new PlayerCastSkillEvent(meta, result);
+        Bukkit.getPluginManager().callEvent(called);
+        if (called.isCancelled())
             return result;
 
         // If the delay is null we cast normally the skill
         final int delayTicks = (int) (meta.getParameter("delay") * 20);
-        if (delayTicks <= 0)
-            castInstantly(meta, result);
-        else
-            new CastingDelayHandler(meta, result);
+        if (delayTicks <= 0) castInstantly(meta, result);
+        else new CastingDelayHandler(meta, result);
 
         return result;
     }
@@ -67,7 +73,8 @@ public abstract class Skill implements CooldownObject {
      * <p>
      * This method however calls {@link SkillCastEvent} after skill casting.
      */
-    public <T extends SkillResult> void castInstantly(SkillMetadata meta, T result) {
+    @NotNull
+    public <T extends SkillResult> void castInstantly(@NotNull SkillMetadata meta, @NotNull T result) {
 
         // High level skill effects
         whenCast(meta);
@@ -89,7 +96,7 @@ public abstract class Skill implements CooldownObject {
      * @return If the skill can be cast
      */
     @NotNull
-    public abstract boolean getResult(SkillMetadata skillMeta);
+    public abstract boolean getResult(@NotNull SkillMetadata skillMeta);
 
     /**
      * This is NOT where the actual skill effects are applied.
@@ -101,8 +108,9 @@ public abstract class Skill implements CooldownObject {
      *
      * @param skillMeta Info of skill being cast
      */
-    public abstract void whenCast(SkillMetadata skillMeta);
+    public abstract void whenCast(@NotNull SkillMetadata skillMeta);
 
+    @NotNull
     public abstract SkillHandler<?> getHandler();
 
     /**
