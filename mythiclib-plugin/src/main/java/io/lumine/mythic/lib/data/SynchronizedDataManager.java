@@ -38,7 +38,7 @@ import java.util.concurrent.CompletableFuture;
  *            are offline
  * @author jules
  */
-public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, O extends OfflineDataHolder> {
+public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, O extends OfflineDataHolder> implements Closeable {
     private final JavaPlugin owning;
     private final Map<UUID, H> activeData = Collections.synchronizedMap(new HashMap<>());
 
@@ -188,6 +188,12 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
      */
     public void whenAutoSaved() {
         // Nothing by default
+    }
+
+    @Override
+    public void close() {
+        saveAll(false);
+        dataHandler.close();
     }
 
     /**
