@@ -1,8 +1,12 @@
 package io.lumine.mythic.lib.version;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.version.wrapper.VersionWrapper;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
 
 public class ServerVersion {
     private final String revision;
@@ -12,7 +16,7 @@ public class ServerVersion {
 
     private static final int MAXIMUM_INDEX = 3;
 
-    public ServerVersion(Class<?> clazz) throws Exception {
+    public ServerVersion(Class<?> clazz) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         revision = clazz.getPackage().getName().replace(".", ",").split(",")[3];
         revisionNumber = Integer.parseInt(revision.split("_")[2].replaceAll("[^0-9]", ""));
 
@@ -21,8 +25,17 @@ public class ServerVersion {
         for (int i = 0; i < integers.length; i++)
             integers[i] = Integer.parseInt(bukkitSplit[i]);
 
-        versionWrapper = (VersionWrapper) Class.forName("io.lumine.mythic.lib.version.wrapper.VersionWrapper_" + revision.substring(1))
-                .getDeclaredConstructor().newInstance();
+        VersionWrapper found;
+        try {
+            found = (VersionWrapper) Class.forName("io.lumine.mythic.lib.version.wrapper.VersionWrapper_" + revision.substring(1))
+                    .getDeclaredConstructor().newInstance();
+        } catch (Exception exception) {
+            MythicLib.plugin.getLogger().log(Level.WARNING, "Your spigot version is not natively compatible, trying reflection-based support.");
+            found = (VersionWrapper) Class.forName("io.lumine.mythic.lib.version.wrapper.VersionWrapper_Reflection")
+                    .getDeclaredConstructor(ServerVersion.class)
+                    .newInstance(this);
+        }
+        this.versionWrapper = found;
     }
 
     /**
@@ -37,7 +50,7 @@ public class ServerVersion {
     /**
      * @param version At most three integers. [1, 20, 2] corresponds to 1.20.2
      * @return If server version is higher than (and not equal to) provided
-     *         version
+     * version
      */
     public boolean isStrictlyHigher(int... version) {
         Validate.isTrue(version.length >= 1 && version.length <= MAXIMUM_INDEX, "Provide at least 1 integer and at most " + MAXIMUM_INDEX);
