@@ -33,10 +33,7 @@ import io.lumine.mythic.lib.script.mechanic.shaped.HelixMechanic;
 import io.lumine.mythic.lib.script.mechanic.shaped.ParabolaMechanic;
 import io.lumine.mythic.lib.script.mechanic.shaped.ProjectileMechanic;
 import io.lumine.mythic.lib.script.mechanic.shaped.SlashMechanic;
-import io.lumine.mythic.lib.script.mechanic.variable.SetDoubleMechanic;
-import io.lumine.mythic.lib.script.mechanic.variable.SetIntegerMechanic;
-import io.lumine.mythic.lib.script.mechanic.variable.SetStringMechanic;
-import io.lumine.mythic.lib.script.mechanic.variable.SetVectorMechanic;
+import io.lumine.mythic.lib.script.mechanic.variable.*;
 import io.lumine.mythic.lib.script.mechanic.variable.vector.*;
 import io.lumine.mythic.lib.script.mechanic.visual.ParticleMechanic;
 import io.lumine.mythic.lib.script.mechanic.visual.SoundMechanic;
@@ -164,10 +161,11 @@ public class SkillManager {
         registerMechanic("set_z", config -> new SetZMechanic(config));
         registerMechanic("subtract_vector", config -> new SubtractVectorMechanic(config));
 
-        registerMechanic("set_double", config -> new SetDoubleMechanic(config));
-        registerMechanic("set_integer", config -> new SetIntegerMechanic(config));
-        registerMechanic("set_string", config -> new SetStringMechanic(config));
-        registerMechanic("set_vector", config -> new SetVectorMechanic(config));
+        registerMechanic("set_boolean", config -> new SetBooleanMechanic(config), "set_bool");
+        registerMechanic("set_double", config -> new SetDoubleMechanic(config), "set_float");
+        registerMechanic("set_integer", config -> new SetIntegerMechanic(config), "set_int");
+        registerMechanic("set_string", config -> new SetStringMechanic(config), "set_str");
+        registerMechanic("set_vector", config -> new SetVectorMechanic(config), "set_vec");
 
         registerMechanic("particle", config -> new ParticleMechanic(config));
         registerMechanic("sound", config -> new SoundMechanic(config));
