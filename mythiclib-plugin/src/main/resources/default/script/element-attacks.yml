@@ -255,7 +255,7 @@ water_critical_strike:
             source:
                 type: target
                 position: FEET
-            radius: 'sin(<var.angle>)'
+            radius: 'sin(<angle>)'
             tick: water_crit_subskill_2
         subskill:
             type: script
@@ -269,7 +269,7 @@ water_crit_subskill_2:
         increase_angle:
             type: set_double
             variable: angle
-            value: '<var.angle> + 0.02618'
+            value: '<angle> + 0.02618'
         showparticle:
             type: particle
             particle: WATER_DROP

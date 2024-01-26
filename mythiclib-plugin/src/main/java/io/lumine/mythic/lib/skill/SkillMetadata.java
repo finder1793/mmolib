@@ -20,6 +20,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,6 +32,8 @@ import java.util.regex.Pattern;
  * and the cached statistics.
  * <p>
  * This also stores variables which can be edited and manipulated by the user.
+ *
+ * @author jules
  */
 public class SkillMetadata {
     private final Skill cast;
@@ -255,8 +259,8 @@ public class SkillMetadata {
      * to potentially orient locations.
      *
      * @return Skill orientation if not null. If it is, it tries to create
-     * one using the skill target and source location if it is not null.
-     * Throws a NPE if the metadata has neither an orientation nor a target location.
+     *         one using the skill target and source location if it is not null.
+     *         Throws a NPE if the metadata has neither an orientation nor a target location.
      */
     @NotNull
     public SkillOrientation getSkillOrientation() {
@@ -286,19 +290,77 @@ public class SkillMetadata {
         return new SkillMetadata(cast, caster, vars, source, targetLocation, targetEntity, orientation, attackSource);
     }
 
+    public static final List<String> RESERVED_VARIABLE_NAMES = Arrays.asList("modifier", "source", "targetLocation", "targetLoc", "target_loc", "target_location", "targetloc", "targetl", "caster", "attack", "stat", "target", "var");
+
     /**
-     * Finds the initial variable and dives into its
-     * subvariables to parse some expression.
+     * @see {@link #getVariable(String)}
+     * @deprecated References no longer exist, in order to reduce confusion, MythicLib
+     *         now reserves specific names for internal variables, see {@link #RESERVED_VARIABLE_NAMES}
+     */
+    @Deprecated
+    public Variable getReference(String name) {
+        return getVariable(name);
+    }
+
+    /**
+     * @see {@link #getVariable(String)}
+     * @deprecated There are no longer major differences between internal/reserved variables
+     *         and user variables, so this method is no longer relevant.
+     */
+    @Deprecated
+    public Variable getCustomVariable(String name) {
+        return getUserVariable(name);
+    }
+
+    public static final VariableList SERVER_VARIABLE_LIST = new VariableList(VariableScope.SERVER);
+
+    /**
+     * User variables have scopes, which dictate in which variable registry
+     * they are saved. They include (from highest to lowest priority in case
+     * of name collision):
+     * - SKILL
+     * - PLAYER
+     * - SERVER
      * <p>
-     * Possible options:
-     * - var.custom_variable.subvariable
-     * - caster.subvariable
-     * - target.subvariable
+     * By definition, all reserved variables are of SKILL scope. This method
+     * looks through these variable registries in order to find the user
+     * variable with the given name.
      *
-     * @param name Something like "var.custom_variable.subvariable1.subvariable2"
+     * @param name User variable name
+     * @return User variable if found, throws a NPE otherwise.
+     */
+    @NotNull
+    public Variable getUserVariable(String name) {
+
+        // Prioritize SKILL scope
+        Variable var = vars.getVariable(name);
+        if (var != null) return var;
+
+        // Check for PLAYER scope
+        var = getCaster().getData().getVariableList().getVariable(name);
+        if (var != null) return var;
+
+        // Check for SERVER scope
+        return Objects.requireNonNull(SERVER_VARIABLE_LIST.getVariable(name), "Could not find user variable with name '" + name + "'");
+    }
+
+    /**
+     * Finds a variable with a certain name and path. There are two types
+     * of variables:
+     * - reserved variables, which names are reserved by MythicLib
+     * to include elementary data like skill source, target location...
+     * - user variables, which can be created and manipulated by the user
+     * <p>
+     * Variables have paths/expressions. Some examples:
+     * - user_variable.subvariable1.subvariable2
+     * - caster.location.x
+     * - target.fire_ticks
+     *
+     * @param name Variable name/path (see examples above)
      * @return The (sub) variable found
      */
-    public Variable getReference(String name) {
+    @NotNull
+    public Variable getVariable(String name) {
 
         // Find initial variable
         final String[] args = name.split("\\.");
@@ -320,6 +382,11 @@ public class SkillMetadata {
 
             // Skill target location
             case "targetLocation":
+            case "target_location":
+            case "targetloc":
+            case "targetl":
+            case "targetLoc":
+            case "target_loc":
                 var = new PositionVariable("temp", getTargetLocation());
                 break;
 
@@ -344,14 +411,16 @@ public class SkillMetadata {
                 var = targetEntity instanceof Player ? new PlayerVariable("temp", (Player) targetEntity) : new EntityVariable("temp", targetEntity);
                 break;
 
-            // Custom variable
+            // User variable (deprecated)
             case "var":
-                Validate.isTrue(args.length > 1, "Custom variable name not specified");
-                var = getCustomVariable(args[i++]);
+                Validate.isTrue(args.length > 1, "User variable name is not specified. Also, 'var.xxxx' notation is deprecated. Use 'xxx' directly instead");
+                var = getUserVariable(args[i++]);
                 break;
 
+            // User variable
             default:
-                throw new IllegalArgumentException("Could not match variable type to '" + args[0] + "', did you mean 'var." + args[0] + "'?");
+                var = getUserVariable(args[0]);
+                break;
         }
 
         // Dives into the variable tree to find the subvariable
@@ -361,62 +430,26 @@ public class SkillMetadata {
         return var;
     }
 
-    public static final VariableList SERVER_VARIABLE_LIST = new VariableList(VariableScope.SERVER);
-
-    /**
-     * Finds a CUSTOM variable with a certain name.
-     * <p>
-     * Scope priority (from most to least restrictive):
-     * - SKILL
-     * - PLAYER
-     * - SERVER
-     *
-     * @param name Variable name
-     * @return Variable found
-     */
-    @NotNull
-    public Variable getCustomVariable(String name) {
-
-        // Prioritize SKILL scope
-        Variable var = vars.getVariable(name);
-        if (var != null) return var;
-
-        // Check for PLAYER scope
-        var = getCaster().getData().getVariableList().getVariable(name);
-        if (var != null) return var;
-
-        // Check for SERVER scope
-        return Objects.requireNonNull(SERVER_VARIABLE_LIST.getVariable(name), "Could not find custom variable with name '" + name + "'");
-    }
-
     private static final Pattern INTERNAL_PLACEHOLDER_PATTERN = Pattern.compile("<[^&|<>]*?>");
 
     @NotNull
     public String parseString(String str) {
 
-        // Parse any placeholders and apply color codes
-        str = MythicLib.plugin.getPlaceholderParser().parse(getCaster().getPlayer(), str);
-
         // Internal placeholders
         Matcher match = INTERNAL_PLACEHOLDER_PATTERN.matcher(str);
         while (match.find()) {
             final String placeholder = str.substring(match.start() + 1, match.end() - 1);
-            str = str.replace("<" + placeholder + ">", getReference(placeholder).toString());
+            str = str.replace("<" + placeholder + ">", getVariable(placeholder).toString());
             match = INTERNAL_PLACEHOLDER_PATTERN.matcher(str);
         }
+
+        // Parse any placeholders and apply color codes
+        str = MythicLib.plugin.getPlaceholderParser().parse(getCaster().getPlayer(), str);
 
         return str;
     }
 
     /**
-     * Have the skill caster damage an entity. Either creates a new
-     * instance of AttackMeta based on this metadata, or uses the
-     * existing one if any is bound.
-     *
-     * @param target Target entity
-     * @param damage Damage dealt
-     * @param types  Type of target
-     * @return The (modified) attack metadata
      * @deprecated Use {@link PlayerMetadata#attack(LivingEntity, double, DamageType...)} instead
      */
     @NotNull

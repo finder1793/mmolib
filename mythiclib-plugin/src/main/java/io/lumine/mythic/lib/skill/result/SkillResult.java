@@ -12,6 +12,7 @@ import io.lumine.mythic.lib.skill.SkillMetadata;
  * Skill results share similar features with custom
  * skill conditions as well as skill targeters.
  */
+// TODO transform into isSuccessful(), skillMetadata should be passed inside of the constructor
 public interface SkillResult {
 
     /**

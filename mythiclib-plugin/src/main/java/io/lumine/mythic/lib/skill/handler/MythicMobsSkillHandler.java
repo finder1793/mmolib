@@ -45,7 +45,7 @@ public class MythicMobsSkillHandler extends SkillHandler<MythicMobsSkillResult> 
             for (String key : config.getConfigurationSection("extra-skills").getKeys(false))
                 try {
                     MythicConfig mythicConfig = new MythicConfigImpl("extra-skills." + key, config);
-                    MetaSkill metaSkill = new MetaSkill(skillManager, null, key, mythicConfig);
+                    MetaSkill metaSkill = new MetaSkill(skillManager, null, null, key, mythicConfig);
                     skillManager.registerSkill(key, metaSkill);
                 } catch (RuntimeException exception) {
                     MythicLib.plugin.getLogger().log(Level.WARNING, "Could not register MythicMob extra skill '" + key + "' for custom skill handler '" + getId() + "': " + exception.getMessage());

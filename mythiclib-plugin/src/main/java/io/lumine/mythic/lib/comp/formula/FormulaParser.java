@@ -36,6 +36,8 @@ public class FormulaParser {
         str = str.replaceAll("\"(.*?)\" in \\[(.*?)\\]", "Arrays.asList(new Object[]{$2}).contains(\"$1\")");
         str = str.replaceAll("(\\d*?) in \\[(.*?)\\]", "Arrays.asList(new Object[]{$2}).contains($1)");
 
+        str = str.replace("PI", "Math.PI");
+
         // Parse random(expr1,expr2) to Math.random() * (expr2 - expr1) + expr1
         str = str.replaceAll("random\\((.*?),(.*?)\\)", "random() * ($2 - $1) + ($1)");
 

@@ -29,27 +29,27 @@ public class ElementalDamage implements Listener {
     public void applyElementalDamage(AttackEvent event) {
 
         // Make sure ML can identify the attacker
-        if (event.getAttack().getAttacker() == null)
-            return;
+        if (event.getAttack().getAttacker() == null) return;
 
         // Apply on-hit elemental damage
         final StatProvider attacker = event.getAttack().getAttacker();
+        final double critChanceCoef = attacker.getStat("CRITICAL_STRIKE_CHANCE") / 100;
         if (event.getDamage().hasType(DamageType.WEAPON)) {
             final double attackCharge = attacker instanceof PlayerMetadata ? MythicLib.plugin.getVersion().getWrapper().getAttackCooldown(((PlayerMetadata) attacker).getPlayer()) : 1;
             for (Element element : MythicLib.plugin.getElements().getAll()) {
                 final double damage = attacker.getStat(element.getId() + "_DAMAGE") * attackCharge;
-                if (damage == 0)
-                    continue;
+                if (damage == 0) continue;
 
-                event.getDamage().add(damage, element);
+                if (MythicLib.plugin.getMMOConfig().skipElementalDamageApplication) {
+                    ((PlayerMetadata) attacker).setStat(element.getId() + "_DAMAGE", damage); // Update for placeholders
+                    applyElementalScripts(event, element, attacker, critChanceCoef); // Apply scripts first?
+                } else event.getDamage().add(damage, element); // Otherwise just set damage
             }
         }
 
         // Apply elemental damage modifiers
-        final double critChanceCoef = attacker.getStat("CRITICAL_STRIKE_CHANCE") / 100;
         for (Element element : MythicLib.plugin.getElements().getAll()) {
-            if (!event.getDamage().hasElement(element))
-                continue;
+            if (!event.getDamage().hasElement(element)) continue;
 
             // Apply percent-based damage buff
             event.getDamage().multiplicativeModifier(1 + Math.max(-1, attacker.getStat(element.getId() + "_DAMAGE_PERCENT") / 100), element);
@@ -65,13 +65,17 @@ public class ElementalDamage implements Listener {
             final double finalDamage = DefenseFormula.calculateDamage(true, defense, initialDamage);
             event.getDamage().multiplicativeModifier(finalDamage / initialDamage, element);
 
-            // Apply critical strikes & on-hit skill
-            final boolean crit = RANDOM.nextDouble() < critChanceCoef;
-            final Skill skill = element.getSkill(crit);
-            if (skill != null && attacker instanceof PlayerMetadata)
-                skill.cast(new TriggerMetadata((PlayerMetadata) attacker, TriggerType.API, event.getEntity(), event.getAttack()));
-            if (crit)
-                event.getDamage().registerElementalCriticalStrike(element);
+            // Apply scripts last?
+            if (!MythicLib.plugin.getMMOConfig().skipElementalDamageApplication)
+                applyElementalScripts(event, element, attacker, critChanceCoef);
         }
+    }
+
+    private void applyElementalScripts(AttackEvent event, Element element, StatProvider attacker, double critChanceCoef) {
+        final boolean crit = RANDOM.nextDouble() < critChanceCoef;
+        final Skill skill = element.getSkill(crit);
+        if (skill != null && attacker instanceof PlayerMetadata)
+            skill.cast(new TriggerMetadata((PlayerMetadata) attacker, TriggerType.API, event.getEntity(), event.getAttack()));
+        if (crit) event.getDamage().registerElementalCriticalStrike(element);
     }
 }

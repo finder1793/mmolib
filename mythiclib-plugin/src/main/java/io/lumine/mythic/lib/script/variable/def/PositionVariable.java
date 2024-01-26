@@ -28,7 +28,7 @@ public class PositionVariable extends Variable<Position> {
         VARIABLE_REGISTRY.registerVariable("x", var -> new DoubleVariable("temp", var.getStored().getX()));
         VARIABLE_REGISTRY.registerVariable("y", var -> new DoubleVariable("temp", var.getStored().getY()));
         VARIABLE_REGISTRY.registerVariable("z", var -> new DoubleVariable("temp", var.getStored().getZ()));
-        VARIABLE_REGISTRY.registerVariable("length", var -> new DoubleVariable("temp", var.getStored().length()));
+        VARIABLE_REGISTRY.registerVariable("length", var -> new DoubleVariable("temp", var.getStored().length()), "norm", "len");
         VARIABLE_REGISTRY.registerVariable("world", var -> new WorldVariable("temp", var.getStored().getWorld()));
         VARIABLE_REGISTRY.registerVariable("biome", var -> new StringVariable("temp", getBiomeAt(var.getStored()).name()));
         VARIABLE_REGISTRY.registerVariable("altitude", var -> new DoubleVariable("temp", UtilityMethods.getAltitude(var.getStored().toLocation())));

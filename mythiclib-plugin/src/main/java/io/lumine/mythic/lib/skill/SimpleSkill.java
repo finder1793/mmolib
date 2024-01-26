@@ -8,13 +8,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Can be used to cast a skill handler with configurable modifier input
+ * Can be used to cast a skill handler with configurable modifier input.
  *
  * @author jules
  */
 public class SimpleSkill extends Skill {
     private final SkillHandler<?> handler;
     private final Map<String, Double> modifiers = new HashMap<>();
+
+    public SimpleSkill(SkillHandler<?> handler) {
+        this(TriggerType.API, handler);
+    }
 
     public SimpleSkill(TriggerType trigger, SkillHandler<?> handler) {
         super(trigger);

@@ -37,7 +37,6 @@ public class ScriptMechanic extends Mechanic {
     @Nullable
     private final EntityTargeter targetEntity;
 
-
     public ScriptMechanic(ConfigObject config) {
         config.validateKeys("name");
 

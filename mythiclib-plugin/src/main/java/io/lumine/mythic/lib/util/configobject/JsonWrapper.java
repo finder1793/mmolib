@@ -2,13 +2,16 @@ package io.lumine.mythic.lib.util.configobject;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
 public class JsonWrapper implements ConfigObject {
+    protected final String key;
     protected final JsonObject object;
 
-    public JsonWrapper(JsonObject object) {
+    public JsonWrapper(String key, JsonObject object) {
+        this.key = key;
         this.object = object;
     }
 
@@ -20,12 +23,19 @@ public class JsonWrapper implements ConfigObject {
          */
         if (!value.contains("{") || !value.contains("}")) {
             object = new JsonObject();
+            key = null;
             return;
         }
 
         // Load Json object
         final int begin = value.indexOf("{"), end = value.lastIndexOf("}") + 1;
         object = new JsonParser().parse(value.substring(begin, end)).getAsJsonObject();
+        key = nullify(value.substring(0, begin));
+    }
+
+    @Nullable
+    private String nullify(@Nullable String str) {
+        return str == null || str.isEmpty() ? null : str;
     }
 
     @Override
@@ -70,7 +80,7 @@ public class JsonWrapper implements ConfigObject {
 
     @Override
     public ConfigObject getObject(String key) {
-        return new JsonWrapper(object.getAsJsonObject(key));
+        return new JsonWrapper(key, object.getAsJsonObject(key));
     }
 
     @Override
@@ -81,5 +91,10 @@ public class JsonWrapper implements ConfigObject {
     @Override
     public Set<String> getKeys() {
         return object.keySet();
+    }
+
+    @Override
+    public String getKey() {
+        return key;
     }
 }

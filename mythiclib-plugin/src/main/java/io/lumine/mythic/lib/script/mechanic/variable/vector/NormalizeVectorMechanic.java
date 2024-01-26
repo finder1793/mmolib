@@ -17,7 +17,7 @@ public class NormalizeVectorMechanic extends VariableMechanic {
 
     @Override
     public void cast(SkillMetadata meta) {
-        Variable var = meta.getCustomVariable(getVariableName());
+        Variable var = meta.getVariable(getVariableName());
         Validate.isTrue(var instanceof PositionVariable, "Variable '" + getVariableName() + "' is not a vector");
         ((Position) var.getStored()).normalize();
     }

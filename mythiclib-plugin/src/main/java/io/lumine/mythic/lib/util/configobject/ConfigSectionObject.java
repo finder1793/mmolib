@@ -66,4 +66,9 @@ public class ConfigSectionObject implements ConfigObject {
     public Set<String> getKeys() {
         return config.getKeys(false);
     }
+
+    @Override
+    public String getKey() {
+        return config.getName();
+    }
 }

@@ -5,6 +5,10 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
+/**
+ * @deprecated Not used yet
+ */
+@Deprecated
 public class SkillOrientation {
     private final Vector pivot;
     private final Vector axis;

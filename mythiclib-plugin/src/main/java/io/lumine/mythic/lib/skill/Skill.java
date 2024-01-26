@@ -45,18 +45,15 @@ public abstract class Skill implements CooldownObject {
 
         // Lower level skill restrictions
         final T result = handler.getResult(meta);
-        if (!result.isSuccessful(meta))
-            return result;
+        if (!result.isSuccessful(meta)) return result;
 
         // High level skill restrictions
-        if (!getResult(meta))
-            return result;
+        if (!getResult(meta)) return result;
 
         // Call first Bukkit event
         final PlayerCastSkillEvent called = new PlayerCastSkillEvent(meta, result);
         Bukkit.getPluginManager().callEvent(called);
-        if (called.isCancelled())
-            return result;
+        if (called.isCancelled()) return result;
 
         // If the delay is null we cast normally the skill
         final int delayTicks = (int) (meta.getParameter("delay") * 20);

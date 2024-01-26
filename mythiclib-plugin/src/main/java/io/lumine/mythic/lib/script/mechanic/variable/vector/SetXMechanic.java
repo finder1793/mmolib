@@ -25,7 +25,7 @@ public class SetXMechanic extends VariableMechanic {
     @Override
     public void cast(SkillMetadata meta) {
 
-        Variable targetVar = meta.getCustomVariable(getVariableName());
+        Variable targetVar = meta.getVariable(getVariableName());
         Validate.isTrue(targetVar instanceof PositionVariable, "Variable '" + getVariableName() + "' is not a vector");
         Position target = (Position) targetVar.getStored();
 

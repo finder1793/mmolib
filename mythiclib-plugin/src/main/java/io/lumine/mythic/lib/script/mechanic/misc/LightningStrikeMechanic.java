@@ -22,9 +22,7 @@ public class LightningStrikeMechanic extends LocationMechanic {
 
     @Override
     public void cast(SkillMetadata meta, Location loc) {
-        if (effect)
-            loc.getWorld().strikeLightningEffect(loc);
-        else
-            loc.getWorld().strikeLightning(loc);
+        if (effect) loc.getWorld().strikeLightningEffect(loc);
+        else loc.getWorld().strikeLightning(loc);
     }
 }

@@ -331,21 +331,6 @@ public class UtilityMethods {
         return str.toLowerCase().replace("_", "-").replace(" ", "-");
     }
 
-    public static double[] getYawPitch(Vector axis) {
-        double _2PI = 6.283185307179586D;
-        double x = axis.getX();
-        double z = axis.getZ();
-
-        if (x == 0 && z == 0) return new double[]{0, axis.getY() > 0 ? -90 : 90};
-        else {
-            double theta = Math.atan2(-x, z);
-            double yaw = (float) Math.toDegrees((theta + _2PI) % _2PI);
-            double xz = Math.sqrt(x * x + z * z);
-            double pitch = (float) Math.toDegrees(Math.atan(-axis.getY() / xz));
-            return new double[]{yaw, pitch};
-        }
-    }
-
     /**
      * Useful when dealing with Pvp stuff. If a VANILLA attack is due to
      * a player, this method will return the damage source ie the player.
@@ -366,9 +351,24 @@ public class UtilityMethods {
         return null;
     }
 
+    public static double[] getYawPitch(Vector axis) {
+        final double _2PI = 6.283185307179586D;
+        final double x = axis.getX();
+        final double z = axis.getZ();
+
+        if (x == 0 && z == 0) return new double[]{0, axis.getY() > 0 ? -90 : 90};
+        else {
+            final double theta = Math.atan2(-x, z);
+            final double yaw = (float) Math.toDegrees((theta + _2PI) % _2PI);
+            final double xz = Math.sqrt(x * x + z * z);
+            final double pitch = (float) Math.toDegrees(Math.atan(-axis.getY() / xz));
+            return new double[]{yaw, pitch};
+        }
+    }
+
     public static Vector rotate(Vector rotated, Vector axis) {
-        double[] pitchYaw = getYawPitch(axis);
-        return rotate(rotated, Math.toRadians(pitchYaw[0]), Math.toRadians(pitchYaw[1]));
+        double[] yawPitch = getYawPitch(axis);
+        return rotate(rotated, Math.toRadians(yawPitch[0]), Math.toRadians(yawPitch[1]));
     }
 
     public static Vector rotate(Vector rotated, double yaw, double pitch) {

@@ -44,7 +44,7 @@ public class MythicLibSupportImpl extends ReloadableModule<MythicBukkit> impleme
 
             // MMO damage mechanic
             if (event.getMechanicName().equalsIgnoreCase("mmodamage") || event.getMechanicName().equalsIgnoreCase("mmod"))
-                event.register(new MMODamageMechanic(event.getContainer().getManager(), event.getMechanicName(), event.getConfig()));
+                event.register(new MMODamageMechanic(event.getContainer().getManager(), event.getContainer().getFile(), event.getMechanicName(), event.getConfig()));
 
             // Multiply damage mechanic
             if (event.getMechanicName().equalsIgnoreCase("multiplydamage"))

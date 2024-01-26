@@ -25,11 +25,11 @@ public class HadamardProductMechanic extends VariableMechanic {
     @Override
     public void cast(SkillMetadata meta) {
 
-        Variable var1 = meta.getCustomVariable(varName1);
+        Variable var1 = meta.getVariable(varName1);
         Validate.isTrue(var1 instanceof PositionVariable, "Variable '" + varName1 + "' is not a vector");
         Position pos1 = (Position) var1.getStored();
 
-        Variable var2 = meta.getCustomVariable(varName2);
+        Variable var2 = meta.getVariable(varName2);
         Validate.isTrue(var2 instanceof PositionVariable, "Variable '" + varName2 + "' is not a vector");
         Position pos2 = (Position) var2.getStored();
 

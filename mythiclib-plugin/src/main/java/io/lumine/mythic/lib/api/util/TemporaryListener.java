@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class TemporaryListener implements Listener {
 
@@ -12,7 +13,7 @@ public abstract class TemporaryListener implements Listener {
      * Handler lists which must be called when the temporary listener is closed
      * so that the listener is entirely unregistered
      */
-    private final HandlerList[] lists;
+    private final HandlerList[] handlerLists;
 
     /**
      * Sometimes the close method is called twice because of a safe delayed task
@@ -21,20 +22,19 @@ public abstract class TemporaryListener implements Listener {
      */
     private boolean closed;
 
-    public TemporaryListener(HandlerList... events) {
-        this(MythicLib.plugin, events);
+    public TemporaryListener(HandlerList... handlerLists) {
+        this(MythicLib.plugin, handlerLists);
     }
 
     /**
      * Used to register listeners which should be unregistered after a specific
-     * period of time
+     * period of time.
      *
-     * @param plugin Plugin registering the listener
-     * @param events Handler lists which will be used to unregistered the
-     *               listener
+     * @param plugin       Plugin registering the listener
+     * @param handlerLists Handler lists which will be used to unregister the listener
      */
-    public TemporaryListener(JavaPlugin plugin, HandlerList... events) {
-        lists = events;
+    public TemporaryListener(@NotNull JavaPlugin plugin, @NotNull HandlerList... handlerLists) {
+        this.handlerLists = handlerLists;
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
@@ -58,7 +58,7 @@ public abstract class TemporaryListener implements Listener {
 
         closed = true;
         whenClosed();
-        for (HandlerList list : lists)
+        for (HandlerList list : handlerLists)
             list.unregister(this);
         return true;
     }

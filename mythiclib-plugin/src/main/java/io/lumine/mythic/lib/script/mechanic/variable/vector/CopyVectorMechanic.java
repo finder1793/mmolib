@@ -13,10 +13,10 @@ import org.apache.commons.lang.Validate;
  * custom variable which can later be modified
  */
 @MechanicMetadata
-public class SaveVectorMechanic extends VariableMechanic {
+public class CopyVectorMechanic extends VariableMechanic {
     private final String varName;
 
-    public SaveVectorMechanic(ConfigObject config) {
+    public CopyVectorMechanic(ConfigObject config) {
         super(config);
 
         config.validateKeys("value");
@@ -26,7 +26,7 @@ public class SaveVectorMechanic extends VariableMechanic {
 
     @Override
     public void cast(SkillMetadata meta) {
-        Variable var = meta.getCustomVariable(varName);
+        Variable var = meta.getVariable(varName);
         Validate.isTrue(var instanceof PositionVariable, "Variable '" + var.getName() + "' is not a vector");
         getTargetVariableList(meta).registerVariable(new PositionVariable(getVariableName(), ((PositionVariable) var).getStored().clone()));
     }

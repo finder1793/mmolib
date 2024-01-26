@@ -1,13 +1,14 @@
 package io.lumine.mythic.lib.script.mechanic.type;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.script.mechanic.Mechanic;
 import io.lumine.mythic.lib.script.targeter.LocationTargeter;
 import io.lumine.mythic.lib.script.targeter.location.CasterLocationTargeter;
 import io.lumine.mythic.lib.script.targeter.location.DefaultDirectionTargeter;
 import io.lumine.mythic.lib.skill.SkillMetadata;
-import io.lumine.mythic.lib.script.mechanic.Mechanic;
-import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import io.lumine.mythic.lib.util.EntityLocationType;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
@@ -39,11 +40,20 @@ public abstract class DirectionMechanic extends Mechanic {
     public void cast(SkillMetadata meta) {
 
         // This better not be empty
-        Location source = this.sourceLocation.findTargets(meta).get(0);
+        final Location source = this.sourceLocation.findTargets(meta).get(0);
+        final Vector sourceVector = source.toVector();
 
-        for (Location loc : targetLocation.findTargets(meta))
-            cast(meta, source, loc.clone().subtract(source).toVector());
+        for (Location loc : targetLocation.findTargets(meta)) {
+            final Vector dir = loc.toVector().subtract(sourceVector);
+            Validate.isTrue(dir.lengthSquared() > 0, "Direction cannot be zero");
+            cast(meta, source, dir.normalize());
+        }
     }
 
-    public abstract void cast(SkillMetadata meta, Location source, Vector dir);
+    /**
+     * @param meta      Skill metadata
+     * @param source    Source location
+     * @param direction Normalized direction vector
+     */
+    public abstract void cast(SkillMetadata meta, Location source, Vector direction);
 }

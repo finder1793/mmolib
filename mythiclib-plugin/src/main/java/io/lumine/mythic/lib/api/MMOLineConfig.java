@@ -47,6 +47,7 @@ public class MMOLineConfig extends JsonWrapper {
     /**
      * @return The string key in front of the brackets
      */
+    @Override
     public String getKey() {
         return key;
     }

@@ -20,22 +20,20 @@ import io.lumine.mythic.lib.script.mechanic.buff.ReduceCooldownMechanic;
 import io.lumine.mythic.lib.script.mechanic.buff.SaturateMechanic;
 import io.lumine.mythic.lib.script.mechanic.buff.stat.AddStatModifierMechanic;
 import io.lumine.mythic.lib.script.mechanic.buff.stat.RemoveStatModifierMechanic;
+import io.lumine.mythic.lib.script.mechanic.projectile.ShulkerBulletMechanic;
 import io.lumine.mythic.lib.script.mechanic.misc.*;
 import io.lumine.mythic.lib.script.mechanic.movement.TeleportMechanic;
 import io.lumine.mythic.lib.script.mechanic.movement.VelocityMechanic;
 import io.lumine.mythic.lib.script.mechanic.offense.*;
 import io.lumine.mythic.lib.script.mechanic.player.GiveItemMechanic;
 import io.lumine.mythic.lib.script.mechanic.player.SudoMechanic;
-import io.lumine.mythic.lib.script.mechanic.raytrace.RayTraceAnyMechanic;
+import io.lumine.mythic.lib.script.mechanic.shaped.*;
 import io.lumine.mythic.lib.script.mechanic.raytrace.RayTraceBlocksMechanic;
 import io.lumine.mythic.lib.script.mechanic.raytrace.RayTraceEntitiesMechanic;
-import io.lumine.mythic.lib.script.mechanic.shaped.HelixMechanic;
-import io.lumine.mythic.lib.script.mechanic.shaped.ParabolaMechanic;
-import io.lumine.mythic.lib.script.mechanic.shaped.ProjectileMechanic;
-import io.lumine.mythic.lib.script.mechanic.shaped.SlashMechanic;
 import io.lumine.mythic.lib.script.mechanic.variable.*;
 import io.lumine.mythic.lib.script.mechanic.variable.vector.*;
 import io.lumine.mythic.lib.script.mechanic.visual.ParticleMechanic;
+import io.lumine.mythic.lib.script.mechanic.visual.PlayerSoundMechanic;
 import io.lumine.mythic.lib.script.mechanic.visual.SoundMechanic;
 import io.lumine.mythic.lib.script.mechanic.visual.TellMechanic;
 import io.lumine.mythic.lib.script.targeter.EntityTargeter;
@@ -122,11 +120,12 @@ public class SkillManager {
         registerMechanic("reduce_cooldown", config -> new ReduceCooldownMechanic(config));
         registerMechanic("saturate", config -> new SaturateMechanic(config));
 
+        registerMechanic("apply_cooldown", ApplyCooldownMechanic::new);
         registerMechanic("delay", DelayMechanic::new);
         registerMechanic("dispatch_command", DispatchCommandMechanic::new);
         registerMechanic("entity_effect", EntityEffectMechanic::new);
         registerMechanic("lightning", config -> new LightningStrikeMechanic(config));
-        registerMechanic("script", config -> new ScriptMechanic(config), "skill");
+        registerMechanic("script", config -> new ScriptMechanic(config), "skill", "cast");
 
         registerMechanic("teleport", config -> new TeleportMechanic(config));
         registerMechanic("set_velocity", config -> new VelocityMechanic(config));
@@ -135,31 +134,35 @@ public class SkillManager {
         registerMechanic("damage", config -> new DamageMechanic(config));
         registerMechanic("multiply_damage", config -> new MultiplyDamageMechanic(config));
         registerMechanic("potion", config -> new PotionMechanic(config));
+        registerMechanic("remove_potion", config -> new RemovePotionMechanic(config));
         registerMechanic("set_on_fire", config -> new SetOnFireMechanic(config));
 
         registerMechanic("give_item", config -> new GiveItemMechanic(config));
         registerMechanic("sudo", config -> new SudoMechanic(config));
 
-        registerMechanic("raytrace", config -> new RayTraceAnyMechanic(config));
+        registerMechanic("shulker_bullet", config -> new ShulkerBulletMechanic(config));
+
         registerMechanic("raytrace_blocks", config -> new RayTraceBlocksMechanic(config));
         registerMechanic("raytrace_entities", config -> new RayTraceEntitiesMechanic(config));
 
         registerMechanic("helix", config -> new HelixMechanic(config));
         registerMechanic("parabola", ParabolaMechanic::new);
         registerMechanic("projectile", config -> new ProjectileMechanic(config));
+        registerMechanic("ray_trace", config -> new RayTraceMechanic(config), "cast_ray", "raytrace", "ray_cast", "raycast");
         registerMechanic("slash", config -> new SlashMechanic(config));
 
-        registerMechanic("add_vector", config -> new AddVectorMechanic(config));
+        registerMechanic("add_vector", config -> new AddVectorMechanic(config), "add_vec");
         registerMechanic("cross_product", config -> new CrossProductMechanic(config));
         registerMechanic("dot_product", config -> new DotProductMechanic(config));
         registerMechanic("hadamard_product", config -> new HadamardProductMechanic(config));
         registerMechanic("multiply_vector", config -> new MultiplyVectorMechanic(config));
-        registerMechanic("normalize_vector", config -> new NormalizeVectorMechanic(config));
-        registerMechanic("save_vector", config -> new SaveVectorMechanic(config));
+        registerMechanic("normalize_vector", config -> new NormalizeVectorMechanic(config), "normalize");
+        registerMechanic("rotate_vector", config -> new RotateVectorMechanic(config), "rotate_vec");
+        registerMechanic("save_vector", config -> new CopyVectorMechanic(config), "save_vec", "copy_vec", "copy_vector");
         registerMechanic("set_x", config -> new SetXMechanic(config));
         registerMechanic("set_y", config -> new SetYMechanic(config));
         registerMechanic("set_z", config -> new SetZMechanic(config));
-        registerMechanic("subtract_vector", config -> new SubtractVectorMechanic(config));
+        registerMechanic("subtract_vector", config -> new SubtractVectorMechanic(config), "sub_vec");
 
         registerMechanic("set_boolean", config -> new SetBooleanMechanic(config), "set_bool");
         registerMechanic("set_double", config -> new SetDoubleMechanic(config), "set_float");
@@ -167,9 +170,10 @@ public class SkillManager {
         registerMechanic("set_string", config -> new SetStringMechanic(config), "set_str");
         registerMechanic("set_vector", config -> new SetVectorMechanic(config), "set_vec");
 
-        registerMechanic("particle", config -> new ParticleMechanic(config));
-        registerMechanic("sound", config -> new SoundMechanic(config));
-        registerMechanic("tell", config -> new TellMechanic(config));
+        registerMechanic("particle", config -> new ParticleMechanic(config), "spawn_particle", "par");
+        registerMechanic("sound", config -> new SoundMechanic(config), "play_world_sound", "play_sound", "world_sound");
+        registerMechanic("player_sound", config -> new PlayerSoundMechanic(config), "play_player_sound");
+        registerMechanic("tell", config -> new TellMechanic(config), "message", "msg", "send", "send_message", "send_msg");
 
         // Default targeters
         registerEntityTargeter("caster", config -> new CasterTargeter());
@@ -233,15 +237,13 @@ public class SkillManager {
     public SkillHandler<?> loadSkillHandler(Object obj) throws IllegalArgumentException, IllegalStateException {
 
         // By handler name
-        if (obj instanceof String)
-            return getHandlerOrThrow(obj.toString());
+        if (obj instanceof String) return getHandlerOrThrow(UtilityMethods.enumName((String) obj));
 
         // By type of configuration section
         if (obj instanceof ConfigurationSection) {
             ConfigurationSection config = (ConfigurationSection) obj;
             for (Map.Entry<Predicate<ConfigurationSection>, Function<ConfigurationSection, SkillHandler>> type : skillHandlerTypes.entrySet())
-                if (type.getKey().test(config))
-                    return type.getValue().apply(config);
+                if (type.getKey().test(config)) return type.getValue().apply(config);
 
             throw new IllegalArgumentException("Could not match handler type to config");
         }
@@ -288,8 +290,7 @@ public class SkillManager {
 
     public Script loadScript(Object obj) {
 
-        if (obj instanceof String)
-            return getScriptOrThrow(obj.toString());
+        if (obj instanceof String) return getScriptOrThrow(obj.toString());
 
         if (obj instanceof ConfigurationSection) {
             Script skill = new Script((ConfigurationSection) obj);
@@ -304,6 +305,13 @@ public class SkillManager {
         return scripts.values();
     }
 
+    @NotNull
+    private String findEffectiveObjectType(String objectType, ConfigObject config) {
+        if (config.contains("type")) return config.getString("type");
+        else if (config.hasKey()) return config.getKey();
+        else throw new IllegalArgumentException("Could not find " + objectType + " type");
+    }
+
     public void registerCondition(String name, Function<ConfigObject, Condition> condition) {
         Validate.isTrue(registration, "Condition registration is disabled");
         Validate.isTrue(!conditions.containsKey(name), "A condition with the same name already exists");
@@ -314,18 +322,15 @@ public class SkillManager {
 
     @NotNull
     public Condition loadCondition(ConfigObject config) {
-        Validate.isTrue(config.contains("type"), "Cannot find condition type");
-        String key = config.getString("type");
-
-        Function<ConfigObject, Condition> supplier = conditions.get(key);
-        if (supplier != null)
-            return supplier.apply(config);
-        throw new IllegalArgumentException("Could not match condition to '" + key + "'");
+        final String key = findEffectiveObjectType("condition", config);
+        final Function<ConfigObject, Condition> supplier = conditions.get(key);
+        Validate.notNull(supplier, "Could not match condition to '" + key + "'");
+        return supplier.apply(config);
     }
 
-    public void registerMechanic(String name, Function<ConfigObject, Mechanic> mechanic, String... aliases) {
+    public void registerMechanic(@NotNull String name, @NotNull Function<ConfigObject, Mechanic> mechanic, String... aliases) {
         Validate.isTrue(registration, "Mechanic registration is disabled");
-        Validate.isTrue(!mechanics.containsKey(name), "A mechanic with the same name already exists");
+        Validate.isTrue(!mechanics.containsKey(name), "A mechanic with the name '" + name + "' already exists");
         Validate.notNull(mechanic, "Function cannot be null");
 
         mechanics.put(name, mechanic);
@@ -336,13 +341,10 @@ public class SkillManager {
 
     @NotNull
     public Mechanic loadMechanic(ConfigObject config) {
-        Validate.isTrue(config.contains("type"), "Cannot find mechanic type");
-        String key = config.getString("type");
-
-        Function<ConfigObject, Mechanic> supplier = mechanics.get(key);
-        if (supplier != null)
-            return supplier.apply(config);
-        throw new IllegalArgumentException("Could not match mechanic to '" + key + "'");
+        final String key = findEffectiveObjectType("mechanic", config);
+        final Function<ConfigObject, Mechanic> supplier = mechanics.get(key);
+        Validate.notNull(supplier, "Could not match mechanic to '" + key + "'");
+        return supplier.apply(config);
     }
 
     public void registerEntityTargeter(String name, Function<ConfigObject, EntityTargeter> entityTarget) {
@@ -355,13 +357,10 @@ public class SkillManager {
 
     @NotNull
     public EntityTargeter loadEntityTargeter(ConfigObject config) {
-        Validate.isTrue(config.contains("type"), "Cannot find targeter type");
-        String key = config.getString("type");
-
-        Function<ConfigObject, EntityTargeter> supplier = entityTargets.get(key);
-        if (supplier != null)
-            return supplier.apply(config);
-        throw new IllegalArgumentException("Could not match targeter to '" + key + "'");
+        final String key = findEffectiveObjectType("targeter", config);
+        final Function<ConfigObject, EntityTargeter> supplier = entityTargets.get(key);
+        Validate.notNull(supplier, "Could not match targeter to '" + key + "'");
+        return supplier.apply(config);
     }
 
     public void registerLocationTargeter(String name, Function<ConfigObject, LocationTargeter> locationTarget) {
@@ -374,20 +373,16 @@ public class SkillManager {
 
     @NotNull
     public LocationTargeter loadLocationTargeter(ConfigObject config) {
-        Validate.isTrue(config.contains("type"), "Cannot find targeter type");
-        String key = config.getString("type");
-
-        Function<ConfigObject, LocationTargeter> supplier = locationTargets.get(key);
-        if (supplier != null)
-            return supplier.apply(config);
-        throw new IllegalArgumentException("Could not match targeter to '" + key + "'");
+        final String key = findEffectiveObjectType("targeter", config);
+        final Function<ConfigObject, LocationTargeter> supplier = locationTargets.get(key);
+        Validate.notNull(supplier, "Could not match targeter to '" + key + "'");
+        return supplier.apply(config);
     }
 
     public void initialize(boolean clearBefore) {
         if (clearBefore) {
             for (SkillHandler<?> handler : handlers.values())
-                if (handler instanceof Listener)
-                    HandlerList.unregisterAll((Listener) handler);
+                if (handler instanceof Listener) HandlerList.unregisterAll((Listener) handler);
 
             handlers.clear();
             scripts.clear();
@@ -396,8 +391,7 @@ public class SkillManager {
 
             // mkdir skill folder
             File skillsFolder = new File(MythicLib.plugin.getDataFolder() + "/skill");
-            if (!skillsFolder.exists())
-                skillsFolder.mkdir();
+            if (!skillsFolder.exists()) skillsFolder.mkdir();
 
             // mkdir script folder
             File scriptFolder = new File(MythicLib.plugin.getDataFolder() + "/script");
@@ -450,8 +444,7 @@ public class SkillManager {
         for (Script script : scripts.values())
             try {
                 script.postLoad();
-                if (script.isPublic())
-                    registerSkillHandler(new MythicLibSkillHandler(script));
+                if (script.isPublic()) registerSkillHandler(new MythicLibSkillHandler(script));
             } catch (RuntimeException exception) {
                 MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load script '" + script.getId() + "': " + exception.getMessage());
             }
@@ -461,12 +454,11 @@ public class SkillManager {
             final FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
             // Read as unique skill
-            if (config.contains("modifiers"))
-                try {
-                    registerSkillHandler(loadSkillHandler(YamlConfiguration.loadConfiguration(file)));
-                } catch (RuntimeException exception) {
-                    MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill handler '" + file.getName() + "': " + exception.getMessage());
-                }
+            if (config.contains("modifiers")) try {
+                registerSkillHandler(loadSkillHandler(YamlConfiguration.loadConfiguration(file)));
+            } catch (RuntimeException exception) {
+                MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill handler '" + file.getName() + "': " + exception.getMessage());
+            }
             else
 
                 // Read multiple skills in the same configuration file

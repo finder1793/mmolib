@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.skill.handler;
 
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.SkillMetadata;
@@ -93,7 +94,7 @@ public abstract class SkillHandler<T extends SkillResult> {
     }
 
     private String formatId(String str) {
-        return str.toUpperCase().replace("-", "_").replace(" ", "_").replaceAll("[^A-Z_]", "");
+        return UtilityMethods.enumName(str).replaceAll("[^A-Z_]", "");
     }
 
     public String getId() {

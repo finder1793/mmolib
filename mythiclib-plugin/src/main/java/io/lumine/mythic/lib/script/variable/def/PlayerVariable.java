@@ -29,6 +29,7 @@ public class PlayerVariable extends Variable<Player> {
         VARIABLE_REGISTRY.registerVariable("stat", var -> new StatsVariable("temp", MMOPlayerData.get(var.getStored()).getStatMap()));
         VARIABLE_REGISTRY.registerVariable("cooldown", var -> new CooldownsVariable("temp", MMOPlayerData.get(var.getStored()).getCooldownMap()));
         VARIABLE_REGISTRY.registerVariable("name", var -> new StringVariable("temp", var.getStored().getName()));
+        VARIABLE_REGISTRY.registerVariable("eye_direction", var -> new PositionVariable("temp", var.getStored().getEyeLocation().getWorld(), var.getStored().getEyeLocation().getDirection()));
     }
 
     public PlayerVariable(String name, Player player) {

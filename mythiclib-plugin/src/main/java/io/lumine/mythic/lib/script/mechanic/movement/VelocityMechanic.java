@@ -22,7 +22,7 @@ public class VelocityMechanic extends TargetMechanic {
 
     @Override
     public void cast(SkillMetadata meta, Entity target) {
-        Variable velVar = meta.getCustomVariable(varName);
+        Variable velVar = meta.getVariable(varName);
         Validate.isTrue(velVar instanceof PositionVariable, "Variable '" + varName + "' is not a vector");
         Vector vel = ((PositionVariable) velVar).getStored().toVector();
 

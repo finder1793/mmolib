@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.script.variable;
 
+import io.lumine.mythic.lib.skill.SkillMetadata;
 import org.apache.commons.lang.Validate;
 import org.jetbrains.annotations.NotNull;
 
@@ -7,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+// TODO inheritance eg Entity => Player
 public class SimpleVariableRegistry<T extends Variable> implements VariableRegistry<T> {
 
     /**
@@ -46,9 +48,14 @@ public class SimpleVariableRegistry<T extends Variable> implements VariableRegis
      * @param supplier Function that takes as input a variable with type given
      *                 as generic parameter which outputs the corresponding subvariable
      */
-    public void registerVariable(String name, Function<T, Variable> supplier) {
-        Validate.isTrue(!registered.containsKey(name), "A variable with the same name already exists");
+    public void registerVariable(@NotNull String name, @NotNull Function<T, Variable> supplier, String... aliases) {
+        Validate.isTrue(!registered.containsKey(name), "A subvariable with the name '" + name + "' already exists");
+        Validate.notNull(supplier, "Supplier cannot be null");
+        Validate.isTrue(!SkillMetadata.RESERVED_VARIABLE_NAMES.contains(name), "Cannot use a reserved variable name");
 
         registered.put(name, supplier);
+
+        for (String alias : aliases)
+            registerVariable(alias, supplier);
     }
 }

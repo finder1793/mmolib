@@ -56,11 +56,6 @@ public class MMODamageMechanic extends DamagingMechanic implements ITargetedEnti
     @Nullable
     private final String elementName;
 
-    @Deprecated
-    public MMODamageMechanic(SkillExecutor manager, String file, MythicLineConfig mlc) {
-        this(manager, new File(file), mlc.getLine(), mlc);
-    }
-
     public MMODamageMechanic(SkillExecutor manager, File file, String line, MythicLineConfig mlc) {
         super(manager, file, line, mlc);
 

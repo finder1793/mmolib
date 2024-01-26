@@ -1,7 +1,11 @@
 package io.lumine.mythic.lib.util.configobject;
 
+import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.script.Script;
 import io.lumine.mythic.lib.util.DoubleFormula;
 import org.apache.commons.lang.Validate;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.Set;
@@ -51,11 +55,22 @@ public interface ConfigObject {
         return contains(key) ? getDoubleFormula(key) : Objects.requireNonNull(defaultValue, "Default value cannot be null");
     }
 
+    @Nullable
+    default Script getScript(String key) {
+        return contains(key) ? MythicLib.plugin.getSkills().getScriptOrThrow(getString(key)) : null;
+    }
+
     ConfigObject getObject(String key);
 
     boolean contains(String key);
 
-    Set<String> getKeys();
+    @NotNull Set<String> getKeys();
+
+    @Nullable String getKey();
+
+    default boolean hasKey() {
+        return getKey() != null;
+    }
 
     /**
      * Throws an IAE if any of the given key

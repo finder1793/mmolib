@@ -60,4 +60,9 @@ public class EmptyConfigObject implements ConfigObject {
     public Set<String> getKeys() {
         return new HashSet<>();
     }
+
+    @Override
+    public String getKey() {
+        return null;
+    }
 }

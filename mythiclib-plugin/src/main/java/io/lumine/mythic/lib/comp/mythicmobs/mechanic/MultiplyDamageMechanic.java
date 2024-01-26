@@ -12,8 +12,6 @@ import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-
 /**
  * Mechanic used to increase the damage for a specific
  * source only. This can be used inside of any skill cast

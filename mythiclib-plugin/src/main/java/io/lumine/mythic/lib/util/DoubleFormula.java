@@ -10,51 +10,53 @@ import java.util.logging.Level;
 /**
  * Instead of directly using a double in a skill, we rather use a string
  * where internal or PAPI placeholders are parsed before finally
- * evaluating the formula.
- * <p>
- * This represents 90% of the total skill system configurability
+ * evaluating the formula. This represents 90% of the total skill
+ * system configurability.
  */
 public class DoubleFormula {
     @Nullable
     private final String value;
-    private final double trivialValue;
-    private final boolean trivial;
+    @Nullable
+    private final Double constant;
 
     public static final DoubleFormula ZERO = new DoubleFormula(0);
 
-    public DoubleFormula(@NotNull String value) {
-        this.value = value;
-
-        double trivialValue;
-        boolean trivial;
+    public DoubleFormula(@NotNull String inputFormula) {
+        String value = null;
+        Double constant = null;
 
         try {
-            trivialValue = Double.valueOf(value);
-            trivial = true;
+            constant = Double.valueOf(inputFormula);
         } catch (IllegalArgumentException exception) {
-            trivialValue = 0;
-            trivial = false;
+            value = inputFormula;
         }
 
-        this.trivialValue = trivialValue;
-        this.trivial = trivial;
+        this.value = value;
+        this.constant = constant;
     }
 
     /**
-     * A mere double
+     * Double formula with constant value
      */
     public DoubleFormula(double trivialValue) {
-        this.trivial = true;
-        this.trivialValue = trivialValue;
         this.value = null;
+        this.constant = trivialValue;
     }
 
     public double evaluate(@NotNull SkillMetadata meta) {
+
+        // Easy case
+        if (constant != null) return constant;
+
         try {
-            return trivial ? trivialValue : MythicLib.plugin.getFormulaParser().evaluateAsDouble(meta.parseString(value));
+            return MythicLib.plugin.getFormulaParser().evaluateAsDouble(meta.parseString(value));
         } catch (Exception exception) {
             MythicLib.plugin.getLogger().log(Level.WARNING, "Could not evaluate '" + value + "' while casting skill '" + meta.getCast().getHandler().getId() + "': " + exception.getMessage());
             return 0;
         }
+    }
+
+    public static DoubleFormula constant(double value) {
+        return new DoubleFormula(value);
     }
 }

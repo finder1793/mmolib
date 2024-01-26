@@ -23,7 +23,7 @@ public class VariableEntityTargeter implements EntityTargeter {
     @Override
     public List<Entity> findTargets(SkillMetadata meta) {
 
-        Variable var = meta.getCustomVariable(args[0]);
+        Variable var = meta.getVariable(args[0]);
         for (int i = 1; i < args.length; i++)
             var = var.getVariable(args[i]);
 
