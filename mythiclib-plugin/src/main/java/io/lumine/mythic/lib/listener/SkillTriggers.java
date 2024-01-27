@@ -10,9 +10,11 @@ import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
 import io.lumine.mythic.lib.comp.profile.ProfileMode;
+import io.lumine.mythic.lib.entity.ProjectileMetadata;
+import io.lumine.mythic.lib.entity.ProjectileType;
+import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
-import io.lumine.mythic.lib.util.CustomProjectile;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -88,10 +90,11 @@ public class SkillTriggers implements Listener {
             final EquipmentSlot actionHand = getShootHand(((Player) event.getEntity()).getInventory());
 
             // Register a runnable to trigger projectile skills
-            final CustomProjectile projectile = new CustomProjectile(caster, CustomProjectile.ProjectileType.ARROW, event.getProjectile(), actionHand);
+            final PlayerMetadata shooterMeta = caster.getStatMap().cache(actionHand);
+            ProjectileMetadata.create(shooterMeta, ProjectileType.ARROW, event.getProjectile());
 
             // Cast on-shoot skills
-            caster.triggerSkills(new TriggerMetadata(caster, TriggerType.SHOOT_BOW, actionHand, null, event.getProjectile(), null, null, projectile.getCaster()));
+            caster.triggerSkills(new TriggerMetadata(caster, TriggerType.SHOOT_BOW, actionHand, null, event.getProjectile(), null, null, shooterMeta));
         }
     }
 
@@ -103,10 +106,11 @@ public class SkillTriggers implements Listener {
             final EquipmentSlot actionHand = getShootHand(shooter.getInventory());
 
             // Register a runnable to trigger projectile skills
-            final CustomProjectile projectile = new CustomProjectile(caster, CustomProjectile.ProjectileType.TRIDENT, event.getEntity(), actionHand);
+            final PlayerMetadata shooterMeta = caster.getStatMap().cache(actionHand);
+            ProjectileMetadata.create(shooterMeta, ProjectileType.TRIDENT, event.getEntity());
 
             // Cast on-shoot skills
-            caster.triggerSkills(new TriggerMetadata(caster, TriggerType.SHOOT_TRIDENT, actionHand, null, event.getEntity(), null, null, projectile.getCaster()));
+            caster.triggerSkills(new TriggerMetadata(caster, TriggerType.SHOOT_TRIDENT, actionHand, null, event.getEntity(), null, null, shooterMeta));
         }
     }
 
@@ -160,15 +164,15 @@ public class SkillTriggers implements Listener {
 
     /**
      * @implNote {@link Cancellable#isCancelled()} does not work with PlayerInteractEvent
-     *         because there are now two possible ways to cancel the event, either
-     *         by canceling the item interaction, either by canceling the block interaction.
-     *         <p>
-     *         Checking if the event is cancelled points towards the block interaction
-     *         and not the item interaction which is NOT what MythicLib is interested in
+     * because there are now two possible ways to cancel the event, either
+     * by canceling the item interaction, either by canceling the block interaction.
+     * <p>
+     * Checking if the event is cancelled points towards the block interaction
+     * and not the item interaction which is NOT what MythicLib is interested in
      * @implNote Scrap this, it's 100% useless to check if the event is cancelled.
-     *         It makes sense to trigger skills even if the item or block interactions are canceled
+     * It makes sense to trigger skills even if the item or block interactions are canceled
      * @implNote Event priority set to {@link EventPriority#LOW} because MI consumes consumables on
-     *         priority NORMAL and item abilities require the held item not to be null in hand
+     * priority NORMAL and item abilities require the held item not to be null in hand
      */
     @EventHandler(priority = EventPriority.LOW)
     public void click(PlayerInteractEvent event) {
@@ -187,7 +191,7 @@ public class SkillTriggers implements Listener {
 
     /**
      * @return Hand used to shoot a projectile (arrow/trident) based on
-     *         what items the player is holding in his two hands
+     * what items the player is holding in his two hands
      */
     @NotNull
     private EquipmentSlot getShootHand(@NotNull PlayerInventory inv) {

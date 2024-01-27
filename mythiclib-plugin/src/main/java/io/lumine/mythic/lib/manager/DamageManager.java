@@ -6,7 +6,7 @@ import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.damage.*;
 import io.lumine.mythic.lib.player.PlayerMetadata;
-import io.lumine.mythic.lib.util.CustomProjectile;
+import io.lumine.mythic.lib.entity.ProjectileMetadata;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -246,9 +246,9 @@ public class DamageManager implements Listener {
 
                 // First tries to find original CustomProjectile
                 final Projectile projectile = (Projectile) damager;
-                final @Nullable CustomProjectile projectileData = CustomProjectile.getCustomData(projectile);
+                final @Nullable ProjectileMetadata projectileData = ProjectileMetadata.get(projectile);
                 if (projectileData != null) {
-                    final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE), (LivingEntity) event.getEntity(), projectileData.getCaster(), projectile);
+                    final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE), (LivingEntity) event.getEntity(), projectileData.getShooter(), projectile);
                     markAsMetadata(attackMeta);
                     return attackMeta;
                 }

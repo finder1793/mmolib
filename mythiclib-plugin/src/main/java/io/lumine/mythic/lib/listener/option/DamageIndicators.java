@@ -58,7 +58,7 @@ public class DamageIndicators extends GameIndicators {
     }
 
     @EventHandler
-    public void a(AttackUnregisteredEvent event) {
+    public void displayIndicators(AttackUnregisteredEvent event) {
         final Entity entity = event.getEntity();
         if (event.getDamage().getDamage() < 2 * DamageMetadata.MINIMAL_DAMAGE) return;
 

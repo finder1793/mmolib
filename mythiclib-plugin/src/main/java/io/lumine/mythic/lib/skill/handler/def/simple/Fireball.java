@@ -88,7 +88,6 @@ public class Fireball extends SkillHandler<SimpleSkillResult> {
                     }.runTaskTimer(MythicLib.plugin, 3, 3);
 
                     cancel();
-                    return;
                 }
             }
         }.runTaskTimer(MythicLib.plugin, 0, 1);

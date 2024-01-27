@@ -4,7 +4,6 @@ import io.lumine.mythic.api.config.MythicConfig;
 import io.lumine.mythic.api.skills.placeholders.PlaceholderDouble;
 import io.lumine.mythic.api.skills.placeholders.PlaceholderInt;
 import io.lumine.mythic.api.skills.placeholders.PlaceholderString;
-import io.lumine.mythic.bukkit.utils.config.file.FileConfiguration;
 import io.lumine.mythic.bukkit.utils.serialize.Chroma;
 import io.lumine.mythic.bukkit.utils.text.Text;
 import io.lumine.mythic.core.config.GenericConfig;
@@ -12,6 +11,7 @@ import io.lumine.mythic.core.skills.placeholders.parsers.PlaceholderColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;

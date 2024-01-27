@@ -1,14 +1,13 @@
-package io.lumine.mythic.lib.util;
+package io.lumine.mythic.lib.entity;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
-import io.lumine.mythic.lib.api.player.EquipmentSlot;
-import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.item.NBTItem;
 import io.lumine.mythic.lib.api.util.TemporaryListener;
 import io.lumine.mythic.lib.damage.ProjectileAttackMetadata;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.player.skill.PassiveSkill;
-import io.lumine.mythic.lib.skill.trigger.TriggerType;
+import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
@@ -19,6 +18,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author indyuce
  */
-public class CustomProjectile extends TemporaryListener {
+public class ProjectileMetadata extends TemporaryListener {
     private final int entityId;
     private final BukkitRunnable runnable;
     private final ProjectileType projectileType;
@@ -47,35 +47,49 @@ public class CustomProjectile extends TemporaryListener {
      * glitch is being fixed by {@link PlayerMetadata}
      */
     private final Iterable<PassiveSkill> cachedSkills;
-    private final PlayerMetadata caster;
+    private final PlayerMetadata shooter;
 
-    public static final String METADATA_KEY = "CustomProjectile";
+    @Nullable
+    private NBTItem sourceItem;
 
     /**
-     * Used to trigger skills related to projectiles (either arrows or tridents). This
-     * class is instanciated when a player shoots a projectile and triggers TICK, HIT
-     * and LAND skills
-     *
-     * @param caster         Player triggering the skills
-     * @param projectileType See {@link ProjectileType}
-     * @param projectile     Type of projectile being shot
-     * @param hand           Hand being used to shoot the projectile
+     * When toggled on, this flag indicates that MythicLib should apply
+     * attack damage amount read from the shooter metadata if the projectile
+     * finds a target.
      */
-    public CustomProjectile(MMOPlayerData caster, ProjectileType projectileType, Entity projectile, EquipmentSlot hand) {
+    private boolean customDamage;
+
+    /**
+     * Can be modified by external plugins.
+     */
+    private double damageMultiplier;
+
+    public static final String METADATA_KEY = "MythicLibProjectileData";
+
+    /**
+     * Used to keep track of custom MythicLib projectiles. This class handles:
+     * - custom projectile damage (bows from MMOItems for instance)
+     * - ability triggering (shoot, tick, hit, land)
+     *
+     * @param shooter        Player performing the shoot
+     * @param projectileType Type of projectile being fired
+     * @param projectile     Projectile being fired
+     */
+    private ProjectileMetadata(@NotNull PlayerMetadata shooter, @NotNull ProjectileType projectileType, @NotNull Entity projectile) {
         super(ProjectileHitEvent.getHandlerList(), EntityDeathEvent.getHandlerList(), PlayerQuitEvent.getHandlerList(), PlayerAttackEvent.getHandlerList());
 
         this.entityId = projectile.getEntityId();
         this.projectileType = projectileType;
 
         // Cache important stuff
-        this.caster = caster.getStatMap().cache(hand);
-        this.cachedSkills = caster.getPassiveSkillMap().isolateModifiers(hand);
+        this.shooter = shooter;
+        this.cachedSkills = shooter.getData().getPassiveSkillMap().isolateModifiers(shooter.getActionHand());
 
         // Trigger skills
         runnable = new BukkitRunnable() {
             @Override
             public void run() {
-                caster.triggerSkills(projectileType.getTickTrigger(), CustomProjectile.this.caster, cachedSkills, projectile);
+                shooter.getData().triggerSkills(new TriggerMetadata(ProjectileMetadata.this.shooter, projectileType.getTickTrigger(), projectile, null), cachedSkills);
             }
         };
         runnable.runTaskTimer(MythicLib.plugin, 0, 1);
@@ -84,8 +98,43 @@ public class CustomProjectile extends TemporaryListener {
         projectile.setMetadata(METADATA_KEY, new FixedMetadataValue(MythicLib.plugin, this));
     }
 
-    public PlayerMetadata getCaster() {
-        return caster;
+    @NotNull
+    public PlayerMetadata getShooter() {
+        return shooter;
+    }
+
+    @Nullable
+    public NBTItem getSourceItem() {
+        return sourceItem;
+    }
+
+    public void setSourceItem(@Nullable NBTItem sourceItem) {
+        this.sourceItem = sourceItem;
+    }
+
+    public boolean isCustomDamage() {
+        return customDamage;
+    }
+
+    public void setCustomDamage(boolean customDamage) {
+        this.customDamage = customDamage;
+    }
+
+    public double getDamageMultiplier() {
+        return damageMultiplier;
+    }
+
+    public void setDamageMultiplier(double damageMultiplier) {
+        this.damageMultiplier = damageMultiplier;
+    }
+
+    /**
+     * Will throw an error if it's not a custom bow
+     *
+     * @return Damage of custom bow
+     */
+    public double getDamage() {
+        return shooter.getStat("ATTACK_DAMAGE") * damageMultiplier;
     }
 
     @EventHandler
@@ -98,7 +147,7 @@ public class CustomProjectile extends TemporaryListener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void triggerHit(PlayerAttackEvent event) {
         if (event.getAttack() instanceof ProjectileAttackMetadata && ((ProjectileAttackMetadata) event.getAttack()).getProjectile().getEntityId() == entityId)
-            caster.getData().triggerSkills(projectileType.getHitTrigger(), caster, cachedSkills, event.getEntity());
+            shooter.getData().triggerSkills(new TriggerMetadata(shooter, projectileType.getHitTrigger(), event.getEntity(), null), cachedSkills);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -106,19 +155,17 @@ public class CustomProjectile extends TemporaryListener {
 
         // Make sure the projectile landed on a block
         if (event.getHitBlock() != null && event.getEntity().getEntityId() == entityId)
-            caster.getData().triggerSkills(projectileType.getLandTrigger(), caster, cachedSkills, event.getEntity());
+            shooter.getData().triggerSkills(projectileType.getLandTrigger(), shooter, cachedSkills, event.getEntity());
     }
 
     @EventHandler
     public void unregisterOnDeath(EntityDeathEvent event) {
-        if (event.getEntity().getEntityId() == entityId)
-            close();
+        if (event.getEntity().getEntityId() == entityId) close();
     }
 
     @EventHandler
     public void unregisterOnLogout(PlayerQuitEvent event) {
-        if (event.getPlayer().getUniqueId().equals(caster.getData().getUniqueId()))
-            close();
+        if (event.getPlayer().getUniqueId().equals(shooter.getData().getUniqueId())) close();
     }
 
     @Override
@@ -126,36 +173,22 @@ public class CustomProjectile extends TemporaryListener {
         runnable.cancel();
     }
 
-    public enum ProjectileType {
-        ARROW,
-        TRIDENT;
-
-        private final TriggerType tick, hit, land;
-
-        ProjectileType() {
-            tick = new TriggerType(name() + "_TICK");
-            hit = new TriggerType(name() + "_HIT");
-            land = new TriggerType(name() + "_LAND");
-        }
-
-        public TriggerType getTickTrigger() {
-            return tick;
-        }
-
-        public TriggerType getHitTrigger() {
-            return hit;
-        }
-
-        public TriggerType getLandTrigger() {
-            return land;
-        }
+    @Deprecated
+    public static ProjectileMetadata getCustomData(Entity proj) {
+        return get(proj);
     }
 
     @Nullable
-    public static CustomProjectile getCustomData(Entity proj) {
-        for (MetadataValue mv : proj.getMetadata(METADATA_KEY))
-            if (mv.getOwningPlugin().equals(MythicLib.plugin))
-                return (CustomProjectile) mv.value();
+    public static ProjectileMetadata get(@NotNull Entity projectile) {
+        for (MetadataValue mv : projectile.getMetadata(METADATA_KEY))
+            if (mv.getOwningPlugin().equals(MythicLib.plugin)) return (ProjectileMetadata) mv.value();
         return null;
+    }
+
+    @NotNull
+    public static ProjectileMetadata create(@NotNull PlayerMetadata shooter, @NotNull ProjectileType projectileType, @NotNull Entity projectile) {
+        final @Nullable ProjectileMetadata get = get(projectile);
+        if (get != null) return get;
+        return new ProjectileMetadata(shooter, projectileType, projectile);
     }
 }

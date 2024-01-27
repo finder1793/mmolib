@@ -13,14 +13,14 @@ public class Line3D {
         direction = loc1.clone().subtract(loc2);
     }
 
-    public Line3D(Location point, Vector direction) {
-        this.direction = direction.clone();
-        this.point = point.toVector();
-    }
-
     public Line3D(double a, double b, double c, double e, double f, double g) {
         point = new Vector(a, b, c);
         direction = new Vector(e, f, g);
+    }
+
+    public Line3D(Location point, Vector direction) {
+        this.direction = direction.clone();
+        this.point = point.toVector();
     }
 
     public double distanceSquared(Entity entity) {
@@ -55,11 +55,9 @@ public class Line3D {
      * @return
      */
     public double distanceSquared(Vector loc) {
-
-        double a = direction.lengthSquared();
-        double b = 2 * (direction.getX() * (point.getX() - loc.getX()) + direction.getY() * (point.getY() - loc.getY()) + direction.getZ() * (point.getZ() - loc.getZ()));
-        double min = -b / (2 * a);
-
+        final double a = direction.lengthSquared();
+        final double b = 2 * (direction.getX() * (point.getX() - loc.getX()) + direction.getY() * (point.getY() - loc.getY()) + direction.getZ() * (point.getZ() - loc.getZ()));
+        final double min = -b / (2 * a);
         return loc.distanceSquared(getPoint(min));
     }
 

@@ -137,6 +137,7 @@ public class MythicLib extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(damageManager, this);
         Bukkit.getPluginManager().registerEvents(new DamageReduction(), this);
         Bukkit.getPluginManager().registerEvents(attackEffects = new AttackEffects(), this);
+        Bukkit.getPluginManager().registerEvents(new CustomProjectileDamage(), this);
         Bukkit.getPluginManager().registerEvents(mitigationMechanics = new MitigationMechanics(), this);
         Bukkit.getPluginManager().registerEvents(new AttackEventListener(), this);
         Bukkit.getPluginManager().registerEvents(new MythicCraftingManager(), this);

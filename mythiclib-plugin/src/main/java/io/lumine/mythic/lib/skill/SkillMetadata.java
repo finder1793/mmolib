@@ -259,8 +259,8 @@ public class SkillMetadata {
      * to potentially orient locations.
      *
      * @return Skill orientation if not null. If it is, it tries to create
-     *         one using the skill target and source location if it is not null.
-     *         Throws a NPE if the metadata has neither an orientation nor a target location.
+     * one using the skill target and source location if it is not null.
+     * Throws a NPE if the metadata has neither an orientation nor a target location.
      */
     @NotNull
     public SkillOrientation getSkillOrientation() {
@@ -295,7 +295,7 @@ public class SkillMetadata {
     /**
      * @see {@link #getVariable(String)}
      * @deprecated References no longer exist, in order to reduce confusion, MythicLib
-     *         now reserves specific names for internal variables, see {@link #RESERVED_VARIABLE_NAMES}
+     * now reserves specific names for internal variables, see {@link #RESERVED_VARIABLE_NAMES}
      */
     @Deprecated
     public Variable getReference(String name) {
@@ -305,7 +305,7 @@ public class SkillMetadata {
     /**
      * @see {@link #getVariable(String)}
      * @deprecated There are no longer major differences between internal/reserved variables
-     *         and user variables, so this method is no longer relevant.
+     * and user variables, so this method is no longer relevant.
      */
     @Deprecated
     public Variable getCustomVariable(String name) {

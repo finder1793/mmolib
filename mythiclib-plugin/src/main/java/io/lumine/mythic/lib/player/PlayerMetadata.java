@@ -9,7 +9,10 @@ import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
+import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
+import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.apache.commons.lang.Validate;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -57,8 +60,8 @@ public class PlayerMetadata implements StatProvider {
 
     /**
      * @return The cached Player instance. Player instances are cached so
-     *         that even if the player logs out, the ability can still be
-     *         cast without additional errors
+     * that even if the player logs out, the ability can still be
+     * cast without additional errors
      */
     public Player getPlayer() {
         return player;
@@ -135,5 +138,9 @@ public class PlayerMetadata implements StatProvider {
         final AttackMetadata attackMeta = new AttackMetadata(new DamageMetadata(damage, types), target, this);
         MythicLib.plugin.getDamage().registerAttack(attackMeta, knockback, false);
         return attackMeta;
+    }
+
+    public void triggerSkills(TriggerType triggerType, @Nullable Entity entity, @Nullable AttackMetadata attack) {
+        playerData.triggerSkills(new TriggerMetadata(this, triggerType, entity, attack));
     }
 }

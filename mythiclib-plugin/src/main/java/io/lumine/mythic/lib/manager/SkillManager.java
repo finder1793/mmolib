@@ -20,16 +20,17 @@ import io.lumine.mythic.lib.script.mechanic.buff.ReduceCooldownMechanic;
 import io.lumine.mythic.lib.script.mechanic.buff.SaturateMechanic;
 import io.lumine.mythic.lib.script.mechanic.buff.stat.AddStatModifierMechanic;
 import io.lumine.mythic.lib.script.mechanic.buff.stat.RemoveStatModifierMechanic;
-import io.lumine.mythic.lib.script.mechanic.projectile.ShulkerBulletMechanic;
 import io.lumine.mythic.lib.script.mechanic.misc.*;
 import io.lumine.mythic.lib.script.mechanic.movement.TeleportMechanic;
 import io.lumine.mythic.lib.script.mechanic.movement.VelocityMechanic;
 import io.lumine.mythic.lib.script.mechanic.offense.*;
 import io.lumine.mythic.lib.script.mechanic.player.GiveItemMechanic;
 import io.lumine.mythic.lib.script.mechanic.player.SudoMechanic;
-import io.lumine.mythic.lib.script.mechanic.shaped.*;
+import io.lumine.mythic.lib.script.mechanic.projectile.ShootArrowMechanic;
+import io.lumine.mythic.lib.script.mechanic.projectile.ShulkerBulletMechanic;
 import io.lumine.mythic.lib.script.mechanic.raytrace.RayTraceBlocksMechanic;
 import io.lumine.mythic.lib.script.mechanic.raytrace.RayTraceEntitiesMechanic;
+import io.lumine.mythic.lib.script.mechanic.shaped.*;
 import io.lumine.mythic.lib.script.mechanic.variable.*;
 import io.lumine.mythic.lib.script.mechanic.variable.vector.*;
 import io.lumine.mythic.lib.script.mechanic.visual.ParticleMechanic;
@@ -140,6 +141,7 @@ public class SkillManager {
         registerMechanic("give_item", config -> new GiveItemMechanic(config));
         registerMechanic("sudo", config -> new SudoMechanic(config));
 
+        registerMechanic("shoot_arrow", config -> new ShootArrowMechanic(config), "fire_arrow", "bowshoot", "bow_shoot", "shoot_bow");
         registerMechanic("shulker_bullet", config -> new ShulkerBulletMechanic(config));
 
         registerMechanic("raytrace_blocks", config -> new RayTraceBlocksMechanic(config));
@@ -207,6 +209,7 @@ public class SkillManager {
         registerCondition("can_target", config -> new CanTargetCondition(config));
         registerCondition("cooldown", config -> new CooldownCondition(config));
         registerCondition("food", config -> new FoodCondition(config));
+        registerCondition("ammo", config -> new HasAmmoMechanic(config));
         registerCondition("has_damage_type", config -> new HasDamageTypeCondition(config));
         registerCondition("is_living", config -> new IsLivingCondition(config));
         registerCondition("on_fire", config -> new OnFireCondition(config));

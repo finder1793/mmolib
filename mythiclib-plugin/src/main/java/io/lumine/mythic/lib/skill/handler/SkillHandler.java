@@ -121,7 +121,7 @@ public abstract class SkillHandler<T extends SkillResult> {
      * <p>
      * This is the option default ML passive skills use.
      *
-     * @return If it should be triggered when calling {@link MMOPlayerData#triggerSkills(TriggerType, Entity)}
+     * @return If it should be triggered when calling {@link MMOPlayerData#triggerSkills(io.lumine.mythic.lib.skill.trigger.TriggerMetadata)}
      */
     public boolean isTriggerable() {
         return triggerable;

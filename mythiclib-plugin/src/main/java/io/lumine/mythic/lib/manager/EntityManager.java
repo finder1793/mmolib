@@ -6,7 +6,7 @@ import io.lumine.mythic.lib.comp.interaction.InteractionType;
 import io.lumine.mythic.lib.comp.interaction.TargetRestriction;
 import io.lumine.mythic.lib.comp.interaction.relation.Relationship;
 import io.lumine.mythic.lib.comp.interaction.relation.RelationshipHandler;
-import io.lumine.mythic.lib.util.CustomProjectile;
+import io.lumine.mythic.lib.entity.ProjectileMetadata;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.*;
 import org.jetbrains.annotations.NotNull;
@@ -50,13 +50,13 @@ public class EntityManager {
     }
 
     /**
-     * @see {@link CustomProjectile#getCustomData(Entity)}
+     * @see {@link ProjectileMetadata#get(Entity)}
      * @deprecated
      */
     @Nullable
     @Deprecated
-    public CustomProjectile getCustomProjectile(Entity entity) {
-        return CustomProjectile.getCustomData(entity);
+    public ProjectileMetadata getCustomProjectile(Entity entity) {
+        return ProjectileMetadata.get(entity);
     }
 
     /**
@@ -65,7 +65,7 @@ public class EntityManager {
      * @deprecated Automatically registers on class instanciation
      */
     @Deprecated
-    public void registerCustomProjectile(Entity entity, CustomProjectile projectileData) {
+    public void registerCustomProjectile(Entity entity, ProjectileMetadata projectileData) {
     }
 
     @Deprecated
@@ -149,6 +149,6 @@ public class EntityManager {
 
     @Deprecated
     public void unregisterCustomProjectile(Projectile projectile) {
-        projectile.removeMetadata(CustomProjectile.METADATA_KEY, MythicLib.plugin);
+        projectile.removeMetadata(ProjectileMetadata.METADATA_KEY, MythicLib.plugin);
     }
 }
