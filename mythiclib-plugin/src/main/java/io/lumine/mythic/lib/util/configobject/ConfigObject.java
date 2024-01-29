@@ -56,7 +56,7 @@ public interface ConfigObject {
     }
 
     @Nullable
-    default Script getScript(String key) {
+    default Script getScriptOrNull(String key) {
         return contains(key) ? MythicLib.plugin.getSkills().getScriptOrThrow(getString(key)) : null;
     }
 

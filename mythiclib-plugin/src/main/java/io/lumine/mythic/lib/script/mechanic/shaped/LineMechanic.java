@@ -1,12 +1,9 @@
 package io.lumine.mythic.lib.script.mechanic.shaped;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.script.Script;
 import io.lumine.mythic.lib.script.mechanic.Mechanic;
 import io.lumine.mythic.lib.script.targeter.LocationTargeter;
-import io.lumine.mythic.lib.script.targeter.location.ConstantLocationTargeter;
-import io.lumine.mythic.lib.script.targeter.location.DefaultLocationTargeter;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.util.DoubleFormula;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
@@ -16,13 +13,16 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 /**
- * Draws a helix of particles around the target
+ * Ticks from point A to point B
  */
 public class LineMechanic extends Mechanic {
-   // private final DoubleFormula points;
+    private final DoubleFormula step;
     private final LocationTargeter source, target;
 
     private final Script onStart, onTick, onEnd;
+
+    private final boolean instant;
+    private final int pointsPerTick;
 
     public LineMechanic(ConfigObject config) {
         config.validateKeys("source", "target");
@@ -30,49 +30,59 @@ public class LineMechanic extends Mechanic {
         source = MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("source"));
         target = MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("target"));
 
-        onStart = config.contains("start") ? MythicLib.plugin.getSkills().getScriptOrThrow(config.getString("start")) : null;
-        onTick = MythicLib.plugin.getSkills().getScriptOrThrow(config.getString("tick"));
-        onEnd = config.contains("end") ? MythicLib.plugin.getSkills().getScriptOrThrow(config.getString("end")) : null;
+        step = config.getDoubleFormula("step", DoubleFormula.constant(.5));
+        instant = config.getBoolean("instant", false);
+        pointsPerTick = config.getInt("points_per_tick", 1);
+        Validate.isTrue(pointsPerTick > 0, "PPT must be strictly positive");
+
+        onStart = config.getScriptOrNull("start");
+        onTick = config.getScriptOrNull("tick");
+        onEnd = config.getScriptOrNull("end");
     }
 
     @Override
     public void cast(SkillMetadata meta) {
- /*
-        // This better not be empty
-        Vector dir = direction.findTargets(meta).get(0).toVector();
-
-        for (Location loc : targetLocation.findTargets(meta))
-            cast(meta, loc, dir); */
+        Location source = this.source.findTargets(meta).get(0);
+        for (Location loc : this.target.findTargets(meta))
+            cast(meta, source, loc);
     }
 
-    public void cast(SkillMetadata meta, Location source, Vector dir) {
-    /*    Validate.isTrue(dir.lengthSquared() > 0, "Direction cannot be zero");
+    public void cast(SkillMetadata meta, Location source, Location target) {
+        if (onStart != null) onStart.cast(meta.clone(source.clone()));
 
-        final double yaw_i = UtilityMethods.getYawPitch(dir)[0] - yawSpread / 2;
+        final double step = LineMechanic.this.step.evaluate(meta);
+        final Vector diff = target.clone().subtract(source).toVector();
+        final double maxDist = diff.length();
+
+        // Draws line instantaneously
+        if (instant) {
+            for (double dist = 0; dist < maxDist; dist += step) {
+                final Location inter = source.clone().add(diff.clone().multiply(dist / maxDist));
+                onTick.cast(meta.clone(inter));
+            }
+            if (onEnd != null) onEnd.cast(meta.clone(target.clone()));
+            return;
+        }
+
+        // Draws line in time
         new BukkitRunnable() {
 
-            // Tick counter
-            int counter = 0;
+            // Distance counter
+            double dist = 0;
 
             public void run() {
                 for (int i = 0; i < pointsPerTick; i++) {
-                    if (counter++ >= points) {
+                    if (dist > maxDist) {
                         cancel();
-                        if (onEnd != null)
-                            onEnd.cast(meta);
+                        if (onEnd != null) onEnd.cast(meta.clone(target.clone()));
                         return;
                     }
 
-                    final double yaw = Math.toRadians(yaw_i + ((double) counter / points) * yawSpread);
-                    final double y = ((double) counter / points) * height, r = radius.evaluate(meta);
-
-                    for (int j = 0; j < helixes; j++) {
-                        final double angle = yaw + Math.PI * 2 / helixes * j;
-                        Location loc = source.clone().add(r * Math.cos(angle), y, r * Math.sin(angle));
-                        onTick.cast(meta.clone(source, loc, null, null));
-                    }
+                    final Location inter = source.clone().add(diff.clone().multiply(dist / maxDist));
+                    onTick.cast(meta.clone(inter));
+                    dist += step;
                 }
             }
-        }.runTaskTimer(MythicLib.plugin, 0, timeInterval); */
+        }.runTaskTimer(MythicLib.plugin, 0, 1);
     }
 }

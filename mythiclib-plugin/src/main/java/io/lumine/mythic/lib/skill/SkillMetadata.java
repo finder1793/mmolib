@@ -287,10 +287,16 @@ public class SkillMetadata {
      */
     @NotNull
     public SkillMetadata clone(@NotNull Location source, @Nullable Location targetLocation, @Nullable Entity targetEntity, @Nullable SkillOrientation orientation) {
+        // TODO change rules to avoid amap null parameters
         return new SkillMetadata(cast, caster, vars, source, targetLocation, targetEntity, orientation, attackSource);
     }
 
-    public static final List<String> RESERVED_VARIABLE_NAMES = Arrays.asList("modifier", "source", "targetLocation", "targetLoc", "target_loc", "target_location", "targetloc", "targetl", "caster", "attack", "stat", "target", "var");
+    @NotNull
+    public SkillMetadata clone(@NotNull Location targetLocation) {
+        return clone(source, targetLocation, targetEntity, orientation);
+    }
+
+    public static final List<String> RESERVED_VARIABLE_NAMES = Arrays.asList("modifier", "parameter", "source", "targetLocation", "targetLoc", "target_loc", "target_location", "targetloc", "targetl", "caster", "attack", "stat", "target", "var", "rand", "random", "rdm");
 
     /**
      * @see {@link #getVariable(String)}
@@ -369,8 +375,9 @@ public class SkillMetadata {
 
         switch (args[0]) {
 
-            // Access modifiers
+            // Access parameters
             case "modifier":
+            case "parameter":
                 Validate.isTrue(args.length > 1, "Please specify a modifier name");
                 var = new DoubleVariable("temp", getParameter(args[i++]));
                 break;
@@ -398,6 +405,13 @@ public class SkillMetadata {
             // Skill caster
             case "attack":
                 var = new AttackMetadataVariable("temp", getAttackSource());
+                break;
+
+            // Internal random module
+            case "random":
+            case "rand":
+            case "rdm":
+                var = RandomVariable.INSTANCE;
                 break;
 
             // Cached stat map

@@ -147,8 +147,9 @@ public class SkillManager {
         registerMechanic("raytrace_blocks", config -> new RayTraceBlocksMechanic(config));
         registerMechanic("raytrace_entities", config -> new RayTraceEntitiesMechanic(config));
 
-        registerMechanic("helix", config -> new HelixMechanic(config));
-        registerMechanic("parabola", ParabolaMechanic::new);
+        registerMechanic("draw_helix", config -> new HelixMechanic(config), "helix");
+        registerMechanic("draw_line", LineMechanic::new, "line");
+        registerMechanic("draw_parabola", ParabolaMechanic::new, "parabola", "spawn_parabola");
         registerMechanic("projectile", config -> new ProjectileMechanic(config));
         registerMechanic("ray_trace", config -> new RayTraceMechanic(config), "cast_ray", "raytrace", "ray_cast", "raycast");
         registerMechanic("slash", config -> new SlashMechanic(config));
@@ -164,8 +165,9 @@ public class SkillManager {
         registerMechanic("set_x", config -> new SetXMechanic(config));
         registerMechanic("set_y", config -> new SetYMechanic(config));
         registerMechanic("set_z", config -> new SetZMechanic(config));
-        registerMechanic("subtract_vector", config -> new SubtractVectorMechanic(config), "sub_vec");
+        registerMechanic("subtract_vector", config -> new SubtractVectorMechanic(config), "sub_vec", "sub_vector", "subvec");
 
+        registerMechanic("increment", config -> new IncrementMechanic(config), "incr");
         registerMechanic("set_boolean", config -> new SetBooleanMechanic(config), "set_bool");
         registerMechanic("set_double", config -> new SetDoubleMechanic(config), "set_float");
         registerMechanic("set_integer", config -> new SetIntegerMechanic(config), "set_int");
@@ -206,7 +208,7 @@ public class SkillManager {
         registerCondition("distance", config -> new DistanceCondition(config));
         registerCondition("world", config -> new WorldCondition(config));
 
-        registerCondition("can_target", config -> new CanTargetCondition(config));
+        registerCondition("can_target", config -> new CanTargetCondition(config), "can_tgt", "cantarget", "ctgt");
         registerCondition("cooldown", config -> new CooldownCondition(config));
         registerCondition("food", config -> new FoodCondition(config));
         registerCondition("ammo", config -> new HasAmmoMechanic(config));
@@ -315,12 +317,15 @@ public class SkillManager {
         else throw new IllegalArgumentException("Could not find " + objectType + " type");
     }
 
-    public void registerCondition(String name, Function<ConfigObject, Condition> condition) {
+    public void registerCondition(String name, Function<ConfigObject, Condition> condition, String... aliases) {
         Validate.isTrue(registration, "Condition registration is disabled");
         Validate.isTrue(!conditions.containsKey(name), "A condition with the same name already exists");
         Validate.notNull(condition, "Function cannot be null");
 
         conditions.put(name, condition);
+
+        for (String alias : aliases)
+            registerCondition(alias, condition);
     }
 
     @NotNull

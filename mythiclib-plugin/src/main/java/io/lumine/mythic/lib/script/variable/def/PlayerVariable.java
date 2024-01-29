@@ -5,6 +5,7 @@ import io.lumine.mythic.lib.script.variable.SimpleVariableRegistry;
 import io.lumine.mythic.lib.script.variable.Variable;
 import io.lumine.mythic.lib.script.variable.VariableMetadata;
 import io.lumine.mythic.lib.script.variable.VariableRegistry;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 @VariableMetadata(name = "player")
@@ -18,6 +19,8 @@ public class PlayerVariable extends Variable<Player> {
         VARIABLE_REGISTRY.registerVariable("uuid", var -> new StringVariable("temp", var.getStored().getUniqueId().toString()));
         VARIABLE_REGISTRY.registerVariable("type", var -> new StringVariable("temp", var.getStored().getType().name()));
         VARIABLE_REGISTRY.registerVariable("location", var -> new PositionVariable("temp", var.getStored().getLocation()));
+        VARIABLE_REGISTRY.registerVariable("bb_center", var -> new PositionVariable("temp", var.getStored().getBoundingBox().getCenter().toLocation(var.getStored().getWorld())));
+        VARIABLE_REGISTRY.registerVariable("eye_location", var -> new PositionVariable("temp", ((LivingEntity) var.getStored()).getEyeLocation()));
         VARIABLE_REGISTRY.registerVariable("health", var -> new DoubleVariable("temp", var.getStored().getHealth()));
         VARIABLE_REGISTRY.registerVariable("looking", var -> new PositionVariable("temp", var.getStored().getWorld(), var.getStored().getEyeLocation().getDirection()));
         VARIABLE_REGISTRY.registerVariable("velocity", var -> new PositionVariable("temp", var.getStored().getWorld(), var.getStored().getVelocity()));

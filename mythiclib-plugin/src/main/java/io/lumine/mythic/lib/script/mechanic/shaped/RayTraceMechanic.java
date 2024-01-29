@@ -31,9 +31,9 @@ public class RayTraceMechanic extends DirectionMechanic {
     public RayTraceMechanic(ConfigObject config) {
         super(config);
 
-        onTick = config.getScript("tick");
-        onHitEntity = config.getScript("hit_entity");
-        onHitBlock = config.getScript("hit_block");
+        onTick = config.getScriptOrNull("tick");
+        onHitEntity = config.getScriptOrNull("hit_entity");
+        onHitBlock = config.getScriptOrNull("hit_block");
         ignorePassable = config.getBoolean("ignore_passable", false);
         neutral = config.getBoolean("neutral", true);
         offense = config.getBoolean("offense", true);
