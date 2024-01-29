@@ -282,4 +282,4 @@ crossbow_attack:
     - 'ammo{item=ARROW;creative_infinite=true;item_ignore_tag=MMOITEMS_DISABLE_ARROW_CONSUMPTION;consume_if_met=true}'
     mechanics:
     - 'play_sound{sound=ENTITY_ARROW_SHOOT;pitch=.5}'
-    - 'shoot_arrow{from_item=true;player_attack_damage=true;velocity="<stat.arrow_velocity> == 0 ? 1 : <stat.arrow_velocity>"}'
+    - 'shoot_arrow{from_item=true;player_attack_damage=true;velocity="<stat.arrow_velocity> == 0 ? 3 : 3 * <stat.arrow_velocity>"}'

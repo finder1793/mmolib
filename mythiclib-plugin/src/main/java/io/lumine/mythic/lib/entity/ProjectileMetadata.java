@@ -8,6 +8,7 @@ import io.lumine.mythic.lib.damage.ProjectileAttackMetadata;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.player.skill.PassiveSkill;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
@@ -62,7 +63,7 @@ public class ProjectileMetadata extends TemporaryListener {
     /**
      * Can be modified by external plugins.
      */
-    private double damageMultiplier;
+    private double damageMultiplier = 1;
 
     public static final String METADATA_KEY = "MythicLibProjectileData";
 
@@ -125,6 +126,7 @@ public class ProjectileMetadata extends TemporaryListener {
     }
 
     public void setDamageMultiplier(double damageMultiplier) {
+        Validate.isTrue(damageMultiplier >= 0, "Damage multiplier must be positive");
         this.damageMultiplier = damageMultiplier;
     }
 
