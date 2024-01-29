@@ -404,8 +404,9 @@ public class SkillManager {
             // mkdir script folder
             File scriptFolder = new File(MythicLib.plugin.getDataFolder() + "/script");
             if (!scriptFolder.exists()) {
-                UtilityMethods.loadDefaultFile("script", "element-attacks.yml");
-                UtilityMethods.loadDefaultFile("script", "showcase-skills.yml");
+                UtilityMethods.loadDefaultFile("script", "elemental_attacks.yml");
+                UtilityMethods.loadDefaultFile("script", "mmoitems_scripts.yml");
+                UtilityMethods.loadDefaultFile("script", "showcase_skills.yml");
             }
 
             // MythicMobs skill handler type

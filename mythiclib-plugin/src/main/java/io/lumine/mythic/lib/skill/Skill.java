@@ -20,6 +20,10 @@ import java.util.Objects;
  * that are SPECIFIC to MMOItems or MMOCore like resource costs,
  * cooldown messages, no-cooldown modes...
  *
+ * TODO move trigger type to a higher class like PassiveSkill,
+ * TODO has NOTHING to do here and is very impractical when
+ * TODO trying to cast skills
+ *
  * @author jules
  */
 public abstract class Skill implements CooldownObject {
