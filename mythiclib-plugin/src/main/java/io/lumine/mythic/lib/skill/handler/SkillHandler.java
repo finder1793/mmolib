@@ -57,7 +57,7 @@ public abstract class SkillHandler<T extends SkillResult> {
      * @param triggerable If the skill can be triggered
      */
     public SkillHandler(boolean triggerable) {
-        this.id = formatId(getClass().getSimpleName());
+        this.id = UtilityMethods.enumName(getClass().getSimpleName());
         this.triggerable = triggerable;
 
         registerModifiers("cooldown", "mana", "stamina", "timer", "delay");
@@ -69,7 +69,7 @@ public abstract class SkillHandler<T extends SkillResult> {
      * @param id Skill handler identifier
      */
     public SkillHandler(@NotNull String id) {
-        this.id = formatId(id);
+        this.id = UtilityMethods.enumName(id);
         this.triggerable = true;
 
         registerModifiers("cooldown", "mana", "stamina", "timer", "delay");
@@ -82,7 +82,7 @@ public abstract class SkillHandler<T extends SkillResult> {
      * @param id     Skill handler identifier
      */
     public SkillHandler(@NotNull ConfigurationSection config, @NotNull String id) {
-        this.id = formatId(id);
+        this.id = UtilityMethods.enumName(id);
         this.triggerable = true;
 
         // Register custom modifiers
@@ -91,10 +91,6 @@ public abstract class SkillHandler<T extends SkillResult> {
 
         // Default modifiers
         registerModifiers("cooldown", "mana", "stamina", "timer", "delay");
-    }
-
-    private String formatId(String str) {
-        return UtilityMethods.enumName(str).replaceAll("[^A-Z_]", "");
     }
 
     public String getId() {
