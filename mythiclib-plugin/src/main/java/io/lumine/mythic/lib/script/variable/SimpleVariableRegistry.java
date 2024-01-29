@@ -1,6 +1,5 @@
 package io.lumine.mythic.lib.script.variable;
 
-import io.lumine.mythic.lib.skill.SkillMetadata;
 import org.apache.commons.lang.Validate;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,7 +50,6 @@ public class SimpleVariableRegistry<T extends Variable> implements VariableRegis
     public void registerVariable(@NotNull String name, @NotNull Function<T, Variable> supplier, String... aliases) {
         Validate.isTrue(!registered.containsKey(name), "A subvariable with the name '" + name + "' already exists");
         Validate.notNull(supplier, "Supplier cannot be null");
-        Validate.isTrue(!SkillMetadata.RESERVED_VARIABLE_NAMES.contains(name), "Cannot use a reserved variable name");
 
         registered.put(name, supplier);
 

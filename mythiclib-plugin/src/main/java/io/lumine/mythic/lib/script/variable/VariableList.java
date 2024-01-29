@@ -1,5 +1,7 @@
 package io.lumine.mythic.lib.script.variable;
 
+import io.lumine.mythic.lib.skill.SkillMetadata;
+import org.apache.commons.lang.Validate;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -25,6 +27,7 @@ public class VariableList implements VariableContainer {
     }
 
     public void registerVariable(@NotNull Variable var) {
+        Validate.isTrue(!SkillMetadata.RESERVED_VARIABLE_NAMES.contains(var.getName()), "Cannot use reserved variable name '" + var.getName() + "'");
         vars.put(var.getName(), var);
     }
 }
