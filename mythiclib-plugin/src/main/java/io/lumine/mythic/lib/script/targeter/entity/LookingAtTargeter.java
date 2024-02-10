@@ -22,8 +22,8 @@ public class LookingAtTargeter implements EntityTargeter {
     private final boolean ignorePassable;
 
     public LookingAtTargeter(ConfigObject config) {
-        size = config.getDoubleFormula("size", new DoubleFormula(.2f));
-        range = config.getDoubleFormula("length", new DoubleFormula(50));
+        size = config.getDoubleFormula("size", DoubleFormula.constant(.2f));
+        range = config.getDoubleFormula("length", DoubleFormula.constant(50));
         ignorePassable = config.getBoolean("ignore_passable", true);
     }
 

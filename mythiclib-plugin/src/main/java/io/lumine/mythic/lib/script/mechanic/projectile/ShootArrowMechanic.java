@@ -1,17 +1,23 @@
 package io.lumine.mythic.lib.script.mechanic.projectile;
 
 import io.lumine.mythic.lib.api.item.NBTItem;
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.entity.ProjectileMetadata;
 import io.lumine.mythic.lib.entity.ProjectileType;
+import io.lumine.mythic.lib.player.modifier.ModifierSource;
+import io.lumine.mythic.lib.player.skill.PassiveSkill;
 import io.lumine.mythic.lib.script.Script;
 import io.lumine.mythic.lib.script.mechanic.type.DirectionMechanic;
+import io.lumine.mythic.lib.skill.SimpleSkill;
 import io.lumine.mythic.lib.skill.SkillMetadata;
+import io.lumine.mythic.lib.skill.handler.MythicLibSkillHandler;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import io.lumine.mythic.lib.util.DoubleFormula;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.bukkit.Location;
 import org.bukkit.entity.Arrow;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ShootArrowMechanic extends DirectionMechanic {
@@ -47,8 +53,15 @@ public class ShootArrowMechanic extends DirectionMechanic {
         if (playerAttackDamage) proj.setCustomDamage(true);
 
         // Register skills
-        if (onHit != null) proj.registerOnHit(onHit);
-        if (onLand != null) proj.registerOnLand(onLand);
-        if (onTick != null) proj.registerOnTick(onTick);
+        if (onHit != null) proj.getEffectiveSkills().add(skill(onHit, TriggerType.ARROW_HIT));
+        if (onLand != null) proj.getEffectiveSkills().add(skill(onLand, TriggerType.ARROW_LAND));
+        if (onTick != null) proj.getEffectiveSkills().add(skill(onTick, TriggerType.ARROW_TICK));
+    }
+
+    private static final String PASSIVE_SKILL_KEY = "api";
+
+    @NotNull
+    private PassiveSkill skill(Script script, TriggerType triggerType) {
+        return new PassiveSkill(PASSIVE_SKILL_KEY, new SimpleSkill(triggerType, new MythicLibSkillHandler(script)), EquipmentSlot.OTHER, ModifierSource.OTHER);
     }
 }

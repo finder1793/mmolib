@@ -14,17 +14,20 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Provider;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
 /**
- * Custom skill made using the ML skill creation system
+ * Custom script made using the MMOLib scripting language. MythicLib
+ * modular approach lead scripts to dissociate from skills. A script
+ * can be wrapped into a skill, and reciprocally a script can cast
+ * any skill.
+ *
+ * @author jules
  */
 public class Script implements PreloadedObject {
     private final String id;
     private final boolean publik;
-    private final List<String> aliases;
     private final List<Condition> conditions = new ArrayList<>();
     private final List<Mechanic> mechanics = new ArrayList<>();
 
@@ -50,13 +53,11 @@ public class Script implements PreloadedObject {
 
         this.id = config.getName();
         publik = config.getBoolean("public", false);
-        aliases = publik && config.contains("alias") ? Arrays.asList(config.get("alias").toString().split("\\,")) : new ArrayList<>();
     }
 
     public Script(String id, boolean publik) {
         this.id = id;
         this.publik = publik;
-        this.aliases = new ArrayList<>();
     }
 
     @NotNull
@@ -89,21 +90,16 @@ public class Script implements PreloadedObject {
     /**
      * Should the skill be public i.e should a skill handler register for
      * that custom skill. If not, server admins won't be able to access
-     * this skill once it is registered in the skill manager.
+     * this skill when it is registered in the script manager.
      * <p>
-     * It's true for more convenience by default. This means that users
-     * can disable the display of some skills which they consider like
-     * 'intermediate' skills and not real skills.
+     * Private scripts can be used within the scripting language scope,
+     * public scripts are basically turned into skills to be used in
+     * other MMO plugins.
      *
      * @return If the skill should be accessible to other plugins
      */
     public boolean isPublic() {
         return publik;
-    }
-
-    @NotNull
-    public List<String> getAliases() {
-        return aliases;
     }
 
     @NotNull

@@ -60,6 +60,11 @@ public interface ConfigObject {
         return contains(key) ? MythicLib.plugin.getSkills().getScriptOrThrow(getString(key)) : null;
     }
 
+    @NotNull
+    default Script getScript(String key) {
+        return MythicLib.plugin.getSkills().getScriptOrThrow(getString(key));
+    }
+
     ConfigObject getObject(String key);
 
     boolean contains(String key);

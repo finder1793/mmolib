@@ -76,6 +76,6 @@ public class Tactical_Grenade extends SkillHandler<TargetSkillResult> {
     }
 
     private Vector offsetVector(double y) {
-        return new Vector(2 * (random.nextDouble() - .5), y, 2 * (random.nextDouble() - .5));
+        return new Vector(2 * (RANDOM.nextDouble() - .5), y, 2 * (RANDOM.nextDouble() - .5));
     }
 }

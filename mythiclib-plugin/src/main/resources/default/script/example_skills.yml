@@ -1,6 +1,7 @@
 
 # Does nothing
 none:
+    alias: 'empty_skill'
     public: true
 
 # Some magical staff attack

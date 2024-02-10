@@ -76,21 +76,67 @@ piercing_attack_effect:
 #
 ##############################################################################################################################
 
+staff_deal_damage:
+  mechanics:
+    - 'damage{amount="<stat.attack_damage>";damage_type="WEAPON,MAGIC,PROJECTILE"}'
+
 # Default staff attack effect
 staff_default:
   public: true
   mechanics:
     - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
     - 'sound{sound=ENTITY_FIREWORK_ROCKET_TWINKLE;volume=2;pitch=.5}'
-    - 'projectile{life_span=10;speed="<range> * 2";hit_entity=staff_default_hit;hit_block=none;tick=staff_default_tick}'
+    - 'projectile{life_span=10;speed="<var.range> * 2";hit_entity=staff_default_hit;hit_block=none;tick=staff_default_tick}'
 
 staff_default_hit:
   mechanics:
-    - 'damage{amount="<stat.attack_damage>";damage_type="WEAPON,MAGIC,PROJECTILE"}'
+    - 'script{name=staff_deal_damage}'
 
 staff_default_tick:
   mechanics:
     - 'particle{particle=CRIT;x=.3;y=.3;z=.3;amount=2}'
+
+# Staff "mana" attack effect
+staff_mana:
+  public: true
+  mechanics:
+    - 'sound{sound=ENTITY_BLAZE_SHOOT;pitch=2}'
+    - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
+    - 'copy_vector{variable=dir;value=caster.eye_direction}'
+    - 'set_double{variable=rad;value=.5}'
+    - 'projectile{life_span=20;speed="<range> * 2";hit_entity=staff_mana_hit;hit_block=none;tick=staff_mana_tick}'
+
+# Backwards compatibility with MI <6.9
+# Can be removed if previous items are updated.
+MANA_SPIRIT:
+  public: true
+  mechanics:
+    - 'script{name=staff_mana}'
+
+staff_mana_tick:
+  mechanics:
+    - 'script{name=staff_mana_tick_2;counter=c;iterations=6}'
+
+staff_mana_tick_2:
+  conditions:
+    - 'boolean{formula="<random.double> < .6"}'
+  mechanics:
+    - 'set_double{variable=a;value="<random.double> * 2 * PI"}'
+    - 'copy_vector{variable=curr;value=target_location}'
+    - 'set_vector{variable=diff;x="<rad> * cos(<a>)",y="<rad> * sin(<a>)";z=0}'
+    - 'rotate_vector{variable=diff;axis=dir}'
+    - 'add_vector{variable=curr;added=diff}'
+    - 'particle{particle=REDSTONE;color={red=0;green=230;blue=255};target={type=variable;name=curr}}'
+
+staff_mana_hit:
+  mechanics:
+    - 'sound{sound=ENTITY_BLAZE_HURT;pitch=2}'
+    - 'sphere{radius=2;tick=staff_mana_hit_tick;points=500}'
+    - 'script{name=staff_deal_damage}'
+
+staff_mana_hit_tick:
+  mechanics:
+    - 'particle{particle=REDSTONE;color={red=0;green=230;blue=255}}'
 
 # Backwards compatibility with MI <6.9
 # Can be removed if previous items are updated.
@@ -109,7 +155,7 @@ staff_lightning:
 
 staff_lightning_hit:
   mechanics:
-    - 'script{name=staff_default_hit}'
+    - 'script{name=staff_deal_damage}'
     - 'particle{particle=FIREWORKS_SPARK;speed=.1;amount=32}'
 
 staff_lightning_tick:
@@ -122,7 +168,7 @@ staff_xray:
   mechanics:
     - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
     - 'sound{sound=ENTITY_FIREWORK_ROCKET_BLAST;volume=2;pitch=1.5}'
-    - 'raytrace{tick=staff_xray_tick;neutral=false;range="<range>";hit_entity=staff_default_hit;size=.2;step=.5}'
+    - 'raytrace{tick=staff_xray_tick;neutral=false;range="<range>";hit_entity=staff_xray_hit;size=.2;step=.5}'
 
 # Backwards compatibility with MI <6.9
 # Can be removed if previous items are updated.
@@ -135,13 +181,41 @@ staff_xray_tick:
   mechanics:
     - 'particle{particle=REDSTONE;color={red=255;green=0;blue=0}}'
 
+staff_xray_hit:
+  mechanics:
+    - 'script{name=staff_deal_damage}'
+
+# Staff "Void" attack effect
+staff_void:
+  public: true
+  mechanics:
+    - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
+    - 'sound{sound=ENTITY_BLAZE_SHOOT;volume=2;pitch=2}'
+    - 'shulker_bullet{life_span=50;hit_entity=staff_void_hit}'
+
+# Backwards compatibility with MI <6.9
+# Can be removed if previous items are updated.
+VOID_SPIRIT:
+  public: true
+  mechanics:
+    - 'script{name=staff_void}'
+
+staff_void_hit:
+  mechanics:
+    - 'script{name=staff_deal_damage}'
+    - 'helix{tick=staff_void_hit_tick}'
+
+staff_void_hit_tick:
+  mechanics:
+    - 'particle{particle=REDSTONE;color={red=90;green=40;blue=40}}'
+
 # Staff "Nether" attack effect
 staff_nether:
   public: true
   mechanics:
     - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
-    - 'sound{sound=ENTITY_FIREWORK_ROCKET_BLAST;volume=2;pitch=1.5}'
-    - 'projectile{hit_entity=staff_nether_hit;hit_block=none;speed=20}'
+    - 'sound{sound=ENTITY_BLAZE_SHOOT;volume=2;pitch=2}'
+    - 'projectile{life_span=20;speed="<var.range> * 2";hit_entity=staff_nether_hit;hit_block=none;tick=staff_nether_tick;size=.5}'
 
 # Backwards compatibility with MI <6.9
 # Can be removed if previous items are updated.
@@ -151,12 +225,16 @@ NETHER_SPIRIT:
     - 'script{name=staff_nether}'
 
 staff_nether_hit:
-  mechanics: [ ]
+  mechanics:
+    - 'script{name=staff_deal_damage}'
+    - 'sound{sound=ENTITY_BLAZE_HURT;volume=2;pitch=2}'
+    - 'particle{particle=FLAME;amount=12;speed=.1}'
+    - 'particle{particle=LAVA;amount=6}'
 
 staff_nether_tick:
   mechanics:
-    - 'particle{particle=FLAME;amount=2;x=.07;y=.07;z=.07}'
-    - 'particle{particle=SMOKE_NORMAL}'
+    - 'particle{particle=FLAME;x=.2;y=.2;z=.2}'
+    - 'particle{particle=SMOKE_NORMAL;x=.2;y=.2;z=.2}'
 
 # Staff "Sunfire" attack effect
 staff_sunfire:
@@ -204,7 +282,7 @@ staff_sunfire_hit:
   conditions:
     - 'can_target{}'
   mechanics:
-    - 'damage{amount="<stat.attack_damage>";damage_type="WEAPON,MAGIC,PROJECTILE"}'
+    - 'script{name=staff_deal_damage}'
 
 staff_sunfire_tick:
   mechanics:
@@ -262,7 +340,7 @@ staff_thunder_hit:
   conditions:
     - 'can_target{}'
   mechanics:
-    - 'damage{amount="<stat.attack_damage>";damage_type="WEAPON,MAGIC,PROJECTILE"}'
+    - 'script{name=staff_deal_damage}'
 
 staff_thunder_tick:
   mechanics:
@@ -281,6 +359,22 @@ staff_thunder_tick2:
 # Other Scripts for MMOItems
 #
 ##############################################################################################################################
+
+# Whip attack effect
+whip_attack:
+  public: true
+  mechanics:
+    - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
+    - 'sound{sound=ENTITY_FIREWORK_ROCKET_BLAST;volume=2;pitch=1.5}'
+    - 'raytrace{tick=whip_attack_tick;neutral=false;range="<range>";hit_entity=whip_attack_hit;size=.2;step=.5}'
+
+whip_attack_tick:
+  mechanics:
+    - 'particle{particle=CRIT}'
+
+whip_attack_hit:
+  mechanics:
+    - 'damage{amount="<stat.attack_damage>";damage_type="WEAPON,PHYSICAL"}'
 
 staff_special_attack:
   public: true

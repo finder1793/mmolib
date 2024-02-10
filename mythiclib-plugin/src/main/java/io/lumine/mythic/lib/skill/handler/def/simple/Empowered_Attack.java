@@ -84,7 +84,7 @@ public class Empowered_Attack extends SkillHandler<SimpleSkillResult> {
                 final Location loc = target.getLocation().add(0, target.getHeight() / 2, 0);
                 for (int j = 0; j < 3; j++) {
                     Location clone = loc.clone();
-                    double a = random.nextDouble() * Math.PI * 2;
+                    double a = RANDOM.nextDouble() * Math.PI * 2;
                     loc.add(Math.cos(a), 5, Math.sin(a));
                     drawVector(clone, loc.clone().subtract(clone).toVector());
                 }

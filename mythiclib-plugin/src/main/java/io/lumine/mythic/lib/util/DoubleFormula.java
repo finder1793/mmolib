@@ -19,7 +19,7 @@ public class DoubleFormula {
     @Nullable
     private final Double constant;
 
-    public static final DoubleFormula ZERO = new DoubleFormula(0);
+    public static final DoubleFormula ZERO = DoubleFormula.constant(0);
 
     public DoubleFormula(@NotNull String inputFormula) {
         String value = null;

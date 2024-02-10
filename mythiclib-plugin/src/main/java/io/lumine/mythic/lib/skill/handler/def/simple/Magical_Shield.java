@@ -72,8 +72,8 @@ public class Magical_Shield extends SkillHandler<SimpleSkillResult> {
             if (ti++ > duration * 20. / 3.)
                 close();
 
-            for (double j = 0; j < Math.PI / 2; j += Math.PI / (28 + random.nextInt(5)))
-                for (double i = 0; i < Math.PI * 2; i += Math.PI / (14 + random.nextInt(5)))
+            for (double j = 0; j < Math.PI / 2; j += Math.PI / (28 + RANDOM.nextInt(5)))
+                for (double i = 0; i < Math.PI * 2; i += Math.PI / (14 + RANDOM.nextInt(5)))
                     loc.getWorld().spawnParticle(Particle.REDSTONE,
                             loc.clone().add(2.5 * Math.cos(i + j) * Math.sin(j), 2.5 * Math.cos(j), 2.5 * Math.sin(i + j) * Math.sin(j)), 1,
                             new Particle.DustOptions(Color.FUCHSIA, 1));

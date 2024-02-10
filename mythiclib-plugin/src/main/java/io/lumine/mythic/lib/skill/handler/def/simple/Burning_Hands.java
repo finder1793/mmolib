@@ -47,7 +47,7 @@ public class Burning_Hands extends SkillHandler<SimpleSkillResult> {
 
                 for (double m = -45; m < 45; m += 5) {
                     double a = (m + caster.getEyeLocation().getYaw() + 90) * Math.PI / 180;
-                    Vector vec = new Vector(Math.cos(a), (random.nextDouble() - .5) * .2, Math.sin(a));
+                    Vector vec = new Vector(Math.cos(a), (RANDOM.nextDouble() - .5) * .2, Math.sin(a));
                     Location source = loc.clone().add(vec.clone().setY(0));
                     source.getWorld().spawnParticle(Particle.FLAME, source, 0, vec.getX(), vec.getY(), vec.getZ(), .5);
                     if (j % 2 == 0)

@@ -62,6 +62,6 @@ public class Arcane_Hail extends SkillHandler<LocationSkillResult> {
 
     // random double between -1 and 1
     private double randomCoordMultiplier() {
-        return (random.nextDouble() - .5) * 2;
+        return (RANDOM.nextDouble() - .5) * 2;
     }
 }

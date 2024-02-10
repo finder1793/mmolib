@@ -18,7 +18,7 @@ public class GiveItemMechanic extends TargetMechanic {
         super(config);
 
         config.validateKeys("type");
-        amount = config.getDoubleFormula("amount", new DoubleFormula(1));
+        amount = config.getDoubleFormula("amount", DoubleFormula.constant(1));
         material = Material.valueOf(config.getString("type"));
     }
 

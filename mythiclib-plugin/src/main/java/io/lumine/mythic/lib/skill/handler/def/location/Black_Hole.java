@@ -45,8 +45,8 @@ public class Black_Hole extends SkillHandler<LocationSkillResult> {
                 loc.getWorld().playSound(loc, VersionSound.BLOCK_NOTE_BLOCK_HAT.toSound(), 2, 2);
                 loc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, loc, 0);
                 for (int j = 0; j < 3; j++) {
-                    double ran = random.nextDouble() * Math.PI * 2;
-                    double ran_y = random.nextDouble() * 2 - 1;
+                    double ran = RANDOM.nextDouble() * Math.PI * 2;
+                    double ran_y = RANDOM.nextDouble() * 2 - 1;
                     double x = Math.cos(ran) * Math.sin(ran_y * Math.PI * 2);
                     double z = Math.sin(ran) * Math.sin(ran_y * Math.PI * 2);
                     Location loc1 = loc.clone().add(x * r, ran_y * r, z * r);

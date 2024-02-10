@@ -3,15 +3,10 @@ package io.lumine.mythic.lib.entity;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.item.NBTItem;
-import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.util.TemporaryListener;
 import io.lumine.mythic.lib.damage.ProjectileAttackMetadata;
 import io.lumine.mythic.lib.player.PlayerMetadata;
-import io.lumine.mythic.lib.player.modifier.ModifierSource;
 import io.lumine.mythic.lib.player.skill.PassiveSkill;
-import io.lumine.mythic.lib.script.Script;
-import io.lumine.mythic.lib.skill.SimpleSkill;
-import io.lumine.mythic.lib.skill.handler.MythicLibSkillHandler;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.apache.commons.lang.Validate;
@@ -123,23 +118,9 @@ public class ProjectileMetadata extends TemporaryListener {
         this.sourceItem = sourceItem;
     }
 
-    private static final String PASSIVE_SKILL_KEY = "api";
-
     @NotNull
-    private PassiveSkill skill(Script script, TriggerType triggerType) {
-        return new PassiveSkill(PASSIVE_SKILL_KEY, new SimpleSkill(triggerType, new MythicLibSkillHandler(script)), EquipmentSlot.OTHER, ModifierSource.OTHER);
-    }
-
-    public void registerOnHit(@NotNull Script onHit) {
-        cachedSkills.add(skill(onHit, projectileType.getHitTrigger()));
-    }
-
-    public void registerOnLand(@NotNull Script onLand) {
-        cachedSkills.add(skill(onLand, projectileType.getLandTrigger()));
-    }
-
-    public void registerOnTick(@NotNull Script onTick) {
-        cachedSkills.add(skill(onTick, projectileType.getTickTrigger()));
+    public List<PassiveSkill> getEffectiveSkills() {
+        return cachedSkills;
     }
 
     public boolean isCustomDamage() {

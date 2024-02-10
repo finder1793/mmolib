@@ -69,6 +69,6 @@ public class Ice_Spikes extends SkillHandler<LocationSkillResult> {
     }
 
     private double offset() {
-        return random.nextDouble() * (random.nextBoolean() ? 1 : -1);
+        return RANDOM.nextDouble() * (RANDOM.nextBoolean() ? 1 : -1);
     }
 }

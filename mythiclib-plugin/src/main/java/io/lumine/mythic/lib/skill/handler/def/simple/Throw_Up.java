@@ -42,8 +42,8 @@ public class Throw_Up extends SkillHandler<SimpleSkillResult> {
                     cancel();
 
                 Location loc = caster.getEyeLocation();
-                loc.setPitch((float) (loc.getPitch() + (random.nextDouble() - .5) * 30));
-                loc.setYaw((float) (loc.getYaw() + (random.nextDouble() - .5) * 30));
+                loc.setPitch((float) (loc.getPitch() + (RANDOM.nextDouble() - .5) * 30));
+                loc.setYaw((float) (loc.getYaw() + (RANDOM.nextDouble() - .5) * 30));
 
                 if (j % 5 == 0)
                     for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))

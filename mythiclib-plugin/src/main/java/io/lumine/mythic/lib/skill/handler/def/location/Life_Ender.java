@@ -39,7 +39,7 @@ public class Life_Ender extends SkillHandler<LocationSkillResult> {
 
         caster.getWorld().playSound(caster.getLocation(), VersionSound.ENTITY_ENDERMAN_TELEPORT.toSound(), 2, 1);
         new BukkitRunnable() {
-            final Location source = loc.clone().add(5 * Math.cos(random.nextDouble() * 2 * Math.PI), 20, 5 * Math.sin(random.nextDouble() * 2 * Math.PI));
+            final Location source = loc.clone().add(5 * Math.cos(RANDOM.nextDouble() * 2 * Math.PI), 20, 5 * Math.sin(RANDOM.nextDouble() * 2 * Math.PI));
             final Vector vec = loc.subtract(source).toVector().multiply((double) 1 / 30);
             int ti = 0;
 

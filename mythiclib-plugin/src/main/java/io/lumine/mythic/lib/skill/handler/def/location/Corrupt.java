@@ -41,7 +41,7 @@ public class Corrupt extends SkillHandler<LocationSkillResult> {
         caster.getWorld().playSound(caster.getLocation(), VersionSound.ENTITY_ENDERMAN_HURT.toSound(), 1, .5f);
         for (double j = 0; j < Math.PI * 2; j += Math.PI / 36) {
             Location loc1 = loc.clone().add(Math.cos(j) * radius, 1, Math.sin(j) * radius);
-            double y_max = .5 + random.nextDouble();
+            double y_max = .5 + RANDOM.nextDouble();
             for (double y = 0; y < y_max; y += .1)
                 loc1.getWorld().spawnParticle(Particle.REDSTONE, loc1.clone().add(0, y, 0), 1, new Particle.DustOptions(Color.PURPLE, 1));
         }

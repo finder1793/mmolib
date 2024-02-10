@@ -6,9 +6,7 @@ import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.def.passive.Backstab;
 import io.lumine.mythic.lib.skill.result.SkillResult;
-import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

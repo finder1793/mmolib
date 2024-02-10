@@ -55,7 +55,7 @@ public class MitigationMechanics implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void a(AttackEvent event) {
+    public void applyMitigation(AttackEvent event) {
         if (!(event.getEntity() instanceof Player) || !MITIGATION_CAUSES.contains(event.toBukkit().getCause()) || event.getEntity().hasMetadata("NPC"))
             return;
 

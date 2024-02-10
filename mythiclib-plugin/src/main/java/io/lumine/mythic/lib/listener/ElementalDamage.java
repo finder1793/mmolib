@@ -25,7 +25,7 @@ import java.util.Random;
 public class ElementalDamage implements Listener {
     private static final Random RANDOM = new Random();
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void applyElementalDamage(AttackEvent event) {
 
         // Make sure ML can identify the attacker

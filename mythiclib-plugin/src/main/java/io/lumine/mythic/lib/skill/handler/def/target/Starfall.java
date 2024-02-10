@@ -30,7 +30,7 @@ public class Starfall extends SkillHandler<TargetSkillResult> {
         final LivingEntity target = result.getTarget();
 
         new BukkitRunnable() {
-            final double ran = random.nextDouble() * Math.PI * 2;
+            final double ran = RANDOM.nextDouble() * Math.PI * 2;
             final Location loc = target.getLocation().add(Math.cos(ran) * 3, 6, Math.sin(ran) * 3);
             final Vector vec = target.getLocation().add(0, .65, 0).toVector().subtract(loc.toVector()).multiply(.05);
             double ti = 0;

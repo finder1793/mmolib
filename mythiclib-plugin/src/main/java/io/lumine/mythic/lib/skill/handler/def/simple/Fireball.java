@@ -76,7 +76,7 @@ public class Fireball extends SkillHandler<SimpleSkillResult> {
                                 return;
                             }
 
-                            double range = 2.5 * (1 + random.nextDouble());
+                            double range = 2.5 * (1 + RANDOM.nextDouble());
                             Vector dir = randomDirection();
                             loc.getWorld().playSound(loc, Sound.ENTITY_BLAZE_HURT, 2, 1.5f);
 
@@ -94,7 +94,7 @@ public class Fireball extends SkillHandler<SimpleSkillResult> {
     }
 
     private Vector randomDirection() {
-        double x = random.nextDouble() - .5, y = (random.nextDouble() - .2) / 2, z = random.nextDouble() - .5;
+        double x = RANDOM.nextDouble() - .5, y = (RANDOM.nextDouble() - .2) / 2, z = RANDOM.nextDouble() - .5;
         Vector dir = new Vector(x, y, z);
         return dir.lengthSquared() == 0 ? new Vector(1, 0, 0) : dir.normalize();
     }

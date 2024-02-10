@@ -31,7 +31,7 @@ public class Swiftness extends SkillHandler<SimpleSkillResult> {
         caster.getWorld().playSound(caster.getLocation(), VersionSound.ENTITY_ZOMBIE_PIGMAN_ANGRY.toSound(), 1, .3f);
         for (double y = 0; y <= 2; y += .2)
             for (double j = 0; j < Math.PI * 2; j += Math.PI / 16)
-                if (random.nextDouble() <= .7)
+                if (RANDOM.nextDouble() <= .7)
                     caster.getWorld().spawnParticle(Particle.SPELL_INSTANT, caster.getLocation().add(Math.cos(j), y, Math.sin(j)), 0);
         caster.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, (int) (duration * 20), amplifier));
         caster.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int) (duration * 20), amplifier));

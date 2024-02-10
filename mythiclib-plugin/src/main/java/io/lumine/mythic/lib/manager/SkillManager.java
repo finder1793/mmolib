@@ -46,6 +46,7 @@ import io.lumine.mythic.lib.skill.handler.MythicLibSkillHandler;
 import io.lumine.mythic.lib.skill.handler.MythicMobsSkillHandler;
 import io.lumine.mythic.lib.skill.handler.SkillAPISkillHandler;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
+import io.lumine.mythic.lib.util.PostLoadException;
 import io.lumine.mythic.lib.util.RecursiveFolderExplorer;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
@@ -153,6 +154,7 @@ public class SkillManager {
         registerMechanic("projectile", config -> new ProjectileMechanic(config));
         registerMechanic("ray_trace", config -> new RayTraceMechanic(config), "cast_ray", "raytrace", "ray_cast", "raycast");
         registerMechanic("slash", config -> new SlashMechanic(config));
+        registerMechanic("draw_sphere", config -> new SphereMechanic(config), "sphere");
 
         registerMechanic("add_vector", config -> new AddVectorMechanic(config), "add_vec");
         registerMechanic("cross_product", config -> new CrossProductMechanic(config));
@@ -283,13 +285,8 @@ public class SkillManager {
     }
 
     public void registerScript(@NotNull Script script) {
-        internalScriptRegistration(script.getId(), script);
-        for (String alias : script.getAliases()) internalScriptRegistration(alias, script);
-    }
-
-    private void internalScriptRegistration(String name, Script script) {
-        Validate.isTrue(!scripts.containsKey(name), "A script with the same name already exists");
-        scripts.put(name, script);
+        Validate.isTrue(!scripts.containsKey(script.getId()), "A script with the same name already exists");
+        scripts.put(script.getId(), script);
     }
 
     @NotNull
@@ -311,6 +308,7 @@ public class SkillManager {
         throw new IllegalArgumentException("Provide either a string or configuration section");
     }
 
+    @NotNull
     public Collection<Script> getScripts() {
         return scripts.values();
     }
@@ -411,7 +409,7 @@ public class SkillManager {
             if (!scriptFolder.exists()) {
                 UtilityMethods.loadDefaultFile("script", "elemental_attacks.yml");
                 UtilityMethods.loadDefaultFile("script", "mmoitems_scripts.yml");
-                UtilityMethods.loadDefaultFile("script", "showcase_skills.yml");
+                UtilityMethods.loadDefaultFile("script", "example_skills.yml");
             }
 
             // MythicMobs skill handler type
@@ -459,6 +457,8 @@ public class SkillManager {
             try {
                 script.getPostLoadAction().performAction();
                 if (script.isPublic()) registerSkillHandler(new MythicLibSkillHandler(script));
+            } catch (PostLoadException exception) {
+                // Trying to load an alias, ignore
             } catch (RuntimeException exception) {
                 MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load script '" + script.getId() + "': " + exception.getMessage());
             }

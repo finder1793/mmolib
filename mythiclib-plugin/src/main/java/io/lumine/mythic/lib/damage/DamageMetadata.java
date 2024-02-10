@@ -9,12 +9,25 @@ import java.util.*;
 /**
  * Contains all the information about damage being dealt
  * during a specific attack.
- * <p>
- * TODO Merge damage types and elements??
- * TODO Turn damage types into strings for external compatibility??
+ *
+ * @author Jules
  */
 public class DamageMetadata implements Cloneable {
     private final List<DamagePacket> packets = new ArrayList<>();
+
+    /**
+     * The first damage packet to be registered inside of this damage
+     * metadata. It is usually the most significant (highest value)
+     * or at least the base damage on which all modifiers are then
+     * applied.
+     * <p>
+     * This field is a direct reference of an existing element
+     * of the collection returned by {@link #getPackets()}.
+     * <p>
+     * Although not common, it can be null.
+     */
+    @Nullable
+    private final DamagePacket initialPacket;
 
     @Deprecated
     private boolean weaponCrit, skillCrit;
@@ -23,30 +36,37 @@ public class DamageMetadata implements Cloneable {
     private final Set<Element> elementalCrit = new HashSet<>();
 
     /**
-     * Used to register an attack with NO initial packet!
+     * Used to register an attack with NO initial packet.
      */
     public DamageMetadata() {
+        initialPacket = null;
     }
 
     /**
-     * Used to register a attack.
+     * Used to register an attack.
      *
      * @param damage The attack damage
      * @param types  The attack damage types
      */
     public DamageMetadata(double damage, DamageType... types) {
-        add(damage, types);
+        this(damage, null, types);
     }
 
     /**
-     * Used to register a attack.
+     * Used to register an attack.
      *
      * @param damage  The attack damage
      * @param element If this is an elemental attack
      * @param types   The attack damage types
      */
-    public DamageMetadata(double damage, @NotNull Element element, DamageType... types) {
-        add(damage, element, types);
+    public DamageMetadata(double damage, @Nullable Element element, DamageType... types) {
+        initialPacket = new DamagePacket(damage, element, types);
+        packets.add(initialPacket);
+    }
+
+    @Nullable
+    public DamagePacket getInitialPacket() {
+        return initialPacket;
     }
 
     public boolean isWeaponCriticalStrike() {
@@ -129,7 +149,7 @@ public class DamageMetadata implements Cloneable {
 
     /**
      * @return Set containing all the damage types found
-     *         in all the different damage packets.
+     * in all the different damage packets.
      */
     @NotNull
     public Set<DamageType> collectTypes() {
@@ -144,7 +164,7 @@ public class DamageMetadata implements Cloneable {
 
     /**
      * @return Set containing all the elements found
-     *         in all the different damage packets.
+     * in all the different damage packets.
      */
     @NotNull
     public Set<Element> collectElements() {
@@ -158,7 +178,7 @@ public class DamageMetadata implements Cloneable {
 
     /**
      * @return Iterates through all registered damage packets and
-     *         see if any has this damage type.
+     * see if any has this damage type.
      */
     public boolean hasType(DamageType type) {
         for (DamagePacket packet : packets)
@@ -170,7 +190,7 @@ public class DamageMetadata implements Cloneable {
     /**
      * @param element If null, will return true if it has non-elemental damage.
      * @return Iterates through all registered damage packets and
-     *         see if any has this element.
+     * see if any has this element.
      */
     public boolean hasElement(@Nullable Element element) {
         for (DamagePacket packet : packets)

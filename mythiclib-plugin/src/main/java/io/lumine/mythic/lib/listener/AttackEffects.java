@@ -5,18 +5,15 @@ import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.stat.SharedStat;
 import io.lumine.mythic.lib.damage.DamageType;
-import io.lumine.mythic.lib.listener.event.AttackEventListener;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.player.cooldown.CooldownType;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.Random;
 
@@ -36,13 +33,7 @@ public class AttackEffects implements Listener {
         skillCritCooldown = MythicLib.plugin.getConfig().getDouble("critical-strikes.skill.cooldown", 3);
     }
 
-    /**
-     * See how easy it is to just listen to any player
-     * attack and apply on-hit attack effects now??
-     *
-     * @see {@link AttackEventListener}
-     */
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true)
     public void onHitAttackEffects(PlayerAttackEvent event) {
         PlayerMetadata stats = event.getAttacker();
 

@@ -59,11 +59,8 @@ public class SkillTriggers implements Listener {
 
         TriggerMetadata triggerMetadata = new TriggerMetadata(caster, TriggerType.DAMAGED, EquipmentSlot.MAIN_HAND, null, null, null, event.getAttack(), null);
         caster.triggerSkills(triggerMetadata);
-        // TODO remove this check in the future. This should be done by the skill coder
-        if (event.getAttack().hasAttacker() && MythicLib.plugin.getEntities().canInteract((Player) event.getEntity(), event.getAttack().getAttacker().getEntity(), InteractionType.OFFENSE_SKILL)) {
-            triggerMetadata = new TriggerMetadata(caster, TriggerType.DAMAGED_BY_ENTITY, EquipmentSlot.MAIN_HAND, null, event.getAttack().getAttacker().getEntity(), null, event.getAttack(), null);
-            caster.triggerSkills(triggerMetadata);
-        }
+        triggerMetadata = new TriggerMetadata(caster, TriggerType.DAMAGED_BY_ENTITY, EquipmentSlot.MAIN_HAND, null, event.getAttack().getAttacker().getEntity(), null, event.getAttack(), null);
+        caster.triggerSkills(triggerMetadata);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
