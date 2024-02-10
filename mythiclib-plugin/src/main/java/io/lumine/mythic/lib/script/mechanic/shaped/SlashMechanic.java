@@ -79,7 +79,7 @@ public class SlashMechanic extends Mechanic {
                 for (int i = 0; i < pointsPerTick; i++) {
 
                     /* Always on start otherwise an error in the
-                     * code will makethe runnable loop forever.
+                     * code will make the runnable loop forever.
                      */
                     if (counter++ >= points) {
                         cancel();

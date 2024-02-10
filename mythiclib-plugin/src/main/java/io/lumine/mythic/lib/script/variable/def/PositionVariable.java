@@ -20,7 +20,7 @@ import org.bukkit.util.Vector;
  * It's easier to morph these objects into one class that is more
  * adapted to our use of these classes
  */
-@VariableMetadata(name = "vector")
+@VariableMetadata(name = "position")
 public class PositionVariable extends Variable<Position> {
     public static final SimpleVariableRegistry<PositionVariable> VARIABLE_REGISTRY = new SimpleVariableRegistry();
 
@@ -28,9 +28,12 @@ public class PositionVariable extends Variable<Position> {
         VARIABLE_REGISTRY.registerVariable("x", var -> new DoubleVariable("temp", var.getStored().getX()));
         VARIABLE_REGISTRY.registerVariable("y", var -> new DoubleVariable("temp", var.getStored().getY()));
         VARIABLE_REGISTRY.registerVariable("z", var -> new DoubleVariable("temp", var.getStored().getZ()));
+        VARIABLE_REGISTRY.registerVariable("yaw", var -> new DoubleVariable("temp", UtilityMethods.getYawPitch(var.getStored().toVector())[0]));
+        VARIABLE_REGISTRY.registerVariable("pitch", var -> new DoubleVariable("temp", UtilityMethods.getYawPitch(var.getStored().toVector())[1]));
         VARIABLE_REGISTRY.registerVariable("length", var -> new DoubleVariable("temp", var.getStored().length()), "norm", "len");
         VARIABLE_REGISTRY.registerVariable("world", var -> new WorldVariable("temp", var.getStored().getWorld()));
         VARIABLE_REGISTRY.registerVariable("biome", var -> new StringVariable("temp", getBiomeAt(var.getStored()).name()));
+
         VARIABLE_REGISTRY.registerVariable("altitude", var -> new DoubleVariable("temp", UtilityMethods.getAltitude(var.getStored().toLocation())));
     }
 

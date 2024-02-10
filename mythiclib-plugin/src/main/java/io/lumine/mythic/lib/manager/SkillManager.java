@@ -162,7 +162,7 @@ public class SkillManager {
         registerMechanic("hadamard_product", config -> new HadamardProductMechanic(config));
         registerMechanic("multiply_vector", config -> new MultiplyVectorMechanic(config));
         registerMechanic("normalize_vector", config -> new NormalizeVectorMechanic(config), "normalize");
-        registerMechanic("rotate_vector", config -> new RotateVectorMechanic(config), "rotate_vec");
+        registerMechanic("orient_vector", config -> new OrientVectorMechanic(config), "orient_vec");
         registerMechanic("save_vector", config -> new CopyVectorMechanic(config), "save_vec", "copy_vec", "copy_vector");
         registerMechanic("set_x", config -> new SetXMechanic(config));
         registerMechanic("set_y", config -> new SetYMechanic(config));

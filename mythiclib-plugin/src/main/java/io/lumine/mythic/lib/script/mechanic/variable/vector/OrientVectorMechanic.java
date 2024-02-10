@@ -12,10 +12,10 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.util.Vector;
 
 @MechanicMetadata
-public class RotateVectorMechanic extends VariableMechanic {
+public class OrientVectorMechanic extends VariableMechanic {
     private final String axisVarName;
 
-    public RotateVectorMechanic(ConfigObject config) {
+    public OrientVectorMechanic(ConfigObject config) {
         super(config);
 
         config.validateKeys("axis");

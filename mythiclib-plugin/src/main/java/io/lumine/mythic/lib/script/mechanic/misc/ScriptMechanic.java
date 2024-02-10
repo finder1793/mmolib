@@ -1,14 +1,16 @@
 package io.lumine.mythic.lib.script.mechanic.misc;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.script.targeter.EntityTargeter;
-import io.lumine.mythic.lib.script.targeter.LocationTargeter;
-import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.script.Script;
 import io.lumine.mythic.lib.script.mechanic.Mechanic;
 import io.lumine.mythic.lib.script.mechanic.MechanicMetadata;
+import io.lumine.mythic.lib.script.targeter.EntityTargeter;
+import io.lumine.mythic.lib.script.targeter.LocationTargeter;
 import io.lumine.mythic.lib.script.variable.def.IntegerVariable;
+import io.lumine.mythic.lib.skill.SkillMetadata;
+import io.lumine.mythic.lib.util.DoubleFormula;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 
@@ -24,7 +26,7 @@ public class ScriptMechanic extends Mechanic {
      * Allows to cast the same script multiple times in a row but
      * everytime the counter is increased by 1 just like in a for loop
      */
-    private final int iterations;
+    private final DoubleFormula iterations;
 
     /**
      * Variable name used to save the iteration counter
@@ -42,7 +44,7 @@ public class ScriptMechanic extends Mechanic {
 
         // Multiple skill casts
         counterVarName = config.getString("counter", "counter");
-        iterations = config.getInt("iterations", 1);
+        iterations = config.getDoubleFormula("iterations", DoubleFormula.constant(1));
 
         // Targeters
         sourceLocation = config.contains("source") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("source")) : null;
@@ -56,11 +58,14 @@ public class ScriptMechanic extends Mechanic {
     public void cast(SkillMetadata meta) {
         if (counterVarName == null)
             castWithNewMeta(meta);
-        else
-            for (int i = 0; i < iterations; i++) {
+        else {
+            final int ni = (int) this.iterations.evaluate(meta);
+            Validate.isTrue(ni >= 0, "Number of iterations must be positive");
+            for (int i = 0; i < ni; i++) {
                 meta.getVariableList().registerVariable(new IntegerVariable(counterVarName, i + 1));
                 castWithNewMeta(meta);
             }
+        }
     }
 
     /**
@@ -72,9 +77,9 @@ public class ScriptMechanic extends Mechanic {
      *
      * @param old Meta used to cast the 'skill' mechanic
      * @implNote Regarding the double for loop which allows to cast the skill
-     *         with every possible skill metadata, this will not be used very often.
-     *         Generally the skill is either used with a entity targeter OR a location targeter,
-     *         neither both at the same time.
+     * with every possible skill metadata, this will not be used very often.
+     * Generally the skill is either used with a entity targeter OR a location targeter,
+     * neither both at the same time.
      */
     private void castWithNewMeta(SkillMetadata old) {
 

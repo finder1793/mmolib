@@ -17,48 +17,68 @@
 #
 ##############################################################################################################################
 
-# On-hit attack effect from blunt weapons
-# TODO
+# On-hit attack effect for BLUNT weapons
 blunt_attack_effect:
   public: true
   conditions:
     - 'cooldown{path=mmoitems_blunt}'
   mechanics:
     - 'apply_cooldown{path=mmoitems_blunt;amount=3}'
-    - 'particle{particle=CRIT;amount=24;speed=.5}'
-    - 'sound{sound=ENTITY_PLAYER_ATTACK_CRIT;pitch=2}'
+    - 'particle{particle=EXPLOSION_LARGE}'
+    - 'sound{sound=ENTITY_PLAYER_ATTACK_CRIT;pitch=.5}'
+    - 'set_double{variable=damage_ratio;value="<stat.blunt_rating> / 100"}'
+    - 'script{name=propagate_damage;target={type=nearby_entities;radius="<stat.blunt_power>"}}'
 
-# On-hit attack effect from slashing weapons
-# TODO
+# On-hit attack effect for SLASHING weapons
 slashing_attack_effect:
   public: true
   conditions:
-    - 'cooldown{path=mmoitems_blunt}'
+    - 'cooldown{path=mmoitems_slashing}'
   mechanics:
-    - 'apply_cooldown{path=mmoitems_blunt;amount=3}'
+    - 'apply_cooldown{path=mmoitems_slashing;amount=3}'
+    - 'set_double{variable=damage_ratio;value=.4}'
+    - 'set_double{variable=angle;value=60}'
     - 'cast{name=slashing_attack_effect_hit;target={type=cone;radius=6.5;angle=60}}'
-    - 'slash{tick=slashing_attack_effect_tick;angle=0;points=4;points_per_tick=10;distance=.2}'
-    - 'slash{tick=slashing_attack_effect_tick;angle=0;points=4;points_per_tick=10;distance=.4}'
-    - 'slash{tick=slashing_attack_effect_tick;angle=0;points=4;points_per_tick=10;distance=.6}'
+    - 'script{name=slash_attack_effect}'
 
-slashing_attack_effect_tick:
-  mechanics:
-    - 'particle{particle=CRIT}'
-
-slashing_attack_effect_hit:
+slash_attack_hit:
   conditions:
     - 'can_target{}'
   mechanics:
-    - 'damage{amount="<attack.damage> * .4";damage_type="PHYSICAL,WEAPON"}'
+    - 'damage{amount="<attack.damage> * <damage_ratio>";damage_type="PHYSICAL,WEAPON"}'
 
-# On-hit attack effect from piercing weapons
-# TODO
+# On-hit attack effect for PIERCING weapons
 piercing_attack_effect:
   public: true
   conditions:
-    - 'cooldown{path=mmoitems_blunt}'
+    - 'cooldown{path=mmoitems_piercing}'
   mechanics:
-    - 'apply_cooldown{path=mmoitems_blunt;amount=3}'
+    - 'apply_cooldown{path=mmoitems_piercing;amount=3}'
+    - 'set_double{variable=damage_ratio;value=.6}'
+    - 'set_double{variable=angle;value=30}'
+    - 'cast{name=slashing_attack_effect_hit;target={type=cone;radius=6.5;angle=30}}'
+    - 'script{name=slash_attack_effect}'
+
+# Used for both slashing and piercing
+slash_attack_effect:
+  mechanics:
+    - 'copy_vector{variable=src;value=caster.location}'
+    - 'set_double{variable=p;value="<caster.eye_direction.pitch> * -PI / 180"}'
+    - 'add_vector{variable=src;y=1}'
+    - 'script{name=sae1;counter=c2;iterations="20"}'
+
+sae1:
+  mechanics:
+    - 'set_int{variable=c1_max;value="<c2> * <angle> / 60.0"}'
+    - 'script{name=sae2;counter=c1;iterations="<c1_max>"}'
+
+sae2:
+  mechanics:
+    - 'set_double{variable=a;value="PI / 180.0 * (90 + <caster.eye_direction.yaw> + <angle> * (-0.5 + (<c1> - 0.5) / <c1_max>))"}'
+    - 'set_double{variable=d;value=".4 + <c2> / 3"}'
+    - 'copy_vector{variable=inter;value=src}'
+    - 'add_vector{variable=inter;x="cos(<p>) * cos(<a>) * <d>";y="sin(<p>) * <d>";z="cos(<p>) *sin(<a>) * <d>"}'
+    - 'particle{particle=CRIT;target={type=variable;name=inter}}'
 
 ##############################################################################################################################
 #
@@ -124,7 +144,7 @@ staff_mana_tick_2:
     - 'set_double{variable=a;value="<random.double> * 2 * PI"}'
     - 'copy_vector{variable=curr;value=target_location}'
     - 'set_vector{variable=diff;x="<rad> * cos(<a>)",y="<rad> * sin(<a>)";z=0}'
-    - 'rotate_vector{variable=diff;axis=dir}'
+    - 'orient_vector{variable=diff;axis=dir}'
     - 'add_vector{variable=curr;added=diff}'
     - 'particle{particle=REDSTONE;color={red=0;green=230;blue=255};target={type=variable;name=curr}}'
 
