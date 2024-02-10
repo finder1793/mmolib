@@ -3,7 +3,6 @@ package io.lumine.mythic.lib.comp.formula;
 import bsh.EvalError;
 import bsh.Interpreter;
 import io.lumine.mythic.lib.MythicLib;
-import org.apache.commons.lang3.Validate;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -73,7 +72,7 @@ public class FormulaParser {
     }
 
     /**
-     * For numeric formulas, this method can return both Integers
+     * For numeric expressions, this method can return both Integers
      * and Doubles. However, Java doesn't allow casting between these
      * two types. It's always better to go through the Number superclass
      * and get the double/int value based on the desired output.
@@ -81,15 +80,16 @@ public class FormulaParser {
      * This method will throw a RuntimeException if an evaluation
      * error occurs or if the given object is not of the right type.
      *
-     * @param str         Given formula string
+     * @param str         Given expression
      * @param targetClass Class of type of object expected
      * @param <O>         Type of object expected
-     * @return Object provided when processing given formula
+     * @return Object provided when processing given expression
      */
     @NotNull
     public <O> O evaluateAs(@NotNull String str, @NotNull Class<O> targetClass) {
         final Object result = evaluate(str);
-        Validate.isInstanceOf(targetClass, result, "Formula did not return a number");
+        if (!targetClass.isInstance(result))
+            throw new IllegalArgumentException("Expression did not return a " + targetClass.getSimpleName());
         return (O) result;
     }
 }
