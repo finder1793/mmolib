@@ -3,11 +3,17 @@ package io.lumine.mythic.lib.entity;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.item.NBTItem;
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.util.TemporaryListener;
 import io.lumine.mythic.lib.damage.ProjectileAttackMetadata;
 import io.lumine.mythic.lib.player.PlayerMetadata;
+import io.lumine.mythic.lib.player.modifier.ModifierSource;
 import io.lumine.mythic.lib.player.skill.PassiveSkill;
+import io.lumine.mythic.lib.script.Script;
+import io.lumine.mythic.lib.skill.SimpleSkill;
+import io.lumine.mythic.lib.skill.handler.MythicLibSkillHandler;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
+import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -21,6 +27,8 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * The one thing about projectiles is that they create some type of
@@ -47,7 +55,7 @@ public class ProjectileMetadata extends TemporaryListener {
      * is still in midair which will change the projectile behaviour. The very same
      * glitch is being fixed by {@link PlayerMetadata}
      */
-    private final Iterable<PassiveSkill> cachedSkills;
+    private final List<PassiveSkill> cachedSkills;
     private final PlayerMetadata shooter;
 
     @Nullable
@@ -65,7 +73,7 @@ public class ProjectileMetadata extends TemporaryListener {
      */
     private double damageMultiplier = 1;
 
-    public static final String METADATA_KEY = "MythicLibProjectileData";
+    public static final String METADATA_KEY = "MythicLibProjectileMetadata";
 
     /**
      * Used to keep track of custom MythicLib projectiles. This class handles:
@@ -88,6 +96,8 @@ public class ProjectileMetadata extends TemporaryListener {
 
         // Trigger skills
         runnable = new BukkitRunnable() {
+            final TriggerMetadata tickTriggerMetadata = new TriggerMetadata(shooter, TriggerType.API, projectile, null);
+
             @Override
             public void run() {
                 shooter.getData().triggerSkills(new TriggerMetadata(ProjectileMetadata.this.shooter, projectileType.getTickTrigger(), projectile, null), cachedSkills);
@@ -111,6 +121,25 @@ public class ProjectileMetadata extends TemporaryListener {
 
     public void setSourceItem(@Nullable NBTItem sourceItem) {
         this.sourceItem = sourceItem;
+    }
+
+    private static final String PASSIVE_SKILL_KEY = "api";
+
+    @NotNull
+    private PassiveSkill skill(Script script, TriggerType triggerType) {
+        return new PassiveSkill(PASSIVE_SKILL_KEY, new SimpleSkill(triggerType, new MythicLibSkillHandler(script)), EquipmentSlot.OTHER, ModifierSource.OTHER);
+    }
+
+    public void registerOnHit(@NotNull Script onHit) {
+        cachedSkills.add(skill(onHit, projectileType.getHitTrigger()));
+    }
+
+    public void registerOnLand(@NotNull Script onLand) {
+        cachedSkills.add(skill(onLand, projectileType.getLandTrigger()));
+    }
+
+    public void registerOnTick(@NotNull Script onTick) {
+        cachedSkills.add(skill(onTick, projectileType.getTickTrigger()));
     }
 
     public boolean isCustomDamage() {

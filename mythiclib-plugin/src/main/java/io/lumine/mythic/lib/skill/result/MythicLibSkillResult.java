@@ -1,8 +1,8 @@
 package io.lumine.mythic.lib.skill.result;
 
-import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.script.Script;
 import io.lumine.mythic.lib.script.condition.Condition;
+import io.lumine.mythic.lib.skill.SkillMetadata;
 
 public class MythicLibSkillResult implements SkillResult {
     private final Script skill;
@@ -14,8 +14,7 @@ public class MythicLibSkillResult implements SkillResult {
     @Override
     public boolean isSuccessful(SkillMetadata skillMeta) {
         for (Condition condition : skill.getConditions())
-            if (!condition.checkIfMet(skillMeta))
-                return false;
+            if (!condition.checkIfMet(skillMeta)) return false;
         return true;
     }
 }

@@ -9,7 +9,9 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class PostLoadAction {
+    @Nullable
     private ConfigurationSection config;
+    @Nullable
     private Consumer<ConfigurationSection> action;
 
     /**

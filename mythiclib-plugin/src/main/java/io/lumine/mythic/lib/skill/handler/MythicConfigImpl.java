@@ -8,10 +8,12 @@ import io.lumine.mythic.bukkit.utils.serialize.Chroma;
 import io.lumine.mythic.bukkit.utils.text.Text;
 import io.lumine.mythic.core.config.GenericConfig;
 import io.lumine.mythic.core.skills.placeholders.parsers.PlaceholderColor;
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
@@ -44,13 +46,8 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
         }
     }
 
-    public ConfigurationSection getConfigurationSection() {
-        return this.fc;
-    }
-
-    @Override
     public FileConfiguration getFileConfiguration() {
-        throw new RuntimeException("Not supported");
+        throw new NotImplementedException();
     }
 
     public String getNode(String field) {
@@ -105,19 +102,31 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
     }
 
     public void load() {
-        throw new RuntimeException("Not supported");
+        this.fc = YamlConfiguration.loadConfiguration(this.file);
     }
 
     public void save() {
-        throw new RuntimeException("Not supported");
+        throw new NotImplementedException();
     }
 
     public MythicConfig getNestedConfig(String key) {
-        throw new RuntimeException("Not supported");
+        return new MythicConfigImpl(this.getNode(key) + key, this.fc);
     }
 
     public Map<String, MythicConfig> getNestedConfigs(String field) {
-        throw new RuntimeException("Not supported");
+        Map<String, MythicConfig> map = new HashMap();
+        if (!this.isSet(field)) {
+            return map;
+        } else {
+            Iterator var3 = this.getKeys(field).iterator();
+
+            while (var3.hasNext()) {
+                String k = (String) var3.next();
+                map.put(k, new MythicConfigImpl(this.getNode(field) + field + "." + k, this.fc));
+            }
+
+            return map;
+        }
     }
 
     public String getString(String field) {
@@ -222,6 +231,36 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
         return this.fc.getBoolean(this.getNode(field) + field, def);
     }
 
+    public Boolean getBooleanNullable(String field) {
+        ConfigurationSection var10000 = this.fc;
+        String var10001 = this.getNode(field);
+        if (var10000.isSet(var10001 + field)) {
+            var10000 = this.fc;
+            var10001 = this.getNode(field);
+            return var10000.getBoolean(var10001 + field);
+        } else {
+            return null;
+        }
+    }
+
+    public Boolean getBooleanNullable(String[] field) {
+        String[] var2 = field;
+        int var3 = field.length;
+
+        for (int var4 = 0; var4 < var3; ++var4) {
+            String key = var2[var4];
+            ConfigurationSection var10000 = this.fc;
+            String var10001 = this.getNode(key);
+            if (var10000.isSet(var10001 + key)) {
+                var10000 = this.fc;
+                var10001 = this.getNode(key);
+                return var10000.getBoolean(var10001 + key);
+            }
+        }
+
+        return null;
+    }
+
     public int getInteger(String field) {
         String var10000 = this.getNode(field);
         String key = var10000 + field;
@@ -302,6 +341,20 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
         return var3.getStringList(var10001 + field);
     }
 
+    public List<String> getStringList(String field, List<String> def) {
+        String var10000 = this.getNode(field);
+        String key = var10000 + field;
+        ConfigurationSection var4 = this.fc;
+        String var10001 = this.getNode(field);
+        if (var4.isSet(var10001 + field)) {
+            var4 = this.fc;
+            var10001 = this.getNode(field);
+            return var4.getStringList(var10001 + field);
+        } else {
+            return def;
+        }
+    }
+
     public List<String> getColorStringList(String field) {
         String var10000 = this.getNode(field);
         String key = var10000 + field;
@@ -338,6 +391,44 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
         }
 
         return parsed;
+    }
+
+    public List<PlaceholderString> getPlaceholderStringList(String field, List<String> def) {
+        String var10000 = this.getNode(field);
+        String key = var10000 + field;
+        List<String> list = this.getStringList(field, def);
+        List<PlaceholderString> parsed = new ArrayList();
+        if (list != null) {
+            Iterator var6 = list.iterator();
+
+            while (var6.hasNext()) {
+                String str = (String) var6.next();
+                parsed.add(PlaceholderString.of(str));
+            }
+        }
+
+        return parsed;
+    }
+
+    public List<PlaceholderString> getPlaceholderStringListAlt(String field, List<PlaceholderString> def) {
+        String var10000 = this.getNode(field);
+        String key = var10000 + field;
+        List<String> list = this.getStringList(field);
+        if (list != null && !list.isEmpty()) {
+            List<PlaceholderString> parsed = new ArrayList();
+            if (list != null) {
+                Iterator var6 = list.iterator();
+
+                while (var6.hasNext()) {
+                    String str = (String) var6.next();
+                    parsed.add(PlaceholderString.of(str));
+                }
+            }
+
+            return parsed;
+        } else {
+            return def;
+        }
     }
 
     public List<Map<?, ?>> getMapList(String field) {
@@ -451,7 +542,7 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
     }
 
     public void merge(MythicConfig tmplConfig, List<String> keysToIgnore) {
-        throw new RuntimeException("Not supported");
+        throw new NotImplementedException();
     }
 
     public File getFile() {

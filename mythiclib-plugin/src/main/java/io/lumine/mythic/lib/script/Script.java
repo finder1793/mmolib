@@ -2,10 +2,11 @@ package io.lumine.mythic.lib.script;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.MMOLineConfig;
-import io.lumine.mythic.lib.api.util.PostLoadObject;
 import io.lumine.mythic.lib.script.condition.Condition;
 import io.lumine.mythic.lib.script.mechanic.Mechanic;
 import io.lumine.mythic.lib.skill.SkillMetadata;
+import io.lumine.mythic.lib.util.PostLoadAction;
+import io.lumine.mythic.lib.util.PreloadedObject;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import io.lumine.mythic.lib.util.configobject.ConfigSectionObject;
 import org.bukkit.configuration.ConfigurationSection;
@@ -13,35 +14,21 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Provider;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
 /**
  * Custom skill made using the ML skill creation system
  */
-public class Script extends PostLoadObject {
+public class Script implements PreloadedObject {
     private final String id;
-    private final boolean publicSkill;
-
+    private final boolean publik;
+    private final List<String> aliases;
     private final List<Condition> conditions = new ArrayList<>();
     private final List<Mechanic> mechanics = new ArrayList<>();
 
-    public Script(@NotNull ConfigurationSection config) {
-        super(config);
-
-        this.id = config.getName();
-        publicSkill = config.getBoolean("public", false);
-    }
-
-    public Script(String id, boolean publicSkill) {
-        super(null);
-
-        this.id = id;
-        this.publicSkill = publicSkill;
-    }
-
-    @Override
-    public void whenPostLoaded(@NotNull ConfigurationSection config) {
+    private final PostLoadAction postLoadAction = new PostLoadAction(config -> {
 
         // Load conditions
         if (config.isConfigurationSection("conditions"))
@@ -56,6 +43,26 @@ public class Script extends PostLoadObject {
                 registerMechanic(str, () -> new ConfigSectionObject(config.getConfigurationSection("mechanics." + str)));
         else if (config.isList("mechanics")) for (Object obj : config.getList("mechanics"))
             registerMechanic(String.valueOf(obj), () -> new MMOLineConfig(String.valueOf(obj)));
+    });
+
+    public Script(@NotNull ConfigurationSection config) {
+        postLoadAction.cacheConfig(config);
+
+        this.id = config.getName();
+        publik = config.getBoolean("public", false);
+        aliases = publik && config.contains("alias") ? Arrays.asList(config.get("alias").toString().split("\\,")) : new ArrayList<>();
+    }
+
+    public Script(String id, boolean publik) {
+        this.id = id;
+        this.publik = publik;
+        this.aliases = new ArrayList<>();
+    }
+
+    @NotNull
+    @Override
+    public PostLoadAction getPostLoadAction() {
+        return postLoadAction;
     }
 
     private void registerCondition(String key, Provider<ConfigObject> config) {
@@ -91,7 +98,12 @@ public class Script extends PostLoadObject {
      * @return If the skill should be accessible to other plugins
      */
     public boolean isPublic() {
-        return publicSkill;
+        return publik;
+    }
+
+    @NotNull
+    public List<String> getAliases() {
+        return aliases;
     }
 
     @NotNull

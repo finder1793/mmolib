@@ -1,4 +1,8 @@
 
+# Does nothing
+none:
+    public: true
+
 # Some magical staff attack
 staff_attack:
     public: true

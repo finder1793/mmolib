@@ -22,7 +22,7 @@ public class CooldownMap {
     }
 
     /**
-     * Sets current cooldown to the maximum value o
+     * Sets current cooldown to the maximum value
      * of the current and input cooldown values.
      *
      * @param path     The skill or action path, must be completely unique
@@ -32,8 +32,7 @@ public class CooldownMap {
     public CooldownInfo applyCooldown(String path, double cooldown) {
         final String key = UtilityMethods.enumName(path);
         @Nullable CooldownInfo current = map.get(key);
-        if (current != null && current.getRemaining() >= cooldown * 1000)
-            return current;
+        if (current != null && current.getRemaining() >= cooldown * 1000) return current;
 
         current = new CooldownInfo(cooldown);
         map.put(key, current);

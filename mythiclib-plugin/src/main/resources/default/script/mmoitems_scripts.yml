@@ -1,7 +1,4 @@
-
 ##############################################################################################################################
-#
-# This
 #
 # Blunt, Piercing, Slashing Weapons
 #
@@ -15,24 +12,27 @@
 # Blunt weapons deal AoE damage to targets all around the initial enemy, just like the vanilla Sweeping Edge.
 # Blunt weapons usually correspond to hammers, greatstaffs.
 #
+# All of the previous are default MMOItems behaviours, however you can redefine them as much as you want.
+# You can create new item types, new weapon types, weapon effects, etc... to make your setup truly unique.
+#
 ##############################################################################################################################
 
 # On-hit attack effect from blunt weapons
 # TODO
 blunt_attack_effect:
-    public: true
-    conditions:
+  public: true
+  conditions:
     - 'cooldown{path=mmoitems_blunt}'
-    mechanics:
+  mechanics:
     - 'apply_cooldown{path=mmoitems_blunt;amount=3}'
 
 # On-hit attack effect from slashing weapons
 # TODO
 slashing_attack_effect:
-    public: true
-    conditions:
+  public: true
+  conditions:
     - 'cooldown{path=mmoitems_blunt}'
-    mechanics:
+  mechanics:
     - 'apply_cooldown{path=mmoitems_blunt;amount=3}'
     - 'cast{name=slashing_attack_effect_hit;target={type=cone;radius=6.5;angle=60}}'
     - 'slash{tick=slashing_attack_effect_tick;angle=0;points=4;points_per_tick=10;distance=.2}'
@@ -40,22 +40,22 @@ slashing_attack_effect:
     - 'slash{tick=slashing_attack_effect_tick;angle=0;points=4;points_per_tick=10;distance=.6}'
 
 slashing_attack_effect_tick:
-    mechanics:
+  mechanics:
     - 'particle{particle=CRIT}'
 
 slashing_attack_effect_hit:
-    conditions:
+  conditions:
     - 'can_target{}'
-    mechanics:
+  mechanics:
     - 'damage{amount="<attack.damage> * .4";damage_type="PHYSICAL,WEAPON"}'
 
 # On-hit attack effect from piercing weapons
 # TODO
 piercing_attack_effect:
-    public: true
-    conditions:
+  public: true
+  conditions:
     - 'cooldown{path=mmoitems_blunt}'
-    mechanics:
+  mechanics:
     - 'apply_cooldown{path=mmoitems_blunt;amount=3}'
 
 ##############################################################################################################################
@@ -76,84 +76,88 @@ piercing_attack_effect:
 
 # Default staff attack effect
 staff_default:
-    public: true
-    mechanics:
+  public: true
+  mechanics:
     - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
     - 'sound{sound=ENTITY_FIREWORK_ROCKET_TWINKLE;volume=2;pitch=.5}'
     - 'projectile{life_span=10;speed="<var.range> * 2";hit_entity=staff_default_hit;tick=staff_default_tick}'
 
 staff_default_hit:
-    mechanics:
+  mechanics:
     - 'damage{amount="<stat.attack_damage>";damage_type="WEAPON,MAGIC,PROJECTILE"}'
 
 staff_default_tick:
-    mechanics:
+  mechanics:
     - 'particle{particle=CRIT;x=.3;y=.3;z=.3;amount=2}'
 
 # Staff "lightning" attack effect
 staff_lightning:
-    public: true
-    mechanics:
+  public: true
+  alias: 'LIGHTNING_SPIRIT'
+  mechanics:
     - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
     - 'sound{sound=ENTITY_FIREWORK_ROCKET_BLAST;volume=2;pitch=1.5}'
     - 'raytrace{tick=staff_lightning_tick;neutral=false;range="<var.range>";hit_entity=staff_lightning_hit;size=.2;step=.5}'
 
 staff_lightning_hit:
-    mechanics:
+  mechanics:
     - 'script{name=staff_default_hit}'
     - 'particle{particle=FIREWORKS_SPARK;speed=.1;amount=32}'
 
 staff_lightning_tick:
-    mechanics:
+  mechanics:
     - 'particle{particle=FIREWORKS_SPARK;amount=1}'
 
 # Staff "X-ray" attack effect
 staff_xray:
-    public: true
-    mechanics:
+  public: true
+  alias: 'XRAY_SPIRIT'
+  mechanics:
     - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
     - 'sound{sound=ENTITY_FIREWORK_ROCKET_BLAST;volume=2;pitch=1.5}'
     - 'raytrace{tick=staff_xray_tick;neutral=false;range="<var.range>";hit_entity=staff_default_hit;size=.2;step=.5}'
 
 staff_xray_tick:
-    mechanics:
+  mechanics:
     - 'particle{particle=REDSTONE;color={red=255;green=0;blue=0}}'
 
 # Staff "Nether" attack effect
 staff_nether:
-    public: true
-    mechanics:
+  public: true
+  alias: 'NETHER_SPIRIT'
+  mechanics:
     - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
     - 'sound{sound=ENTITY_FIREWORK_ROCKET_BLAST;volume=2;pitch=1.5}'
     - 'projectile{hit_entity=staff_nether_hit;speed=20}'
 
 staff_nether_hit:
-    mechanics: []
+  mechanics: [ ]
 
 staff_nether_tick:
-    mechanics:
+  mechanics:
     - 'particle{particle=FLAME;amount=2;x=.07;y=.07;z=.07}'
     - 'particle{particle=SMOKE_NORMAL}'
 
 # Staff "Sunfire" attack effect
 staff_sunfire:
-    public: true
-    mechanics:
+  public: true
+  alias: 'SUNFIRE_SPIRIT'
+  mechanics:
     - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
     - 'ray_trace{size=.4;range="<range>";size=0;hit_block=staff_sunfire_success_block;hit_entity=staff_sunfire_success_entity}'
 
 staff_sunfire_success_block:
-    mechanics:
+  mechanics:
     - 'copy_vector{variable=meteor_tgt;value=target_location}'
     - 'script{name=staff_sunfire_success_2}'
 
 staff_sunfire_success_entity:
-    mechanics:
-    - 'copy_vector{variable=meteor_tgt;value="target.location.bb_center"}'
+  mechanics:
+    - 'copy_vector{variable=meteor_tgt;value="target.bb_center"}'
     - 'script{name=staff_sunfire_success_2}'
 
 staff_sunfire_success_2:
-    mechanics:
+  mechanics:
     - 'sound{sound=ENTITY_WITHER_SHOOT;volume=2;pitch=2}'
     - 'set_double{variable=angle;value="<random.unif> * PI * 2"}'
     - 'set_vector{variable=meteor_src;x="<meteor_tgt.x> + 4 * cos(<angle>)";y="<meteor_tgt.y> + 10";z="<meteor_tgt.z> + 4 * sin(<angle>)"}'
@@ -163,7 +167,7 @@ staff_sunfire_success_2:
     - 'draw_line{source={type=variable;name=meteor_src};target={type=variable;name=meteor_tgt};tick=staff_sunfire_tick;end=staff_sunfire_explode;step=.7}'
 
 staff_sunfire_explode:
-    mechanics:
+  mechanics:
     - 'particle{particle=FLAME;speed=.12;amount=24}'
     - 'particle{particle=SMOKE_NORMAL;speed=.12;amount=24}'
     - 'particle{particle=EXPLOSION_LARGE}'
@@ -171,42 +175,43 @@ staff_sunfire_explode:
     - 'script{name=staff_sunfire_hit;target={type=nearby_entities;radius=3}}'
 
 staff_sunfire_hit:
-    conditions:
+  conditions:
     - 'can_target{}'
-    mechanics:
+  mechanics:
     - 'damage{amount="<stat.attack_damage>";damage_type="WEAPON,MAGIC,PROJECTILE"}'
 
 staff_sunfire_tick:
-    mechanics:
+  mechanics:
     - 'particle{particle=FLAME;x=.3;y=.3;z=.3;amount=4}'
     - 'script{name=staff_sunfire_tick2}'
     - 'incr{variable=c}'
 
 staff_sunfire_tick2:
-    conditions:
+  conditions:
     - 'boolean{formula="<c> % 4 == 0"}'
-    mechanics:
+  mechanics:
     - 'sound{sound=BLOCK_FIRE_AMBIENT;volume=2;pitch=2}'
 
 # Staff "Thunder" attack effect
 staff_thunder:
-    public: true
-    mechanics:
+  public: true
+  alias: 'THUNDER_SPIRIT'
+  mechanics:
     - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
     - 'ray_trace{size=.4;range="<range>";size=0;hit_block=staff_thunder_success_block;hit_entity=staff_thunder_success_entity}'
 
 staff_thunder_success_block:
-    mechanics:
+  mechanics:
     - 'copy_vector{variable=meteor_tgt;value=target_location}'
     - 'script{name=staff_thunder_success_2}'
 
 staff_thunder_success_entity:
-    mechanics:
-    - 'copy_vector{variable=meteor_tgt;value="target.location.bb_center"}'
+  mechanics:
+    - 'copy_vector{variable=meteor_tgt;value="target.bb_center"}'
     - 'script{name=staff_thunder_success_2}'
 
 staff_thunder_success_2:
-    mechanics:
+  mechanics:
     - 'sound{sound=ENTITY_WITHER_SHOOT;volume=2;pitch=2}'
     - 'set_double{variable=angle;value="<random.unif> * PI * 2"}'
     - 'set_vector{variable=meteor_src;x="<meteor_tgt.x> + 4 * cos(<angle>)";y="<meteor_tgt.y> + 10";z="<meteor_tgt.z> + 4 * sin(<angle>)"}'
@@ -216,27 +221,27 @@ staff_thunder_success_2:
     - 'draw_line{source={type=variable;name=meteor_src};target={type=variable;name=meteor_tgt};tick=staff_thunder_tick;end=staff_thunder_explode;step=.3;points_per_tick=4}'
 
 staff_thunder_explode:
-    mechanics:
+  mechanics:
     - 'particle{particle=FIREWORKS_SPARK;speed=.12;amount=24}'
     - 'sound{sound=ENTITY_FIREWORK_ROCKET_BLAST;volume=2;pitch=2}'
     - 'script{name=staff_thunder_hit;target={type=nearby_entities;radius=3}}'
 
 staff_thunder_hit:
-    conditions:
+  conditions:
     - 'can_target{}'
-    mechanics:
+  mechanics:
     - 'damage{amount="<stat.attack_damage>";damage_type="WEAPON,MAGIC,PROJECTILE"}'
 
 staff_thunder_tick:
-    mechanics:
+  mechanics:
     - 'particle{particle=FIREWORKS_SPARK}'
     - 'script{name=staff_thunder_tick2}'
     - 'incr{variable=c}'
 
 staff_thunder_tick2:
-    conditions:
+  conditions:
     - 'boolean{formula="<c> % 2 == 0"}'
-    mechanics:
+  mechanics:
     - 'sound{sound=BLOCK_NOTE_BLOCK_HAT;volume=2;pitch=2}'
 
 ##############################################################################################################################
@@ -246,10 +251,10 @@ staff_thunder_tick2:
 ##############################################################################################################################
 
 staff_special_attack:
-    public: true
-    condition:
+  public: true
+  conditions:
     - 'cooldown{path=mmoitems_staff_special}'
-    mechanics:
+  mechanics:
     - 'apply_cooldown{path=mmoitems_staff_special;amount=10}'
     - 'particle{particle=EXPLOSION_LARGE}'
     - 'particle{particle=EXPLOSION_NORMAL;amount=16;speed=.1}'
@@ -261,10 +266,10 @@ staff_special_attack:
     - 'set_velocity{vector=knockback}'
 
 gauntlet_special_attack:
-    public: true
-    condition:
+  public: true
+  conditions:
     - 'cooldown{path=mmoitems_gauntlet}'
-    mechanics:
+  mechanics:
     - 'apply_cooldown{path=mmoitems_gauntlet;amount=10}'
     - 'particle{particle=EXPLOSION_LARGE}'
     - 'sound{sound=BLOCK_ANVIL_LAND;pitch=2}'
@@ -277,9 +282,13 @@ gauntlet_special_attack:
     - 'set_velocity{vector=knockback}'
 
 crossbow_attack:
-    public: true
-    conditions:
+  public: true
+  conditions:
     - 'ammo{item=ARROW;creative_infinite=true;item_ignore_tag=MMOITEMS_DISABLE_ARROW_CONSUMPTION;consume_if_met=true}'
-    mechanics:
+  mechanics:
     - 'play_sound{sound=ENTITY_ARROW_SHOOT;pitch=.5}'
-    - 'shoot_arrow{from_item=true;player_attack_damage=true;velocity="<stat.arrow_velocity> == 0 ? 3 : 3 * <stat.arrow_velocity>"}'
+    - 'shoot_arrow{from_item=true;player_attack_damage=true;tick=crossbow_arrow_tick;velocity="<stat.arrow_velocity> == 0 ? 3 : 3 * <stat.arrow_velocity>"}'
+
+crossbow_arrow_tick:
+  mechanics:
+    - 'particle{particle=CRIT;speed=.05}'

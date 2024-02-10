@@ -283,9 +283,13 @@ public class SkillManager {
     }
 
     public void registerScript(@NotNull Script script) {
-        Validate.isTrue(!scripts.containsKey(script.getId()), "A script with the same name already exists");
+        internalScriptRegistration(script.getId(), script);
+        for (String alias : script.getAliases()) internalScriptRegistration(alias, script);
+    }
 
-        scripts.put(script.getId(), script);
+    private void internalScriptRegistration(String name, Script script) {
+        Validate.isTrue(!scripts.containsKey(name), "A script with the same name already exists");
+        scripts.put(name, script);
     }
 
     @NotNull
@@ -293,13 +297,14 @@ public class SkillManager {
         return Objects.requireNonNull(scripts.get(name), "Could not find script with name '" + name + "'");
     }
 
+    @NotNull
     public Script loadScript(Object obj) {
 
         if (obj instanceof String) return getScriptOrThrow(obj.toString());
 
         if (obj instanceof ConfigurationSection) {
             Script skill = new Script((ConfigurationSection) obj);
-            skill.postLoad();
+            skill.getPostLoadAction().performAction();
             return skill;
         }
 
@@ -449,10 +454,10 @@ public class SkillManager {
 
         }, MythicLib.plugin, "Could not load scripts").explore(new File(MythicLib.plugin.getDataFolder() + "/script"));
 
-        // Post load custom scripts and register a skill handler
+        // Postload custom scripts and register a skill handler
         for (Script script : scripts.values())
             try {
-                script.postLoad();
+                script.getPostLoadAction().performAction();
                 if (script.isPublic()) registerSkillHandler(new MythicLibSkillHandler(script));
             } catch (RuntimeException exception) {
                 MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load script '" + script.getId() + "': " + exception.getMessage());

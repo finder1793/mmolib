@@ -31,20 +31,24 @@ public abstract class PostLoadObject {
      * @param config Config section being cached in
      *               memory until {@link #postLoad()} is called
      */
+    @Deprecated
     public PostLoadObject(@Nullable ConfigurationSection config) {
         this.config = config;
     }
 
     @NotNull
+    @Deprecated
     public ConfigurationSection getPostLoadConfig() {
         return Objects.requireNonNull(config, "Object already post loaded");
     }
 
+    @Deprecated
     public void postLoad() {
         Validate.notNull(config, "Object already post loaded");
         whenPostLoaded(config);
         config = null;
     }
 
+    @Deprecated
     protected abstract void whenPostLoaded(@NotNull ConfigurationSection config);
 }

@@ -23,7 +23,7 @@ public class Position {
 
     private double x, y, z;
 
-    private static final double epsilon = 1.0E-6D;
+    private static final double EPSILON = 1.0E-6D;
 
     public Position(World world, double x, double y, double z) {
         this.world = Objects.requireNonNull(world, "World cannot be null");
@@ -131,7 +131,7 @@ public class Position {
     }
 
     public boolean isNormalized() {
-        return Math.abs(this.lengthSquared() - 1.0D) < epsilon;
+        return Math.abs(this.lengthSquared() - 1.0D) < EPSILON;
     }
 
     @NotNull
@@ -245,7 +245,7 @@ public class Position {
             return false;
         } else {
             Position other = (Position) obj;
-            return Math.abs(this.x - other.x) < epsilon && Math.abs(this.y - other.y) < epsilon && Math.abs(this.z - other.z) < epsilon;
+            return Math.abs(this.x - other.x) < EPSILON && Math.abs(this.y - other.y) < EPSILON && Math.abs(this.z - other.z) < EPSILON;
         }
     }
 
@@ -275,7 +275,7 @@ public class Position {
     }
 
     public static double getEpsilon() {
-        return epsilon;
+        return EPSILON;
     }
 
     @NotNull

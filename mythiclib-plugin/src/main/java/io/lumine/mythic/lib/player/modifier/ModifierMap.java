@@ -27,7 +27,7 @@ public abstract class ModifierMap<T extends PlayerModifier> {
     }
 
     @NotNull
-    public Iterable<T> isolateModifiers(@NotNull EquipmentSlot hand) {
+    public List<T> isolateModifiers(@NotNull EquipmentSlot hand) {
         final ArrayList<T> isolated = new ArrayList<>();
 
         for (T modifier : getModifiers())
