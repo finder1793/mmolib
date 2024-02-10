@@ -25,6 +25,8 @@ blunt_attack_effect:
     - 'cooldown{path=mmoitems_blunt}'
   mechanics:
     - 'apply_cooldown{path=mmoitems_blunt;amount=3}'
+    - 'particle{particle=CRIT;amount=24;speed=.5}'
+    - 'sound{sound=ENTITY_PLAYER_ATTACK_CRIT;pitch=2}'
 
 # On-hit attack effect from slashing weapons
 # TODO
@@ -80,7 +82,7 @@ staff_default:
   mechanics:
     - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
     - 'sound{sound=ENTITY_FIREWORK_ROCKET_TWINKLE;volume=2;pitch=.5}'
-    - 'projectile{life_span=10;speed="<var.range> * 2";hit_entity=staff_default_hit;tick=staff_default_tick}'
+    - 'projectile{life_span=10;speed="<range> * 2";hit_entity=staff_default_hit;hit_block=none;tick=staff_default_tick}'
 
 staff_default_hit:
   mechanics:
@@ -90,14 +92,20 @@ staff_default_tick:
   mechanics:
     - 'particle{particle=CRIT;x=.3;y=.3;z=.3;amount=2}'
 
+# Backwards compatibility with MI <6.9
+# Can be removed if previous items are updated.
+LIGHTNING_SPIRIT:
+  public: true
+  mechanics:
+    - 'script{name=staff_lightning}'
+
 # Staff "lightning" attack effect
 staff_lightning:
   public: true
-  alias: 'LIGHTNING_SPIRIT'
   mechanics:
     - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
     - 'sound{sound=ENTITY_FIREWORK_ROCKET_BLAST;volume=2;pitch=1.5}'
-    - 'raytrace{tick=staff_lightning_tick;neutral=false;range="<var.range>";hit_entity=staff_lightning_hit;size=.2;step=.5}'
+    - 'raytrace{tick=staff_lightning_tick;neutral=false;range="<range>";hit_entity=staff_lightning_hit;size=.2;step=.5}'
 
 staff_lightning_hit:
   mechanics:
@@ -111,11 +119,17 @@ staff_lightning_tick:
 # Staff "X-ray" attack effect
 staff_xray:
   public: true
-  alias: 'XRAY_SPIRIT'
   mechanics:
     - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
     - 'sound{sound=ENTITY_FIREWORK_ROCKET_BLAST;volume=2;pitch=1.5}'
-    - 'raytrace{tick=staff_xray_tick;neutral=false;range="<var.range>";hit_entity=staff_default_hit;size=.2;step=.5}'
+    - 'raytrace{tick=staff_xray_tick;neutral=false;range="<range>";hit_entity=staff_default_hit;size=.2;step=.5}'
+
+# Backwards compatibility with MI <6.9
+# Can be removed if previous items are updated.
+XRAY_SPIRIT:
+  public: true
+  mechanics:
+    - 'script{name=staff_xray}'
 
 staff_xray_tick:
   mechanics:
@@ -124,11 +138,17 @@ staff_xray_tick:
 # Staff "Nether" attack effect
 staff_nether:
   public: true
-  alias: 'NETHER_SPIRIT'
   mechanics:
     - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
     - 'sound{sound=ENTITY_FIREWORK_ROCKET_BLAST;volume=2;pitch=1.5}'
-    - 'projectile{hit_entity=staff_nether_hit;speed=20}'
+    - 'projectile{hit_entity=staff_nether_hit;hit_block=none;speed=20}'
+
+# Backwards compatibility with MI <6.9
+# Can be removed if previous items are updated.
+NETHER_SPIRIT:
+  public: true
+  mechanics:
+    - 'script{name=staff_nether}'
 
 staff_nether_hit:
   mechanics: [ ]
@@ -141,10 +161,16 @@ staff_nether_tick:
 # Staff "Sunfire" attack effect
 staff_sunfire:
   public: true
-  alias: 'SUNFIRE_SPIRIT'
   mechanics:
     - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
     - 'ray_trace{size=.4;range="<range>";size=0;hit_block=staff_sunfire_success_block;hit_entity=staff_sunfire_success_entity}'
+
+# Backwards compatibility with MI <6.9
+# Can be removed if previous items are updated.
+SUNFIRE_SPIRIT:
+  public: true
+  mechanics:
+    - 'script{name=staff_sunfire}'
 
 staff_sunfire_success_block:
   mechanics:
@@ -195,10 +221,16 @@ staff_sunfire_tick2:
 # Staff "Thunder" attack effect
 staff_thunder:
   public: true
-  alias: 'THUNDER_SPIRIT'
   mechanics:
     - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
     - 'ray_trace{size=.4;range="<range>";size=0;hit_block=staff_thunder_success_block;hit_entity=staff_thunder_success_entity}'
+
+# Backwards compatibility with MI <6.9
+# Can be removed if previous items are updated.
+THUNDER_SPIRIT:
+  public: true
+  mechanics:
+    - 'script{name=staff_thunder}'
 
 staff_thunder_success_block:
   mechanics:
