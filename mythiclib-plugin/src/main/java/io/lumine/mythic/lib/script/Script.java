@@ -12,9 +12,9 @@ import io.lumine.mythic.lib.util.configobject.ConfigSectionObject;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
-import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
 /**
@@ -66,7 +66,7 @@ public class Script implements PreloadedObject {
         return postLoadAction;
     }
 
-    private void registerCondition(String key, Provider<ConfigObject> config) {
+    private void registerCondition(String key, Supplier<ConfigObject> config) {
         try {
             conditions.add(MythicLib.plugin.getSkills().loadCondition(config.get()));
         } catch (RuntimeException exception) {
@@ -74,7 +74,7 @@ public class Script implements PreloadedObject {
         }
     }
 
-    private void registerMechanic(String key, Provider<ConfigObject> config) {
+    private void registerMechanic(String key, Supplier<ConfigObject> config) {
         try {
             mechanics.add(MythicLib.plugin.getSkills().loadMechanic(config.get()));
         } catch (RuntimeException exception) {

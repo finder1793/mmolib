@@ -152,7 +152,7 @@ public class FriendlyFeedbackProvider {
     public int messagesTotal(@NotNull FriendlyFeedbackCategory ofCategory) { return getFeedbackOf(ofCategory).size(); }
 
     /**
-     * @return How many messages are in this Friendly Feedback Provider
+     * @return How many messages are in this FriendlyFeedbackProvider
      */
     public int messagesTotal() { int t = 0; for (FriendlyFeedbackCategory cat : FriendlyFeedbackCategory.values()) { t+= messagesTotal(cat); } return t; }
     //endregion
