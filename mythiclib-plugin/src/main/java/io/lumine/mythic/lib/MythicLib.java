@@ -127,7 +127,7 @@ public class MythicLib extends JavaPlugin {
         }
 
         // Fixes left clicks
-        new MythicPacketSniffer(this, version.isBelowOrEqual(1, 20, 1) ? 3.5 : 3);
+        new MythicPacketSniffer(this);
 
         // Hologram provider
         Bukkit.getServicesManager().register(HologramFactory.class, new BukkitHologramFactory(), this, ServicePriority.Low);

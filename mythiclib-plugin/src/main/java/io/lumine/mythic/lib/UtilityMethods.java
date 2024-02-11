@@ -3,6 +3,7 @@ package io.lumine.mythic.lib;
 import io.lumine.mythic.lib.api.MMOLineConfig;
 import io.lumine.mythic.lib.api.condition.RegionCondition;
 import io.lumine.mythic.lib.api.condition.type.MMOCondition;
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
@@ -53,6 +54,18 @@ public class UtilityMethods {
         }
 
         return null;
+    }
+
+    @Nullable
+    public static ItemStack getHandItem(@NotNull LivingEntity entity, @NotNull EquipmentSlot hand) {
+        switch (hand) {
+            case MAIN_HAND:
+                return entity.getEquipment().getItemInMainHand();
+            case OFF_HAND:
+                return entity.getEquipment().getItemInOffHand();
+            default:
+                throw new IllegalArgumentException("Must provide a hand slot");
+        }
     }
 
     @Deprecated
@@ -126,10 +139,10 @@ public class UtilityMethods {
     /**
      * @param loc Where we are looking for nearby entities
      * @return List of all entities surrounding a location. This method loops
-     *         through the 9 surrounding chunks and collect all entities from
-     *         them. This list can be cached and used multiple times in the same
-     *         tick for projectile based spells which need to run entity
-     *         checkups
+     * through the 9 surrounding chunks and collect all entities from
+     * them. This list can be cached and used multiple times in the same
+     * tick for projectile based spells which need to run entity
+     * checkups
      */
     public static List<Entity> getNearbyChunkEntities(Location loc) {
         List<Entity> entities = new ArrayList<>();
@@ -337,7 +350,7 @@ public class UtilityMethods {
      *
      * @param event Some damage event
      * @return The player, if this event is due to him. It is the player which
-     *         is taken into account when PvP is toggled on.
+     * is taken into account when PvP is toggled on.
      */
     @Nullable
     public static Player getPlayerDamager(EntityDamageByEntityEvent event) {

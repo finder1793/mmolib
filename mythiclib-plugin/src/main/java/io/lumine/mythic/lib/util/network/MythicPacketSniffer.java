@@ -11,7 +11,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,19 +20,22 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Fixes two things:
- * - Bukkit not sending LEFT CLICK interact events on successful/missed
- * melee hits (1.20.2+)
- * - Bukkit not sending LEFT CLICK interact events when the hit entity
- * is too close to be an AIR interact, too far to be a successful hit
- * (1.14-1.20.1)
+ * Minecraft vanilla behaviour (glitched):
+ * - distance < 3, successful melee hit, no interact packet but attack packet.
+ * - distance 3 - 5, missed melee attack, no interact packet, no attack packet.
+ * - distance > 5, not an attack, interact packet.
+ * - at any distance, swing packet.
+ * <p>
+ * This class fixes when the entity is at distance <5 to send an interact
+ * packet at this situation. The recreated behaviour is that interact events
+ * are called EVERYTIME.
  *
  * @author Roch Blondiaux (Kiwix). 18/05/2023
  */
 public class MythicPacketSniffer extends LightInjector {
-    private final double range;
+    private static final double MAX_RANGE = 5;
 
-    private static final Map<String, Map<String, Field>> fields = new ConcurrentHashMap<>();
+    private static final Map<String, Map<String, Field>> FIELDS = new ConcurrentHashMap<>();
 
     /**
      * Initializes the injector and starts to listen to packets.
@@ -46,26 +48,22 @@ public class MythicPacketSniffer extends LightInjector {
      * @throws IllegalStateException    When <b>not</b> called from the main thread.
      * @throws IllegalArgumentException If the provided {@code plugin} is not enabled.
      */
-    public MythicPacketSniffer(@NotNull Plugin plugin, double range) {
+    public MythicPacketSniffer(@NotNull Plugin plugin) {
         super(plugin);
-
-        this.range = range;
     }
 
     @Override
     protected @Nullable Object onPacketReceiveAsync(@Nullable Player sender, @NotNull Channel channel, @NotNull Object packet) {
-        if (sender == null)
-            return packet;
+        if (sender == null) return packet;
         final String packetName = packet.getClass().getSimpleName();
 
         if (packetName.equals("PacketPlayInArmAnimation")) {
             Object hand = getField(packet, "a");
-            if (hand == null || !hand.toString().equals("MAIN_HAND"))
-                return packet;
+            if (hand == null || !hand.toString().equals("MAIN_HAND")) return packet;
 
-            // We need to run this synchronously because bukkit sucks
+            // We need to run this synchronously because Bukkit sucks
             Bukkit.getScheduler().runTask(getPlugin(), () -> {
-                Entity entity = getTarget(sender);
+                final SeenEntity entity = getLineOfSight(sender);
                 if (entity != null)
                     triggerEvent(sender);
             });
@@ -80,14 +78,18 @@ public class MythicPacketSniffer extends LightInjector {
     }
 
     /**
-     * Approximative re-implementation of vanilla
-     * behaviour when trying to hit an entity.
+     * Approximate re-implementation of the line of sight of a
+     * player, that is the entity that the player is looking at.
+     *
+     * @return The entity in line of sight as well as their distance
+     * to the player's camera
      */
-    private @Nullable Entity getTarget(Player player) {
+    @Nullable
+    private SeenEntity getLineOfSight(Player player) {
         final RayTraceResult result = player.getWorld().rayTrace(
                 player.getEyeLocation(),
                 player.getEyeLocation().getDirection(),
-                range,
+                MAX_RANGE,
                 FluidCollisionMode.NEVER,
                 true,
                 0,
@@ -95,17 +97,17 @@ public class MythicPacketSniffer extends LightInjector {
         if (result == null) return null;
         final Entity entity = result.getHitEntity();
         if (entity == null || entity instanceof Player && ((Player) entity).getGameMode().ordinal() == 3) return null;
-        return entity;
+        final double distance = result.getHitPosition().distance(player.getEyeLocation().toVector());
+        return new SeenEntity(entity, distance);
     }
 
-    private void triggerEvent(Player player) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                PlayerInteractEvent event = new PlayerInteractEvent(player, Action.LEFT_CLICK_AIR, player.getInventory().getItemInMainHand(), null, BlockFace.EAST, EquipmentSlot.HAND);
-                Bukkit.getPluginManager().callEvent(event);
-            }
-        }.runTask(getPlugin());
+    private void triggerEvent(@NotNull Player player) {
+        Bukkit.getPluginManager().callEvent(new PlayerInteractEvent(player,
+                Action.LEFT_CLICK_AIR,
+                player.getInventory().getItemInMainHand(),
+                null,
+                BlockFace.EAST,
+                EquipmentSlot.HAND));
     }
 
     @Nullable
@@ -115,8 +117,8 @@ public class MythicPacketSniffer extends LightInjector {
 
     @Nullable
     private Object getField(Object object, Class<?> c, String field) {
-        if (fields.containsKey(c.getCanonicalName())) {
-            Map<String, Field> fs = fields.get(c.getCanonicalName());
+        if (FIELDS.containsKey(c.getCanonicalName())) {
+            Map<String, Field> fs = FIELDS.get(c.getCanonicalName());
             if (fs.containsKey(field)) {
                 try {
                     return fs.get(field).get(object);
@@ -143,11 +145,11 @@ public class MythicPacketSniffer extends LightInjector {
         f.setAccessible(true);
 
         Map<String, Field> map;
-        if (fields.containsKey(c.getCanonicalName())) {
-            map = fields.get(c.getCanonicalName());
+        if (FIELDS.containsKey(c.getCanonicalName())) {
+            map = FIELDS.get(c.getCanonicalName());
         } else {
             map = new ConcurrentHashMap<>();
-            fields.put(c.getCanonicalName(), map);
+            FIELDS.put(c.getCanonicalName(), map);
         }
 
         map.put(f.getName(), f);
@@ -158,5 +160,16 @@ public class MythicPacketSniffer extends LightInjector {
             return null;
         }
 
+    }
+
+    private class SeenEntity {
+        @NotNull
+        final Entity entity;
+        final double distance;
+
+        private SeenEntity(@NotNull Entity entity, double distance) {
+            this.entity = entity;
+            this.distance = distance;
+        }
     }
 }

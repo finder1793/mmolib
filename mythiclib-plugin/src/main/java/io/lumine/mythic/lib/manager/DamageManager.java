@@ -1,12 +1,13 @@
 package io.lumine.mythic.lib.manager;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.AttackUnregisteredEvent;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.damage.*;
-import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.entity.ProjectileMetadata;
+import io.lumine.mythic.lib.player.PlayerMetadata;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -22,6 +23,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.ProjectileSource;
 import org.jetbrains.annotations.NotNull;
@@ -371,11 +373,12 @@ public class DamageManager implements Listener {
             return new DamageType[]{DamageType.PHYSICAL};
 
         // Physical attack with bare fists.
-        if (isAir(damager.getEquipment().getItem(hand.toBukkit())))
+        final @Nullable ItemStack handItem = UtilityMethods.getHandItem(damager, hand);
+        if (isAir(handItem))
             return new DamageType[]{DamageType.UNARMED, DamageType.PHYSICAL};
 
         // Weapon attack
-        if (isWeapon(damager.getEquipment().getItem(hand.toBukkit()).getType()))
+        if (isWeapon(handItem.getType()))
             return new DamageType[]{DamageType.WEAPON, DamageType.PHYSICAL};
 
         // Hitting with a random item
@@ -405,12 +408,14 @@ public class DamageManager implements Listener {
         }
     }
 
-    // Purely arbitrary but works decently
-    private boolean isWeapon(Material mat) {
+    /**
+     * Purely arbitrary but works decently
+     */
+    private boolean isWeapon(@NotNull Material mat) {
         return mat.getMaxDurability() > 0;
     }
 
-    private boolean isAir(ItemStack item) {
+    private boolean isAir(@Nullable ItemStack item) {
         return item == null || item.getType() == Material.AIR;
     }
 }
