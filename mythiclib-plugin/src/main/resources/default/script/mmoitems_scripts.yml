@@ -38,10 +38,10 @@ slashing_attack_effect:
     - 'apply_cooldown{path=mmoitems_slashing;amount=3}'
     - 'set_double{variable=damage_ratio;value=.4}'
     - 'set_double{variable=angle;value=60}'
-    - 'cast{name=slashing_attack_effect_hit;target={type=cone;radius=6.5;angle=60}}'
+    - 'cast{name=propagate_damage;target={type=cone;radius=6.5;angle=60}}'
     - 'script{name=slash_attack_effect}'
 
-slash_attack_hit:
+propagate_damage:
   conditions:
     - 'can_target{}'
   mechanics:
@@ -56,7 +56,7 @@ piercing_attack_effect:
     - 'apply_cooldown{path=mmoitems_piercing;amount=3}'
     - 'set_double{variable=damage_ratio;value=.6}'
     - 'set_double{variable=angle;value=30}'
-    - 'cast{name=slashing_attack_effect_hit;target={type=cone;radius=6.5;angle=30}}'
+    - 'cast{name=propagate_damage;target={type=cone;radius=6.5;angle=30}}'
     - 'script{name=slash_attack_effect}'
 
 # Used for both slashing and piercing
