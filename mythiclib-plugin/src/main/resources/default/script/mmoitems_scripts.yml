@@ -122,7 +122,7 @@ staff_mana:
   mechanics:
     - 'sound{sound=ENTITY_BLAZE_SHOOT;pitch=2}'
     - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
-    - 'copy_vector{variable=dir;value=caster.looking}'
+    - 'copy_vector{variable=dir;value=caster.eye_direction}'
     - 'set_double{variable=rad;value=.5}'
     - 'projectile{life_span=20;speed="<range> * 2";hit_entity=staff_mana_hit;hit_block=none;tick=staff_mana_tick}'
 
