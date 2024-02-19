@@ -10,7 +10,6 @@ import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamagePacket;
 import io.lumine.mythic.lib.element.Element;
-import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -47,8 +46,7 @@ public class MythicMobsAttackHandler implements AttackHandler {
         final DamageMetadata damageMeta = new DamageMetadata(mythic.getAmount(), MythicLib.plugin.getDamage().getVanillaDamageTypes(mythic.getDamageCause()));
         if (mythic.getElement() != null)
             try {
-                final @Nullable Element element = MythicLib.plugin.getElements().get(UtilityMethods.enumName(mythic.getElement()));
-                Validate.notNull(element);
+                final Element element = MythicLib.plugin.getElements().get(UtilityMethods.enumName(mythic.getElement()));
                 for (DamagePacket packet : damageMeta.getPackets())
                     packet.setElement(element);
             } catch (Exception exception) {

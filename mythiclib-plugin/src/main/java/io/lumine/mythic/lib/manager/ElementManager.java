@@ -6,11 +6,13 @@ import io.lumine.mythic.lib.element.Element;
 import io.lumine.mythic.lib.util.ConfigFile;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 
 public class ElementManager {
@@ -37,8 +39,13 @@ public class ElementManager {
             }
     }
 
-    @Nullable
+    @NotNull
     public Element get(String id) {
+        return Objects.requireNonNull(mapped.get(id), "No element found with ID '" + id + "'");
+    }
+
+    @Nullable
+    public Element getOrNull(String id) {
         return mapped.get(id);
     }
 

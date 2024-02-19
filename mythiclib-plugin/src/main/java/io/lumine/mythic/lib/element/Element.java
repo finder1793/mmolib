@@ -83,10 +83,10 @@ public class Element {
     /**
      * @param id Element identifier
      * @return Element with given identifier
-     * @throws IllegalArgumentException If no element was found with given ID
+     * @throws NullPointerException If no element was found with given ID
      */
-    @Nullable
+    @NotNull
     public static Element valueOf(String id) {
-        return Objects.requireNonNull(MythicLib.plugin.getElements().get(id), "Could not find element with ID '" + id + "'");
+        return MythicLib.plugin.getElements().get(id);
     }
 }

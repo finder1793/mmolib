@@ -17,8 +17,6 @@ import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-
 @MechanicMetadata
 public class DamageMechanic extends TargetMechanic {
     private final DoubleFormula amount;
@@ -62,7 +60,7 @@ public class DamageMechanic extends TargetMechanic {
     @Override
     public void cast(SkillMetadata meta, @NotNull Entity target) {
         Validate.isTrue(target instanceof LivingEntity, "Cannot damage a non living entity");
-        final @Nullable Element element = elementName != null ? Objects.requireNonNull(MythicLib.plugin.getElements().get(elementName), "Could not find element with ID '" + elementName + "'") : null;
+        final Element element = elementName == null ? null : MythicLib.plugin.getElements().get(elementName);
 
         // Look for attackMetadata
         final @Nullable AttackMetadata opt = MythicLib.plugin.getDamage().getRegisteredAttackMetadata(target);

@@ -14,6 +14,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
@@ -38,6 +40,28 @@ public class UtilityMethods {
 
     public static Location readLocation(@NotNull ConfigObject config) {
         return new Location(Bukkit.getWorld(config.getString("world")), config.getDouble("x"), config.getDouble("y"), config.getDouble("z"), (float) config.getDouble("yaw"), (float) config.getDouble("pitch"));
+    }
+
+    private static final Listener PRIVATE_LISTENER = new Listener() {
+    };
+
+    public static <T extends Event> void registerEvent(@NotNull Class<T> eventClass,
+                                                       @NotNull EventPriority priority,
+                                                       @NotNull Consumer<T> executor) {
+        registerEvent(eventClass, PRIVATE_LISTENER, priority, executor, MythicLib.plugin, false);
+    }
+
+    /**
+     * This is sometimes used when Bukkit has a hard time finding
+     * the handler list of a class extending Event.
+     */
+    public static <T extends Event> void registerEvent(@NotNull Class<T> eventClass,
+                                                       @NotNull Listener listener,
+                                                       @NotNull EventPriority priority,
+                                                       @NotNull Consumer<T> executor,
+                                                       @NotNull Plugin plugin,
+                                                       boolean ignoreCancelled) {
+        Bukkit.getPluginManager().registerEvent(eventClass, listener, priority, (listener2, event) -> executor.accept((T) event), plugin, ignoreCancelled);
     }
 
     /**

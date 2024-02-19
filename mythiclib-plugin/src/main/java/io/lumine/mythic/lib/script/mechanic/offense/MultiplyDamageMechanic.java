@@ -44,7 +44,7 @@ public class MultiplyDamageMechanic extends TargetMechanic {
 
     @Override
     public void cast(SkillMetadata meta, Entity target) {
-        final @Nullable Element element = elementName != null ? Objects.requireNonNull(MythicLib.plugin.getElements().get(elementName), "Could not find element with ID '" + elementName + "'") : null;
+        final Element element = elementName == null ? null : MythicLib.plugin.getElements().get(elementName);
 
         if (additive) {
             if (element != null)

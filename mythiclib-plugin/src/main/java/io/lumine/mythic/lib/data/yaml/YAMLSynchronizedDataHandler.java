@@ -24,7 +24,6 @@ public abstract class YAMLSynchronizedDataHandler<H extends SynchronizedDataHold
 
     @Override
     public void saveData(@NotNull H playerData, boolean autosave) {
-        // TODO config section is uselessly loaded into memory
         final ConfigFile configFile = getUserFile(playerData);
         saveInSection(playerData, configFile.getConfig());
         configFile.save();
@@ -34,7 +33,6 @@ public abstract class YAMLSynchronizedDataHandler<H extends SynchronizedDataHold
 
     @Override
     public boolean loadData(@NotNull H playerData) {
-        // TODO support true/false
         loadFromSection(playerData, getUserFile(playerData).getConfig());
         return true;
     }
