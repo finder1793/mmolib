@@ -98,7 +98,7 @@ public class MMOPlayerData {
      * Developers are encouraged to use this method over other getters.
      *
      * @return The Player entity unique ID. This may differ from the current player's
-     *         profile ID depending on the profile provider being used on the server.
+     * profile ID depending on the profile provider being used on the server.
      * @see #getProfileId()
      * @see #getOfficialId()
      * @see SynchronizedDataHolder#getEffectiveId()
@@ -158,8 +158,8 @@ public class MMOPlayerData {
 
     /**
      * @return The player's stat map which can be used by any other plugins to
-     *         apply stat modifiers to ANY MMOItems/MMOCore/external stats,
-     *         calculate stat values, etc.
+     * apply stat modifiers to ANY MMOItems/MMOCore/external stats,
+     * calculate stat values, etc.
      */
     @NotNull
     public StatMap getStatMap() {
@@ -168,7 +168,7 @@ public class MMOPlayerData {
 
     /**
      * @return The player's skill modifier map. This map applies modifications
-     *         to numerical skill parameters (damage, cooldown...)
+     * to numerical skill parameters (damage, cooldown...)
      */
     @NotNull
     public SkillModifierMap getSkillModifierMap() {
@@ -432,12 +432,14 @@ public class MMOPlayerData {
         return Objects.requireNonNull(PLAYER_DATA.get(uuid), "Player data not loaded");
     }
 
-    /**
-     * Use it at your own risk! Player data might not be loaded
-     */
-    @Nullable
+    @Deprecated
     public static MMOPlayerData getOrNull(@NotNull OfflinePlayer player) {
         return getOrNull(player.getUniqueId());
+    }
+
+    @Nullable
+    public static MMOPlayerData online(@NotNull Player player) {
+        return player.isOnline() ? PLAYER_DATA.get(player.getUniqueId()) : null;
     }
 
     /**
@@ -472,9 +474,9 @@ public class MMOPlayerData {
 
     /**
      * @return Currently loaded MMOPlayerData instances. This can be used to
-     *         apply things like resource regeneration or other runnable based
-     *         tasks instead of looping through online players and having to
-     *         resort to a map-lookup-based get(Player) call
+     * apply things like resource regeneration or other runnable based
+     * tasks instead of looping through online players and having to
+     * resort to a map-lookup-based get(Player) call
      */
     @NotNull
     public static Collection<MMOPlayerData> getLoaded() {

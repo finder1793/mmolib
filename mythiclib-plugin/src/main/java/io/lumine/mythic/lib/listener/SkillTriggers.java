@@ -8,7 +8,6 @@ import io.lumine.mythic.lib.api.event.PlayerKillEntityEvent;
 import io.lumine.mythic.lib.api.event.armorequip.ArmorEquipEvent;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.comp.interaction.InteractionType;
 import io.lumine.mythic.lib.comp.profile.ProfileMode;
 import io.lumine.mythic.lib.entity.ProjectileMetadata;
 import io.lumine.mythic.lib.entity.ProjectileType;
@@ -54,7 +53,7 @@ public class SkillTriggers implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void attack(AttackEvent event) {
         final MMOPlayerData caster;
-        if (!(event.getEntity() instanceof Player) || (caster = MMOPlayerData.getOrNull((Player) event.getEntity())) == null)
+        if (!(event.getEntity() instanceof Player) || (caster = MMOPlayerData.online((Player) event.getEntity())) == null)
             return;
 
         TriggerMetadata triggerMetadata = new TriggerMetadata(caster, TriggerType.DAMAGED, EquipmentSlot.MAIN_HAND, null, null, null, event.getAttack(), null);
@@ -68,7 +67,7 @@ public class SkillTriggers implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void death(PlayerDeathEvent event) {
         final MMOPlayerData caster;
-        if ((caster = MMOPlayerData.getOrNull(event.getEntity())) != null && caster.isOnline())
+        if ((caster = MMOPlayerData.online(event.getEntity())) != null)
             // Check if caster is online as DeluxeCombat calls this event while the player has already logged off
             caster.triggerSkills(new TriggerMetadata(caster, TriggerType.DEATH));
     }
@@ -85,7 +84,7 @@ public class SkillTriggers implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void shootBow(EntityShootBowEvent event) {
         final MMOPlayerData caster;
-        if (event.getEntity() instanceof Player && (caster = MMOPlayerData.getOrNull((Player) event.getEntity())) != null) {
+        if (event.getEntity() instanceof Player && (caster = MMOPlayerData.online((Player) event.getEntity())) != null) {
             final EquipmentSlot actionHand = getShootHand(((Player) event.getEntity()).getInventory());
 
             // Register a runnable to trigger projectile skills
@@ -100,7 +99,7 @@ public class SkillTriggers implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void shootTrident(ProjectileLaunchEvent event) {
         final MMOPlayerData caster;
-        if (event.getEntity() instanceof Trident && event.getEntity().getShooter() instanceof Player && (caster = MMOPlayerData.getOrNull((Player) event.getEntity().getShooter())) != null) {
+        if (event.getEntity() instanceof Trident && event.getEntity().getShooter() instanceof Player && (caster = MMOPlayerData.online((Player) event.getEntity().getShooter())) != null) {
             final Player shooter = (Player) event.getEntity().getShooter();
             final EquipmentSlot actionHand = getShootHand(shooter.getInventory());
 
@@ -142,8 +141,8 @@ public class SkillTriggers implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void teleport(PlayerTeleportEvent event) {
-        final MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
-        final boolean sneaking = event.getPlayer().isSneaking() && !MythicLib.plugin.getMMOConfig().ignoreShiftTriggers;
+        final MMOPlayerData caster = MMOPlayerData.online(event.getPlayer());
+        if (caster == null) return;
         caster.triggerSkills(new TriggerMetadata(caster, TriggerType.TELEPORT, event.getFrom(), event.getTo()));
     }
 
