@@ -35,10 +35,8 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
     public String onPlaceholderRequest(Player player, @NotNull String params) {
 
         // Negative space
-        if (params.startsWith("space_")) {
-            final int space = Integer.parseInt(params.substring(6));
-            return UtilityMethods.getFontSpace(space);
-        }
+        if (params.startsWith("space_"))
+            return UtilityMethods.getFontSpace(Integer.parseInt(params.substring(6)));
 
         // Player-related Placeholders
         if (player == null) return null;
