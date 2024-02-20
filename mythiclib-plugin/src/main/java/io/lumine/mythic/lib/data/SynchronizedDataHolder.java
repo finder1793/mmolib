@@ -19,7 +19,7 @@ import java.util.UUID;
  *
  * @author jules
  */
-public abstract class SynchronizedDataHolder implements OfflineDataHolder {
+public abstract class SynchronizedDataHolder implements OfflineDataHolder, PlayerProvider {
     private final MMOPlayerData playerData;
     private final boolean profilePlugin;
 
@@ -64,6 +64,7 @@ public abstract class SynchronizedDataHolder implements OfflineDataHolder {
     }
 
     @NotNull
+    @Override
     public Player getPlayer() {
         return playerData.getPlayer();
     }

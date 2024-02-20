@@ -2,7 +2,11 @@ package io.lumine.mythic.lib.data.sql;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.data.SynchronizedDataHandler;
 import io.lumine.mythic.lib.data.SynchronizedDataHolder;
+import io.lumine.mythic.lib.data.SynchronizedDataManager;
+import io.lumine.mythic.lib.util.ThrowingFunction;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -72,6 +76,27 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
      * This method freezes the thread and shall be called async.
      */
     public boolean synchronize() {
+        // Cancel if player is offline
+        if (!playerData.getMMOPlayerData().isOnline()) {
+            UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Stopped data retrieval for '" + effectiveId + "' as they went offline");
+            return false;
+        }
+        return synchronize(result -> {
+            if (playerData.getEffectiveId().equals(playerData.getUniqueId())) {
+                loadData(result, result);
+                return true;
+            } else {
+                return synchronize((entityUUIDResult -> {
+                    loadData(result, entityUUIDResult);
+                    return true;
+                }));
+            }
+        });
+    }
+
+
+    private boolean synchronize(ThrowingFunction<ResultSet, Boolean> function) {
+
         tries++;
 
         // Fields that must be closed afterwards
@@ -98,8 +123,7 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
             if (result.next()) {
                 if (tries > MythicLib.plugin.getMMOConfig().maxSyncTries || result.getInt("is_saved") == 1) {
                     confirmReception(connection);
-                    success = true;
-                    loadData(result);
+                    success = function.accept(result);
                     if (tries > MythicLib.plugin.getMMOConfig().maxSyncTries)
                         UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Maximum number of tries reached.");
                     UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Found and loaded data of '" + effectiveId + "'");
@@ -178,6 +202,13 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
      * @param result Row found in the database
      */
     public abstract void loadData(ResultSet result) throws SQLException, IOException, ClassNotFoundException;
+
+    /**
+     * You should override this method if you want to load data from both the effective UUID and the entity(player) UUID.
+     */
+    public void loadData(ResultSet result, ResultSet entityUUIDResult) throws SQLException, IOException, ClassNotFoundException {
+        loadData(result);
+    }
 
     /**
      * Called when no data was found.
