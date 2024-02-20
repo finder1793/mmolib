@@ -1,8 +1,6 @@
 package io.lumine.mythic.lib.api.stat.handler;
 
-import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.stat.StatInstance;
-import io.lumine.mythic.lib.api.stat.StatMap;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
@@ -12,6 +10,14 @@ import org.jetbrains.annotations.NotNull;
 public class MovementSpeedStatHandler extends StatHandler {
     private final boolean moveSpeed;
 
+    /**
+     * Move speed and speed malus reduction, which share the same
+     * update task, so they are grouped up in the same stat handler.
+     *
+     * @param config    Root stat handlers config file
+     * @param stat      Stat identifier
+     * @param moveSpeed Is it move speed?
+     */
     public MovementSpeedStatHandler(@NotNull ConfigurationSection config, @NotNull String stat, boolean moveSpeed) {
         super(config, stat);
 
@@ -24,17 +30,11 @@ public class MovementSpeedStatHandler extends StatHandler {
         final AttributeInstance attrIns = randomInstance.getMap().getPlayerData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
         removeModifiers(attrIns);
 
-        /*
-         * Calculate speed malus reduction (capped at 80%)
-         */
+        // Calculate speed malus reduction (capped at 80%)
         final double coef = 1 - randomInstance.getMap().getStat("SPEED_MALUS_REDUCTION") / 100;
 
-        /*
-         * This guarantees that weapons held in off
-         * hand don't register any of their stats.
-         */
         final StatInstance statIns = randomInstance.getMap().getInstance("MOVEMENT_SPEED");
-        final double mmo = statIns.getFilteredTotal(mod -> !mod.getSource().isWeapon() || mod.getSlot() != EquipmentSlot.OFF_HAND, mod -> mod.getValue() < 0 ? mod.multiply(coef) : mod);
+        final double mmo = statIns.getTotal(mod -> mod.getValue() < 0 ? mod.multiply(coef) : mod);
 
         /*
          * Calculate the stat base value. Since it can be changed by external
@@ -55,8 +55,8 @@ public class MovementSpeedStatHandler extends StatHandler {
     }
 
     @Override
-    public double getTotalValue(@NotNull StatInstance instance) {
-        return moveSpeed ? instance.getMap().getPlayerData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getValue() : instance.getMap().getStat("SPEED_MALUS_REDUCTION");
+    public double getFinalValue(@NotNull StatInstance instance) {
+        return moveSpeed ? instance.getMap().getPlayerData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getValue() : instance.getMap().getInstance("SPEED_MALUS_REDUCTION").getTotal();
     }
 
     @Override

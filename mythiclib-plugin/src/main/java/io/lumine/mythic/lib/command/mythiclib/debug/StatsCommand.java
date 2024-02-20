@@ -23,7 +23,7 @@ public class StatsCommand extends CommandTreeNode {
         final StatMap stats = MMOPlayerData.get((Player) sender).getStatMap();
         for (StatInstance ins : stats.getInstances()) {
             StringBuilder str = new StringBuilder(ins.getStat());
-            str.append(" | Stat: ").append(ins.getTotal()).append(" | Base: ").append(ins.getBase()).append(" | ");
+            str.append(" | Stat: ").append(ins.getFinal()).append(" | Base: ").append(ins.getBase()).append(" | ");
             for (StatModifier mod : ins.getModifiers())
                 str.append(mod.toString()).append(" (").append(mod.getKey()).append(") + ");
             sender.sendMessage(str.toString());

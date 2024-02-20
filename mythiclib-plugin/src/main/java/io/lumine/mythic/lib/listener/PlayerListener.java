@@ -1,6 +1,5 @@
 package io.lumine.mythic.lib.listener;
 
-import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.gui.PluginInventory;
 import org.bukkit.event.EventHandler;
@@ -19,8 +18,12 @@ public class PlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void loadData(PlayerJoinEvent event) {
-        MMOPlayerData data = MMOPlayerData.setup(event.getPlayer());
-        MythicLib.plugin.getStats().runUpdates(data.getStatMap());
+
+        // Setup player data
+        final MMOPlayerData data = MMOPlayerData.setup(event.getPlayer());
+
+        // Update stat map (remove old modifiers)
+        data.getStatMap().updateAll();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

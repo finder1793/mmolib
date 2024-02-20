@@ -117,6 +117,10 @@ public abstract class ModifiedInstance<T extends InstanceModifier> {
         removeIf(key::equals);
     }
 
+    public boolean isEmpty() {
+        return modifiers.isEmpty();
+    }
+
     /**
      * Iterates through registered modifiers and unregisters them if a
      * certain condition based on their string key is met.

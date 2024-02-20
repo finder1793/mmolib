@@ -89,13 +89,11 @@ public enum EquipmentSlot {
      * @param modifierSource Source of modifier
      * @param equipmentSlot  Equipment slot of modifier
      * @return If a modifier with the given equipment slot and modifier source should
-     *         be taken into account given the action hand
+     * be taken into account given the action hand
      */
     public boolean isCompatible(@NotNull ModifierSource modifierSource, @NotNull EquipmentSlot equipmentSlot) {
         Validate.isTrue(isHand(), "Instance called must be a hand equipment slot");
-
-        if (equipmentSlot == OTHER)
-            return true;
+        if (equipmentSlot == OTHER) return true;
 
         switch (modifierSource) {
 

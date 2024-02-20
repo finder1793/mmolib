@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -19,6 +20,15 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
     private final StatMap map;
     @NotNull
     private final String stat;
+
+    /**
+     * Can be null at anytime since it can be flushed by events
+     * like plugin reloads. Plugin reloads should flush all
+     * existing references to StatHandlers as they potentially apply
+     * modifications to statistics max/min values, base values, etc.
+     */
+    @Nullable
+    private Optional<StatHandler> cachedHandler;
 
     public StatInstance(@NotNull StatMap map, @NotNull String stat) {
         this.map = map;
@@ -36,30 +46,39 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
     }
 
     public double getBase() {
-        return MythicLib.plugin.getStats().getBaseValue(this);
-    }
-
-    @Nullable
-    public StatHandler findHandler() {
-        return MythicLib.plugin.getStats().getStatHandler(stat);
+        return handler().isPresent() ? cachedHandler.get().getBaseValue(this) : 0;
     }
 
     /**
      * @return The final stat value taking into account the default stat value
-     *         as well as the stat modifiers. The relative stat modifiers are
-     *         applied afterwards, onto the sum of the base value + flat
-     *         modifiers.
+     * as well as the stat modifiers. The relative stat modifiers are
+     * applied afterwards, onto the sum of the base value + flat
+     * modifiers.
      */
     public double getTotal() {
         return getFilteredTotal(EquipmentSlot.MAIN_HAND::isCompatible, mod -> mod);
     }
 
+    public double getFinal() {
+        return handler().isPresent() ? cachedHandler.get().getFinalValue(this) : getTotal();
+    }
+
+    @NotNull
+    public String formatFinal() {
+        return format(getFinal());
+    }
+
+    @NotNull
+    public String format(double value) {
+        return (handler().isPresent() ? cachedHandler.get().getDecimalFormat() : MythicLib.plugin.getMMOConfig().decimal).format(value);
+    }
+
     /**
      * @param filter Filters stat modifications taken into account for the calculation
      * @return The final stat value taking into account the default stat value
-     *         as well as the stat modifiers. The relative stat modifiers are
-     *         applied afterwards, onto the sum of the base value + flat
-     *         modifiers.
+     * as well as the stat modifiers. The relative stat modifiers are
+     * applied afterwards, onto the sum of the base value + flat
+     * modifiers.
      */
     public double getFilteredTotal(Predicate<StatModifier> filter) {
         return getFilteredTotal(filter, mod -> mod);
@@ -71,9 +90,9 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
      *                     reduce debuffs, by checking if a stat modifier has a negative
      *                     value and returning a modifier with a reduced absolute value
      * @return The final stat value taking into account the default stat value
-     *         as well as the stat modifiers. The relative stat modifiers are
-     *         applied afterwards, onto the sum of the base value + flat
-     *         modifiers.
+     * as well as the stat modifiers. The relative stat modifiers are
+     * applied afterwards, onto the sum of the base value + flat
+     * modifiers.
      */
     public double getTotal(Function<StatModifier, StatModifier> modification) {
         return getFilteredTotal(EquipmentSlot.MAIN_HAND::isCompatible, modification);
@@ -86,22 +105,18 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
      *                     reduce debuffs, by checking if a stat modifier has a negative
      *                     value and returning a modifier with a reduced absolute value
      * @return The final stat value taking into account the default stat value
-     *         as well as the stat modifiers. The relative stat modifiers are
-     *         applied afterwards, onto the sum of the base value + flat
-     *         modifiers.
+     * as well as the stat modifiers. The relative stat modifiers are
+     * applied afterward, onto the sum of the base value & flat modifiers.
      */
     public double getFilteredTotal(Predicate<StatModifier> filter, Function<StatModifier, StatModifier> modification) {
-        final @Nullable StatHandler handler = findHandler();
-        final double base = handler == null ? 0 : handler.getBaseValue(this);
-        final double total = getFilteredTotal(base, filter, modification);
-        return handler == null ? total : handler.clampValue(total);
+        final double total = getFilteredTotal(getBase(), filter, modification);
+        return cachedHandler.isPresent() ? cachedHandler.get().clampValue(total) : total;
     }
 
-    @Override
-    @Deprecated
-    public void addModifier(@NotNull StatModifier modifier) {
-        removeIf(modifier.getKey()::equals);
-        registerModifier(modifier);
+    @NotNull
+    private Optional<StatHandler> handler() {
+        if (cachedHandler == null) cachedHandler = MythicLib.plugin.getStats().getHandler(stat);
+        return cachedHandler;
     }
 
     /**
@@ -113,7 +128,7 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
     public void registerModifier(@NotNull StatModifier modifier) {
         final ModifierPacket packet = new ModifierPacket();
         packet.addModifier(modifier);
-        packet.runUpdate();
+        packet.update();
     }
 
     /**
@@ -127,18 +142,7 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
     public void removeIf(@NotNull Predicate<String> condition) {
         final ModifierPacket packet = new ModifierPacket();
         packet.removeIf(condition);
-        packet.runUpdate();
-    }
-
-    /**
-     * Removes a stat modifier with a specific key
-     *
-     * @param key The string key of the external stat modifier source or plugin
-     */
-    @Override
-    @Deprecated
-    public void remove(String key) {
-        removeIf(key::equals);
+        packet.update();
     }
 
     /**
@@ -148,7 +152,7 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
     public void removeModifier(@NotNull UUID uniqueId) {
         final ModifierPacket packet = new ModifierPacket();
         packet.remove(uniqueId);
-        packet.runUpdate();
+        packet.update();
     }
 
     @NotNull
@@ -157,8 +161,15 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
     }
 
     /**
+     * Forces an update on this stat instance
+     */
+    public void update() {
+        if (handler().isPresent()) cachedHandler.get().runUpdate(this);
+    }
+
+    /**
      * Allows to first add as many modifiers as needed and only THEN update the
-     * stat instance to avoid sending too many udpates at one time which can
+     * stat instance to avoid sending too many updates at one time which can
      * be performance heavy for attribute based stats.
      * <p>
      * Since MythicLib 1.3 the use of a modifier packet is mandatory to add,
@@ -201,7 +212,7 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
             /*
              * Closing modifier is really important with temporary stats because
              * otherwise the runnable will try to remove the key from the map even
-             * though the attribute was cancelled before hand
+             * though the attribute was cancelled beforehand
              */
             if (mod instanceof Closeable) ((Closeable) mod).close();
 
@@ -235,13 +246,42 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
             }
         }
 
-        /**
-         * Only runs an update if absolutely necessary
-         */
+
+        @Deprecated
         public void runUpdate() {
-            final StatHandler handler;
-            if (updateRequired && (handler = findHandler()) != null) handler.runUpdate(StatInstance.this);
+            update();
         }
+
+        /**
+         * Only runs a stat value update if absolutely necessary
+         */
+        public void update() {
+            if (updateRequired) StatInstance.this.update();
+        }
+    }
+
+    @Override
+    @Deprecated
+    public void addModifier(@NotNull StatModifier modifier) {
+        removeIf(modifier.getKey()::equals);
+        registerModifier(modifier);
+    }
+
+    @Nullable
+    @Deprecated
+    public StatHandler findHandler() {
+        return handler().isPresent() ? cachedHandler.get() : null;
+    }
+
+    /**
+     * Removes a stat modifier with a specific key
+     *
+     * @param key The string key of the external stat modifier source or plugin
+     */
+    @Override
+    @Deprecated
+    public void remove(String key) {
+        removeIf(key::equals);
     }
 }
 

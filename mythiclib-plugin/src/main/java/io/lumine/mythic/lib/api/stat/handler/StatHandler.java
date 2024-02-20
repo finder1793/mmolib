@@ -10,16 +10,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
-import java.util.Arrays;
-import java.util.regex.Pattern;
 
 /**
  * Used to handle complex stat behaviours, including updates
  * ran whenever a player stat changes or stat base values.
- * <p>
- * TODO merge with StatInstance? So much confusion possible
  *
- * @author indyuce
+ * @author jules
  */
 public class StatHandler {
     private final boolean hasMinValue, hasMaxValue;
@@ -27,6 +23,10 @@ public class StatHandler {
     private final DecimalFormat decimalFormat;
     private final String stat;
 
+    /**
+     * @param config Root stat handlers configuration file
+     * @param stat   Unique string identifier of stat
+     */
     public StatHandler(@NotNull ConfigurationSection config, @NotNull String stat) {
         this.stat = stat;
         final String[] splitBounds = (" " + config.getString("min-max-values." + this.stat, "=") + " ").split("=");
@@ -52,9 +52,13 @@ public class StatHandler {
     }
 
     /**
-     * Update ran whenever a player equips an item, or something happens that makes
-     * the player's stat value changes. This is important eg for attribute based stats
-     * like Max Health, because the player's spigot Max Health attribute must be updated.
+     * Some stats like movement speed, attack damage... are based on vanilla
+     * player attributes. Every time a stat modifier is added to a StatInstance
+     * in MythicLib, MythicLib needs to perform a further attribute modifier update.
+     * <p>
+     * This is the method implemented to update a specific stat (often, a stat
+     * based on a vanilla attribute). Usually called when equipping items, applying
+     * buffs, etc.
      *
      * @param instance Stat instance of player that needs updating
      */
@@ -75,13 +79,14 @@ public class StatHandler {
     }
 
     /**
-     * Used for attribute-based statistics. These stats already in Minecraft therefore
-     * the final value doesn't match the value returned by {@link StatMap#getStat(String)}
+     * Used for attribute-based statistics. These stats already exist in Minecraft therefore
+     * the final value doesn't match the value returned by {@link StatInstance#getTotal()}
+     * but it is the same as {@link StatMap#getStat(String)}
      *
      * @param instance Stat instance collecting the stat value
      * @return The player's total stat value
      */
-    public double getTotalValue(@NotNull StatInstance instance) {
+    public double getFinalValue(@NotNull StatInstance instance) {
         return instance.getTotal();
     }
 
