@@ -6,6 +6,7 @@ import io.lumine.mythic.lib.util.MMOPlugin;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -22,6 +23,7 @@ import java.util.UUID;
  */
 public abstract class SynchronizedDataHolder implements OfflineDataHolder {
     private final MMOPlayerData playerData;
+    @Nullable
     private final MMOPlugin mmoPlugin;
 
     /**
@@ -29,6 +31,11 @@ public abstract class SynchronizedDataHolder implements OfflineDataHolder {
      * and if it can be saved again in the remote/local database.
      */
     private boolean sync;
+
+    @Deprecated
+    public SynchronizedDataHolder(@NotNull MMOPlayerData playerData) {
+        this(null, playerData);
+    }
 
     /**
      * @param mmoPlugin  If the plugin creating the player data is a profile plugin
@@ -75,7 +82,7 @@ public abstract class SynchronizedDataHolder implements OfflineDataHolder {
         if (MythicLib.plugin.getProfileMode() == null) return getUniqueId();
 
         // Profile plugin => take official ID (if proxy-based profiles are enabled), unique ID otherwise (legacy profiles)
-        if (mmoPlugin.hasProfiles())
+        if (mmoPlugin != null && mmoPlugin.hasProfiles())
             return playerData.hasOfficialId() ? getOfficialId() : getUniqueId();
 
         // Otherwise, take profile ID if it exists
@@ -97,6 +104,6 @@ public abstract class SynchronizedDataHolder implements OfflineDataHolder {
     public void markAsSynchronized() {
         Validate.isTrue(!sync, "Data holder already marked synchronized");
         sync = true;
-        playerData.markAsSynchronized(mmoPlugin);
+        if (mmoPlugin != null) playerData.markAsSynchronized(mmoPlugin);
     }
 }
