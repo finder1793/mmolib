@@ -19,7 +19,7 @@ public class AutoSaveRunnable extends BukkitRunnable {
         final ConfigurationSection config = manager.getOwningPlugin().getConfig().getConfigurationSection("auto-save");
         log = config.getBoolean("log", false);
         final long timer = Math.max(MINIMUM_INTERVAL, config.getLong("interval", 60 * 30)) * 20;
-        runTaskTimerAsynchronously(manager.getOwningPlugin(), timer, timer);
+        runTaskTimer(manager.getOwningPlugin(), timer, timer);
     }
 
     @Override

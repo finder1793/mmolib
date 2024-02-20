@@ -9,6 +9,7 @@ import io.lumine.mythic.lib.api.event.SynchronizedDataLoadEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.comp.profile.LegacyProfiles;
 import io.lumine.mythic.lib.comp.profile.ProfileMode;
+import io.lumine.mythic.lib.util.Autosaveable;
 import io.lumine.mythic.lib.util.Closeable;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -127,7 +128,8 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
     public void saveAll(boolean autosave) {
         for (H holder : getLoaded())
             if (holder.isSynchronized()) {
-                if (!autosave && holder instanceof Closeable) ((Closeable) holder).close();
+                if (holder instanceof Autosaveable) ((Autosaveable) holder).prepareSaving(autosave);
+                else if (holder instanceof Closeable) ((Closeable) holder).close();
                 getDataHandler().saveData(holder, autosave);
             }
 
@@ -161,11 +163,11 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         if (owning.getConfig().getBoolean("auto-save.enabled")) new AutoSaveRunnable(this);
 
         // Setup data on login
-        Bukkit.getPluginManager().registerEvent(PlayerJoinEvent.class, FICTIVE_LISTENER, joinEventPriority, (listener, event) -> setup(((PlayerJoinEvent) event).getPlayer()), owning);
+        UtilityMethods.registerEvent(PlayerJoinEvent.class, FICTIVE_LISTENER, joinEventPriority, event -> setup(event.getPlayer()), owning, false);
 
         // Save data on logout
         if (profilePlugin || MythicLib.plugin.getProfileMode() != ProfileMode.LEGACY)
-            Bukkit.getPluginManager().registerEvent(PlayerQuitEvent.class, FICTIVE_LISTENER, quitEventPriority, (listener, event) -> unregister(((PlayerQuitEvent) event).getPlayer()), owning);
+            UtilityMethods.registerEvent(PlayerQuitEvent.class, FICTIVE_LISTENER, quitEventPriority, event -> unregister(event.getPlayer()), owning, false);
 
         if (profilePlugin) return;
 
@@ -274,7 +276,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
 
     /**
      * @return An object of type {@link fr.phoenixdevt.profiles.ProfileDataModule} which is an object
-     *         that cannot be referenced inside of that class to avoid import issues.
+     * that cannot be referenced inside of that class to avoid import issues.
      */
     public abstract Object newProfileDataModule();
 
