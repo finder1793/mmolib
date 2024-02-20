@@ -71,18 +71,12 @@ public class StatMap implements StatProvider {
     public void updateAll() {
         for (StatHandler handler : MythicLib.plugin.getStats().getHandlers()) {
             final StatInstance ins = stats.get(handler.getStat());
+            if (ins != null) ins.update();
         }
-        // MythicLib.plugin.getStats().runUpdates(this);
     }
 
-    /***
-     * Runs a specific stat update for a specific StatMap
-     *
-     * @param stat The string key of the stat which needs update
-     */
-    @Deprecated
-    public void update(String stat) {
-        getInstance(stat).update();
+    public void flushCache() {
+        stats.values().forEach(StatInstance::flushCache);
     }
 
     /**
@@ -98,5 +92,11 @@ public class StatMap implements StatProvider {
      */
     public PlayerMetadata cache(EquipmentSlot castHand) {
         return new PlayerMetadata(this, castHand);
+    }
+
+    @Deprecated
+    public void update(String stat) {
+        final StatInstance ins = stats.get(stat);
+        if (ins != null) ins.update();
     }
 }

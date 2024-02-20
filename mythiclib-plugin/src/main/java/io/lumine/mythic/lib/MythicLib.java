@@ -41,6 +41,7 @@ import io.lumine.mythic.lib.listener.option.FixMovementSpeed;
 import io.lumine.mythic.lib.listener.option.HealthScale;
 import io.lumine.mythic.lib.listener.option.VanillaDamageModifiers;
 import io.lumine.mythic.lib.manager.*;
+import io.lumine.mythic.lib.util.MMOPlugin;
 import io.lumine.mythic.lib.util.gson.MythicLibGson;
 import io.lumine.mythic.lib.util.loadingorder.DependencyCycleCheck;
 import io.lumine.mythic.lib.util.loadingorder.DependencyNode;
@@ -51,9 +52,12 @@ import org.apache.commons.lang.Validate;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mozilla.javascript.NativeArray;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -66,7 +70,6 @@ public class MythicLib extends JavaPlugin {
     public static MythicLib plugin;
 
     private final DamageManager damageManager = new DamageManager();
-
     private final MythicLibCommandManager commandManager = new MythicLibCommandManager();
     private final EntityManager entityManager = new EntityManager();
     private final StatManager statManager = new StatManager();
@@ -79,6 +82,7 @@ public class MythicLib extends JavaPlugin {
     private final IndicatorManager indicatorManager = new IndicatorManager();
     private final FormulaParser formulaParser = new FormulaParser();
     private final FakeEventManager fakeEventManager = new FakeEventManager();
+    private final List<MMOPlugin> mmoPlugins = new ArrayList<>();
     private Gson gson;
     private AntiCheatSupport antiCheatSupport;
     private ServerVersion version;
@@ -131,6 +135,10 @@ public class MythicLib extends JavaPlugin {
 
         // Hologram provider
         Bukkit.getServicesManager().register(HologramFactory.class, new BukkitHologramFactory(), this, ServicePriority.Low);
+
+        // Detect MMO plugins
+        for (Plugin plugin : Bukkit.getPluginManager().getPlugins())
+            if (plugin instanceof MMOPlugin) mmoPlugins.add((MMOPlugin) plugin);
 
         // Register listeners
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
@@ -272,6 +280,10 @@ public class MythicLib extends JavaPlugin {
         configManager.reload();
         elementManager.reload(true);
         this.indicatorManager.reload(getConfig());
+
+        // Flush outdated data
+        for (MMOPlayerData online : MMOPlayerData.getLoaded())
+            online.getStatMap().flushCache();
     }
 
     @Override
@@ -428,5 +440,10 @@ public class MythicLib extends JavaPlugin {
 
     public File getJarFile() {
         return plugin.getFile();
+    }
+
+    @NotNull
+    public List<MMOPlugin> getMMOPlugins() {
+        return new ArrayList<>(mmoPlugins);
     }
 }

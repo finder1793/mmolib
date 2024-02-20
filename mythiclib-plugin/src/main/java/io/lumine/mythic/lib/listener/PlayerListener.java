@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.listener;
 
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.gui.PluginInventory;
 import org.bukkit.event.EventHandler;
@@ -14,7 +15,7 @@ public class PlayerListener implements Listener {
     /**
      * Async pre join events are unreliable for some reason so
      * it seems to be better to initialize player data on the
-     * lowest priority possible on sync when the player joins.
+     * lowest priority possible synchronously when player join
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void loadData(PlayerJoinEvent event) {
@@ -22,8 +23,8 @@ public class PlayerListener implements Listener {
         // Setup player data
         final MMOPlayerData data = MMOPlayerData.setup(event.getPlayer());
 
-        // Update stat map (remove old modifiers)
-        data.getStatMap().updateAll();
+        // Flush old modifiers
+        UtilityMethods.flushOldModifiers(data.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

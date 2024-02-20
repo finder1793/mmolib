@@ -7,8 +7,13 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * TODO fully interface Bukkit and MythicLib stats
+ */
 public class AttributeStatHandler extends StatHandler {
-    private final Attribute attribute;
+    protected final Attribute attribute;
+
+    protected static final String ATTRIBUTE_NAME = "mythiclib.main";
 
     /**
      * Statistics like Atk Damage, Atk Speed, Max Health...
@@ -37,7 +42,7 @@ public class AttributeStatHandler extends StatHandler {
          * value is different from the main one to save calculations.
          */
         if (mmo != base)
-            attrIns.addModifier(new AttributeModifier("mythiclib.main", mmo - base, AttributeModifier.Operation.ADD_NUMBER));
+            attrIns.addModifier(new AttributeModifier(ATTRIBUTE_NAME, mmo - base, AttributeModifier.Operation.ADD_NUMBER));
     }
 
     @Override
@@ -48,5 +53,10 @@ public class AttributeStatHandler extends StatHandler {
     @Override
     public double getFinalValue(@NotNull StatInstance instance) {
         return instance.getMap().getPlayerData().getPlayer().getAttribute(attribute).getValue();
+    }
+
+    protected void removeModifiers(@NotNull AttributeInstance ins) {
+        for (AttributeModifier attribute : ins.getModifiers())
+            if (attribute.getName().equals(ATTRIBUTE_NAME)) ins.removeModifier(attribute);
     }
 }

@@ -5,10 +5,13 @@ import io.lumine.mythic.lib.api.condition.RegionCondition;
 import io.lumine.mythic.lib.api.condition.type.MMOCondition;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
+import io.lumine.mythic.lib.util.annotation.BackwardsCompatibility;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -239,6 +242,23 @@ public class UtilityMethods {
         if (!MythicLib.plugin.getEntities().canInteract(source, target, interaction)) return false;
 
         return true;
+    }
+
+    private static final String[] PREVIOUS_ATTRIBUTE_MODIFIER_NAMES = {"mmolib.", "mmoitems."};
+
+    /**
+     * Method called on login to flush old modifiers which
+     * paths used back in ML ~1.3
+     */
+    @BackwardsCompatibility(version = "1.3")
+    public static void flushOldModifiers(@NotNull Player player) {
+        for (Attribute attribute : Attribute.values()) {
+            final AttributeInstance ins = player.getAttribute(attribute);
+            if (ins == null) continue;
+            for (AttributeModifier mod : ins.getModifiers())
+                for (String prev : PREVIOUS_ATTRIBUTE_MODIFIER_NAMES)
+                    if (mod.getName().startsWith(prev)) ins.removeModifier(mod);
+        }
     }
 
     public static boolean isRealPlayer(Entity entity) {

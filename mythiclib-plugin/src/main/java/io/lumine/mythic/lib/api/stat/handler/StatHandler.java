@@ -4,8 +4,6 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.stat.StatInstance;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import org.apache.commons.lang.Validate;
-import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
@@ -61,6 +59,7 @@ public class StatHandler {
      * buffs, etc.
      *
      * @param instance Stat instance of player that needs updating
+     * @see {@link StatInstance#update()}
      */
     public void runUpdate(@NotNull StatInstance instance) {
         // Nothing to do
@@ -99,24 +98,5 @@ public class StatHandler {
         if (hasMaxValue && clamped > maxValue) clamped = maxValue;
         if (hasMinValue && clamped < minValue) clamped = minValue;
         return clamped;
-    }
-
-    /**
-     * Used by attribute based stats like Max Healh or Attack Damage. Clears
-     * attribute modifiers due to MythicLib ie modifiers which names start
-     * with "mmolib." or "mythiclib." or "mmoitems."
-     *
-     * @param ins The attribute instance to clean from undesired modifiers
-     */
-    public void removeModifiers(AttributeInstance ins) {
-        for (AttributeModifier attribute : ins.getModifiers())
-
-            /*
-             * 'mmoitems.' is not used as an attribute modifier name prefix
-             * anymore but old modifiers still have it so we need to clear these.
-             * Same with 'mmolib.'
-             */
-            if (attribute.getName().startsWith("mmolib.") || attribute.getName().startsWith("mmoitems.") || attribute.getName().startsWith("mythiclib."))
-                ins.removeModifier(attribute);
     }
 }

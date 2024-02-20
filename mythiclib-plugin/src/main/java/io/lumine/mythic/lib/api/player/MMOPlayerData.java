@@ -19,6 +19,7 @@ import io.lumine.mythic.lib.script.variable.VariableScope;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
+import io.lumine.mythic.lib.util.MMOPlugin;
 import org.apache.commons.lang.Validate;
 import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
@@ -53,6 +54,14 @@ public class MMOPlayerData {
      */
     private long lastLogActivity;
 
+    /**
+     * When logging in, MythicLib waits for all MMO plugins
+     * to fill in the empty player's StatMap before performing
+     * stat updates. As soon as the
+     */
+    @Nullable
+    private final List<MMOPlugin> pluginLoadQueue = new ArrayList<>();
+
     // Temporary player data
     private final CooldownMap cooldownMap = new CooldownMap();
     private final StatMap statMap = new StatMap(this);
@@ -75,7 +84,6 @@ public class MMOPlayerData {
     private MMOPlayerData(@NotNull Player player) {
         this.lookup = false;
         this.entityId = Objects.requireNonNull(player, "Player cannot be null").getUniqueId();
-        this.player = player;
     }
 
     /**
@@ -154,6 +162,18 @@ public class MMOPlayerData {
 
     public boolean isLookup() {
         return lookup;
+    }
+
+    public boolean hasFullySynchronized() {
+        return pluginLoadQueue.isEmpty();
+    }
+
+    public void markAsSynchronized(@NotNull MMOPlugin plugin) {
+        pluginLoadQueue.remove(plugin);
+        if (pluginLoadQueue.isEmpty()) return;
+
+        // Ran when the player data is fully synchronized
+        statMap.updateAll();
     }
 
     /**
@@ -240,9 +260,7 @@ public class MMOPlayerData {
     }
 
     public void triggerSkills(@NotNull TriggerMetadata triggerMetadata) {
-        final Iterable<PassiveSkill> candidates = triggerMetadata.getTriggerType().isActionHandSpecific()
-                ? passiveSkillMap.isolateModifiers(triggerMetadata.getActionHand())
-                : passiveSkillMap.getModifiers();
+        final Iterable<PassiveSkill> candidates = triggerMetadata.getTriggerType().isActionHandSpecific() ? passiveSkillMap.isolateModifiers(triggerMetadata.getActionHand()) : passiveSkillMap.getModifiers();
         triggerSkills(triggerMetadata, candidates);
     }
 
@@ -331,6 +349,18 @@ public class MMOPlayerData {
     public void updatePlayer(@Nullable Player player) {
         this.player = player;
         this.lastLogActivity = System.currentTimeMillis();
+
+        // When logging in
+        if (player != null) {
+            pluginLoadQueue.clear();
+            for (MMOPlugin mmoPlugin : MythicLib.plugin.getMMOPlugins())
+                if (mmoPlugin.hasData()) pluginLoadQueue.add(mmoPlugin);
+        }
+
+        // When logging off
+        else {
+            statMap.flushCache();
+        }
     }
 
     /**

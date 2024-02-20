@@ -6,6 +6,7 @@ import io.lumine.mythic.lib.api.stat.api.ModifiedInstance;
 import io.lumine.mythic.lib.api.stat.handler.StatHandler;
 import io.lumine.mythic.lib.api.stat.modifier.StatModifier;
 import io.lumine.mythic.lib.util.Closeable;
+import io.lumine.mythic.lib.util.annotation.CacheData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +29,11 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
      * modifications to statistics max/min values, base values, etc.
      */
     @Nullable
+    @CacheData
     private Optional<StatHandler> cachedHandler;
+
+    @CacheData
+    private boolean enabled;
 
     public StatInstance(@NotNull StatMap map, @NotNull String stat) {
         this.map = map;
@@ -119,6 +124,10 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
         return cachedHandler;
     }
 
+    private boolean enabled() {
+        return enabled || (map.getPlayerData().hasFullySynchronized() && (enabled = true));
+    }
+
     /**
      * Registers a stat modifier and run the required player stat updates
      *
@@ -161,10 +170,19 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
     }
 
     /**
-     * Forces an update on this stat instance
+     * Forces an update on this stat instance. An important convention
+     * is that NO UPDATES may be ran before all MMO plugins have loaded
+     * their data. This gives time to other plugins to load in their
+     * respective stat modifiers before updating vanilla stats like
+     * Max Health, Movement Speed.
      */
     public void update() {
-        if (handler().isPresent()) cachedHandler.get().runUpdate(this);
+        if (enabled() && handler().isPresent()) cachedHandler.get().runUpdate(this);
+    }
+
+    public void flushCache() {
+        cachedHandler = null;
+        enabled = false;
     }
 
     /**
@@ -246,17 +264,16 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
             }
         }
 
-
-        @Deprecated
-        public void runUpdate() {
-            update();
-        }
-
         /**
          * Only runs a stat value update if absolutely necessary
          */
         public void update() {
             if (updateRequired) StatInstance.this.update();
+        }
+
+        @Deprecated
+        public void runUpdate() {
+            update();
         }
     }
 

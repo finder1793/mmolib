@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.data;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.util.MMOPlugin;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,7 @@ import java.util.UUID;
  */
 public abstract class SynchronizedDataHolder implements OfflineDataHolder {
     private final MMOPlayerData playerData;
-    private final boolean profilePlugin;
+    private final MMOPlugin mmoPlugin;
 
     /**
      * This boolean dictates whether the player data was loaded
@@ -29,16 +30,12 @@ public abstract class SynchronizedDataHolder implements OfflineDataHolder {
      */
     private boolean sync;
 
-    public SynchronizedDataHolder(@NotNull MMOPlayerData playerData) {
-        this(false, playerData);
-    }
-
     /**
-     * @param profilePlugin If the plugin creating the player data is a profile plugin
-     * @param playerData    Parent MythicLib player data
+     * @param mmoPlugin  If the plugin creating the player data is a profile plugin
+     * @param playerData Parent MythicLib player data
      */
-    public SynchronizedDataHolder(boolean profilePlugin, @NotNull MMOPlayerData playerData) {
-        this.profilePlugin = profilePlugin;
+    public SynchronizedDataHolder(@NotNull MMOPlugin mmoPlugin, @NotNull MMOPlayerData playerData) {
+        this.mmoPlugin = mmoPlugin;
         this.playerData = playerData;
     }
 
@@ -78,7 +75,8 @@ public abstract class SynchronizedDataHolder implements OfflineDataHolder {
         if (MythicLib.plugin.getProfileMode() == null) return getUniqueId();
 
         // Profile plugin => take official ID (if proxy-based profiles are enabled), unique ID otherwise (legacy profiles)
-        if (profilePlugin) return playerData.hasOfficialId() ? getOfficialId() : getUniqueId();
+        if (mmoPlugin.hasProfiles())
+            return playerData.hasOfficialId() ? getOfficialId() : getUniqueId();
 
         // Otherwise, take profile ID if it exists
         return playerData.hasProfile() ? getProfileId() : getUniqueId();
@@ -99,5 +97,6 @@ public abstract class SynchronizedDataHolder implements OfflineDataHolder {
     public void markAsSynchronized() {
         Validate.isTrue(!sync, "Data holder already marked synchronized");
         sync = true;
+        playerData.markAsSynchronized(mmoPlugin);
     }
 }

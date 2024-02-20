@@ -7,7 +7,7 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
-public class MovementSpeedStatHandler extends StatHandler {
+public class MovementSpeedStatHandler extends AttributeStatHandler {
     private final boolean moveSpeed;
 
     /**
@@ -19,12 +19,11 @@ public class MovementSpeedStatHandler extends StatHandler {
      * @param moveSpeed Is it move speed?
      */
     public MovementSpeedStatHandler(@NotNull ConfigurationSection config, @NotNull String stat, boolean moveSpeed) {
-        super(config, stat);
+        super(config, Attribute.GENERIC_MOVEMENT_SPEED, stat);
 
         this.moveSpeed = moveSpeed;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void runUpdate(@NotNull StatInstance randomInstance) {
         final AttributeInstance attrIns = randomInstance.getMap().getPlayerData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
