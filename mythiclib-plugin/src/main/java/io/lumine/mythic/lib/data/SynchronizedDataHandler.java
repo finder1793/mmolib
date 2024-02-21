@@ -22,14 +22,14 @@ public interface SynchronizedDataHandler<H extends SynchronizedDataHolder, O ext
     public void setup();
 
     /**
-     * Called when player data must be saved in configs or database.
-     * This method is always called async, no need to wrap requests
-     * inside of async runnables.
+     * Called when player data must be saved in database.
      *
      * @param playerData Player data to save
      * @param autosave   When logging out, is_saved is switched back to 1. This behaviour
      *                   must be skipped when autosaving otherwise this will mess with
      *                   the database.
+     * @implNote This method should be called async so there is no need
+     * to run async tasks inside of this method implementation.
      */
     public void saveData(@NotNull H playerData, boolean autosave);
 

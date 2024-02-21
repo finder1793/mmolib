@@ -24,9 +24,7 @@ public class AutoSaveRunnable extends BukkitRunnable {
 
     @Override
     public void run() {
-        if (log)
-            manager.getOwningPlugin().getLogger().log(Level.INFO, "Autosaving player data, might take a while...");
-        manager.saveAll(true);
-        manager.whenAutoSaved();
+        if (log) manager.getOwningPlugin().getLogger().log(Level.INFO, "Autosaving player data, might take a while...");
+        manager.autosave();
     }
 }

@@ -86,7 +86,7 @@ public abstract class SQLDataSynchronizer<H extends SynchronizedDataHolder> {
             prepared.setString(1, effectiveId.toString());
 
             UtilityMethods.debug(dataSource.getPlugin(), "SQL", "Trying to load data of " + effectiveId);
-            result = prepared.executeQuery();
+            result = prepared.executeQuery(); // Freezes thread
 
             // Check if player went offline
             if (playerWentOffline()) {

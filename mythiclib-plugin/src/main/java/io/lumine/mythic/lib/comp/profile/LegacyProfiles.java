@@ -49,8 +49,7 @@ public class LegacyProfiles implements Listener {
         profilePlugin.registerModule(module);
 
         // Load data on profile select
-        Bukkit.getPluginManager().registerEvent(ProfileSelectEvent.class, fictiveListener, joinEventPriority, (listener, evt) -> {
-            final ProfileSelectEvent event = (ProfileSelectEvent) evt;
+        UtilityMethods.registerEvent(ProfileSelectEvent.class, fictiveListener, joinEventPriority, event -> {
             final @NotNull H data = manager.get(event.getPlayer());
             if (data.isSynchronized()) event.validate(module); // More resilience
             else
@@ -59,14 +58,13 @@ public class LegacyProfiles implements Listener {
                     data.markAsSynchronized();
                     Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(manager, data, event));
                 }));
-        }, manager.getOwningPlugin());
+        }, manager.getOwningPlugin(), false);
 
         // TODO remove data from other plugins when removing profiles in order to empty databases
 
         // Save data on profile unload
-        Bukkit.getPluginManager().registerEvent(ProfileUnloadEvent.class, fictiveListener, quitEventPriority, (listener, evt) -> {
-            final ProfileUnloadEvent event = (ProfileUnloadEvent) evt;
+        UtilityMethods.registerEvent(ProfileUnloadEvent.class, fictiveListener, quitEventPriority, event -> {
             manager.unregister(event.getPlayer()).thenAccept(UtilityMethods.sync(manager.getOwningPlugin(), v -> event.validate(module)));
-        }, manager.getOwningPlugin());
+        }, manager.getOwningPlugin(), false);
     }
 }

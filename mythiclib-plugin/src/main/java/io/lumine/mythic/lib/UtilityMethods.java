@@ -119,6 +119,7 @@ public class UtilityMethods {
     }
 
     @NotNull
+    @Deprecated
     public static Runnable serverThreadCatch(@NotNull Plugin plugin, @NotNull Runnable runnable) {
         return () -> {
             try {

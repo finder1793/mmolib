@@ -11,6 +11,7 @@ import io.lumine.mythic.lib.comp.profile.LegacyProfiles;
 import io.lumine.mythic.lib.comp.profile.ProfileMode;
 import io.lumine.mythic.lib.util.Autosaveable;
 import io.lumine.mythic.lib.util.Closeable;
+import io.lumine.mythic.lib.util.Tasks;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -20,7 +21,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -117,26 +117,13 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         return isLoaded(uuid) ? (O) activeData.get(uuid) : dataHandler.getOffline(uuid);
     }
 
-    /**
-     * Saves all currently loaded data. It is either used on server
-     * shutdown, which requires to save all the data of currently
-     * connected players, or when performing frequent autosaves.
-     * <p>
-     * On server shutdown (/restart) pending async methods must be
-     * completed before the program stops, otherwise data saving
-     * tasks are lost, deleting the players' progressions.
-     */
-    public void saveAll(boolean autosave) {
+    public void autosave() {
         for (H holder : getLoaded())
             if (holder.isSynchronized()) {
-                if (holder instanceof Autosaveable) ((Autosaveable) holder).prepareSaving(autosave);
-                else if (holder instanceof Closeable) ((Closeable) holder).close();
-                getDataHandler().saveData(holder, autosave);
+                if (holder instanceof Autosaveable) ((Autosaveable) holder).prepareSaving(true);
+                // TODO make sure there aren't too many requests being sent, perhaps add batch options to the config (batch size, frequency)
+                Tasks.runAsync(owning, () -> getDataHandler().saveData(holder, true));
             }
-
-        // Execute pending async tasks (supports /restart and /stop)
-        if (!autosave) for (BukkitTask pending : Bukkit.getScheduler().getPendingTasks())
-            if (pending.getOwner().equals(owning)) ((Runnable) pending).run();
     }
 
     private static final Listener FICTIVE_LISTENER = new Listener() {
@@ -187,15 +174,30 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
     }
 
     /**
-     * Called when the data manager is being auto saved.
+     * Saves all currently loaded data. It is either used on server
+     * shutdown, which requires to save all the data of currently
+     * connected players, or when performing frequent autosaves.
+     * <p>
+     * On server shutdown (/restart) pending async methods must be
+     * completed before the program stops, otherwise data saving
+     * tasks are lost, deleting the players' progressions.
      */
-    public void whenAutoSaved() {
-        // Nothing by default
-    }
-
     @Override
     public void close() {
-        saveAll(false);
+
+        // Save data SYNCHRONOUSLY of online players (not called with /restart)
+        for (H holder : getLoaded())
+            if (holder.isSynchronized()) {
+                if (holder instanceof Closeable) ((Closeable) holder).close();
+                getDataHandler().saveData(holder, false);
+            }
+
+        // Wait for completion of safe tasks
+        owning.getLogger().log(Level.INFO, "Waiting for other threads, please wait...");
+        Tasks.executePendingSafe(owning);
+        Tasks.waitSafe(owning);
+
+        // Release resources from data handler
         dataHandler.close();
     }
 
@@ -205,7 +207,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
      */
     @NotNull
     public CompletableFuture<Void> loadData(@NotNull H playerData) {
-        return CompletableFuture.runAsync(UtilityMethods.serverThreadCatch(owning, () -> dataHandler.loadData(playerData)));
+        return Tasks.runAsync(owning, () -> dataHandler.loadData(playerData));
     }
 
     /**
@@ -242,14 +244,6 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
     }
 
     /**
-     * @deprecated Use {@link #unregister(Player)} instead
-     */
-    @Deprecated
-    public void unregisterSafely(H playerData) {
-        unregister(playerData.getPlayer());
-    }
-
-    /**
      * Safely unregisters the player data from the map.
      * This saves the player data either through SQL or YAML,
      * then closes the player data and clears it from the data map.
@@ -266,7 +260,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         if (playerData instanceof Closeable) ((Closeable) playerData).close();
 
         // Save data async if required
-        return playerData.isSynchronized() ? CompletableFuture.runAsync(UtilityMethods.serverThreadCatch(owning, () -> dataHandler.saveData(playerData, false))) : CompletableFuture.completedFuture(null);
+        return playerData.isSynchronized() ? Tasks.runSafeAsync(owning, () -> dataHandler.saveData(playerData, false)) : CompletableFuture.completedFuture(null);
     }
 
     /**
@@ -287,5 +281,16 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
 
     public Collection<H> getLoaded() {
         return activeData.values();
+    }
+
+    @Deprecated
+    public void saveAll(boolean autosave) {
+        if (autosave) autosave();
+        else close();
+    }
+
+    @Deprecated
+    public void unregisterSafely(H playerData) {
+        unregister(playerData.getPlayer());
     }
 }

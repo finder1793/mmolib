@@ -5,8 +5,6 @@ import io.lumine.mythic.lib.data.SynchronizedDataHandler;
 import io.lumine.mythic.lib.data.SynchronizedDataHolder;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.CompletableFuture;
-
 public abstract class SQLSynchronizedDataHandler<H extends SynchronizedDataHolder, O extends OfflineDataHolder> implements SynchronizedDataHandler<H, O> {
     private final SQLDataSource dataSource;
 
@@ -23,9 +21,7 @@ public abstract class SQLSynchronizedDataHandler<H extends SynchronizedDataHolde
         return newDataSynchronizer(playerData).synchronize();
     }
 
-    /**
-     * TODO: Not generalized yet
-     */
+    // TODO Make it abstract
     @Override
     public abstract void saveData(@NotNull H playerData, boolean autosave);
 
