@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 public class SkillAPIModule implements Listener, FakeEventCaller<EntityDamageEvent> {
@@ -23,7 +24,7 @@ public class SkillAPIModule implements Listener, FakeEventCaller<EntityDamageEve
 
     @Override
     public boolean isFake(EntityDamageEvent event) {
-        return event instanceof DefaultCombatProtection.FakeEntityDamageByEntityEvent;
+        return event instanceof EntityDamageByEntityEvent && DefaultCombatProtection.isFakeDamageEvent((EntityDamageByEntityEvent) event);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
