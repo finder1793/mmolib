@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 
 /**
  * A general player data manager which implements
@@ -169,20 +170,20 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         if (profilePlugin || MythicLib.plugin.getProfileMode() != ProfileMode.LEGACY)
             UtilityMethods.registerEvent(PlayerQuitEvent.class, FICTIVE_LISTENER, quitEventPriority, event -> unregister(event.getPlayer()), owning, false);
 
-        if (profilePlugin) return;
+        // ProfileAPI compatibility
+        if (!profilePlugin && MythicLib.plugin.hasProfiles()) {
+            owning.getLogger().log(Level.INFO, "Hooked onto ProfileAPI");
 
-        // Support for legacy profiles
-        if (MythicLib.plugin.getProfileMode() == ProfileMode.LEGACY)
-            LegacyProfiles.hook(this, FICTIVE_LISTENER, joinEventPriority, quitEventPriority);
-            // Support for proxy based profiles
-        else if (MythicLib.plugin.getProfileMode() == ProfileMode.PROXY) hookOnProxyProfiles();
-    }
+            // Placeholders for MMOProfiles
+            final ProfileProvider profilePlugin = Bukkit.getServicesManager().getRegistration(ProfileProvider.class).getProvider();
+            final ProfileDataModule module = (ProfileDataModule) newProfileDataModule();
+            if (module instanceof PlaceholderProcessor)
+                profilePlugin.registerPlaceholders((PlaceholderProcessor) module);
 
-
-    private void hookOnProxyProfiles() {
-        final ProfileProvider profilePlugin = Bukkit.getServicesManager().getRegistration(ProfileProvider.class).getProvider();
-        final ProfileDataModule module = (ProfileDataModule) newProfileDataModule();
-        if (module instanceof PlaceholderProcessor) profilePlugin.registerPlaceholders((PlaceholderProcessor) module);
+            // Support for legacy profiles
+            if (MythicLib.plugin.getProfileMode() == ProfileMode.LEGACY)
+                LegacyProfiles.hook(profilePlugin, module, this, FICTIVE_LISTENER, joinEventPriority, quitEventPriority);
+        }
     }
 
     /**
@@ -237,7 +238,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         if (MythicLib.plugin.getProfileMode() == null) return true;
         if (MythicLib.plugin.getProfileMode() == ProfileMode.LEGACY) return false;
         if (MythicLib.plugin.getProfileMode() == ProfileMode.PROXY) return holder.getMMOPlayerData().hasProfile();
-        throw new RuntimeException();
+        throw new RuntimeException("Unhandled profile mode");
     }
 
     /**

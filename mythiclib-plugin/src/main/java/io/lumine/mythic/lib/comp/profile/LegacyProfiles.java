@@ -4,7 +4,6 @@ import fr.phoenixdevt.profiles.ProfileDataModule;
 import fr.phoenixdevt.profiles.ProfileProvider;
 import fr.phoenixdevt.profiles.event.ProfileSelectEvent;
 import fr.phoenixdevt.profiles.event.ProfileUnloadEvent;
-import fr.phoenixdevt.profiles.placeholder.PlaceholderProcessor;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.SynchronizedDataLoadEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
@@ -16,8 +15,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.logging.Level;
 
 public class LegacyProfiles implements Listener {
 
@@ -41,17 +38,15 @@ public class LegacyProfiles implements Listener {
      * selected by a player. By default, player data loads on login so this
      * has to be changed to support profiles.
      */
-    public static <H extends SynchronizedDataHolder> void hook(@NotNull SynchronizedDataManager<H, ?> manager,
-                                                         @NotNull Listener fictiveListener,
-                                                         @NotNull EventPriority joinEventPriority,
-                                                         @NotNull EventPriority quitEventPriority) {
+    public static <H extends SynchronizedDataHolder> void hook(@NotNull ProfileProvider profilePlugin,
+                                                               @NotNull ProfileDataModule module,
+                                                               @NotNull SynchronizedDataManager<H, ?> manager,
+                                                               @NotNull Listener fictiveListener,
+                                                               @NotNull EventPriority joinEventPriority,
+                                                               @NotNull EventPriority quitEventPriority) {
 
         // Register data holder
-        final ProfileProvider profilePlugin = Bukkit.getServicesManager().getRegistration(ProfileProvider.class).getProvider();
-        final ProfileDataModule module = (ProfileDataModule) manager.newProfileDataModule();
         profilePlugin.registerModule(module);
-        if (module instanceof PlaceholderProcessor) profilePlugin.registerPlaceholders((PlaceholderProcessor) module);
-        manager.getOwningPlugin().getLogger().log(Level.INFO, "Hooked onto Profiles");
 
         // Load data on profile select
         Bukkit.getPluginManager().registerEvent(ProfileSelectEvent.class, fictiveListener, joinEventPriority, (listener, evt) -> {
@@ -66,7 +61,7 @@ public class LegacyProfiles implements Listener {
                 }));
         }, manager.getOwningPlugin());
 
-        // TODO Remove data on profile removal
+        // TODO remove data from other plugins when removing profiles in order to empty databases
 
         // Save data on profile unload
         Bukkit.getPluginManager().registerEvent(ProfileUnloadEvent.class, fictiveListener, quitEventPriority, (listener, evt) -> {
