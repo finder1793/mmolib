@@ -62,17 +62,17 @@ public abstract class ModifiedInstance<T extends InstanceModifier> {
      *         as well as all of the modifiers. %-based modifiers are applied
      *         afterwards, onto the sum of the base value + flat modifiers.
      */
-    public double getFilteredTotal(double d, Predicate<T> filter, Function<T, T> modification) {
+    public double getFilteredTotal(double base, Predicate<T> filter, Function<T, T> modification) {
 
         for (T mod : modifiers.values())
             if (mod.getType() == ModifierType.FLAT && filter.test(mod))
-                d += modification.apply(mod).getValue();
+                base += modification.apply(mod).getValue();
 
         for (T mod : modifiers.values())
             if (mod.getType() == ModifierType.RELATIVE && filter.test(mod))
-                d *= 1 + modification.apply(mod).getValue() / 100;
+                base *= 1 + modification.apply(mod).getValue() / 100;
 
-        return d;
+        return base;
     }
 
     @Nullable

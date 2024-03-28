@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.api.stat.handler;
 
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.stat.StatInstance;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -14,6 +15,7 @@ public class AttributeStatHandler extends StatHandler {
     protected final Attribute attribute;
 
     protected static final String ATTRIBUTE_NAME = "mythiclib.main";
+    protected static final double EPSILON = .0001;
 
     /**
      * Statistics like Atk Damage, Atk Speed, Max Health...
@@ -34,20 +36,21 @@ public class AttributeStatHandler extends StatHandler {
         final AttributeInstance attrIns = instance.getMap().getPlayerData().getPlayer().getAttribute(attribute);
         removeModifiers(attrIns);
 
-        final double mmo = instance.getTotal();
-        final double base = instance.getMap().getPlayerData().getPlayer().getAttribute(attribute).getBaseValue();
+        final double vanillaBase = instance.getMap().getPlayerData().getPlayer().getAttribute(attribute).getBaseValue();
+        final double mmoFinal = instance.getFilteredTotal(vanillaBase, EquipmentSlot.MAIN_HAND::isCompatible);
 
         /*
          * Only add an attribute modifier if the very final stat
          * value is different from the main one to save calculations.
          */
-        if (mmo != base)
-            attrIns.addModifier(new AttributeModifier(ATTRIBUTE_NAME, mmo - base, AttributeModifier.Operation.ADD_NUMBER));
+        if (Math.abs(mmoFinal - vanillaBase) > EPSILON)
+            attrIns.addModifier(new AttributeModifier(ATTRIBUTE_NAME, mmoFinal - vanillaBase, AttributeModifier.Operation.ADD_NUMBER));
     }
 
     @Override
     public double getBaseValue(@NotNull StatInstance instance) {
-        return super.getBaseValue(instance) + instance.getMap().getPlayerData().getPlayer().getAttribute(attribute).getBaseValue();
+        // TODO support base value for any attribute
+        return instance.getMap().getPlayerData().getPlayer().getAttribute(attribute).getBaseValue();
     }
 
     @Override

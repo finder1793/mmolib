@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.api.stat.handler;
 
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.stat.StatInstance;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -33,33 +34,25 @@ public class MovementSpeedStatHandler extends AttributeStatHandler {
         final double coef = 1 - randomInstance.getMap().getStat("SPEED_MALUS_REDUCTION") / 100;
 
         final StatInstance statIns = randomInstance.getMap().getInstance("MOVEMENT_SPEED");
-        final double mmo = statIns.getTotal(mod -> mod.getValue() < 0 ? mod.multiply(coef) : mod);
-
-        /*
-         * Calculate the stat base value. Since it can be changed by external
-         * plugins, it's better to calculate it once and cache the result.
-         *
-         * This cannot use the TOTAL stat value otherwise the output of that
-         * function depends on the date of execution because of attribute
-         * modifiers from other plugins.
-         */
-        final double base = randomInstance.getMap().getPlayerData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue();
+        final double vanillaBase = statIns.getMap().getPlayerData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue();
+        final double mmoFinal = statIns.getFilteredTotal(vanillaBase, EquipmentSlot.MAIN_HAND::isCompatible, mod -> mod.getValue() < 0 ? mod.multiply(coef) : mod);
 
         /*
          * Only add an attribute modifier if the very final stat
          * value is different from the main one to save calculations.
          */
-        if (mmo != base)
-            attrIns.addModifier(new AttributeModifier("mythiclib.main", mmo - base, AttributeModifier.Operation.ADD_NUMBER));
+        if (Math.abs(mmoFinal - vanillaBase) > EPSILON)
+            attrIns.addModifier(new AttributeModifier(ATTRIBUTE_NAME, mmoFinal - vanillaBase, AttributeModifier.Operation.ADD_NUMBER));
     }
 
     @Override
     public double getFinalValue(@NotNull StatInstance instance) {
-        return moveSpeed ? instance.getMap().getPlayerData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getValue() : instance.getMap().getInstance("SPEED_MALUS_REDUCTION").getTotal();
+        return moveSpeed ? instance.getMap().getPlayerData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getValue() : instance.getTotal();
     }
 
     @Override
     public double getBaseValue(@NotNull StatInstance instance) {
-        return super.getBaseValue(instance) + (moveSpeed ? instance.getMap().getPlayerData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue() : 0);
+        // TODO support configurable base value for SMR and MS
+        return moveSpeed ? instance.getMap().getPlayerData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue() : 0;
     }
 }
