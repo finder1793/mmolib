@@ -169,8 +169,7 @@ public class MMOPlayerData {
     }
 
     public void markAsSynchronized(@NotNull MMOPlugin plugin) {
-        pluginLoadQueue.remove(plugin);
-        if (pluginLoadQueue.isEmpty()) return;
+        if (!pluginLoadQueue.remove(plugin) || !pluginLoadQueue.isEmpty()) return;
 
         // Ran when the player data is fully synchronized
         statMap.updateAll();
