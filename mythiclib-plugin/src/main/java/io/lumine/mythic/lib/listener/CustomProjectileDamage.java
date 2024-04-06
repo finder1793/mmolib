@@ -35,6 +35,7 @@ public class CustomProjectileDamage implements Listener {
 
         // Apply power vanilla enchant
         if (projectile instanceof AbstractArrow
+                && data.getSourceItem() != null
                 && data.getSourceItem().getItem().hasItemMeta()
                 && data.getSourceItem().getItem().getItemMeta().getEnchants().containsKey(Enchantment.ARROW_DAMAGE))
             baseDamage *= 1.25 + (.25 * data.getSourceItem().getItem().getItemMeta().getEnchantLevel(Enchantment.ARROW_DAMAGE));
