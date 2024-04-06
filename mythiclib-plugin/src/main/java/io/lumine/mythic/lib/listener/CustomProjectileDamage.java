@@ -30,16 +30,20 @@ public class CustomProjectileDamage implements Listener {
         final ProjectileMetadata data = ProjectileMetadata.get(projectile);
         if (data == null) return;
 
-        // Calculate custom base damage
-        double baseDamage = data.getDamage();
+        /*
+         * CUSTOM PROJECTILE DAMAGE FORMULA
+         */
+        if (data.isCustomDamage()) {
+            double baseDamage = data.getDamage();
 
-        // Apply power vanilla enchant
-        if (projectile instanceof AbstractArrow
-                && data.getSourceItem() != null
-                && data.getSourceItem().getItem().hasItemMeta()
-                && data.getSourceItem().getItem().getItemMeta().getEnchants().containsKey(Enchantment.ARROW_DAMAGE))
-            baseDamage *= 1.25 + (.25 * data.getSourceItem().getItem().getItemMeta().getEnchantLevel(Enchantment.ARROW_DAMAGE));
+            // Apply power vanilla enchant
+            if (projectile instanceof AbstractArrow
+                    && data.getSourceItem() != null
+                    && data.getSourceItem().getItem().hasItemMeta()
+                    && data.getSourceItem().getItem().getItemMeta().getEnchants().containsKey(Enchantment.ARROW_DAMAGE))
+                baseDamage *= 1.25 + (.25 * data.getSourceItem().getItem().getItemMeta().getEnchantLevel(Enchantment.ARROW_DAMAGE));
 
-        event.setDamage(baseDamage);
+            event.setDamage(baseDamage);
+        }
     }
 }
