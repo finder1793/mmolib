@@ -468,7 +468,9 @@ public class MMOPlayerData {
 
     @Nullable
     public static MMOPlayerData online(@NotNull Player player) {
-        return player.isOnline() ? PLAYER_DATA.get(player.getUniqueId()) : null;
+        if (!player.isOnline()) return null;
+        final MMOPlayerData found = PLAYER_DATA.get(player.getUniqueId());
+        return found != null && found.isOnline() ? found : null;
     }
 
     /**
