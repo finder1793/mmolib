@@ -16,10 +16,10 @@ import java.text.DecimalFormat;
  * @author jules
  */
 public class StatHandler {
-    private final boolean hasMinValue, hasMaxValue;
-    private final double baseValue, minValue, maxValue;
-    private final DecimalFormat decimalFormat;
-    private final String stat;
+    protected final boolean hasMinValue, hasMaxValue;
+    protected final double baseValue, minValue, maxValue;
+    protected final DecimalFormat decimalFormat;
+    protected final String stat;
 
     /**
      * @param config Root stat handlers configuration file

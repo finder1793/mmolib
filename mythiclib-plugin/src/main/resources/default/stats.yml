@@ -62,11 +62,13 @@ min-max-values:
 # with MMOItems items as well.
 #
 # This is also an important tool for balancing your player stats.
+# The default base stat for any stat is 0.
 #
-# !! If this value is lower than your minimum stat value, it is most
-# likely useless because your stat value will not be buffed.
+# !! For vanilla attribute-based stats (Max Health, Movement Speed, Armor...)
+# !! this base stat value adds up to the player's vanilla base attribute value
+# !! (20 for Max Health, 0.1 for Movement Speed, 0 for Armor...)
 #
-# The default base stat for any stat is 0, this cannot be edited.
+# !! This option does NOT work when MMOCore is installed. Use class configs installed.
 base-stat-value:
 
   # Crits. By default, crits deal 2x damage

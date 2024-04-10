@@ -7,6 +7,7 @@ import io.lumine.mythic.lib.api.stat.SharedStat;
 import io.lumine.mythic.lib.api.stat.StatInstance;
 import io.lumine.mythic.lib.api.stat.StatMap;
 import io.lumine.mythic.lib.api.stat.handler.AttributeStatHandler;
+import io.lumine.mythic.lib.api.stat.handler.DelegateStatHandler;
 import io.lumine.mythic.lib.api.stat.handler.MovementSpeedStatHandler;
 import io.lumine.mythic.lib.api.stat.handler.StatHandler;
 import io.lumine.mythic.lib.util.ConfigFile;
@@ -39,8 +40,9 @@ public class StatManager {
             handlers.put(SharedStat.ATTACK_SPEED, new AttributeStatHandler(statsConfig, Attribute.GENERIC_ATTACK_SPEED, SharedStat.ATTACK_SPEED));
             handlers.put(SharedStat.KNOCKBACK_RESISTANCE, new AttributeStatHandler(statsConfig, Attribute.GENERIC_KNOCKBACK_RESISTANCE, SharedStat.KNOCKBACK_RESISTANCE));
             handlers.put(SharedStat.MAX_HEALTH, new AttributeStatHandler(statsConfig, Attribute.GENERIC_MAX_HEALTH, SharedStat.MAX_HEALTH));
-            handlers.put(SharedStat.MOVEMENT_SPEED, new MovementSpeedStatHandler(statsConfig, SharedStat.MOVEMENT_SPEED, true));
-            handlers.put(SharedStat.SPEED_MALUS_REDUCTION, new MovementSpeedStatHandler(statsConfig, SharedStat.SPEED_MALUS_REDUCTION, false));
+            StatHandler msStatHandler = new MovementSpeedStatHandler(statsConfig);
+            handlers.put(SharedStat.MOVEMENT_SPEED, msStatHandler);
+            handlers.put(SharedStat.SPEED_MALUS_REDUCTION, new DelegateStatHandler(statsConfig, SharedStat.SPEED_MALUS_REDUCTION, msStatHandler));
         } catch (Exception exception) {
             MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load default stat handlers:");
             exception.printStackTrace();

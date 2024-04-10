@@ -8,9 +8,6 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * TODO fully interface Bukkit and MythicLib stats
- */
 public class AttributeStatHandler extends StatHandler {
     protected final Attribute attribute;
 
@@ -37,20 +34,20 @@ public class AttributeStatHandler extends StatHandler {
         removeModifiers(attrIns);
 
         final double vanillaBase = instance.getMap().getPlayerData().getPlayer().getAttribute(attribute).getBaseValue();
-        final double mmoFinal = instance.getFilteredTotal(vanillaBase, EquipmentSlot.MAIN_HAND::isCompatible);
+        final double mmoFinal = clampValue(instance.getFilteredTotal(vanillaBase + this.baseValue, EquipmentSlot.MAIN_HAND::isCompatible));
+        final double difference = mmoFinal - vanillaBase;
 
         /*
          * Only add an attribute modifier if the very final stat
-         * value is different from the main one to save calculations.
+         * value is different from the main one to save map updates.
          */
-        if (Math.abs(mmoFinal - vanillaBase) > EPSILON)
-            attrIns.addModifier(new AttributeModifier(ATTRIBUTE_NAME, mmoFinal - vanillaBase, AttributeModifier.Operation.ADD_NUMBER));
+        if (Math.abs(difference) > EPSILON)
+            attrIns.addModifier(new AttributeModifier(ATTRIBUTE_NAME, difference, AttributeModifier.Operation.ADD_NUMBER));
     }
 
     @Override
     public double getBaseValue(@NotNull StatInstance instance) {
-        // TODO support base value for any attribute
-        return instance.getMap().getPlayerData().getPlayer().getAttribute(attribute).getBaseValue();
+        return this.baseValue + instance.getMap().getPlayerData().getPlayer().getAttribute(attribute).getBaseValue();
     }
 
     @Override

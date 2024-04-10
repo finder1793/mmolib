@@ -57,8 +57,7 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
     /**
      * @return The final stat value taking into account the default stat value
      * as well as the stat modifiers. The relative stat modifiers are
-     * applied afterwards, onto the sum of the base value + flat
-     * modifiers.
+     * applied afterward, onto the sum of the base value + flat modifiers.
      */
     public double getTotal() {
         return getFilteredTotal(EquipmentSlot.MAIN_HAND::isCompatible, mod -> mod);
@@ -82,8 +81,7 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
      * @param filter Filters stat modifications taken into account for the calculation
      * @return The final stat value taking into account the default stat value
      * as well as the stat modifiers. The relative stat modifiers are
-     * applied afterwards, onto the sum of the base value + flat
-     * modifiers.
+     * applied afterward, onto the sum of the base value + flat modifiers.
      */
     public double getFilteredTotal(Predicate<StatModifier> filter) {
         return getFilteredTotal(filter, mod -> mod);

@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.comp.placeholder;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.manager.StatManager;
 import io.lumine.mythic.lib.util.DefenseFormula;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
@@ -49,7 +50,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
         if (params.startsWith("stat_")) {
             final String stat = UtilityMethods.enumName(params.substring(5));
-            return MythicLib.plugin.getStats().format(stat, MMOPlayerData.get(player));
+            return StatManager.format(stat, MMOPlayerData.get(player));
         }
 
         if (params.startsWith("cooldown_")) {
