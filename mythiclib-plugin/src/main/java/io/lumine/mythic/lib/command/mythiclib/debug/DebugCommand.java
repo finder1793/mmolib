@@ -14,6 +14,7 @@ public class DebugCommand extends CommandTreeNode {
         addChild(new AttributesCommand(this));
         addChild(new HealthScaleCommand(this));
         addChild(new TestCommand(this));
+        addChild(new ParseCommand(this));
     }
 
     @Override

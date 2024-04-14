@@ -17,8 +17,21 @@ public class FormulaParser {
         interpreter = new Interpreter();
         try {
             interpreter.eval("import java.lang.Math;");
-            interpreter.eval("import java.util.Arrays;");
-            interpreter.eval("import java.util.List;");
+            //interpreter.eval("import java.util.Arrays;");
+            //interpreter.eval("import java.util.List;");
+            interpreter.eval("import java.util.Random;");
+
+            interpreter.eval("private static final Random RANDOM = new Random();");
+
+            // Constants
+            interpreter.eval("private static final double PI = Math.PI, Pi = Math.PI;");
+
+            // random(double, double) function definition
+            interpreter.eval("private static final double random(double d1, double d2) { return RANDOM.nextDouble() * (d2 - d1) + d1; }");
+
+            // Math function definitions
+            for (String mathFunction : mathFunctions)
+                interpreter.eval("private static final double " + mathFunction + "(double d) { return Math." + mathFunction + "(d); }");
         } catch (EvalError error) {
             throw new RuntimeException(error);
         }
@@ -31,17 +44,12 @@ public class FormulaParser {
 
     @NotNull
     public Object evaluate(@NotNull String str) {
+
         // Enable to use val in [val1,val2,val3,...]
-        str = str.replaceAll("\"(.*?)\" in \\[(.*?)\\]", "Arrays.asList(new Object[]{$2}).contains(\"$1\")");
-        str = str.replaceAll("(\\d*?) in \\[(.*?)\\]", "Arrays.asList(new Object[]{$2}).contains($1)");
+        // Removed to avoid performance loss
+        // str = str.replaceAll("\"(.*?)\" in \\[(.*?)\\]", "Arrays.asList(new Object[]{$2}).contains(\"$1\")");
+        // str = str.replaceAll("(\\d*?) in \\[(.*?)\\]", "Arrays.asList(new Object[]{$2}).contains($1)");
 
-        str = str.replace("PI", "Math.PI");
-
-        // Parse random(expr1,expr2) to Math.random() * (expr2 - expr1) + expr1
-        str = str.replaceAll("random\\((.*?),(.*?)\\)", "random() * ($2 - $1) + ($1)");
-
-        for (String function : mathFunctions)
-            str = str.replace(function + "(", "Math." + function + "(");
         try {
             return interpreter.eval(str);
         } catch (EvalError error) {
