@@ -438,7 +438,7 @@ public class VersionWrapper_Reflection implements VersionWrapper {
         ServerLevel nmsWorld = _CraftWorld_getHandle(block.getWorld());
         SkullBlockEntity skull = (SkullBlockEntity) nmsWorld.getBlockEntity(new BlockPos(block.getX(), block.getY(), block.getZ()));
         if (skull.getOwnerProfile() == null) return "";
-        return skull.getOwnerProfile().getProperties().get("textures").iterator().next().getValue();
+        return skull.getOwnerProfile().getProperties().get("textures").iterator().next().value();
     }
 
     @Override

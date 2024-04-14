@@ -396,7 +396,7 @@ public class VersionWrapper_1_20_R2 implements VersionWrapper {
     public String getSkullValue(Block block) {
         SkullBlockEntity skull = (SkullBlockEntity) ((CraftWorld) block.getWorld()).getHandle().getBlockEntity(new BlockPos(block.getX(), block.getY(), block.getZ()));
         if (skull.getOwnerProfile() == null) return "";
-        return skull.getOwnerProfile().getProperties().get("textures").iterator().next().getValue();
+        return skull.getOwnerProfile().getProperties().get("textures").iterator().next().value();
     }
 
     @Override
