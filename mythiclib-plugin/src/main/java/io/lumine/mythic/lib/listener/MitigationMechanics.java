@@ -7,6 +7,7 @@ import io.lumine.mythic.lib.api.event.mitigation.PlayerDodgeEvent;
 import io.lumine.mythic.lib.api.event.mitigation.PlayerParryEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatMap;
+import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.player.cooldown.CooldownType;
 import io.lumine.mythic.lib.version.VersionSound;
 import org.bukkit.*;
@@ -157,12 +158,19 @@ public class MitigationMechanics implements Listener {
     /**
      * @param victim Entity being hit
      * @return If there is a damager, returns a vector pointing towards damager.
-     *         Otherwise, just returns the victim's eye location.
+     * Otherwise, just returns the victim's eye location.
      */
     @NotNull
     private Vector getVector(LivingEntity victim, AttackEvent event) {
-        final Entity damager = event.toBukkit() instanceof EntityDamageByEntityEvent ? ((EntityDamageByEntityEvent) event.toBukkit()).getDamager() : null;
-        return damager == null ? normalize(damager.getLocation().subtract(victim.getLocation()).toVector()) : victim.getEyeLocation().getDirection();
+        final StatProvider attacker = event.getAttack().getAttacker();
+
+        // Backwards compatibility
+        if (attacker == null) {
+            final Entity damager = event.toBukkit() instanceof EntityDamageByEntityEvent ? ((EntityDamageByEntityEvent) event.toBukkit()).getDamager() : null;
+            return damager == null ? normalize(damager.getLocation().subtract(victim.getLocation()).toVector()) : victim.getEyeLocation().getDirection();
+        }
+
+        return normalize(attacker.getEntity().getLocation().subtract(victim.getLocation()).toVector());
     }
 
     @NotNull
