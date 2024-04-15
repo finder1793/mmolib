@@ -221,7 +221,7 @@ public class SkillManager {
         registerCondition("time", config -> new TimeCondition(config));
 
         // Default skill handler types
-        registerSkillHandlerType(config -> config.contains("mythiclib-skill-id"), config -> new MythicLibSkillHandler(getScriptOrThrow(config.getString("mythiclib-skill-id"))));
+        registerSkillHandlerType(config -> config.contains("mythiclib-skill-id"), config -> new MythicLibSkillHandler(config, getScriptOrThrow(config.getString("mythiclib-skill-id"))));
         registerSkillHandlerType(config -> config.contains("mechanics"), config -> new MythicLibSkillHandler(new Script(config)));
     }
 
