@@ -23,7 +23,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.ProjectileSource;
 import org.jetbrains.annotations.NotNull;
@@ -73,11 +72,6 @@ public class DamageManager implements Listener {
         return handlers;
     }
 
-    @Deprecated
-    public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target) {
-        damage(metadata, target, true);
-    }
-
     /**
      * Forces a player to damage an entity with knockback
      *
@@ -85,11 +79,6 @@ public class DamageManager implements Listener {
      */
     public void registerAttack(@NotNull AttackMetadata metadata) {
         registerAttack(metadata, true, false);
-    }
-
-    @Deprecated
-    public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target, boolean knockback) {
-        damage(metadata, target, knockback, false);
     }
 
     /**
@@ -100,11 +89,6 @@ public class DamageManager implements Listener {
      */
     public void registerAttack(@NotNull AttackMetadata metadata, boolean knockback) {
         registerAttack(metadata, knockback, false);
-    }
-
-    @Deprecated
-    public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target, boolean knockback, boolean ignoreImmunity) {
-        registerAttack(new AttackMetadata(metadata.getDamage(), target, metadata.getAttacker()), knockback, ignoreImmunity);
     }
 
     /**
@@ -163,23 +147,6 @@ public class DamageManager implements Listener {
             if (damager == null) target.damage(damage);
             else target.damage(damage, damager);
         }
-    }
-
-    /**
-     * This method draws an interface between MythicLib damage mitigation system
-     * and Bukkit damage events.
-     * <p>
-     * In the worst case (unknown damage cause/damage not logged by any plugin) scenario,
-     * it just returns a damage metadata with no damage type which is completely fine.
-     *
-     * @param event The damage event
-     * @return The corresponding MythicLib damage metadata.
-     * @deprecated Use {@link #findAttack(EntityDamageEvent)} which provides more information
-     */
-    @NotNull
-    @Deprecated
-    public DamageMetadata findDamage(EntityDamageEvent event) {
-        return findAttack(event).getDamage();
     }
 
     /**
@@ -285,7 +252,7 @@ public class DamageManager implements Listener {
     }
 
     /**
-     * Registers the attackMetadata inside of the entity metadata.
+     * Registers the attackMetadata inside the entity metadata.
      * This does NOT apply any damage to the target entity.
      *
      * @param attackMeta Attack metadata being registered
@@ -418,4 +385,38 @@ public class DamageManager implements Listener {
     private boolean isAir(@Nullable ItemStack item) {
         return item == null || item.getType() == Material.AIR;
     }
+
+    //region Deprecated methods
+    @Deprecated
+    public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target) {
+        damage(metadata, target, true);
+    }
+
+    @Deprecated
+    public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target, boolean knockback) {
+        damage(metadata, target, knockback, false);
+    }
+
+    @Deprecated
+    public void damage(@NotNull AttackMetadata metadata, @NotNull LivingEntity target, boolean knockback, boolean ignoreImmunity) {
+        registerAttack(new AttackMetadata(metadata.getDamage(), target, metadata.getAttacker()), knockback, ignoreImmunity);
+    }
+
+    /**
+     * This method draws an interface between MythicLib damage mitigation system
+     * and Bukkit damage events.
+     * <p>
+     * In the worst case (unknown damage cause/damage not logged by any plugin) scenario,
+     * it just returns a damage metadata with no damage type which is completely fine.
+     *
+     * @param event The damage event
+     * @return The corresponding MythicLib damage metadata.
+     * @deprecated Use {@link #findAttack(EntityDamageEvent)} which provides more information
+     */
+    @NotNull
+    @Deprecated
+    public DamageMetadata findDamage(EntityDamageEvent event) {
+        return findAttack(event).getDamage();
+    }
+    //endregion
 }

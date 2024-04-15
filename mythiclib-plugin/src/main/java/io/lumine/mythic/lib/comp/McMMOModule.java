@@ -28,7 +28,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 public class McMMOModule implements Listener, FakeEventCaller<EntityDamageEvent> {
     public McMMOModule() {
         MythicLib.plugin.getFakeEvents().registerFakeEventCaller(EntityDamageEvent.class, this);
-        Bukkit.getPluginManager().registerEvents(this, MythicLib.plugin);
+        // Bukkit.getPluginManager().registerEvents(this, MythicLib.plugin);
     }
 
     @Override
@@ -36,9 +36,8 @@ public class McMMOModule implements Listener, FakeEventCaller<EntityDamageEvent>
         return event instanceof FakeEvent;
     }
 
-    /**
-     * Runs on priority LOW right before MythicLib's HIGHEST
-     */
+    /*
+     * mcMMO no longers triggers a DamageEvent so MythicLib cannot interact with it.
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void registerAttacks(McMMOEntityDamageByRuptureEvent event) {
         if (!(event.getEntity() instanceof LivingEntity)) return;
@@ -48,4 +47,5 @@ public class McMMOModule implements Listener, FakeEventCaller<EntityDamageEvent>
         final AttackMetadata attackMeta = new AttackMetadata(damageMeta, (LivingEntity) event.getEntity(), damager);
         MythicLib.plugin.getDamage().markAsMetadata(attackMeta);
     }
+    */
 }
