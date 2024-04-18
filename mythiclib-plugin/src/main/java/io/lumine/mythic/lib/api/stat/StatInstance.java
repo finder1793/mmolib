@@ -6,7 +6,7 @@ import io.lumine.mythic.lib.api.stat.api.ModifiedInstance;
 import io.lumine.mythic.lib.api.stat.handler.StatHandler;
 import io.lumine.mythic.lib.api.stat.modifier.StatModifier;
 import io.lumine.mythic.lib.util.Closeable;
-import io.lumine.mythic.lib.util.annotation.CacheData;
+import io.lumine.mythic.lib.util.Lazy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,16 +28,13 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
      * existing references to StatHandlers as they potentially apply
      * modifications to statistics max/min values, base values, etc.
      */
-    @Nullable
-    @CacheData
-    private Optional<StatHandler> cachedHandler;
-
-    @CacheData
-    private boolean enabled;
+    @NotNull
+    private final Lazy<Optional<StatHandler>> cachedHandler;
 
     public StatInstance(@NotNull StatMap map, @NotNull String stat) {
         this.map = map;
         this.stat = stat;
+        this.cachedHandler = Lazy.persistent(() -> MythicLib.plugin.getStats().getHandler(stat));
     }
 
     @NotNull
@@ -51,7 +48,7 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
     }
 
     public double getBase() {
-        return handler().isPresent() ? cachedHandler.get().getBaseValue(this) : 0;
+        return hasHandler() ? cachedHandler.get().get().getBaseValue(this) : 0;
     }
 
     /**
@@ -64,7 +61,7 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
     }
 
     public double getFinal() {
-        return handler().isPresent() ? cachedHandler.get().getFinalValue(this) : getTotal();
+        return hasHandler() ? cachedHandler.get().get().getFinalValue(this) : getTotal();
     }
 
     @NotNull
@@ -74,7 +71,7 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
 
     @NotNull
     public String format(double value) {
-        return (handler().isPresent() ? cachedHandler.get().getDecimalFormat() : MythicLib.plugin.getMMOConfig().decimal).format(value);
+        return (hasHandler() ? cachedHandler.get().get().getDecimalFormat() : MythicLib.plugin.getMMOConfig().decimal).format(value);
     }
 
     /**
@@ -113,17 +110,12 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
      */
     public double getFilteredTotal(Predicate<StatModifier> filter, Function<StatModifier, StatModifier> modification) {
         final double total = getFilteredTotal(getBase(), filter, modification);
-        return cachedHandler.isPresent() ? cachedHandler.get().clampValue(total) : total;
+        return hasHandler() ? cachedHandler.get().get().clampValue(total) : total;
     }
 
-    @NotNull
-    private Optional<StatHandler> handler() {
-        if (cachedHandler == null) cachedHandler = MythicLib.plugin.getStats().getHandler(stat);
-        return cachedHandler;
-    }
-
-    private boolean enabled() {
-        return enabled || (map.getPlayerData().hasFullySynchronized() && (enabled = true));
+    private boolean hasHandler() {
+        if (!map.getPlayerData().hasFullySynchronized()) return false;
+        return cachedHandler.get().isPresent();
     }
 
     /**
@@ -175,12 +167,11 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
      * Max Health, Movement Speed.
      */
     public void update() {
-        if (enabled() && handler().isPresent()) cachedHandler.get().runUpdate(this);
+        if (hasHandler()) cachedHandler.get().get().runUpdate(this);
     }
 
     public void flushCache() {
-        cachedHandler = null;
-        enabled = false;
+        cachedHandler.flush();
     }
 
     /**
@@ -285,7 +276,7 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
     @Nullable
     @Deprecated
     public StatHandler findHandler() {
-        return handler().isPresent() ? cachedHandler.get() : null;
+        return hasHandler() ? cachedHandler.get().get() : null;
     }
 
     /**

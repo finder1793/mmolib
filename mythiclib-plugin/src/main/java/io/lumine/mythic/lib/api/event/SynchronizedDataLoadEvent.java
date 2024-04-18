@@ -36,6 +36,10 @@ public class SynchronizedDataLoadEvent extends Event {
         return holder;
     }
 
+    public boolean syncIsFull() {
+        return holder.getMMOPlayerData().hasFullySynchronized();
+    }
+
     @NotNull
     public Event getProfileEvent() {
         return Objects.requireNonNull(profileEvent, "No corresponding profile event");

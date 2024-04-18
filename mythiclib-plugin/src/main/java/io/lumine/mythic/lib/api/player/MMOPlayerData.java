@@ -57,10 +57,10 @@ public class MMOPlayerData {
     /**
      * When logging in, MythicLib waits for all MMO plugins
      * to fill in the empty player's StatMap before performing
-     * stat updates. As soon as the
+     * stat updates.
      */
     @Nullable
-    private final List<MMOPlugin> pluginLoadQueue = new ArrayList<>();
+    private List<MMOPlugin> pluginLoadQueue = new LinkedList<>();
 
     // Temporary player data
     private final CooldownMap cooldownMap = new CooldownMap();
@@ -165,14 +165,21 @@ public class MMOPlayerData {
     }
 
     public boolean hasFullySynchronized() {
-        return pluginLoadQueue.isEmpty();
+        return pluginLoadQueue == null || pluginLoadQueue.isEmpty();
     }
 
-    public void markAsSynchronized(@NotNull MMOPlugin plugin) {
-        if (!pluginLoadQueue.remove(plugin) || !pluginLoadQueue.isEmpty()) return;
+    public void markAsSynchronized(@NotNull MMOPlugin plugin, @NotNull SynchronizedDataHolder holder) {
+        Validate.notNull(pluginLoadQueue, "Player is offline or MMO player data already synchronized");
+        Validate.isTrue(pluginLoadQueue.remove(plugin), "Player data already marked synchronized");
 
-        // Ran when the player data is fully synchronized
-        statMap.updateAll();
+        // Full MMO plugin synchronization
+        if (pluginLoadQueue.isEmpty()) {
+
+            // If player is online
+            if (!lookup) statMap.updateAll();
+
+            pluginLoadQueue = null;
+        }
     }
 
     /**
@@ -351,13 +358,14 @@ public class MMOPlayerData {
 
         // When logging in
         if (player != null) {
-            pluginLoadQueue.clear();
+            pluginLoadQueue = new ArrayList<>();
             for (MMOPlugin mmoPlugin : MythicLib.plugin.getMMOPlugins())
                 if (mmoPlugin.hasData()) pluginLoadQueue.add(mmoPlugin);
         }
 
         // When logging off
         else {
+            pluginLoadQueue = null;
             statMap.flushCache();
         }
     }

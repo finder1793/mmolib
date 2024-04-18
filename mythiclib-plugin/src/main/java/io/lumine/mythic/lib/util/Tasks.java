@@ -119,7 +119,7 @@ public class Tasks {
 
     private static void printStackTraceSync(@NotNull Plugin plugin, @NotNull Throwable throwable) {
         Bukkit.getScheduler().runTask(plugin, () -> {
-            plugin.getLogger().log(Level.WARNING, "Worker thread error:");
+            plugin.getLogger().log(Level.INFO, "Caught error on async thread:");
             throwable.printStackTrace();
         });
     }

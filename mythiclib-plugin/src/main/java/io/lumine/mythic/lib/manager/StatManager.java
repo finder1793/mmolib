@@ -122,13 +122,12 @@ public class StatManager {
 
     @Deprecated
     public void runUpdates(@NotNull StatMap map) {
-        handlers.values().forEach(handler -> handler.runUpdate(map.getInstance(handler.getStat())));
+        for (StatInstance ins : map.getInstances()) ins.update();
     }
 
     @Deprecated
     public void runUpdate(@NotNull StatInstance instance) {
-        StatHandler handler = handlers.get(instance.getStat());
-        if (handler != null) handler.runUpdate(instance);
+        instance.update();
     }
 
     @Deprecated

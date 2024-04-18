@@ -59,7 +59,7 @@ public class StatHandler {
      * buffs, etc.
      *
      * @param instance Stat instance of player that needs updating
-     * @see {@link StatInstance#update()}
+     * @see StatInstance#update()
      */
     public void runUpdate(@NotNull StatInstance instance) {
         // Nothing to do

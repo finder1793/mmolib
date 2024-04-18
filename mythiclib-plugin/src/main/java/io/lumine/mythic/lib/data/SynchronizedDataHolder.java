@@ -102,8 +102,10 @@ public abstract class SynchronizedDataHolder implements OfflineDataHolder {
     }
 
     public void markAsSynchronized() {
-        Validate.isTrue(!sync, "Data holder already marked synchronized");
+        Validate.isTrue(!sync, "Data holder already synchronized");
+        Validate.isTrue(playerData.isOnline() || playerData.isLookup(), "Cannot synchronize non-lookup offline player data");
+
         sync = true;
-        if (mmoPlugin != null) playerData.markAsSynchronized(mmoPlugin);
+        if (mmoPlugin != null) playerData.markAsSynchronized(mmoPlugin, this);
     }
 }

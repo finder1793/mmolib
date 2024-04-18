@@ -65,9 +65,6 @@ public class StatMap implements StatProvider {
         return stats.values();
     }
 
-    /**
-     * Updates all requires
-     */
     public void updateAll() {
         for (StatHandler handler : MythicLib.plugin.getStats().getHandlers()) {
             final StatInstance ins = stats.get(handler.getStat());
