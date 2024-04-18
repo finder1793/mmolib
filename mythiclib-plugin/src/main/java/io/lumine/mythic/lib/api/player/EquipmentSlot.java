@@ -100,14 +100,13 @@ public enum EquipmentSlot {
             // Simple rules
             case VOID:
                 return false;
-
             case OTHER:
                 return true;
 
             // Ignore modifiers from opposite hand if it's a weapon
             case RANGED_WEAPON:
             case MELEE_WEAPON:
-                return equipmentSlot != getOppositeHand();
+                return equipmentSlot == this;
 
             // Hand items
             case OFFHAND_ITEM:
