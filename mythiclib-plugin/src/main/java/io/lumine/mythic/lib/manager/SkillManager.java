@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.manager;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.api.event.SkillRegistrationEvent;
 import io.lumine.mythic.lib.script.Script;
 import io.lumine.mythic.lib.script.condition.Condition;
 import io.lumine.mythic.lib.script.condition.generic.BooleanCondition;
