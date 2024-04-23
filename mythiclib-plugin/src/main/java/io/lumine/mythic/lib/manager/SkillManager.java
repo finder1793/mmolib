@@ -421,6 +421,9 @@ public class SkillManager {
                 registerSkillHandlerType(config -> config.contains("skillapi-skill-id"), config -> new SkillAPISkillHandler(config));
         }
 
+        SkillRegistrationEvent event = new SkillRegistrationEvent();
+        event.CallEvent();
+        
         // Load default skills
         try {
             JarFile file = new JarFile(MythicLib.plugin.getJarFile());
