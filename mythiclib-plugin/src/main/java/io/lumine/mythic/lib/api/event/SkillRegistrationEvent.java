@@ -9,6 +9,9 @@ public class SkillRegistrationEvent extends Event {
 
     boolean clearBefore = false;
 
+    public SkillRegistrationEvent() {
+    }
+
     public SkillRegistrationEvent(boolean clearBefore) {
         this.clearBefore = clearBefore;
     }
