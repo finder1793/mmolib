@@ -13,6 +13,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import java.util.Random;
@@ -33,7 +34,11 @@ public class AttackEffects implements Listener {
         skillCritCooldown = MythicLib.plugin.getConfig().getDouble("critical-strikes.skill.cooldown", 3);
     }
 
-    @EventHandler(ignoreCancelled = true)
+    /**
+     * On priority HIGH so that it applies onto elemental damage
+     * which is applied on priority NORMAL.
+     */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onHitAttackEffects(PlayerAttackEvent event) {
         PlayerMetadata stats = event.getAttacker();
 
