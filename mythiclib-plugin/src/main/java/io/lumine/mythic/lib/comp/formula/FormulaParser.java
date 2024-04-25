@@ -11,7 +11,9 @@ import java.util.List;
 
 public class FormulaParser {
     private final Interpreter interpreter;
-    private final List<String> mathFunctions = Arrays.asList("pow", "sqrt", "sin", "cos", "tan", "asin", "acos", "atan", "atan2", "exp", "log", "random", "abs", "max", "min");
+    private final List<String> zeroArityMathFunctions = Arrays.asList("random");
+    private final List<String> unaryMathFunctions = Arrays.asList("sqrt", "sin", "cos", "tan", "asin", "acos", "atan", "atan2", "exp", "log", "abs");
+    private final List<String> binaryMathFunctions = Arrays.asList("pow", "min", "max");
 
     public FormulaParser() {
         interpreter = new Interpreter();
@@ -27,11 +29,16 @@ public class FormulaParser {
             interpreter.eval("private static final double PI = Math.PI, Pi = Math.PI;");
 
             // random(double, double) function definition
-            interpreter.eval("private static final double random(double d1, double d2) { return RANDOM.nextDouble() * (d2 - d1) + d1; }");
+            interpreter.eval("private static final double random(double a, double b) { return RANDOM.nextDouble() * (b - a) + a; }");
 
             // Math function definitions
-            for (String mathFunction : mathFunctions)
-                interpreter.eval("private static final double " + mathFunction + "(double d) { return Math." + mathFunction + "(d); }");
+            for (String mathFunction : zeroArityMathFunctions)
+                interpreter.eval("private static final double " + mathFunction + "() { return Math." + mathFunction + "(); }");
+            for (String mathFunction : unaryMathFunctions)
+                interpreter.eval("private static final double " + mathFunction + "(double a) { return Math." + mathFunction + "(a); }");
+            for (String mathFunction : binaryMathFunctions)
+                interpreter.eval("private static final double " + mathFunction + "(double a, double b) { return Math." + mathFunction + "(a, b); }");
+
         } catch (EvalError error) {
             throw new RuntimeException(error);
         }
