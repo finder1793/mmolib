@@ -259,9 +259,7 @@ public class SkillManager {
     }
 
     public void registerSkillHandler(SkillHandler<?> handler) {
-        Validate.isTrue(!handlers.containsKey(handler.getId()), "A skill handler with the same name already exists");
-
-        handlers.put(handler.getId(), handler);
+        Validate.isTrue(handlers.putIfAbsent(handler.getId(), handler) == null, "A skill handler with the same name already exists");
 
         if (!registration && handler instanceof Listener)
             Bukkit.getPluginManager().registerEvents((Listener) handler, MythicLib.plugin);
@@ -429,8 +427,6 @@ public class SkillManager {
                 if (!name.contains("$") && name.endsWith(".class") && name.startsWith("io.lumine.mythic.lib.skill.handler.def.")) {
                     SkillHandler<?> ability = (SkillHandler<?>) Class.forName(name.substring(0, name.length() - 6)).getDeclaredConstructor().newInstance();
                     registerSkillHandler(ability);
-                    if (ability instanceof Listener)
-                        Bukkit.getPluginManager().registerEvents((Listener) ability, MythicLib.plugin);
                 }
             }
             file.close();
