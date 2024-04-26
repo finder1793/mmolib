@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.listener;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.AttackEvent;
 import io.lumine.mythic.lib.api.event.mitigation.PlayerBlockEvent;
 import io.lumine.mythic.lib.api.event.mitigation.PlayerDodgeEvent;
@@ -101,7 +102,7 @@ public class MitigationMechanics implements Listener {
             player.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, player.getLocation(), 16, 0, 0, 0, .06);
             if (parryKnockback > 0 && event.toBukkit() instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) event.toBukkit()).getDamager() instanceof LivingEntity) {
                 LivingEntity attacker = (LivingEntity) ((EntityDamageByEntityEvent) event.toBukkit()).getDamager();
-                attacker.setVelocity(normalize(attacker.getLocation().toVector().subtract(player.getLocation().toVector())).setY(.35).multiply(parryKnockback));
+                attacker.setVelocity(UtilityMethods.safeNormalize(attacker.getLocation().toVector().subtract(player.getLocation().toVector())).setY(.35).multiply(parryKnockback));
             }
             return;
         }
@@ -167,15 +168,10 @@ public class MitigationMechanics implements Listener {
         // Backwards compatibility
         if (attacker == null) {
             final Entity damager = event.toBukkit() instanceof EntityDamageByEntityEvent ? ((EntityDamageByEntityEvent) event.toBukkit()).getDamager() : null;
-            return damager == null ? normalize(damager.getLocation().subtract(victim.getLocation()).toVector()) : victim.getEyeLocation().getDirection();
+            return damager == null ? UtilityMethods.safeNormalize(damager.getLocation().subtract(victim.getLocation()).toVector()) : victim.getEyeLocation().getDirection();
         }
 
-        return normalize(attacker.getEntity().getLocation().subtract(victim.getLocation()).toVector());
-    }
-
-    @NotNull
-    private Vector normalize(Vector vec) {
-        return vec.lengthSquared() == 0 ? vec : vec.normalize();
+        return UtilityMethods.safeNormalize(attacker.getEntity().getLocation().subtract(victim.getLocation()).toVector());
     }
 
     private double getYaw(Entity player, Vector vec) {

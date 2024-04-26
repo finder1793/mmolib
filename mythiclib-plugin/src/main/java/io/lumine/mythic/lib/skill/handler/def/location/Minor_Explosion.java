@@ -11,7 +11,6 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 public class Minor_Explosion extends SkillHandler<LocationSkillResult> {
     public Minor_Explosion() {
@@ -41,11 +40,7 @@ public class Minor_Explosion extends SkillHandler<LocationSkillResult> {
         for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
             if (entity.getLocation().distanceSquared(loc) < radiusSquared && UtilityMethods.canTarget(caster, entity)) {
                 skillMeta.getCaster().attack((LivingEntity) entity, damage, DamageType.SKILL, DamageType.MAGIC);
-                entity.setVelocity(normalize(entity.getLocation().subtract(loc).toVector().setY(0)).setY(.2).multiply(2 * knockback));
+                entity.setVelocity(UtilityMethods.safeNormalize(entity.getLocation().subtract(loc).toVector().setY(0)).setY(.2).multiply(2 * knockback));
             }
-    }
-
-    private Vector normalize(Vector vec) {
-        return vec.lengthSquared() == 0 ? vec : vec.normalize();
     }
 }

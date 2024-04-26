@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.skill.handler.def.simple;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.util.TemporaryListener;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
@@ -13,6 +14,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 public class Bunny_Mode extends SkillHandler<SimpleSkillResult> {
     public Bunny_Mode() {
@@ -26,6 +28,8 @@ public class Bunny_Mode extends SkillHandler<SimpleSkillResult> {
         return new SimpleSkillResult();
     }
 
+    private static final long JUMP_COOLDOWN = 300;
+
     @Override
     public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         double duration = skillMeta.getParameter("duration") * 20;
@@ -38,6 +42,8 @@ public class Bunny_Mode extends SkillHandler<SimpleSkillResult> {
             final BunnyModeEffect handler = new BunnyModeEffect(caster, duration);
             int j = 0;
 
+            long lastJump = 0;
+
             public void run() {
                 if (j++ > duration) {
                     handler.close(3 * 20);
@@ -45,12 +51,13 @@ public class Bunny_Mode extends SkillHandler<SimpleSkillResult> {
                     return;
                 }
 
-                if (caster.getLocation().add(0, -.5, 0).getBlock().getType().isSolid()) {
-                    caster.setVelocity(caster.getEyeLocation().getDirection().setY(0).normalize().multiply(.8 * xz).setY(0.5 * y / xz));
+                if (caster.getLocation().add(0, -.3, 0).getBlock().getType().isSolid() && System.currentTimeMillis() - lastJump > JUMP_COOLDOWN) {
+                    lastJump = System.currentTimeMillis();
+                    final Vector dir = UtilityMethods.safeNormalize(caster.getEyeLocation().getDirection().setY(0), new Vector(0, 1, 0));
+                    caster.setVelocity(dir.multiply(.8 * xz).setY(0.5 * y));
                     caster.getWorld().playSound(caster.getLocation(), VersionSound.ENTITY_ENDER_DRAGON_FLAP.toSound(), 2, 1);
                     for (double a = 0; a < Math.PI * 2; a += Math.PI / 12)
-                        caster.getWorld().spawnParticle(Particle.CLOUD, caster.getLocation(), 0, Math.cos(a), 0, Math.sin(a),
-                                .2);
+                        caster.getWorld().spawnParticle(Particle.CLOUD, caster.getLocation(), 0, Math.cos(a), 0, Math.sin(a), .2);
                 }
             }
         }.runTaskTimer(MythicLib.plugin, 0, 1);
@@ -63,8 +70,6 @@ public class Bunny_Mode extends SkillHandler<SimpleSkillResult> {
             super(EntityDamageEvent.getHandlerList());
 
             this.player = player;
-
-            close((long) (duration * 20));
         }
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

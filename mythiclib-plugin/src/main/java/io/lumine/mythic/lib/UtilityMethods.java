@@ -45,6 +45,16 @@ public class UtilityMethods {
         return new Location(Bukkit.getWorld(config.getString("world")), config.getDouble("x"), config.getDouble("y"), config.getDouble("z"), (float) config.getDouble("yaw"), (float) config.getDouble("pitch"));
     }
 
+    public static Vector safeNormalize(@NotNull Vector vec) {
+        return safeNormalize(vec, vec);
+    }
+
+    public static Vector safeNormalize(@NotNull Vector vec, @NotNull Vector defaultValue) {
+        final double normSquared = vec.lengthSquared();
+        if (normSquared == 0) return defaultValue;
+        return vec.multiply(1d / Math.sqrt(normSquared));
+    }
+
     private static final Listener PRIVATE_LISTENER = new Listener() {
     };
 

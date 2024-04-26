@@ -56,12 +56,8 @@ public class Black_Hole extends SkillHandler<LocationSkillResult> {
 
                 for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
                     if (entity.getLocation().distanceSquared(loc) < Math.pow(radius, 2) && UtilityMethods.canTarget(caster, entity))
-                        entity.setVelocity(normalize(loc.clone().subtract(entity.getLocation()).toVector()).multiply(.5));
+                        entity.setVelocity(UtilityMethods.safeNormalize(loc.clone().subtract(entity.getLocation()).toVector()).multiply(.5));
             }
         }.runTaskTimer(MythicLib.plugin, 0, 1);
-    }
-
-    private Vector normalize(Vector vec) {
-        return vec.lengthSquared() == 0 ? vec : vec.normalize();
     }
 }
