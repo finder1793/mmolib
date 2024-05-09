@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.skill.handler.def.simple;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
@@ -92,7 +93,7 @@ public class Shadow_Veil extends SkillHandler<SimpleSkillResult> {
 
         @Override
         public void run() {
-            if (ti++ > duration * 20 || !player.isOnline()) {
+            if (ti++ > duration * 20 || UtilityMethods.isInvalidated(player)) {
                 close();
                 return;
             }

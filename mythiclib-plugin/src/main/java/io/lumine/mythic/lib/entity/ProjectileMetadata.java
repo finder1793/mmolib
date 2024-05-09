@@ -41,7 +41,6 @@ import java.util.List;
  */
 public class ProjectileMetadata extends TemporaryListener {
     private final int entityId;
-    private final BukkitRunnable runnable;
     private final ProjectileType projectileType;
 
     /**
@@ -90,15 +89,14 @@ public class ProjectileMetadata extends TemporaryListener {
         this.cachedSkills = shooter.getData().getPassiveSkillMap().isolateModifiers(shooter.getActionHand());
 
         // Trigger skills
-        runnable = new BukkitRunnable() {
-            final TriggerMetadata tickTriggerMetadata = new TriggerMetadata(shooter, TriggerType.API, projectile, null);
+        registerRunnable(new BukkitRunnable() {
+            final TriggerMetadata tickTriggerMetadata = new TriggerMetadata(shooter, projectileType.getTickTrigger(), projectile, null);
 
             @Override
             public void run() {
-                shooter.getData().triggerSkills(new TriggerMetadata(ProjectileMetadata.this.shooter, projectileType.getTickTrigger(), projectile, null), cachedSkills);
+                shooter.getData().triggerSkills(tickTriggerMetadata, cachedSkills);
             }
-        };
-        runnable.runTaskTimer(MythicLib.plugin, 0, 1);
+        }, runnable -> runnable.runTaskTimer(MythicLib.plugin, 0, 1));
 
         // Register
         projectile.setMetadata(METADATA_KEY, new FixedMetadataValue(MythicLib.plugin, this));
@@ -182,7 +180,7 @@ public class ProjectileMetadata extends TemporaryListener {
 
     @Override
     public void whenClosed() {
-        runnable.cancel();
+        // Nothing
     }
 
     @Deprecated

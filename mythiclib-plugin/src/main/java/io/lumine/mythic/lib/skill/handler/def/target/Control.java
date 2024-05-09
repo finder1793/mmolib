@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.skill.handler.def.target;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
@@ -79,7 +80,7 @@ public class Control extends SkillHandler<TargetSkillResult> {
 
         @Override
         public void run() {
-            if (!caster.getData().isOnline() || entity.isDead() || j++ >= d) {
+            if (UtilityMethods.isInvalidated(caster) || entity.isDead() || j++ >= d) {
                 close();
                 return;
             }

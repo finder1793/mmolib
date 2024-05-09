@@ -63,7 +63,7 @@ public class Bunny_Mode extends SkillHandler<SimpleSkillResult> {
         }.runTaskTimer(MythicLib.plugin, 0, 1);
     }
 
-    public class BunnyModeEffect extends TemporaryListener {
+    public static class BunnyModeEffect extends TemporaryListener {
         private final Player player;
 
         public BunnyModeEffect(Player player, double duration) {

@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.skill.handler.def.target;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
@@ -42,7 +43,7 @@ public class Combo_Attack extends SkillHandler<TargetSkillResult> {
 
             @Override
             public void run() {
-                if (counter++ >= count || !skillMeta.getCaster().getData().isOnline() || target.isDead()) {
+                if (counter++ >= count || UtilityMethods.isInvalidated(skillMeta.getCaster()) || target.isDead()) {
                     cancel();
                     return;
                 }

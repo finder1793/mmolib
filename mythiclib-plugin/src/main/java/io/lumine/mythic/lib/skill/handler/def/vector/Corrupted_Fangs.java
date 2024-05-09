@@ -61,7 +61,7 @@ public class Corrupted_Fangs extends SkillHandler<VectorSkillResult> {
         }.runTaskTimer(MythicLib.plugin, 0, 1);
     }
 
-    public class FangsHandler extends TemporaryListener {
+    public static class FangsHandler extends TemporaryListener {
         private final Set<Integer> entities = new HashSet<>();
         private final PlayerMetadata caster;
         private final double skillDamage;

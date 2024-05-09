@@ -4,7 +4,9 @@ import io.lumine.mythic.lib.api.MMOLineConfig;
 import io.lumine.mythic.lib.api.condition.RegionCondition;
 import io.lumine.mythic.lib.api.condition.type.MMOCondition;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
+import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.util.annotation.BackwardsCompatibility;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
@@ -91,6 +93,18 @@ public class UtilityMethods {
         }
 
         return null;
+    }
+
+    public static boolean isInvalidated(@NotNull PlayerMetadata caster) {
+        return isInvalidated(caster.getData());
+    }
+
+    public static boolean isInvalidated(@NotNull MMOPlayerData playerData) {
+        return !playerData.isOnline() || isInvalidated(playerData.getPlayer());
+    }
+
+    public static boolean isInvalidated(@NotNull Player player) {
+        return !player.isOnline() || player.isDead();
     }
 
     @Nullable

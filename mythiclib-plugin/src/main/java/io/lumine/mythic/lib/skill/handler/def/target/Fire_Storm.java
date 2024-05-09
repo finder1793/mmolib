@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.skill.handler.def.target;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
@@ -40,8 +41,7 @@ public class Fire_Storm extends SkillHandler<TargetSkillResult> {
 
             @Override
             public void run() {
-                if (j++ > 5 || caster.getPlayer().isDead() || !caster.getPlayer().isOnline() || target.isDead() || !caster.getPlayer().getWorld()
-                        .equals(target.getWorld())) {
+                if (j++ > 5 || UtilityMethods.isInvalidated(caster) || target.isDead() || !caster.getPlayer().getWorld().equals(target.getWorld())) {
                     cancel();
                     return;
                 }

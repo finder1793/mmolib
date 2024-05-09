@@ -103,7 +103,7 @@ public class Explosive_Turkey extends SkillHandler<VectorSkillResult> {
     /**
      * This fixes an issue where chickens sometimes drop
      */
-    public class ChickenHandler extends TemporaryListener {
+    public static class ChickenHandler extends TemporaryListener {
         private final Chicken chicken;
 
         public ChickenHandler(Chicken chicken) {

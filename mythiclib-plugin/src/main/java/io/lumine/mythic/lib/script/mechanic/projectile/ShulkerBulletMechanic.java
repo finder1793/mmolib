@@ -43,13 +43,6 @@ public class ShulkerBulletMechanic extends DirectionMechanic {
         private final Vector direction;
         private final SkillMetadata skillMetadata;
 
-        private final BukkitRunnable runnable = new BukkitRunnable() {
-            public void run() {
-                if (bullet.isDead()) close();
-                else bullet.setVelocity(direction);
-            }
-        };
-
         public ShulkerBulletHandler(ShulkerBullet bullet, SkillMetadata skillMetadata, Vector direction) {
             super(EntityDamageByEntityEvent.getHandlerList());
 
@@ -57,13 +50,18 @@ public class ShulkerBulletMechanic extends DirectionMechanic {
             this.bullet = bullet;
             this.skillMetadata = skillMetadata;
 
-            runnable.runTaskTimer(MythicLib.plugin, 0, 1);
+            registerRunnable(new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (bullet.isDead()) close();
+                    else bullet.setVelocity(direction);
+                }
+            }, runnable -> runnable.runTaskTimer(MythicLib.plugin, 0, 1));
         }
 
         @Override
         public void whenClosed() {
-            bullet.remove();
-            runnable.cancel();
+            if (!bullet.isDead()) bullet.remove();
         }
 
         @EventHandler

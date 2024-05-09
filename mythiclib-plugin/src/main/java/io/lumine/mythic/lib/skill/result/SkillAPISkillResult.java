@@ -6,6 +6,7 @@ import com.sucy.skill.api.skills.Skill;
 import com.sucy.skill.api.skills.SkillShot;
 import com.sucy.skill.api.skills.TargetSkill;
 import com.sucy.skill.api.target.TargetHelper;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +45,7 @@ public class SkillAPISkillResult implements SkillResult {
     public boolean isSuccessful(SkillMetadata skillMeta) {
 
         // Dead players can't cast skills
-        if (skillMeta.getCaster().getPlayer().isDead())
+        if (UtilityMethods.isInvalidated(skillMeta.getCaster()))
             return false;
 
         // Skill Shots

@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.skill.handler.def.target;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
@@ -71,7 +72,7 @@ public class Telekinesy extends SkillHandler<TargetSkillResult> {
 
         @Override
         public void run() {
-            if (!caster.isOnline() || entity.isDead() || j++ >= duration) {
+            if (UtilityMethods.isInvalidated(caster) || entity.isDead() || j++ >= duration) {
                 close();
                 return;
             }

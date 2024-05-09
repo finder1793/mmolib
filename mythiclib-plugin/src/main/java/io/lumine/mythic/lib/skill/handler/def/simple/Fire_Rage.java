@@ -128,7 +128,7 @@ public class Fire_Rage extends SkillHandler<SimpleSkillResult> {
 
         @Override
         public void run() {
-            if (caster.getPlayer().isDead() || !caster.getPlayer().isOnline()) {
+            if (UtilityMethods.isInvalidated(caster)) {
                 close();
                 return;
             }

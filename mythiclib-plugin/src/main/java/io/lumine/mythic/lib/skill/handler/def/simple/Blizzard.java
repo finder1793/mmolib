@@ -61,7 +61,7 @@ public class Blizzard extends SkillHandler<SimpleSkillResult> {
         }.runTaskTimer(MythicLib.plugin, 0, 2);
     }
 
-    public class CustomSnowballRegistry extends TemporaryListener {
+    public static class CustomSnowballRegistry extends TemporaryListener {
         private final List<UUID> entities = new ArrayList<>();
         private final double damage;
 
@@ -73,7 +73,7 @@ public class Blizzard extends SkillHandler<SimpleSkillResult> {
 
         @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
         public void a(EntityDamageByEntityEvent event) {
-            if (entities.contains(event.getDamager().getUniqueId()))
+            if (entities.remove(event.getDamager().getUniqueId()))
                 event.setDamage(damage);
         }
 

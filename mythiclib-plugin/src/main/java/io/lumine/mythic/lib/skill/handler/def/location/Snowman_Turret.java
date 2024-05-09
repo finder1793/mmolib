@@ -52,7 +52,7 @@ public class Snowman_Turret extends SkillHandler<LocationSkillResult> {
             final TurretHandler turret = new TurretHandler(skillMeta.getParameter("damage"));
 
             public void run() {
-                if (ti++ > duration || caster.isDead() || snowman == null || snowman.isDead()) {
+                if (ti++ > duration || UtilityMethods.isInvalidated(caster) || snowman.isDead()) {
                     turret.close(3 * 20);
                     snowman.remove();
                     cancel();
@@ -79,7 +79,7 @@ public class Snowman_Turret extends SkillHandler<LocationSkillResult> {
         }.runTaskTimer(MythicLib.plugin, 0, 1);
     }
 
-    public class TurretHandler extends TemporaryListener {
+    public static class TurretHandler extends TemporaryListener {
         private final List<UUID> entities = new ArrayList<>();
         private final double damage;
 

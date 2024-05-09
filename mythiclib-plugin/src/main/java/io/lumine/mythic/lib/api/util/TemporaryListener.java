@@ -1,11 +1,17 @@
 package io.lumine.mythic.lib.api.util;
 
 import io.lumine.mythic.lib.MythicLib;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public abstract class TemporaryListener implements Listener {
 
@@ -21,6 +27,14 @@ public abstract class TemporaryListener implements Listener {
      * being closed at least once
      */
     private boolean closed;
+
+    /**
+     * Temporary listeners often have a timed (or even delayed)
+     * runnable scheduled on the side for skills or waiting times
+     * for instance. This is purely optional.
+     */
+    @Nullable
+    private BukkitRunnable runnable;
 
     public TemporaryListener(HandlerList... handlerLists) {
         this(MythicLib.plugin, handlerLists);
@@ -47,17 +61,30 @@ public abstract class TemporaryListener implements Listener {
         Bukkit.getScheduler().runTaskLater(MythicLib.plugin, (Runnable) this::close, duration);
     }
 
+    @NotNull
+    public BukkitRunnable getRunnable() {
+        return Objects.requireNonNull(runnable, "No runnable registered");
+    }
+
+    public void registerRunnable(@NotNull BukkitRunnable runnable, Consumer<BukkitRunnable> action) {
+        Validate.notNull(runnable, "Runnable cannot be null");
+        Validate.isTrue(this.runnable == null, "Runnable already registered");
+
+        this.runnable = runnable;
+        action.accept(runnable);
+    }
+
     /**
      * Immediately unregisters the listener
      *
      * @return If it's the first time this method is called for this instance
      */
     public boolean close() {
-        if (closed)
-            return false;
+        if (closed) return false;
 
         closed = true;
         whenClosed();
+        if (runnable != null && !runnable.isCancelled()) runnable.cancel();
         for (HandlerList list : handlerLists)
             list.unregister(this);
         return true;

@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.skill.handler.def.target;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
@@ -77,7 +78,7 @@ public class Human_Shield extends SkillHandler<TargetSkillResult> {
 
         @Override
         public void run() {
-            if (!caster.isOnline() || caster.getPlayer().isDead() || !target.isOnline() || target.isDead() || j++ >= duration) {
+            if (UtilityMethods.isInvalidated(caster) || UtilityMethods.isInvalidated(target) || j++ >= duration) {
                 close();
                 return;
             }

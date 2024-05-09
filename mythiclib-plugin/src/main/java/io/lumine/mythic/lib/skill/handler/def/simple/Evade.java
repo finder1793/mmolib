@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.skill.handler.def.simple;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.damage.DamageType;
@@ -70,8 +71,7 @@ public class Evade extends SkillHandler<SimpleSkillResult> {
 
         @Override
         public void run() {
-            if (!data.isOnline() || data.getPlayer().isDead())
-                close();
+            if (UtilityMethods.isInvalidated(data)) close();
             else
                 data.getPlayer().getWorld().spawnParticle(Particle.CLOUD, data.getPlayer().getLocation().add(0, 1, 0), 0);
         }

@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.skill.handler.def;
 
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.SkillResult;
@@ -34,7 +35,7 @@ public class Warp extends SkillHandler<Warp.WarpSkillResult> {
         Location loc = result.getLocation();
 
         new ParabolicProjectile(caster.getLocation().add(0, 1, 0), loc.clone().add(0, 1, 0), () -> {
-            if (caster.isOnline() && !caster.isDead()) {
+            if (!UtilityMethods.isInvalidated(caster)) {
                 caster.teleport(loc);
                 caster.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, caster.getLocation().add(0, 1, 0), 0);
                 caster.getWorld().spawnParticle(Particle.SPELL_INSTANT, caster.getLocation().add(0, 1, 0), 32, 0, 0, 0, .1);
@@ -43,7 +44,7 @@ public class Warp extends SkillHandler<Warp.WarpSkillResult> {
         }, 2, Particle.SPELL_INSTANT);
     }
 
-    public class WarpSkillResult implements SkillResult {
+    public static class WarpSkillResult implements SkillResult {
         private final Location loc;
 
         public WarpSkillResult(SkillMetadata meta) {

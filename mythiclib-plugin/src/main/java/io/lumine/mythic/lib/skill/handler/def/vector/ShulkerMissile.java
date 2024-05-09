@@ -58,24 +58,13 @@ public class ShulkerMissile extends SkillHandler<VectorSkillResult> {
         }.runTaskTimer(MythicLib.plugin, 0, 3);
     }
 
-    public class ShulkerMissileHandler extends TemporaryListener {
+    public static class ShulkerMissileHandler extends TemporaryListener {
         private final PlayerMetadata caster;
         private final ShulkerBullet bullet;
         private final Vector vel;
         private final long duration;
         private final double damage;
         private final int effectDuration;
-
-        private final BukkitRunnable runnable = new BukkitRunnable() {
-            double ti = 0;
-
-            public void run() {
-                if (bullet.isDead() || ti++ >= duration) {
-                    bullet.remove();
-                    cancel();
-                } else bullet.setVelocity(vel);
-            }
-        };
 
         public ShulkerMissileHandler(PlayerMetadata caster, ShulkerBullet bullet, Vector vel, long duration, double damage, int effectDuration) {
             super(EntityDamageByEntityEvent.getHandlerList());
@@ -87,12 +76,19 @@ public class ShulkerMissile extends SkillHandler<VectorSkillResult> {
             this.damage = damage;
             this.effectDuration = effectDuration;
 
-            runnable.runTaskTimer(MythicLib.plugin, 0, 1);
+            registerRunnable(new BukkitRunnable() {
+                double ti = 0;
+
+                public void run() {
+                    if (bullet.isDead() || ti++ >= duration) close();
+                    else bullet.setVelocity(vel);
+                }
+            }, runnable -> runnable.runTaskTimer(MythicLib.plugin, 0, 1));
         }
 
         @Override
         public void whenClosed() {
-            // Nothing
+            if (!bullet.isDead()) bullet.remove();
         }
 
         @EventHandler

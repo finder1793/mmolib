@@ -30,6 +30,7 @@ public class TargetSkillResult implements SkillResult {
         this.target = target;
     }
 
+    @Nullable
     public LivingEntity getTarget() {
         return target;
     }

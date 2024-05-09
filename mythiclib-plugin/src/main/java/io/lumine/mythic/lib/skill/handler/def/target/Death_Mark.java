@@ -36,7 +36,7 @@ public class Death_Mark extends SkillHandler<TargetSkillResult> {
 
             public void run() {
                 ti++;
-                if (ti > duration || target == null || target.isDead()) {
+                if (ti > duration || target.isDead()) {
                     cancel();
                     return;
                 }
