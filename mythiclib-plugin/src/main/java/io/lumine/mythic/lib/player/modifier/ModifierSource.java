@@ -73,7 +73,24 @@ public enum ModifierSource {
      */
     VOID;
 
+    /**
+     * @return Is the source of the modifier a weapon?
+     */
     public boolean isWeapon() {
         return this == MELEE_WEAPON || this == RANGED_WEAPON;
+    }
+
+    /**
+     * @return Is the source of the modifier an item that must be handheld (accessories & weapons).
+     */
+    public boolean isHandheld() {
+        return isEquipment() && this != ARMOR && this != ACCESSORY;
+    }
+
+    /**
+     * @return Is the source of the modifier a piece of equipment (either handheld or armor).
+     */
+    public boolean isEquipment() {
+        return this != VOID && this != OTHER;
     }
 }
