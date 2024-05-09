@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.skill.trigger;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.handler.def.passive.Backstab;
+import io.lumine.mythic.lib.util.annotation.NotUsed;
 import org.apache.commons.lang.Validate;
 import org.jetbrains.annotations.NotNull;
 
@@ -174,16 +175,6 @@ public class TriggerType {
     SNEAK = new TriggerType("SNEAK", false),
 
     /**
-     * Called when a player equips armor
-     */
-    EQUIP_ARMOR = new TriggerType("EQUIP_ARMOR", false),
-
-    /**
-     * Called when a player unequips armor
-     */
-    UNEQUIP_ARMOR = new TriggerType("UNEQUIP_ARMOR", false),
-
-    /**
      * Called when a player teleports from one location to another.
      * Locations can have different worlds.
      * <p>
@@ -214,6 +205,17 @@ public class TriggerType {
      * @see {@link SkillHandler#isTriggerable()}
      */
     API = new TriggerType("API");
+
+    /**
+     * Called when a player equips armor
+     */
+    @NotUsed
+    public static final TriggerType EQUIP_ARMOR = new TriggerType("EQUIP_ARMOR", false),
+
+    /**
+     * Called when a player unequips armor
+     */
+    UNEQUIP_ARMOR = new TriggerType("UNEQUIP_ARMOR", false);
 
     // CONSUME, POTION_SPLASH, PICKUP, UNCROUCH, INTERACT
 
@@ -252,8 +254,8 @@ public class TriggerType {
         register(LOGIN);
         register(SNEAK);
         register(TELEPORT);
-        register(EQUIP_ARMOR);
-        register(UNEQUIP_ARMOR);
+        //register(EQUIP_ARMOR);
+        //register(UNEQUIP_ARMOR);
         register(TIMER);
         register(CAST);
         register(API);

@@ -6,6 +6,7 @@ import io.lumine.mythic.lib.api.crafting.recipes.vmp.MegaWorkbenchMapping;
 import io.lumine.mythic.lib.api.crafting.recipes.vmp.SuperWorkbenchMapping;
 import io.lumine.mythic.lib.api.crafting.uifilters.MythicItemUIFilter;
 import io.lumine.mythic.lib.api.event.armorequip.ArmorEquipEvent;
+import io.lumine.mythic.lib.api.event.armorequip.ArmorListener;
 import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.command.ExploreAttributesCommand;
@@ -152,7 +153,7 @@ public class MythicLib extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new SkillTriggers(), this);
         Bukkit.getPluginManager().registerEvents(new ElementalDamage(), this);
         Bukkit.getPluginManager().registerEvents(new PvpListener(), this);
-        ArmorEquipEvent.registerListener(this);
+        Bukkit.getPluginManager().registerEvents(new ArmorListener(), this);
 
         if (getConfig().getBoolean("vanilla-damage-modifiers.enabled"))
             Bukkit.getPluginManager().registerEvents(new VanillaDamageModifiers(getConfig().getConfigurationSection("vanilla-damage-modifiers")), this);
