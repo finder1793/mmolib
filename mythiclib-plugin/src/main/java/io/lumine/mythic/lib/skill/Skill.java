@@ -49,7 +49,7 @@ public abstract class Skill implements CooldownObject {
 
         // Lower level skill restrictions
         final T result = handler.getResult(meta);
-        if (!result.isSuccessful(meta)) return result;
+        if (!result.isSuccessful()) return result;
 
         // High level skill restrictions
         if (!getResult(meta)) return result;

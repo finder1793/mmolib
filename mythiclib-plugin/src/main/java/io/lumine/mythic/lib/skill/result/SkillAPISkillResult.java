@@ -18,14 +18,16 @@ public class SkillAPISkillResult implements SkillResult {
     private final PlayerData skillPlayerData;
     private final Skill skill;
     private final int level;
+    private final boolean success;
 
     @Nullable
     private LivingEntity target;
 
-    public SkillAPISkillResult(SkillMetadata skillMeta, Skill skill) {
+    public SkillAPISkillResult(@NotNull SkillMetadata skillMeta, @NotNull Skill skill) {
         this.skillPlayerData = SkillAPI.getPlayerData(skillMeta.getCaster().getPlayer());
         this.skill = skill;
         this.level = (int) skillMeta.getParameter("level");
+        this.success = checkUsage(skillMeta);
     }
 
     public Skill getSkill() {
@@ -42,7 +44,11 @@ public class SkillAPISkillResult implements SkillResult {
     }
 
     @Override
-    public boolean isSuccessful(SkillMetadata skillMeta) {
+    public boolean isSuccessful() {
+        return success;
+    }
+
+    private boolean checkUsage(SkillMetadata skillMeta) {
 
         // Dead players can't cast skills
         if (UtilityMethods.isInvalidated(skillMeta.getCaster()))

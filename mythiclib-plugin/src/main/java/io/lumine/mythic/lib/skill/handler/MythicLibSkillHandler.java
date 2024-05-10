@@ -26,7 +26,7 @@ public class MythicLibSkillHandler extends SkillHandler<MythicLibSkillResult> {
 
     @Override
     public MythicLibSkillResult getResult(SkillMetadata meta) {
-        return new MythicLibSkillResult(script);
+        return new MythicLibSkillResult(meta, script);
     }
 
     @Override

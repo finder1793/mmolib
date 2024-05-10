@@ -35,7 +35,7 @@ public class AttackSkillResult implements SkillResult {
     }
 
     @Override
-    public boolean isSuccessful(SkillMetadata skillMeta) {
+    public boolean isSuccessful() {
         return target != null;
     }
 }

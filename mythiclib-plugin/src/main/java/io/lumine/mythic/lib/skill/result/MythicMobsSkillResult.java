@@ -12,15 +12,15 @@ import io.lumine.mythic.lib.skill.handler.MythicMobsSkillHandler;
 import io.lumine.mythic.lib.util.RayTrace;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 
 public class MythicMobsSkillResult implements SkillResult {
-    private final MythicMobsSkillHandler behaviour;
     private final SkillMetadataImpl mmSkillMeta;
+    private final boolean success;
 
-    public MythicMobsSkillResult(SkillMetadata skillMeta, MythicMobsSkillHandler behaviour) {
-        this.behaviour = behaviour;
+    public MythicMobsSkillResult(@NotNull SkillMetadata skillMeta, @NotNull MythicMobsSkillHandler behaviour) {
 
         // TODO Support trigger/caster difference?
         AbstractEntity trigger = BukkitAdapter.adapt(skillMeta.getCaster().getPlayer());
@@ -30,8 +30,7 @@ public class MythicMobsSkillResult implements SkillResult {
         HashSet<AbstractLocation> targetLocations = new HashSet<>();
 
         // Add target entity
-        if (skillMeta.hasTargetEntity())
-            targetEntities.add(BukkitAdapter.adapt(skillMeta.getTargetEntityOrNull()));
+        if (skillMeta.hasTargetEntity()) targetEntities.add(BukkitAdapter.adapt(skillMeta.getTargetEntityOrNull()));
 
             /*
              * If none is found, provide a default entity target. This takes
@@ -42,8 +41,7 @@ public class MythicMobsSkillResult implements SkillResult {
         else {
             final Player player = skillMeta.getCaster().getPlayer();
             final RayTrace res = new RayTrace(player, 32, entity -> !entity.equals(player) && entity instanceof LivingEntity);
-            if (res.hasHit())
-                targetEntities.add(BukkitAdapter.adapt(res.getHit()));
+            if (res.hasHit()) targetEntities.add(BukkitAdapter.adapt(res.getHit()));
         }
 
         // Add target location
@@ -54,13 +52,15 @@ public class MythicMobsSkillResult implements SkillResult {
 
         // Stats & cast skill are cached inside a variable
         mmSkillMeta.getVariables().putObject(MMO_SKILLMETADATA_TAG, skillMeta);
+
+        success = behaviour.getSkill().isUsable(mmSkillMeta);
     }
 
     public static final String MMO_SKILLMETADATA_TAG = "MMOSkillMetadata";
 
     @Override
-    public boolean isSuccessful(SkillMetadata skillMeta) {
-        return behaviour.getSkill().isUsable(mmSkillMeta);
+    public boolean isSuccessful() {
+        return success;
     }
 
     public SkillMetadataImpl getMythicMobsSkillMetadata() {

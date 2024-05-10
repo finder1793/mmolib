@@ -1,21 +1,20 @@
 package io.lumine.mythic.lib.skill.result.def;
 
-import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.result.SkillResult;
 
 public class SimpleSkillResult implements SkillResult {
-    private final boolean successful;
+    private final boolean success;
 
     public SimpleSkillResult() {
         this(true);
     }
 
-    public SimpleSkillResult(boolean successful) {
-        this.successful = successful;
+    public SimpleSkillResult(boolean success) {
+        this.success = success;
     }
 
     @Override
-    public boolean isSuccessful(SkillMetadata skillMeta) {
-        return successful;
+    public boolean isSuccessful() {
+        return success;
     }
 }

@@ -56,7 +56,7 @@ public class Warp extends SkillHandler<Warp.WarpSkillResult> {
         }
 
         @Override
-        public boolean isSuccessful(SkillMetadata skillMeta) {
+        public boolean isSuccessful() {
             return loc != null;
         }
 

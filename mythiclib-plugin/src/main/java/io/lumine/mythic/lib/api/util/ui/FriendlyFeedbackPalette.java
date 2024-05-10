@@ -89,7 +89,7 @@ public abstract class FriendlyFeedbackPalette {
 
     /**
      * Sometimes one must be clearer when specifying if an operation
-     * completed sucessfully. In such cases, highlight a word
+     * completed successfully. In such cases, highlight a word
      * indicating success with <b>$s</b>.
      * <p></p>
      * Example:

@@ -26,13 +26,11 @@ public class VectorSkillResult implements SkillResult {
 
     @NotNull
     public Vector getTargetDirection(Player player, Entity target) {
-        return target == null || !target.getWorld().equals(player.getWorld()) ?
-                player.getEyeLocation().getDirection() :
-                target.getLocation().add(0, target.getHeight() / 2, 0).subtract(player.getLocation().add(0, 1.3, 0)).toVector().normalize();
+        return target == null || !target.getWorld().equals(player.getWorld()) ? player.getEyeLocation().getDirection() : target.getLocation().add(0, target.getHeight() / 2, 0).subtract(player.getLocation().add(0, 1.3, 0)).toVector().normalize();
     }
 
     @Override
-    public boolean isSuccessful(SkillMetadata skillMeta) {
+    public boolean isSuccessful() {
         return target != null;
     }
 }

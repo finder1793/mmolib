@@ -21,11 +21,11 @@ public class ItemSkillResult extends VectorSkillResult {
     @Nullable
     private final Material defaultMaterial;
 
-    public ItemSkillResult(SkillMetadata skillMeta) {
+    public ItemSkillResult(@NotNull SkillMetadata skillMeta) {
         this(skillMeta, null);
     }
 
-    public ItemSkillResult(SkillMetadata skillMeta, @Nullable Material defaultMaterial) {
+    public ItemSkillResult(@NotNull SkillMetadata skillMeta, @Nullable Material defaultMaterial) {
         super(skillMeta);
 
         this.defaultMaterial = defaultMaterial;
@@ -39,7 +39,7 @@ public class ItemSkillResult extends VectorSkillResult {
     }
 
     @Override
-    public boolean isSuccessful(SkillMetadata skillMeta) {
-        return super.isSuccessful(skillMeta) && (!UtilityMethods.isAir(item) || defaultMaterial != null);
+    public boolean isSuccessful() {
+        return super.isSuccessful() && (!UtilityMethods.isAir(item) || defaultMaterial != null);
     }
 }

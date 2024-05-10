@@ -29,7 +29,7 @@ public class Human_Shield extends SkillHandler<TargetSkillResult> {
     @Override
     public TargetSkillResult getResult(SkillMetadata meta) {
         TargetSkillResult result = new TargetSkillResult(meta, 7, InteractionType.SUPPORT_SKILL);
-        return result.isSuccessful(meta) && result.getTarget() instanceof Player ? result : new TargetSkillResult((LivingEntity) null);
+        return result.isSuccessful() && result.getTarget() instanceof Player ? result : new TargetSkillResult((LivingEntity) null);
     }
 
     @Override
