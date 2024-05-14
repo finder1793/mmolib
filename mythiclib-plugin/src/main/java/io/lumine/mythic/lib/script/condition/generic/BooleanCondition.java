@@ -1,9 +1,9 @@
 package io.lumine.mythic.lib.script.condition.generic;
 
-import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.script.condition.Condition;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
+import io.lumine.mythic.lib.util.formula.BooleanExpression;
 
 /**
  * Checks if the specified algebraic expression returns true
@@ -21,6 +21,6 @@ public class BooleanCondition extends Condition {
 
     @Override
     public boolean isMet(SkillMetadata meta) {
-        return MythicLib.plugin.getFormulaParser().evaluateAs(meta.parseString(formula), Boolean.class).booleanValue();
+        return BooleanExpression.eval(meta.parseString(formula));
     }
 }

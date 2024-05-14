@@ -104,7 +104,7 @@ staff_deal_damage:
 staff_default:
   public: true
   mechanics:
-    - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
+    - 'set_double{variable=range;value="non_zero(<stat.range>, 12)"}'
     - 'sound{sound=ENTITY_FIREWORK_ROCKET_TWINKLE;volume=2;pitch=.5}'
     - 'projectile{life_span=10;speed="<var.range> * 2";hit_entity=staff_default_hit;hit_block=none;tick=staff_default_tick}'
 
@@ -121,7 +121,7 @@ staff_mana:
   public: true
   mechanics:
     - 'sound{sound=ENTITY_BLAZE_SHOOT;pitch=2}'
-    - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
+    - 'set_double{variable=range;value="non_zero(<stat.range>, 12)"}'
     - 'copy_vector{variable=dir;value=caster.eye_direction}'
     - 'set_double{variable=rad;value=.5}'
     - 'projectile{life_span=20;speed="<range> * 2";hit_entity=staff_mana_hit;hit_block=none;tick=staff_mana_tick}'
@@ -169,7 +169,7 @@ LIGHTNING_SPIRIT:
 staff_lightning:
   public: true
   mechanics:
-    - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
+    - 'set_double{variable=range;value="non_zero(<stat.range>, 12)"}'
     - 'sound{sound=ENTITY_FIREWORK_ROCKET_BLAST;volume=2;pitch=1.5}'
     - 'raytrace{tick=staff_lightning_tick;neutral=false;range="<range>";hit_entity=staff_lightning_hit;size=.2;step=.5}'
 
@@ -186,7 +186,7 @@ staff_lightning_tick:
 staff_xray:
   public: true
   mechanics:
-    - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
+    - 'set_double{variable=range;value="non_zero(<stat.range>, 12)"}'
     - 'sound{sound=ENTITY_FIREWORK_ROCKET_BLAST;volume=2;pitch=1.5}'
     - 'raytrace{tick=staff_xray_tick;neutral=false;range="<range>";hit_entity=staff_xray_hit;size=.2;step=.5}'
 
@@ -209,7 +209,7 @@ staff_xray_hit:
 staff_void:
   public: true
   mechanics:
-    - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
+    - 'set_double{variable=range;value="non_zero(<stat.range>, 12)"}'
     - 'sound{sound=ENTITY_BLAZE_SHOOT;volume=2;pitch=2}'
     - 'shulker_bullet{life_span=50;hit_entity=staff_void_hit}'
 
@@ -233,7 +233,7 @@ staff_void_hit_tick:
 staff_nether:
   public: true
   mechanics:
-    - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
+    - 'set_double{variable=range;value="non_zero(<stat.range>, 12)"}'
     - 'sound{sound=ENTITY_BLAZE_SHOOT;volume=2;pitch=2}'
     - 'projectile{life_span=20;speed="<var.range> * 2";hit_entity=staff_nether_hit;hit_block=none;tick=staff_nether_tick;size=.5}'
 
@@ -260,7 +260,7 @@ staff_nether_tick:
 staff_sunfire:
   public: true
   mechanics:
-    - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
+    - 'set_double{variable=range;value="non_zero(<stat.range>, 12)"}'
     - 'ray_trace{size=.4;range="<range>";size=0;hit_block=staff_sunfire_success_block;hit_entity=staff_sunfire_success_entity}'
 
 # Backwards compatibility with MI <6.9
@@ -320,7 +320,7 @@ staff_sunfire_tick2:
 staff_thunder:
   public: true
   mechanics:
-    - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 12"}'
+    - 'set_double{variable=range;value="non_zero(<stat.range>, 12)"}'
     - 'ray_trace{size=.4;range="<range>";size=0;hit_block=staff_thunder_success_block;hit_entity=staff_thunder_success_entity}'
 
 # Backwards compatibility with MI <6.9
@@ -384,7 +384,7 @@ staff_thunder_tick2:
 whip_attack:
   public: true
   mechanics:
-    - 'set_double{variable=range;value="<stat.range> != 0 ? <stat.range> : 8"}'
+    - 'set_double{variable=range;value="non_zero(<stat.range>, 8)"}'
     - 'sound{sound=ENTITY_FIREWORK_ROCKET_BLAST;volume=2;pitch=1.5}'
     - 'raytrace{tick=whip_attack_tick;neutral=false;range="<range>";hit_entity=whip_attack_hit;size=.2;step=.5}'
 
@@ -435,7 +435,7 @@ crossbow_attack:
     - 'ammo{item=ARROW;creative_infinite=true;item_ignore_tag=MMOITEMS_DISABLE_ARROW_CONSUMPTION;consume_if_met=true}'
   mechanics:
     - 'play_sound{sound=ENTITY_ARROW_SHOOT;pitch=.5}'
-    - 'shoot_arrow{from_item=true;player_attack_damage=true;tick=crossbow_arrow_tick;velocity="<stat.arrow_velocity> == 0 ? 3 : 3 * <stat.arrow_velocity>"}'
+    - 'shoot_arrow{from_item=true;player_attack_damage=true;tick=crossbow_arrow_tick;velocity="non_zero(<stat.arrow_velocity>, 1) * 3"}'
 
 crossbow_arrow_tick:
   mechanics:

@@ -40,6 +40,7 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 public class UtilityMethods {
 
@@ -55,6 +56,11 @@ public class UtilityMethods {
         final double normSquared = vec.lengthSquared();
         if (normSquared == 0) return defaultValue;
         return vec.multiply(1d / Math.sqrt(normSquared));
+    }
+
+    @NotNull
+    public static Pattern internalPlaceholderPattern(char start, char end) {
+        return Pattern.compile(start + "[^&|!=" + start + end + "]*?" + end);
     }
 
     private static final Listener PRIVATE_LISTENER = new Listener() {

@@ -62,18 +62,13 @@
                                     <shadedPattern>io.lumine.mythic.lib.sql.hikari</shadedPattern>
                                 </relocation>
                                 <relocation>
+                                    <pattern>net.objecthunter.exp4j</pattern>
+                                    <shadedPattern>io.lumine.mythic.lib.exp4j</shadedPattern>
+                                </relocation>
+                                <relocation>
                                     <pattern>org.bstats</pattern>
                                     <shadedPattern>io.lumine.mythic.lib.metrics</shadedPattern>
                                 </relocation>
-                                <!-- BSH has an issue as it uses reflection to find one of its own
-                                classes, which makes it incompatible with a Maven shade relocation
-                                <relocation>
-                                    <pattern>bsh</pattern>
-                                    <shadedPattern>io.lumine.mythic.lib.bsh</shadedPattern>
-                                    <includes>
-                                        <include>bsh.*</include>
-                                    </includes>
-                                </relocation> -->
                             </relocations>
                             <minimizeJar>false</minimizeJar>
                         </configuration>

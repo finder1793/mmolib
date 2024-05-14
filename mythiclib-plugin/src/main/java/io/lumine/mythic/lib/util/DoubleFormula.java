@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.util;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.skill.SkillMetadata;
+import io.lumine.mythic.lib.util.formula.NumericalExpression;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,6 +13,10 @@ import java.util.logging.Level;
  * where internal or PAPI placeholders are parsed before finally
  * evaluating the formula. This represents 90% of the total skill
  * system configurability.
+ *
+ * TODO
+ * @see io.lumine.mythic.lib.util.formula.NumericalExpression
+ * @see io.lumine.mythic.lib.util.formula.preprocess.ExpressionPreprocessor
  */
 public class DoubleFormula {
     @Nullable
@@ -49,7 +54,7 @@ public class DoubleFormula {
         if (constant != null) return constant;
 
         try {
-            return MythicLib.plugin.getFormulaParser().evaluateAsDouble(meta.parseString(value));
+            return NumericalExpression.eval(meta.parseString(value));
         } catch (Exception exception) {
             MythicLib.plugin.getLogger().log(Level.WARNING, "Could not evaluate '" + value + "' while casting skill '" + meta.getCast().getHandler().getId() + "': " + exception.getMessage());
             return 0;

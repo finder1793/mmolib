@@ -80,7 +80,6 @@ public class MythicLib extends JavaPlugin {
     private final ModifierManager modifierManager = new ModifierManager();
     private final FlagHandler flagHandler = new FlagHandler();
     private final IndicatorManager indicatorManager = new IndicatorManager();
-    private final FormulaParser formulaParser = new FormulaParser();
     private final FakeEventManager fakeEventManager = new FakeEventManager();
     private final List<MMOPlugin> mmoPlugins = new ArrayList<>();
     private Gson gson;
@@ -370,8 +369,9 @@ public class MythicLib extends JavaPlugin {
         return antiCheatSupport;
     }
 
+    @Deprecated
     public FormulaParser getFormulaParser() {
-        return formulaParser;
+        return FormulaParser.getInstance();
     }
 
     @Nullable

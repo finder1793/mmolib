@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.skill;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.damage.AttackMetadata;
@@ -444,7 +445,7 @@ public class SkillMetadata {
         return var;
     }
 
-    private static final Pattern INTERNAL_PLACEHOLDER_PATTERN = Pattern.compile("<[^&|<>]*?>");
+    private static final Pattern INTERNAL_PLACEHOLDER_PATTERN = UtilityMethods.internalPlaceholderPattern('<', '>');
 
     @NotNull
     public String parseString(String str) {
@@ -453,7 +454,9 @@ public class SkillMetadata {
         Matcher match = INTERNAL_PLACEHOLDER_PATTERN.matcher(str);
         while (match.find()) {
             final String placeholder = str.substring(match.start() + 1, match.end() - 1);
+            // TODO not use replace, make use of indices provided maybe with a StringBuilder
             str = str.replace("<" + placeholder + ">", getVariable(placeholder).toString());
+            // TODO not necessary to re-match everytime a new placeholder is parsed i.e 'match' could be final
             match = INTERNAL_PLACEHOLDER_PATTERN.matcher(str);
         }
 
