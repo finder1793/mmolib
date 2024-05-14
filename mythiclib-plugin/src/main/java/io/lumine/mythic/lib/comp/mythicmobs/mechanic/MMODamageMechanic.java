@@ -108,7 +108,7 @@ public class MMODamageMechanic extends DamagingMechanic implements ITargetedEnti
             MythicLib.plugin.getLogger().log(Level.SEVERE, "Caught an exception (4) while damaging entity '" + target.getUniqueId() + "':");
             exception.printStackTrace();
         } finally {
-            MythicLib.plugin.getDamage().unmarkAsMetadata(attackMeta);
+            MythicLib.plugin.getDamage().unmarkAsMetadata(target.getBukkitEntity());
         }
 
         return SkillResult.SUCCESS;

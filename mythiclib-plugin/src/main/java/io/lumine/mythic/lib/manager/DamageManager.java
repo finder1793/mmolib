@@ -109,7 +109,7 @@ public class DamageManager implements Listener {
             MythicLib.plugin.getLogger().log(Level.SEVERE, "Caught an exception (1) while damaging entity '" + attack.getTarget().getUniqueId() + "':");
             exception.printStackTrace();
         } finally {
-            unmarkAsMetadata(attack);
+            unmarkAsMetadata(attack.getTarget());
         }
     }
 
@@ -240,25 +240,28 @@ public class DamageManager implements Listener {
     }
 
     /**
-     * Registers the attackMetadata inside of the entity metadata.
-     * This does NOT apply any damage to the target entity.
-     *
-     * @param attackMeta Attack metadata being registered
-     */
-    public void markAsMetadata(AttackMetadata attackMeta) {
-        final @Nullable AttackMetadata found = attackMetadatas.put(attackMeta.getTarget().getUniqueId(), attackMeta);
-        if (found != null)
-            MythicLib.plugin.getLogger().log(Level.WARNING, "Please report this issue to the developer: persistent attack metadata was found.");
-    }
-
-    /**
      * Registers the attackMetadata inside the entity metadata.
      * This does NOT apply any damage to the target entity.
      *
      * @param attackMeta Attack metadata being registered
+     * @return Attack metadata already present on the player, if it's not
+     * the case it's an internal error.
      */
-    public void unmarkAsMetadata(AttackMetadata attackMeta) {
-        attackMetadatas.remove(attackMeta.getTarget().getUniqueId());
+    @Nullable
+    public AttackMetadata markAsMetadata(@NotNull AttackMetadata attackMeta) {
+        final @Nullable AttackMetadata found = attackMetadatas.put(attackMeta.getTarget().getUniqueId(), attackMeta);
+        if (found != null)
+            MythicLib.plugin.getLogger().log(Level.WARNING, "Please report this issue to the developer: persistent attack metadata was found.");
+        return found;
+    }
+
+    /**
+     * @param target Target of current attack
+     * @return Attack metadata that was found, if any
+     */
+    @Nullable
+    public AttackMetadata unmarkAsMetadata(@NotNull Entity target) {
+        return attackMetadatas.remove(target.getUniqueId());
     }
 
     /**
@@ -360,7 +363,9 @@ public class DamageManager implements Listener {
     /**
      * This method is used to unregister MythicLib custom damage after everything
      * was calculated, hence MONITOR priority. As a safe practice, it does NOT
-     * ignore cancelled damage events.
+     * ignore cancelled damage events. It does however ignore fake events as they
+     * are sometimes called for checking interaction rules after the metadata
+     * has been set, but before effects are being applied which can screw things up.
      * <p>
      * This method is ABSOLUTELY NECESSARY. While MythicLib does clean up the
      * entity metadata as soon as damage is dealt, vanilla attacks and extra
@@ -368,8 +373,10 @@ public class DamageManager implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void unregisterCustomAttacks(EntityDamageEvent event) {
+        if (UtilityMethods.isFake(event)) return;
+
         if (event.getEntity() instanceof LivingEntity) {
-            final @Nullable AttackMetadata attack = attackMetadatas.remove(event.getEntity().getUniqueId());
+            final @Nullable AttackMetadata attack = unmarkAsMetadata(event.getEntity());
             if (attack != null && !event.isCancelled() && event.getFinalDamage() > 0)
                 Bukkit.getPluginManager().callEvent(new AttackUnregisteredEvent(event, attack));
         }
@@ -417,6 +424,11 @@ public class DamageManager implements Listener {
     @Deprecated
     public DamageMetadata findDamage(EntityDamageEvent event) {
         return findAttack(event).getDamage();
+    }
+
+    @Deprecated
+    public void unmarkAsMetadata(@NotNull AttackMetadata attackMetadata) {
+        unmarkAsMetadata(attackMetadata.getTarget());
     }
     //endregion
 }

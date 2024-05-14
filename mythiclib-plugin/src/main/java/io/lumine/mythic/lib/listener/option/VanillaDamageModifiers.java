@@ -34,7 +34,7 @@ public class VanillaDamageModifiers implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void a(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player)) return;
+        if (!(event.getEntity() instanceof Player) || UtilityMethods.isFake(event)) return;
         final Player player = (Player) event.getEntity();
 
         @Nullable String formula = formulas.get(event.getCause());
