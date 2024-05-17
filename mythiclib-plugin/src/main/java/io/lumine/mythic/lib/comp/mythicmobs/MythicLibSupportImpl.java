@@ -11,6 +11,7 @@ import io.lumine.mythic.bukkit.events.MythicReloadedEvent;
 import io.lumine.mythic.bukkit.utils.Events;
 import io.lumine.mythic.bukkit.utils.plugin.ReloadableModule;
 import io.lumine.mythic.core.skills.placeholders.Placeholder;
+import io.lumine.mythic.core.skills.placeholders.types.MetaPlaceholder;
 import io.lumine.mythic.core.skills.variables.Variable;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
@@ -116,8 +117,7 @@ public class MythicLibSupportImpl extends ReloadableModule<MythicBukkit> impleme
             return String.valueOf(attackMeta.getDamage().getDamage());
         }));
 
-        // Stats
-        MythicBukkit.inst().getPlaceholderManager().register("stat", Placeholder.meta((metadata, arg) -> {
+        final MetaPlaceholder mmostatMeta = Placeholder.meta((metadata, arg) -> {
 
             /**
              * This has to be checked first before trying to get the stat value using
@@ -143,7 +143,11 @@ public class MythicLibSupportImpl extends ReloadableModule<MythicBukkit> impleme
 
             final MMOPlayerData playerData = MMOPlayerData.get(caster.getEntity().getUniqueId());
             return MythicLib.inst().getMMOConfig().decimals.format(playerData.getStatMap().getStat(arg.toUpperCase()));
-        }));
+        });
+
+        // Stats
+        MythicBukkit.inst().getPlaceholderManager().register("stat", mmostatMeta);
+        MythicBukkit.inst().getPlaceholderManager().register("mmostat", mmostatMeta);
 
         // Target Stats
         MythicBukkit.inst().getPlaceholderManager().register("target.stat", Placeholder.entity((entity, arg) -> {
