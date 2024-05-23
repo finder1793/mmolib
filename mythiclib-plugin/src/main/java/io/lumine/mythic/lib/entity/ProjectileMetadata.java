@@ -8,12 +8,12 @@ import io.lumine.mythic.lib.damage.ProjectileAttackMetadata;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.player.skill.PassiveSkill;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
-import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -68,6 +68,7 @@ public class ProjectileMetadata extends TemporaryListener {
     private double damageMultiplier = 1;
 
     public static final String METADATA_KEY = "MythicLibProjectileMetadata";
+    private static final HandlerList[] HANDLER_LISTS = inferHandlerLists(ProjectileMetadata.class);
 
     /**
      * Used to keep track of custom MythicLib projectiles. This class handles:
@@ -79,7 +80,7 @@ public class ProjectileMetadata extends TemporaryListener {
      * @param projectile     Projectile being fired
      */
     private ProjectileMetadata(@NotNull PlayerMetadata shooter, @NotNull ProjectileType projectileType, @NotNull Entity projectile) {
-        super(ProjectileHitEvent.getHandlerList(), EntityDeathEvent.getHandlerList(), PlayerQuitEvent.getHandlerList(), PlayerAttackEvent.getHandlerList());
+        super(HANDLER_LISTS);
 
         this.entityId = projectile.getEntityId();
         this.projectileType = projectileType;

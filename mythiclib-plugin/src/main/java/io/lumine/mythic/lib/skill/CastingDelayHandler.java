@@ -15,6 +15,7 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -32,6 +33,7 @@ public class CastingDelayHandler extends TemporaryListener {
     private final BossBar bossbar;
 
     private static final String MOVEMENT_SPEED_MODIFIER_KEY = "mythiclibSkillCasting";
+    private static final HandlerList[] HANDLER_LISTS = inferHandlerLists(CastingDelayHandler.class);
 
     /**
      * Called when a skill has a non null casting delay.
@@ -40,7 +42,7 @@ public class CastingDelayHandler extends TemporaryListener {
      * @param result   Result of skill being cast
      */
     public CastingDelayHandler(SkillMetadata metadata, SkillResult result) {
-        super(PlayerMoveEvent.getHandlerList(), PlayerCastSkillEvent.getHandlerList());
+        super(HANDLER_LISTS);
 
         this.metadata = metadata;
         this.delayTicks = (int) (metadata.getParameter("delay") * 20);

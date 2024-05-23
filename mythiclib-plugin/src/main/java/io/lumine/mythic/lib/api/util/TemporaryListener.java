@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.api.util;
 import io.lumine.mythic.lib.MythicLib;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -10,6 +11,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -36,7 +40,7 @@ public abstract class TemporaryListener implements Listener {
     @Nullable
     private BukkitRunnable runnable;
 
-    public TemporaryListener(HandlerList... handlerLists) {
+    public TemporaryListener(@NotNull HandlerList... handlerLists) {
         this(MythicLib.plugin, handlerLists);
     }
 
@@ -96,4 +100,24 @@ public abstract class TemporaryListener implements Listener {
      * was already closed, this method will NOT get called a second time
      */
     public abstract void whenClosed();
+
+    protected static HandlerList[] inferHandlerLists(@NotNull Class<?> clazz) {
+        final List<HandlerList> lists = new ArrayList<>();
+        for (Method method : clazz.getDeclaredMethods())
+            try {
+                if (method.getParameterCount() != 1) continue;
+                final Class<?> paramType = method.getParameters()[0].getType();
+                if (!isEventClass(paramType)) continue;
+                final HandlerList handlerList = (HandlerList) paramType.getMethod("getHandlerList").invoke(null);
+                lists.add(handlerList);
+            } catch (Throwable any) {
+                throw new RuntimeException("Could not infer events of temporary listener", any);
+            }
+        return lists.toArray(new HandlerList[0]);
+    }
+
+    private static boolean isEventClass(@NotNull Class<?> clazz) {
+        final Class<?> superclass;
+        return clazz == Event.class || ((superclass = clazz.getSuperclass()) != null && isEventClass(superclass));
+    }
 }
