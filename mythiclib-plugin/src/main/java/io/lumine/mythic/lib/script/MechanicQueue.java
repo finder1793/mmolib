@@ -1,7 +1,6 @@
 package io.lumine.mythic.lib.script;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.script.mechanic.Mechanic;
 import io.lumine.mythic.lib.script.mechanic.misc.DelayMechanic;
 import io.lumine.mythic.lib.skill.SkillMetadata;
@@ -24,7 +23,8 @@ public class MechanicQueue {
     private final Script skill;
 
     /**
-     * Its only use is error messages
+     * Used in error messages to tell the user
+     * what mechanic threw the error.
      */
     private int counter = 0;
 

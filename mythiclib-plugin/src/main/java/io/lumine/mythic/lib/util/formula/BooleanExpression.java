@@ -9,8 +9,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class BooleanExpression<C> {
 
+    private static final double EPSILON = 1e-10;
+
     // Logical operators
     private static final int EQUALITY_PRECEDENCE = 100;
+    private static final int ORDER_PRECEDENCE = 300;
     private static final Operator LOGICAL_AND = new Operator("&&", 2, true, Operator.PRECEDENCE_MULTIPLICATION) {
 
         @Override
@@ -32,21 +35,54 @@ public class BooleanExpression<C> {
             return args[0] != 0 ? 0 : 1;
         }
     };
+
+    // Equality operators
     private static final Operator LOGICAL_EQ = new Operator("==", 2, true, EQUALITY_PRECEDENCE) {
 
         @Override
         public double apply(double... args) {
-            return Math.abs(args[0] - args[1]) < .5 ? 1 : 0;
+            return Math.abs(args[0] - args[1]) < EPSILON ? 1 : 0;
         }
     };
     private static final Operator LOGICAL_NEQ = new Operator("!=", 2, true, EQUALITY_PRECEDENCE) {
 
         @Override
         public double apply(double... args) {
-            return Math.abs(args[0] - args[1]) > .5 ? 1 : 0;
+            return Math.abs(args[0] - args[1]) > EPSILON ? 1 : 0;
         }
     };
-    private static final Operator[] OPERATORS = {LOGICAL_NOT, LOGICAL_OR, LOGICAL_AND, LOGICAL_EQ, LOGICAL_NEQ};
+
+    // Comparators
+    private static final Operator LOWER_OR_EQUAL = new Operator("<=", 2, false, ORDER_PRECEDENCE) {
+        @Override
+        public double apply(double... doubles) {
+            final double d1 = doubles[0], d2 = doubles[1];
+            return d1 <= d2 || Math.abs(d1 - d2) < EPSILON ? 1 : 0;
+        }
+    };
+    private static final Operator LOWER_THAN = new Operator("<", 2, false, ORDER_PRECEDENCE) {
+        @Override
+        public double apply(double... doubles) {
+            return doubles[0] < doubles[1] ? 1 : 0;
+        }
+    };
+    private static final Operator GREATER_OR_EQUAL = new Operator(">=", 2, false, ORDER_PRECEDENCE) {
+        @Override
+        public double apply(double... doubles) {
+            final double d1 = doubles[0], d2 = doubles[1];
+            return d1 >= d2 || Math.abs(d1 - d2) < EPSILON ? 1 : 0;
+        }
+    };
+    private static final Operator GREATER_THAN = new Operator(">", 2, false, ORDER_PRECEDENCE) {
+        @Override
+        public double apply(double... doubles) {
+            return doubles[0] > doubles[1] ? 1 : 0;
+        }
+    };
+    private static final Operator[] OPERATORS = {
+            LOGICAL_NOT, LOGICAL_OR, LOGICAL_AND,
+            LOGICAL_EQ, LOGICAL_NEQ,
+            LOWER_OR_EQUAL, LOWER_THAN, GREATER_OR_EQUAL, GREATER_THAN};
 
     // Logical constants
     private static final String[] CONSTANTS = {"true", "false"};
