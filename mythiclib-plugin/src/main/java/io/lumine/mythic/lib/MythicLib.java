@@ -35,6 +35,7 @@ import io.lumine.mythic.lib.gui.PluginInventory;
 import io.lumine.mythic.lib.hologram.HologramFactory;
 import io.lumine.mythic.lib.hologram.HologramFactoryList;
 import io.lumine.mythic.lib.hologram.factory.BukkitHologramFactory;
+import io.lumine.mythic.lib.hologram.factory.LegacyBukkitHologramFactory;
 import io.lumine.mythic.lib.listener.*;
 import io.lumine.mythic.lib.listener.event.AttackEventListener;
 import io.lumine.mythic.lib.listener.option.FixMovementSpeed;
@@ -57,7 +58,6 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.mozilla.javascript.NativeArray;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -133,7 +133,9 @@ public class MythicLib extends JavaPlugin {
         new MythicPacketSniffer(this);
 
         // Hologram provider
-        Bukkit.getServicesManager().register(HologramFactory.class, new BukkitHologramFactory(), this, ServicePriority.Low);
+        Bukkit.getServicesManager().register(HologramFactory.class, new LegacyBukkitHologramFactory(), this, ServicePriority.Lowest);
+        if (version.isStrictlyHigher(1, 19, 3))
+            Bukkit.getServicesManager().register(HologramFactory.class, new BukkitHologramFactory(), this, ServicePriority.Low);
 
         // Detect MMO plugins
         for (Plugin plugin : Bukkit.getPluginManager().getPlugins())

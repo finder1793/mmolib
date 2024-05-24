@@ -7,8 +7,8 @@ import org.bukkit.plugin.ServicePriority;
 import java.lang.reflect.InvocationTargetException;
 
 public enum HologramFactoryList {
-    HOLOGRAPHIC_DISPLAYS("HolographicDisplays", HDHologramFactory.class, ServicePriority.High),
-    DECENT_HOLOGRAMS("DecentHolograms", DecentHologramFactory.class, ServicePriority.Normal),
+    HOLOGRAPHIC_DISPLAYS("HolographicDisplays", HDHologramFactory.class, ServicePriority.Normal),
+    DECENT_HOLOGRAMS("DecentHolograms", DecentHologramFactory.class, ServicePriority.High),
     HOLOGRAMS("Holograms", HologramsHologramFactory.class, ServicePriority.Normal),
     CMI("CMI", CMIHologramFactory.class, ServicePriority.Low),
     TR_HOLOGRAM("TrHologram", TrHologramFactory.class, ServicePriority.Normal);

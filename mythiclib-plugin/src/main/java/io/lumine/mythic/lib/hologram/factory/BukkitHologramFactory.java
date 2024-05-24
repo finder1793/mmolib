@@ -5,35 +5,34 @@ import io.lumine.mythic.lib.hologram.Hologram;
 import io.lumine.mythic.lib.hologram.HologramFactory;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
+import org.bukkit.entity.TextDisplay;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class BukkitHologramFactory implements HologramFactory {
     public BukkitHologramFactory() {
     }
 
     public Hologram newHologram(Location loc, List<String> lines) {
-        return new BukkitHologram(loc, lines);
+        return new TextDisplayHologram(loc, lines);
     }
 
-    private static final class BukkitHologram implements Hologram {
-        private static final Method SET_CAN_TICK;
+    private static final class TextDisplayHologram implements Hologram {
+        private final List<String> lines = new ArrayList<>();
+        private final List<TextDisplay> spawnedEntities = new ArrayList<>();
+
         private Location loc;
-        private final List<String> lines = new ArrayList();
-        private final List<ArmorStand> spawnedEntities = new ArrayList();
         private boolean spawned = false;
 
-        BukkitHologram(Location loc, List<String> lines) {
-            this.loc = Objects.requireNonNull(loc, "position");
+        TextDisplayHologram(@NotNull Location loc, @NotNull List<String> lines) {
+            this.loc = Objects.requireNonNull(loc, "hologram location");
             this.updateLines(lines);
 
             spawn();
@@ -48,7 +47,7 @@ public class BukkitHologramFactory implements HologramFactory {
             if (this.spawnedEntities.isEmpty()) {
                 return this.loc;
             } else {
-                ArmorStand last = (ArmorStand) this.spawnedEntities.get(this.spawnedEntities.size() - 1);
+                TextDisplay last = this.spawnedEntities.get(this.spawnedEntities.size() - 1);
                 return last.getLocation().subtract(0.0D, 0.25D, 0.0D);
             }
         }
@@ -56,58 +55,32 @@ public class BukkitHologramFactory implements HologramFactory {
         public void spawn() {
             int linesSize = this.lines.size();
             int spawnedSize = this.spawnedEntities.size();
-            int i;
-            ArmorStand as;
-            if (linesSize < spawnedSize) {
-                i = spawnedSize - linesSize;
 
-                for (int j = 0; j < i; ++i) {
-                    as = (ArmorStand) this.spawnedEntities.remove(this.spawnedEntities.size() - 1);
-                    as.remove();
-                }
-            }
+            // Remove un-necessary entities
+            final int tooMuch = spawnedSize - linesSize;
+            for (int j = 0; j < tooMuch; ++j)
+                this.spawnedEntities.remove(this.spawnedEntities.size() - 1).remove();
 
-            for (i = 0; i < this.lines.size(); ++i) {
-                String line = (String) this.lines.get(i);
+            // Add new lines
+            for (int i = 0; i < this.lines.size(); ++i) {
+                final String line = this.lines.get(i);
+
+                // Add new entity
                 if (i >= this.spawnedEntities.size()) {
-                    Location loc = this.getNewLinePosition();
-                    Chunk chunk = loc.getChunk();
-                    if (!chunk.isLoaded()) {
-                        chunk.load();
-                    }
-
-                    loc.getWorld().getNearbyEntities(loc, 1.0D, 1.0D, 1.0D).forEach((e) -> {
-                        if (e.getType() == EntityType.ARMOR_STAND && locationsEqual(e.getLocation(), loc)) {
-                            e.remove();
-                        }
-
-                    });
-                    as = (ArmorStand) loc.getWorld().spawn(loc, ArmorStand.class);
-                    as.setSmall(true);
-                    as.setMarker(true);
-                    as.setArms(false);
-                    as.setBasePlate(false);
-                    as.setGravity(false);
-                    as.setVisible(false);
-                    as.setCustomName(line);
-                    as.setCustomNameVisible(true);
-                    as.setAI(false);
-                    as.setCollidable(false);
-                    as.setInvulnerable(true);
-                    if (SET_CAN_TICK != null) {
-                        try {
-                            SET_CAN_TICK.invoke(as, false);
-                        } catch (Exception var9) {
-                            var9.printStackTrace();
-                        }
-                    }
-
+                    final Location loc = this.getNewLinePosition();
+                    final Chunk chunk = loc.getChunk();
+                    if (!chunk.isLoaded()) chunk.load();
+                    final TextDisplay as = loc.getWorld().spawn(loc, TextDisplay.class);
+                    as.setBillboard(Display.Billboard.CENTER);
                     this.spawnedEntities.add(as);
-                } else {
-                    as = (ArmorStand) this.spawnedEntities.get(i);
-                    if (as.getCustomName() == null || !as.getCustomName().equals(line)) {
-                        as.setCustomName(line);
-                    }
+
+                    as.setText(line);
+                }
+
+                // Entity exists
+                else {
+                    final TextDisplay entity = this.spawnedEntities.get(i);
+                    if (!Objects.equals(entity.getText(), line)) entity.setText(line);
                 }
             }
 
@@ -126,15 +99,15 @@ public class BukkitHologramFactory implements HologramFactory {
             if (!this.spawned) {
                 return false;
             } else {
-                Iterator var1 = this.spawnedEntities.iterator();
+                Iterator<TextDisplay> var1 = this.spawnedEntities.iterator();
 
-                ArmorStand stand;
+                TextDisplay stand;
                 do {
                     if (!var1.hasNext()) {
                         return true;
                     }
 
-                    stand = (ArmorStand) var1.next();
+                    stand = var1.next();
                 } while (stand.isValid());
 
                 return false;
@@ -151,8 +124,8 @@ public class BukkitHologramFactory implements HologramFactory {
                 } else {
                     double offset = 0.0D;
 
-                    for (Iterator var4 = this.getSpawnedEntities().iterator(); var4.hasNext(); offset += 0.25D) {
-                        ArmorStand as = (ArmorStand) var4.next();
+                    for (Iterator<TextDisplay> var4 = this.getSpawnedEntities().iterator(); var4.hasNext(); offset += 0.25D) {
+                        TextDisplay as = var4.next();
                         as.teleport(loc.add(0.0D, offset, 0.0D));
                     }
                 }
@@ -164,23 +137,11 @@ public class BukkitHologramFactory implements HologramFactory {
         public void updateLines(@Nonnull List<String> lines) {
             Objects.requireNonNull(lines, "lines");
             Preconditions.checkArgument(!lines.isEmpty(), "lines cannot be empty");
-            Iterator var2 = lines.iterator();
-
-            while (var2.hasNext()) {
-                String line = (String) var2.next();
+            for (String line : lines)
                 Preconditions.checkArgument(line != null, "null line");
-            }
 
-            List<String> ret = lines.stream().collect(Collectors.toList());
-            if (!this.lines.equals(ret)) {
-                this.lines.clear();
-                this.lines.addAll(ret);
-            }
-        }
-
-
-        private static boolean locationsEqual(Location l1, Location l2) {
-            return Double.doubleToLongBits(l1.getX()) == Double.doubleToLongBits(l2.getX()) && Double.doubleToLongBits(l1.getY()) == Double.doubleToLongBits(l2.getY()) && Double.doubleToLongBits(l1.getZ()) == Double.doubleToLongBits(l2.getZ());
+            this.lines.clear();
+            this.lines.addAll(lines);
         }
 
         @Override
@@ -188,19 +149,8 @@ public class BukkitHologramFactory implements HologramFactory {
             return loc;
         }
 
-        public List<ArmorStand> getSpawnedEntities() {
+        public List<TextDisplay> getSpawnedEntities() {
             return this.spawnedEntities;
-        }
-
-        static {
-            Method setCanTick = null;
-
-            try {
-                setCanTick = ArmorStand.class.getDeclaredMethod("setCanTick", Boolean.TYPE);
-            } catch (Throwable var2) {
-            }
-
-            SET_CAN_TICK = setCanTick;
         }
     }
 }

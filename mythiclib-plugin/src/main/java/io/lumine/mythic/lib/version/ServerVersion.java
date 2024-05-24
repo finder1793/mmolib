@@ -21,7 +21,7 @@ public class ServerVersion {
         revisionNumber = Integer.parseInt(revision.split("_")[2].replaceAll("[^0-9]", ""));
 
         final String[] bukkitSplit = Bukkit.getServer().getBukkitVersion().split("\\-")[0].split("\\.");
-        integers = new int[bukkitSplit.length];
+        integers = new int[Math.min(MAXIMUM_INDEX, bukkitSplit.length)];
         for (int i = 0; i < integers.length; i++)
             integers[i] = Integer.parseInt(bukkitSplit[i]);
 
@@ -55,8 +55,8 @@ public class ServerVersion {
     public boolean isStrictlyHigher(int... version) {
         Validate.isTrue(version.length >= 1 && version.length <= MAXIMUM_INDEX, "Provide at least 1 integer and at most " + MAXIMUM_INDEX);
 
-        final int maxLength = Math.max(version.length, integers.length);
-        for (int i = 0; i < Math.min(MAXIMUM_INDEX, maxLength); i++) {
+        final int maxLength = Math.min(MAXIMUM_INDEX, Math.max(version.length, integers.length));
+        for (int i = 0; i < maxLength; i++) {
             final int server = i >= integers.length ? 0 : integers[i];
             final int provided = i >= version.length ? 0 : version[i];
             if (server != provided) return server > provided;
