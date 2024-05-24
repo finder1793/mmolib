@@ -15,9 +15,7 @@ import java.util.UUID;
  * A skill "modifier" modifies a specific parameter of a skill,
  * in the same way that a stat modifier modifies a stat for a player.
  * It can also be given a boolean formula, which determines which
- * skills the modifier will apply onto.
- *
- * @author Guillaume, Jules
+ * skills the modifier will apply onto
  */
 public class SkillModifier extends InstanceModifier {
 
@@ -77,31 +75,23 @@ public class SkillModifier extends InstanceModifier {
         return parameter;
     }
 
-    /**
-     * Used to register the skillBuff for only 1 specific skill.
-     */
     @Deprecated
     public void register(MMOPlayerData playerData, SkillHandler<?> handler) {
-        playerData.getSkillModifierMap().getInstance(handler, parameter).registerModifier(this);
+        register(playerData);
     }
 
-    /**
-     * Used to unregister the skillBuff for only 1 specific skill.
-     */
     @Deprecated
     public void unregister(MMOPlayerData playerData, SkillHandler<?> handler) {
-        playerData.getSkillModifierMap().getInstance(handler, parameter).removeModifier(getUniqueId());
+        unregister(playerData);
     }
 
     @Override
     public void register(MMOPlayerData playerData) {
-        for (SkillHandler<?> handler : skills)
-            playerData.getSkillModifierMap().getInstance(handler, parameter).registerModifier(this);
+        playerData.getSkillModifierMap().addModifier(this);
     }
 
     @Override
     public void unregister(MMOPlayerData playerData) {
-        for (SkillHandler<?> handler : skills)
-            playerData.getSkillModifierMap().getInstance(handler, parameter).removeModifier(getUniqueId());
+        playerData.getSkillModifierMap().removeModifier(getUniqueId());
     }
 }

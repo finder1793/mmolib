@@ -1,50 +1,34 @@
 package io.lumine.mythic.lib.player.skillmod;
 
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.player.modifier.ModifierMap;
+import io.lumine.mythic.lib.player.modifier.ModifierType;
 import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-public class SkillModifierMap {
-    private final MMOPlayerData playerData;
-
-    /**
-     * This map enables to calculate the skill buffs associated to a particular skill and a particular skillModifier
-     * without having to parse other modifers. In particular this is done every time a skill is cast.
-     */
-    private final Map<SkillParameterIdentifier, SkillModifierInstance> instances = new HashMap<>();
-
+public class SkillModifierMap extends ModifierMap<SkillModifier> {
     public SkillModifierMap(MMOPlayerData playerData) {
-        this.playerData = playerData;
-    }
-
-    /**
-     * @return The StatMap owner ie the corresponding MMOPlayerData
-     */
-    public MMOPlayerData getPlayerData() {
-        return playerData;
+        super(playerData);
     }
 
     public double calculateValue(@NotNull Skill cast, @NotNull String parameter) {
-        return getInstance(cast.getHandler(), parameter).getTotal(cast.getParameter(parameter));
+        return calculateValue(cast.getHandler(), cast.getParameter(parameter), parameter);
     }
 
-    /**
-     * @return The StatInstances that have been manipulated so far since the
-     * player has logged in. StatInstances are completely flushed when
-     * the server restarts
-     */
-    public Collection<SkillModifierInstance> getInstances() {
-        return instances.values();
-    }
+    public double calculateValue(@NotNull SkillHandler<?> skill, double base, @NotNull String parameter) {
+        for (SkillModifier mod : getModifiers())
+            if (mod.getType() == ModifierType.FLAT
+                    && mod.getParameter().equals(parameter)
+                    && mod.getSkills().contains(skill))
+                base += mod.getValue();
 
-    @NotNull
-    public SkillModifierInstance getInstance(SkillHandler<?> handler, String skill) {
-        final SkillParameterIdentifier id = new SkillParameterIdentifier(handler, skill);
-        return instances.computeIfAbsent(id, ident -> new SkillModifierInstance(ident.handler, ident.parameter));
+        for (SkillModifier mod : getModifiers())
+            if (mod.getType() == ModifierType.RELATIVE
+                    && mod.getParameter().equals(parameter)
+                    && mod.getSkills().contains(skill))
+                base *= 1 + mod.getValue() / 100;
+
+        return base;
     }
 }
