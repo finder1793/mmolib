@@ -127,7 +127,8 @@ public class Tasks {
     /**
      * Prefer using this method over {@link CompletableFuture#runAsync(Runnable)}
      * as using Bukkit scheduler to manage other threads is always preferable
-     * over the default Java concurrent package.
+     * over the default Java concurrent package. This notably fixes MMOCore#971
+     * and seems to introduce less concurrency issues.
      * <p>
      * Unlike the Java method, this method does print out stack traces in the
      * server console in case of exceptions or errors.

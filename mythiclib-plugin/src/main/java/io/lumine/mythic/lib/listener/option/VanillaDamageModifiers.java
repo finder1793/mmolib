@@ -41,7 +41,7 @@ public class VanillaDamageModifiers implements Listener {
         if (formula == null) return;
 
         try {
-            formula = applyInternalPlaceholders(formula, event);
+            formula = applyPlaceholders(formula, event, player);
             final double result = NumericalExpression.eval(formula);
             event.setDamage(result);
         } catch (Exception exception) {
@@ -50,8 +50,9 @@ public class VanillaDamageModifiers implements Listener {
     }
 
     @NotNull
-    private String applyInternalPlaceholders(@NotNull String str, @NotNull EntityDamageEvent event) {
+    private String applyPlaceholders(@NotNull String str, @NotNull EntityDamageEvent event, @NotNull Player player) {
         str = str.replace("{event_damage}", String.valueOf(event.getDamage()));
+        str = MythicLib.plugin.getPlaceholderParser().parse(player, str);
         return str;
     }
 }
