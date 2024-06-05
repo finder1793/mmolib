@@ -23,11 +23,8 @@
 package io.lumine.mythic.lib.util.network;
 
 import com.mojang.authlib.GameProfile;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPromise;
+import io.lumine.mythic.lib.MythicLib;
+import io.netty.channel.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -45,17 +42,7 @@ import org.jetbrains.annotations.Range;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Queue;
-import java.util.RandomAccess;
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.UUID;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
@@ -76,8 +63,8 @@ import java.util.logging.Level;
 public abstract class LightInjector {
 
     // Used for reflections
-    private static final String COMPLETE_VERSION = Bukkit.getServer().getClass().getName().split("\\.")[3];
-    private static final int VERSION = Integer.parseInt(COMPLETE_VERSION.split("_")[1]);
+    private static final String COMPLETE_VERSION = MythicLib.plugin.getVersion().getCraftBukkitVersion();
+    private static final int VERSION = MythicLib.plugin.getVersion().getBukkitVersion()[1];
 
     private static final Class<?> SERVER_CLASS = getNMSClass("MinecraftServer", "server");
     private static final Class<?> SERVER_CONNECTION_CLASS = getNMSClass("ServerConnection", "server.network");
@@ -133,8 +120,8 @@ public abstract class LightInjector {
      * it's more efficient and recommended to just have only one.
      *
      * @param plugin The {@link Plugin} which is instantiating this injector.
-     * @throws NullPointerException If the provided {@code plugin} is {@code null}.
-     * @throws IllegalStateException When <b>not</b> called from the main thread.
+     * @throws NullPointerException     If the provided {@code plugin} is {@code null}.
+     * @throws IllegalStateException    When <b>not</b> called from the main thread.
      * @throws IllegalArgumentException If the provided {@code plugin} is not enabled.
      */
     public LightInjector(@NotNull Plugin plugin) {
@@ -181,9 +168,9 @@ public abstract class LightInjector {
     /**
      * Called asynchronously (i.e. not from main thread) when a packet is received from a {@link Player}.
      *
-     * @param sender The {@link Player} which sent the packet. May be {@code null} for early login packets.
+     * @param sender  The {@link Player} which sent the packet. May be {@code null} for early login packets.
      * @param channel The {@link Channel} of the player's connection.
-     * @param packet The packet received from player.
+     * @param packet  The packet received from player.
      * @return The packet to receive instead, or {@code null} if the packet should be cancelled.
      */
     protected abstract @Nullable Object onPacketReceiveAsync(@Nullable Player sender, @NotNull Channel channel, @NotNull Object packet);
@@ -192,8 +179,8 @@ public abstract class LightInjector {
      * Called asynchronously (i.e. not from main thread) when a packet is sent to a {@link Player}.
      *
      * @param receiver The {@link Player} which will receive the packet. May be {@code null} for early login packets.
-     * @param channel The {@link Channel} of the player's connection.
-     * @param packet The packet to send to the player.
+     * @param channel  The {@link Channel} of the player's connection.
+     * @param packet   The packet to send to the player.
      * @return The packet to send instead, or {@code null} if the packet should be cancelled.
      */
     protected abstract @Nullable Object onPacketSendAsync(@Nullable Player receiver, @NotNull Channel channel, @NotNull Object packet);
@@ -204,7 +191,7 @@ public abstract class LightInjector {
      * injector (any other packet injectors present on the sever will intercept and possibly cancel the packet as well).
      *
      * @param receiver The {@link Player} to which the packet will be sent.
-     * @param packet The packet to send.
+     * @param packet   The packet to send.
      * @throws NullPointerException When a parameter is {@code null}.
      */
     public final void sendPacket(@NotNull Player receiver, @NotNull Object packet) {
@@ -219,7 +206,7 @@ public abstract class LightInjector {
      * injector (any other packet injectors present on the sever will intercept and possibly cancel the packet as well).
      *
      * @param channel The {@link Channel} on which the packet will be sent.
-     * @param packet The packet to send.
+     * @param packet  The packet to send.
      * @throws NullPointerException When a parameter is {@code null}.
      */
     public final void sendPacket(@NotNull Channel channel, @NotNull Object packet) {
@@ -251,7 +238,7 @@ public abstract class LightInjector {
      * and possibly cancel the packet as well).
      *
      * @param channel The {@link Channel} on which the packet will be received.
-     * @param packet The packet to receive.
+     * @param packet  The packet to receive.
      * @throws NullPointerException When a parameter is {@code null} or the provided channel is not a player's channel.
      */
     public final void receivePacket(@NotNull Channel channel, @NotNull Object packet) {

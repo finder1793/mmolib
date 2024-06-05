@@ -1,41 +1,76 @@
 package io.lumine.mythic.lib.version;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.util.annotation.BackwardsCompatibility;
 import io.lumine.mythic.lib.version.wrapper.VersionWrapper;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 public class ServerVersion {
-    private final String revision;
-    private final int revisionNumber;
-    private final int[] integers;
+    private final String craftBukkitVersion;
+    private final int revNumber;
+    private final int[] bukkitVersion;
     private final VersionWrapper versionWrapper;
 
     private static final int MAXIMUM_INDEX = 3;
+    private static final Map<String, Integer> REVISION_NUMBERS = generateRevisionNumbers();
 
-    public ServerVersion(Class<?> clazz) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        revision = clazz.getPackage().getName().replace(".", ",").split(",")[3];
-        revisionNumber = Integer.parseInt(revision.split("_")[2].replaceAll("[^0-9]", ""));
+    @Deprecated
+    public ServerVersion(Class<?> ignored) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        this();
+    }
 
-        final String[] bukkitSplit = Bukkit.getServer().getBukkitVersion().split("\\-")[0].split("\\.");
-        integers = new int[Math.min(MAXIMUM_INDEX, bukkitSplit.length)];
-        for (int i = 0; i < integers.length; i++)
-            integers[i] = Integer.parseInt(bukkitSplit[i]);
+    public ServerVersion() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+
+        // Version numbers
+        final String[] bukkitSplit = Bukkit.getServer().getBukkitVersion().split("\\-")[0].split("\\."); // ["1", "20", "4"]
+        bukkitVersion = new int[Math.min(MAXIMUM_INDEX, bukkitSplit.length)];
+        for (int i = 0; i < bukkitVersion.length; i++)
+            bukkitVersion[i] = Integer.parseInt(bukkitSplit[i]);
+
+        // Compute rev number
+        revNumber = findRevisionNumber();
+        craftBukkitVersion = "v" + bukkitVersion[0] + "_" + bukkitVersion[1] + "_R" + revNumber; // "v1_20_R4"
 
         VersionWrapper found;
         try {
-            found = (VersionWrapper) Class.forName("io.lumine.mythic.lib.version.wrapper.VersionWrapper_" + revision.substring(1))
-                    .getDeclaredConstructor().newInstance();
+            found = (VersionWrapper) Class.forName("io.lumine.mythic.lib.version.wrapper.VersionWrapper_" + craftBukkitVersion.substring(1)).getDeclaredConstructor().newInstance();
         } catch (Exception exception) {
-            MythicLib.plugin.getLogger().log(Level.WARNING, "Your spigot version is not natively compatible, trying reflection-based support.");
-            found = (VersionWrapper) Class.forName("io.lumine.mythic.lib.version.wrapper.VersionWrapper_Reflection")
-                    .getDeclaredConstructor(ServerVersion.class)
-                    .newInstance(this);
+            MythicLib.plugin.getLogger().log(Level.WARNING, "Non-natively supported Spigot version detected, trying reflection-based compatibility mode");
+            found = (VersionWrapper) Class.forName("io.lumine.mythic.lib.version.wrapper.VersionWrapper_Reflection").getDeclaredConstructor(ServerVersion.class).newInstance(this);
         }
         this.versionWrapper = found;
+    }
+
+    @BackwardsCompatibility(version = "1.20.5")
+    private int findRevisionNumber() {
+
+        // Spigot || Paper <1.20.5
+        try {
+            final Class<?> bukkitServerClass = Bukkit.getServer().getClass();
+            final String rev = bukkitServerClass.getPackage().getName().replace(".", ",").split(",")[3]; // "1_20_R4"
+            return Integer.parseInt(rev.split("_")[2].replaceAll("[^0-9]", ""));
+        } catch (Throwable throwable) {
+            // Ignored
+        }
+
+        // Paper 1.20.5+
+        try {
+            final String minecraftVersion = Bukkit.getBukkitVersion().split("\\-")[0]; // "1.20.6"
+            final @Nullable Integer found = REVISION_NUMBERS.get(minecraftVersion);
+            if (found != null) return found;
+        } catch (Throwable throwable) {
+            // Ignored
+        }
+
+        throw new RuntimeException("Version revision mapping not specified");
     }
 
     /**
@@ -55,9 +90,9 @@ public class ServerVersion {
     public boolean isStrictlyHigher(int... version) {
         Validate.isTrue(version.length >= 1 && version.length <= MAXIMUM_INDEX, "Provide at least 1 integer and at most " + MAXIMUM_INDEX);
 
-        final int maxLength = Math.min(MAXIMUM_INDEX, Math.max(version.length, integers.length));
+        final int maxLength = Math.min(MAXIMUM_INDEX, Math.max(version.length, bukkitVersion.length));
         for (int i = 0; i < maxLength; i++) {
-            final int server = i >= integers.length ? 0 : integers[i];
+            final int server = i >= bukkitVersion.length ? 0 : bukkitVersion[i];
             final int provided = i >= version.length ? 0 : version[i];
             if (server != provided) return server > provided;
         }
@@ -65,21 +100,16 @@ public class ServerVersion {
         return false;
     }
 
-    public String getRevision() {
-        return revision;
+    public String getCraftBukkitVersion() {
+        return craftBukkitVersion;
     }
 
     public int getRevisionNumber() {
-        return revisionNumber;
+        return revNumber;
     }
 
-    public int[] getIntegers() {
-        return integers;
-    }
-
-    @Deprecated
-    public int[] toNumbers() {
-        return integers;
+    public int[] getBukkitVersion() {
+        return bukkitVersion;
     }
 
     public VersionWrapper getWrapper() {
@@ -88,6 +118,32 @@ public class ServerVersion {
 
     @Override
     public String toString() {
-        return revision;
+        return "ServerVersion{" +
+                "revision='" + craftBukkitVersion + '\'' +
+                ", revisionNumber=" + revNumber +
+                ", integers=" + Arrays.toString(bukkitVersion) +
+                '}';
+    }
+
+    private static Map<String, Integer> generateRevisionNumbers() {
+        final Map<String, Integer> revisionNumbers = new LinkedHashMap<>();
+        revisionNumbers.put("1.20.5", 4);
+        revisionNumbers.put("1.20.6", 4);
+        return revisionNumbers;
+    }
+
+    @Deprecated
+    public String getRevision() {
+        return getCraftBukkitVersion();
+    }
+
+    @Deprecated
+    public int[] toNumbers() {
+        return bukkitVersion;
+    }
+
+    @Deprecated
+    public int[] getIntegers() {
+        return getBukkitVersion();
     }
 }

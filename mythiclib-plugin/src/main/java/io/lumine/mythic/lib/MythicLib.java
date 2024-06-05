@@ -98,11 +98,10 @@ public class MythicLib extends JavaPlugin {
         getLogger().log(Level.INFO, "Plugin file is called '" + getFile().getName() + "'");
 
         try {
-            version = new ServerVersion(Bukkit.getServer().getClass());
-            getLogger().log(Level.INFO, "Detected Bukkit Version: " + version.toString());
+            version = new ServerVersion();
+            getLogger().log(Level.INFO, "Detected Bukkit Version: " + version.getCraftBukkitVersion());
         } catch (Exception exception) {
-            getLogger().log(Level.INFO, net.md_5.bungee.api.ChatColor.RED + "Your server version is not compatible.");
-            exception.printStackTrace();
+            getLogger().log(Level.WARNING, "Your server version is not compatible.");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
@@ -130,7 +129,12 @@ public class MythicLib extends JavaPlugin {
         }
 
         // Fixes left clicks
-        new MythicPacketSniffer(this);
+        try {
+            new MythicPacketSniffer(this);
+        } catch (Throwable throwable) {
+            MythicLib.plugin.getLogger().log(Level.WARNING, "Could not enable left-click packet fix:");
+            throwable.printStackTrace();
+        }
 
         // Hologram provider
         Bukkit.getServicesManager().register(HologramFactory.class, new LegacyBukkitHologramFactory(), this, ServicePriority.Lowest);
