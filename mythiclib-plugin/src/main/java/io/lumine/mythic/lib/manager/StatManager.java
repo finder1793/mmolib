@@ -24,13 +24,11 @@ import java.util.logging.Level;
 public class StatManager {
     private final Map<String, StatHandler> handlers = new HashMap<>();
 
-    private ConfigurationSection statsConfig;
-
     public void initialize(boolean clearBefore) {
         if (clearBefore) handlers.clear();
         else UtilityMethods.loadDefaultFile("", "stats.yml");
 
-        statsConfig = new ConfigFile("stats").getConfig();
+        final ConfigurationSection statsConfig = new ConfigFile("stats").getConfig();
 
         // Default stat handlers
         try {
@@ -49,7 +47,7 @@ public class StatManager {
         }
 
         // Load stat handlers
-        for (String key : collectKeys())
+        for (String key : collectKeys(statsConfig))
             try {
                 final String stat = UtilityMethods.enumName(key);
                 handlers.putIfAbsent(stat, new StatHandler(statsConfig, stat));
@@ -58,10 +56,11 @@ public class StatManager {
             }
     }
 
-    private Set<String> collectKeys() {
-        final Set<String> keys = new HashSet<>();
-        for (String key : statsConfig.getKeys(false))
-            keys.addAll(statsConfig.getConfigurationSection(key).getKeys(false));
+    @NotNull
+    private Iterable<String> collectKeys(ConfigurationSection config) {
+        final List<String> keys = new ArrayList<>();
+        for (String key : config.getKeys(false))
+            keys.addAll(config.getConfigurationSection(key).getKeys(false));
         return keys;
     }
 

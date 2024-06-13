@@ -32,7 +32,7 @@ public class BukkitHologramFactory implements HologramFactory {
         private boolean spawned = false;
 
         TextDisplayHologram(@NotNull Location loc, @NotNull List<String> lines) {
-            this.loc = Objects.requireNonNull(loc, "hologram location");
+            this.loc = Objects.requireNonNull(loc, "hologram location").clone();
             this.updateLines(lines);
 
             spawn();
@@ -114,23 +114,26 @@ public class BukkitHologramFactory implements HologramFactory {
             }
         }
 
+        // private static final double EPSILON = 1e-5;
+
         @Override
-        public void updateLocation(Location loc) {
-            Objects.requireNonNull(loc, "position");
-            if (!this.loc.equals(loc)) {
-                this.loc = loc;
-                if (!this.isSpawned()) {
-                    this.spawn();
-                } else {
-                    double offset = 0.0D;
+        public void updateLocation(Location newLoc) {
+            /* Not very pretty to move around display entities
+            Objects.requireNonNull(newLoc, "position");
+            if (loc.distanceSquared(newLoc) < EPSILON) return;
+            loc = newLoc.clone();
+            if (!this.isSpawned()) {
+                this.spawn();
+            } else {
+                double offset = 0.0D;
 
-                    for (Iterator<TextDisplay> var4 = this.getSpawnedEntities().iterator(); var4.hasNext(); offset += 0.25D) {
-                        TextDisplay as = var4.next();
-                        as.teleport(loc.add(0.0D, offset, 0.0D));
-                    }
+                for (Iterator<TextDisplay> var4 = this.getSpawnedEntities().iterator(); var4.hasNext(); offset += 0.25D) {
+                    TextDisplay as = var4.next();
+                    final Location asLoc = loc.clone().add(0.0D, offset, 0.0D);
+                    as.setVelocity(asLoc.toVector().subtract(as.getLocation().toVector()).multiply(10));
+                    as.teleport(asLoc);
                 }
-
-            }
+            }*/
         }
 
         @Override

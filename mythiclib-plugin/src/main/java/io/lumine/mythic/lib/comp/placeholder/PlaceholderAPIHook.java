@@ -48,6 +48,11 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             return MythicLib.plugin.getMMOConfig().decimal.format(damageReduction);
         }
 
+        if (params.startsWith("raw_stat_")) {
+            final String stat = UtilityMethods.enumName(params.substring(9));
+            return String.valueOf(MMOPlayerData.get(player).getStatMap().getInstance(stat).getFinal());
+        }
+
         if (params.startsWith("stat_")) {
             final String stat = UtilityMethods.enumName(params.substring(5));
             return StatManager.format(stat, MMOPlayerData.get(player));
