@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.util;
 
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
+import io.lumine.mythic.lib.version.VParticle;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
 import org.bukkit.FluidCollisionMode;
@@ -95,7 +96,7 @@ public class RayTrace {
     }
 
     public void draw(double step, Color color) {
-        draw(step, loc -> loc.getWorld().spawnParticle(Particle.REDSTONE, loc, 0, new Particle.DustOptions(color, 1)));
+        draw(step, loc -> loc.getWorld().spawnParticle(VParticle.REDSTONE.get(), loc, 0, new Particle.DustOptions(color, 1)));
     }
 
     public void draw(double step, Consumer<Location> tick) {

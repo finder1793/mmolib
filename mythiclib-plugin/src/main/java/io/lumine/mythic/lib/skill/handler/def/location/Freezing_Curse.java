@@ -6,15 +6,15 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.LocationSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VPotionEffectType;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class Freezing_Curse extends SkillHandler<LocationSkillResult> {
@@ -42,10 +42,10 @@ public class Freezing_Curse extends SkillHandler<LocationSkillResult> {
             public void run() {
 
                 if (j++ % 2 == 0)
-                    loc.getWorld().playSound(loc, VersionSound.BLOCK_NOTE_BLOCK_PLING.toSound(), 2, (float) (.5 + ((ti - rads) / (Math.PI * 2) * 1.5)));
+                    loc.getWorld().playSound(loc, VSound.BLOCK_NOTE_BLOCK_PLING.get(), 2, (float) (.5 + ((ti - rads) / (Math.PI * 2) * 1.5)));
                 for (int j = 0; j < 2; j++) {
                     ti += Math.PI / 32;
-                    loc.getWorld().spawnParticle(Particle.SPELL_INSTANT, loc.clone().add(Math.cos(ti) * 3, .1, Math.sin(ti) * 3), 0);
+                    loc.getWorld().spawnParticle(VParticle.INSTANT_EFFECT.get(), loc.clone().add(Math.cos(ti) * 3, .1, Math.sin(ti) * 3), 0);
                 }
 
                 if (ti > Math.PI * 2 + rads) {
@@ -61,8 +61,7 @@ public class Freezing_Curse extends SkillHandler<LocationSkillResult> {
                     for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
                         if (entity.getLocation().distanceSquared(loc) < radius * radius && UtilityMethods.canTarget(caster, entity)) {
                             skillMeta.getCaster().attack((LivingEntity) entity, damage, DamageType.SKILL, DamageType.MAGIC);
-                            ((LivingEntity) entity).removePotionEffect(PotionEffectType.SLOW);
-                            ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (duration * 20), (int) amplifier));
+                            UtilityMethods.forcePotionEffect((LivingEntity) entity, VPotionEffectType.SLOWNESS.get(), duration, (int) amplifier);
                         }
                     cancel();
                 }

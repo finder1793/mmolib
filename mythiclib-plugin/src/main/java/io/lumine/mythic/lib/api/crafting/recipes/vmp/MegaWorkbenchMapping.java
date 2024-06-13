@@ -424,7 +424,7 @@ public class MegaWorkbenchMapping  extends VanillaInventoryMapping implements Cu
     /**
      * The edge item used to limit the Super Workbench Area
      */
-    public static final ItemStack MWB_EDGE = ItemFactory.of(Material.GRAY_STAINED_GLASS_PANE).name("\u00a7\u02a4").flag(ItemFlag.HIDE_POTION_EFFECTS).model(3000).build();
+    public static final ItemStack MWB_EDGE = ItemFactory.of(Material.GRAY_STAINED_GLASS_PANE).name("\u00a7\u02a4").model(3000).build();
 
     /**
      * Creates a new instance of the super workbench, ready

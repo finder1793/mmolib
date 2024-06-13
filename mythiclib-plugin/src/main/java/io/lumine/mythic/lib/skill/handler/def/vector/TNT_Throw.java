@@ -5,9 +5,9 @@ import io.lumine.mythic.lib.api.util.TemporaryListener;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.VectorSkillResult;
-import org.bukkit.Particle;
+import io.lumine.mythic.lib.version.VEntityType;
+import io.lumine.mythic.lib.version.VParticle;
 import org.bukkit.Sound;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
@@ -32,12 +32,12 @@ public class TNT_Throw extends SkillHandler<VectorSkillResult> {
         Player caster = skillMeta.getCaster().getPlayer();
 
         Vector vec = result.getTarget().multiply(2 * skillMeta.getParameter("force"));
-        TNTPrimed tnt = (TNTPrimed) caster.getWorld().spawnEntity(caster.getLocation().add(0, 1, 0), EntityType.PRIMED_TNT);
+        TNTPrimed tnt = caster.getWorld().spawn(caster.getLocation().add(0, 1, 0), TNTPrimed.class);
         tnt.setFuseTicks(80);
         tnt.setVelocity(vec);
         new CancelTeamDamage(caster, tnt);
         caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_SNOWBALL_THROW, 1, 0);
-        caster.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, caster.getLocation().add(0, 1, 0), 12, 0, 0, 0, .1);
+        caster.getWorld().spawnParticle(VParticle.EXPLOSION.get(), caster.getLocation().add(0, 1, 0), 12, 0, 0, 0, .1);
     }
 
     /**

@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.comp.interaction;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
+@Deprecated
 public interface TargetRestriction {
 
     /**
@@ -17,5 +18,6 @@ public interface TargetRestriction {
      * @param interaction Type of interaction, whether it's positive (buff, heal) or negative (offense skill, attack)
      * @return If false, any interaction should be cancelled!
      */
+    @Deprecated
     boolean canTarget(Player source, LivingEntity target, InteractionType interaction);
 }

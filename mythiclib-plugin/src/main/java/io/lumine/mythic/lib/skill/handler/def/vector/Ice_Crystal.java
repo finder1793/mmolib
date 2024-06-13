@@ -6,7 +6,9 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.VectorSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VPotionEffectType;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -15,7 +17,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -37,7 +38,7 @@ public class Ice_Crystal extends SkillHandler<VectorSkillResult> {
     public void whenCast(VectorSkillResult result, SkillMetadata skillMeta) {
         Player caster = skillMeta.getCaster().getPlayer();
 
-        caster.getWorld().playSound(caster.getLocation(), VersionSound.ENTITY_FIREWORK_ROCKET_BLAST.toSound(), 1, 1);
+        caster.getWorld().playSound(caster.getLocation(), VSound.ENTITY_FIREWORK_ROCKET_BLAST.get(), 1, 1);
         new BukkitRunnable() {
             final Vector vec = result.getTarget().multiply(.45);
             final Location loc = caster.getEyeLocation().clone().add(0, -.3, 0);
@@ -64,17 +65,17 @@ public class Ice_Crystal extends SkillHandler<VectorSkillResult> {
                             Vector vec = UtilityMethods.rotate(new Vector(r * Math.cos(a + (double) ti / 10), r * Math.sin(a + (double) ti / 10), 0),
                                     loc.getDirection());
                             loc.add(vec);
-                            loc.getWorld().spawnParticle(Particle.REDSTONE, loc, 1, new Particle.DustOptions(Color.WHITE, .7f));
+                            loc.getWorld().spawnParticle(VParticle.REDSTONE.get(), loc, 1, new Particle.DustOptions(Color.WHITE, .7f));
                             loc.add(vec.multiply(-1));
                         }
 
                     for (Entity entity : entities)
                         if (UtilityMethods.canTarget(caster, loc, entity)) {
-                            loc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, loc, 0);
-                            loc.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, loc, 48, 0, 0, 0, .2);
+                            loc.getWorld().spawnParticle(VParticle.LARGE_EXPLOSION.get(), loc, 0);
+                            loc.getWorld().spawnParticle(VParticle.FIREWORK.get(), loc, 48, 0, 0, 0, .2);
                             loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 2, 1);
                             skillMeta.getCaster().attack((LivingEntity) entity, skillMeta.getParameter("damage"), DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE);
-                            ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW,
+                            ((LivingEntity) entity).addPotionEffect(new PotionEffect(VPotionEffectType.SLOWNESS.get(),
                                     (int) (skillMeta.getParameter("duration") * 20), (int) skillMeta.getParameter("amplifier")));
                             cancel();
                             return;

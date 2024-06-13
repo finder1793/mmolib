@@ -6,14 +6,14 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.VectorSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VPotionEffectType;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -40,7 +40,7 @@ public class Arcane_Rift extends SkillHandler<VectorSkillResult> {
         double slowDuration = skillMeta.getParameter("duration");
         double slowAmplifier = skillMeta.getParameter("amplifier");
 
-        caster.getWorld().playSound(caster.getLocation(), VersionSound.ENTITY_ENDERMAN_DEATH.toSound(), 2, .5f);
+        caster.getWorld().playSound(caster.getLocation(), VSound.ENTITY_ENDERMAN_DEATH.get(), 2, .5f);
         new BukkitRunnable() {
             final Vector vec = result.getTarget().setY(0).normalize().multiply(.5 * skillMeta.getParameter("speed"));
             final Location loc = caster.getLocation();
@@ -53,13 +53,13 @@ public class Arcane_Rift extends SkillHandler<VectorSkillResult> {
                     cancel();
 
                 loc.add(vec);
-                loc.getWorld().spawnParticle(Particle.SPELL_WITCH, loc, 5, .5, 0, .5, 0);
+                loc.getWorld().spawnParticle(VParticle.WITCH.get(), loc, 5, .5, 0, .5, 0);
 
                 for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
                     if (UtilityMethods.canTarget(caster, entity) && loc.distanceSquared(entity.getLocation()) < 2 && !hit.contains(entity.getEntityId())) {
                         hit.add(entity.getEntityId());
                         skillMeta.getCaster().attack((LivingEntity) entity, damage, DamageType.SKILL, DamageType.MAGIC);
-                        ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (slowDuration * 20), (int) slowAmplifier));
+                        ((LivingEntity) entity).addPotionEffect(new PotionEffect(VPotionEffectType.SLOWNESS.get(), (int) (slowDuration * 20), (int) slowAmplifier));
                     }
             }
         }.runTaskTimer(MythicLib.plugin, 0, 1);

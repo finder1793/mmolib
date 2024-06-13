@@ -9,6 +9,7 @@ import io.lumine.mythic.lib.comp.interaction.InteractionType;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.util.annotation.BackwardsCompatibility;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
+import io.lumine.mythic.lib.version.VParticle;
 import org.apache.commons.lang.Validate;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -29,6 +30,8 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +42,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
@@ -56,6 +61,11 @@ public class UtilityMethods {
         final double normSquared = vec.lengthSquared();
         if (normSquared == 0) return defaultValue;
         return vec.multiply(1d / Math.sqrt(normSquared));
+    }
+
+    public static void forcePotionEffect(LivingEntity entity, PotionEffectType type, double duration, int amplifier) {
+        entity.removePotionEffect(type);
+        entity.addPotionEffect(new PotionEffect(type, (int) (duration * 20), amplifier));
     }
 
     @NotNull
@@ -190,7 +200,7 @@ public class UtilityMethods {
         final double step = 1d / ((double) PTS_PER_BLOCK) / vec.length();
         for (double d = 0; d < 1; d += step) {
             Location inter = source.clone().add(vec.clone().multiply(d));
-            inter.getWorld().spawnParticle(Particle.REDSTONE, inter, 0, new Particle.DustOptions(color, .6f));
+            inter.getWorld().spawnParticle(VParticle.REDSTONE.get(), inter, 0, new Particle.DustOptions(color, .6f));
         }
     }
 
@@ -203,11 +213,10 @@ public class UtilityMethods {
      * checkups
      */
     public static List<Entity> getNearbyChunkEntities(Location loc) {
-        List<Entity> entities = new ArrayList<>();
+        final List<Entity> entities = new ArrayList<>();
 
         int cx = loc.getChunk().getX();
         int cz = loc.getChunk().getZ();
-        // d
 
         for (int x = -1; x < 2; x++)
             for (int z = -1; z < 2; z++)
@@ -273,6 +282,29 @@ public class UtilityMethods {
         if (!MythicLib.plugin.getEntities().canInteract(source, target, interaction)) return false;
 
         return true;
+    }
+
+    @NotNull
+    public static <T> T resolveEnumField(@NotNull Function<String, T> resolver, @NotNull String... candidates) {
+        return resolveEnumField(resolver, null, candidates);
+    }
+
+    @NotNull
+    public static <T> T resolveEnumField(@NotNull Function<String, T> resolver, @Nullable Supplier<T> defaultValue, @NotNull String... candidates) {
+
+        // Try all candidates
+        for (String candidate : candidates)
+            try {
+                return resolver.apply(candidate);
+            } catch (Throwable throwable) {
+                // Ignore & try next candidate
+            }
+
+        // Default value if any
+        if (defaultValue != null) return Objects.requireNonNull(defaultValue.get(), "Null supplied value");
+
+        // Error otherwise
+        throw new RuntimeException("Could not find enum field called '" + Arrays.asList(candidates) + "'");
     }
 
     private static final String[] PREVIOUS_ATTRIBUTE_MODIFIER_NAMES = {"mmolib.", "mmoitems."};

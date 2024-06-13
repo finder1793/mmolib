@@ -7,8 +7,8 @@ import io.lumine.mythic.lib.comp.interaction.InteractionType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.TargetSkillResult;
+import io.lumine.mythic.lib.version.VParticle;
 import org.bukkit.Bukkit;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
@@ -84,7 +84,7 @@ public class Human_Shield extends SkillHandler<TargetSkillResult> {
             }
 
             double a = (double) j / 5;
-            target.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, target.getLocation().add(Math.cos(a), 1 + Math.sin(a / 3) / 1.3, Math.sin(a)), 0);
+            target.getWorld().spawnParticle(VParticle.HAPPY_VILLAGER.get(), target.getLocation().add(Math.cos(a), 1 + Math.sin(a / 3) / 1.3, Math.sin(a)), 0);
         }
 
         private void close() {

@@ -100,7 +100,7 @@ public class NoClipItem extends TemporaryListener {
          * to look like a vanilla item if a player somehow picks it up and Luck 0 does nothing.
          */
         if (oldItem.getItemMeta().hasEnchants()) {
-            newItemMeta.addEnchant(Enchantment.LUCK, 0, true);
+            newItemMeta.addEnchant(Enchantment.KNOCKBACK, 0, true);
             newItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
 

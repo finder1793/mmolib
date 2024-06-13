@@ -7,7 +7,11 @@ import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
 import io.lumine.mythic.lib.util.NoClipItem;
-import org.bukkit.*;
+import io.lumine.mythic.lib.version.VParticle;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -55,7 +59,7 @@ public class Throw_Up extends SkillHandler<SimpleSkillResult> {
                 NoClipItem item = new NoClipItem(caster.getLocation().add(0, 1.2, 0), new ItemStack(Material.ROTTEN_FLESH));
                 Bukkit.getScheduler().scheduleSyncDelayedTask(MythicLib.plugin, item::close, 40);
                 item.getEntity().setVelocity(loc.getDirection().multiply(.8));
-                caster.getWorld().spawnParticle(Particle.SMOKE_LARGE, caster.getLocation().add(0, 1.2, 0), 0, loc.getDirection().getX(), loc.getDirection().getY(), loc.getDirection().getZ(), 1);
+                caster.getWorld().spawnParticle(VParticle.LARGE_SMOKE.get(), caster.getLocation().add(0, 1.2, 0), 0, loc.getDirection().getX(), loc.getDirection().getY(), loc.getDirection().getZ(), 1);
             }
         }.runTaskTimer(MythicLib.plugin, 0, 2);
     }

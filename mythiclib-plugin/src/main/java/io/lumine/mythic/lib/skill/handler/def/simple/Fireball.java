@@ -9,7 +9,7 @@ import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
 import io.lumine.mythic.lib.util.CustomProjectileHandler;
 import io.lumine.mythic.lib.util.RayTrace;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -37,7 +37,7 @@ public class Fireball extends SkillHandler<SimpleSkillResult> {
     public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         Player caster = skillMeta.getCaster().getPlayer();
 
-        caster.getWorld().playSound(caster.getLocation(), VersionSound.ENTITY_FIREWORK_ROCKET_BLAST.toSound(), 1, 1);
+        caster.getWorld().playSound(caster.getLocation(), VSound.ENTITY_FIREWORK_ROCKET_BLAST.get(), 1, 1);
         new BukkitRunnable() {
             int j = 0;
             final Vector vec = caster.getPlayer().getEyeLocation().getDirection();

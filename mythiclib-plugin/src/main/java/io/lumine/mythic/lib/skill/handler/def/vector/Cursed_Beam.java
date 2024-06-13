@@ -6,9 +6,9 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.VectorSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -56,7 +56,7 @@ public class Cursed_Beam extends SkillHandler<VectorSkillResult> {
                     for (double i = 0; i < Math.PI * 2; i += Math.PI / 6) {
                         Vector vec = UtilityMethods.rotate(new Vector(r * Math.cos(i), r * Math.sin(i), 0), loc.getDirection());
                         loc.add(vec);
-                        loc.getWorld().spawnParticle(Particle.SPELL_WITCH, loc, 0);
+                        loc.getWorld().spawnParticle(VParticle.WITCH.get(), loc, 0);
                         loc.add(vec.multiply(-1));
                     }
 
@@ -64,7 +64,7 @@ public class Cursed_Beam extends SkillHandler<VectorSkillResult> {
                         if (UtilityMethods.canTarget(caster, loc, target)) {
                             effect(target);
                             double damage = skillMeta.getParameter("damage");
-                            loc.getWorld().playSound(loc, VersionSound.ENTITY_ENDERMAN_TELEPORT.toSound(), 2, .7f);
+                            loc.getWorld().playSound(loc, VSound.ENTITY_ENDERMAN_TELEPORT.get(), 2, .7f);
 
                             for (Entity entity : entities)
                                 if (UtilityMethods.canTarget(caster, entity) && loc.distanceSquared(entity.getLocation().add(0, 1, 0)) < 9) {
@@ -89,7 +89,7 @@ public class Cursed_Beam extends SkillHandler<VectorSkillResult> {
                     y += .05;
                     for (int j = 0; j < 2; j++) {
                         double xz = y * Math.PI * .8 + (j * Math.PI);
-                        loc2.getWorld().spawnParticle(Particle.SPELL_WITCH, loc2.clone().add(Math.cos(xz) * 2.5, y, Math.sin(xz) * 2.5), 0);
+                        loc2.getWorld().spawnParticle(VParticle.WITCH.get(), loc2.clone().add(Math.cos(xz) * 2.5, y, Math.sin(xz) * 2.5), 0);
                     }
                 }
                 if (y >= 3)

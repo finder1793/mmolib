@@ -11,7 +11,6 @@ import io.lumine.mythic.lib.api.util.ItemFactory;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackProvider;
 import io.lumine.mythic.lib.api.util.ui.QuickNumberRange;
 import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
-import io.lumine.mythic.lib.version.VersionMaterial;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
@@ -44,7 +43,7 @@ public class RecipeUIFilter implements UIFilter {
         ItemStack target = inven.getItem(slot);
 
         // Yes
-        if (target == null) { target = VersionMaterial.CAULDRON.toItem(); }
+        if (target == null) { target = new ItemStack(Material.CAULDRON); }
 
         // That's it
         return target;

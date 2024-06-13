@@ -6,16 +6,20 @@ import io.lumine.mythic.lib.api.util.TemporaryListener;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.LocationSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VEntityType;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VPotionEffectType;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
+import org.bukkit.entity.Snowman;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -42,10 +46,10 @@ public class Snowman_Turret extends SkillHandler<LocationSkillResult> {
         double duration = Math.min(skillMeta.getParameter("duration") * 20, 300);
         double radiusSquared = Math.pow(skillMeta.getParameter("radius"), 2);
 
-        loc.getWorld().playSound(loc, VersionSound.ENTITY_ENDERMAN_TELEPORT.toSound(), 2, 1);
-        final Snowman snowman = (Snowman) loc.getWorld().spawnEntity(loc.add(0, 1, 0), EntityType.SNOWMAN);
+        loc.getWorld().playSound(loc, VSound.ENTITY_ENDERMAN_TELEPORT.get(), 2, 1);
+        final Snowman snowman = loc.getWorld().spawn(loc.add(0, 1, 0), Snowman.class);
         snowman.setInvulnerable(true);
-        snowman.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100000, 254, true));
+        snowman.addPotionEffect(new PotionEffect(VPotionEffectType.SLOWNESS.get(), 100000, 254, true));
         new BukkitRunnable() {
             int ti = 0;
             double j = 0;
@@ -60,9 +64,9 @@ public class Snowman_Turret extends SkillHandler<LocationSkillResult> {
 
                 j += Math.PI / 24 % (2 * Math.PI);
                 for (double k = 0; k < 3; k++)
-                    snowman.getWorld().spawnParticle(Particle.SPELL_INSTANT,
+                    snowman.getWorld().spawnParticle(VParticle.INSTANT_EFFECT.get(),
                             snowman.getLocation().add(Math.cos(j + k / 3 * 2 * Math.PI) * 1.3, 1, Math.sin(j + k / 3 * 2 * Math.PI) * 1.3), 0);
-                snowman.getWorld().spawnParticle(Particle.SPELL_INSTANT, snowman.getLocation().add(0, 1, 0), 1, 0, 0, 0, .2);
+                snowman.getWorld().spawnParticle(VParticle.INSTANT_EFFECT.get(), snowman.getLocation().add(0, 1, 0), 1, 0, 0, 0, .2);
 
                 if (ti % 2 == 0)
                     for (Entity entity : UtilityMethods.getNearbyChunkEntities(snowman.getLocation()))

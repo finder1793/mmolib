@@ -5,14 +5,14 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VPotionEffectType;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 public class Circular_Slash extends SkillHandler<SimpleSkillResult> {
@@ -36,7 +36,7 @@ public class Circular_Slash extends SkillHandler<SimpleSkillResult> {
         Player caster = skillMeta.getCaster().getPlayer();
 
         caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2, .5f);
-        caster.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 2, 254));
+        caster.addPotionEffect(new PotionEffect(VPotionEffectType.SLOWNESS.get(), 2, 254));
         for (Entity entity : caster.getNearbyEntities(radius, radius, radius)) {
             if (UtilityMethods.canTarget(caster, entity)) {
                 skillMeta.getCaster().attack((LivingEntity) entity, damage, DamageType.SKILL, DamageType.PHYSICAL);
@@ -51,8 +51,8 @@ public class Circular_Slash extends SkillHandler<SimpleSkillResult> {
         for (double j = 0; j < Math.PI * 2; j += Math.PI / step) {
             Location loc = caster.getLocation().clone();
             loc.add(Math.cos(j) * radius, .75, Math.sin(j) * radius);
-            loc.getWorld().spawnParticle(Particle.SMOKE_LARGE, loc, 0);
+            loc.getWorld().spawnParticle(VParticle.LARGE_SMOKE.get(), loc, 0);
         }
-        caster.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, caster.getLocation().add(0, 1, 0), 0);
+        caster.getWorld().spawnParticle(VParticle.LARGE_EXPLOSION.get(), caster.getLocation().add(0, 1, 0), 0);
     }
 }

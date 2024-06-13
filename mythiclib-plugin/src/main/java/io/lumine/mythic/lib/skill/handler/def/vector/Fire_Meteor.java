@@ -6,7 +6,8 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.VectorSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -33,7 +34,7 @@ public class Fire_Meteor extends SkillHandler<VectorSkillResult> {
     public void whenCast(VectorSkillResult result, SkillMetadata skillMeta) {
         Player caster = skillMeta.getCaster().getPlayer();
 
-        caster.getWorld().playSound(caster.getLocation(), VersionSound.ENTITY_ENDERMAN_TELEPORT.toSound(), 3, 1);
+        caster.getWorld().playSound(caster.getLocation(), VSound.ENTITY_ENDERMAN_TELEPORT.get(), 3, 1);
         new BukkitRunnable() {
             final Location loc = caster.getLocation().clone().add(0, 10, 0);
             final Vector vec = result.getTarget().multiply(1.3).setY(-1).normalize();
@@ -45,12 +46,12 @@ public class Fire_Meteor extends SkillHandler<VectorSkillResult> {
                     cancel();
 
                 loc.add(vec);
-                loc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, loc, 0);
+                loc.getWorld().spawnParticle(VParticle.LARGE_EXPLOSION.get(), loc, 0);
                 loc.getWorld().spawnParticle(Particle.FLAME, loc, 4, .2, .2, .2, 0);
                 if (loc.getBlock().getRelative(BlockFace.DOWN).getType().isSolid() || loc.getBlock().getType().isSolid()) {
                     loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 3, .6f);
-                    loc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, loc, 10, 2, 2, 2, 0);
-                    loc.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, loc, 32, 0, 0, 0, .3);
+                    loc.getWorld().spawnParticle(VParticle.LARGE_EXPLOSION.get(), loc, 10, 2, 2, 2, 0);
+                    loc.getWorld().spawnParticle(VParticle.EXPLOSION.get(), loc, 32, 0, 0, 0, .3);
                     loc.getWorld().spawnParticle(Particle.FLAME, loc, 32, 0, 0, 0, .3);
 
                     double damage = skillMeta.getParameter("damage");

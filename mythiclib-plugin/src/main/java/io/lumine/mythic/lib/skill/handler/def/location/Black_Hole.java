@@ -5,9 +5,9 @@ import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.LocationSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -33,7 +33,7 @@ public class Black_Hole extends SkillHandler<LocationSkillResult> {
         double duration = skillMeta.getParameter("duration") * 20;
         double radius = skillMeta.getParameter("radius");
 
-        loc.getWorld().playSound(loc, VersionSound.ENTITY_ENDERMAN_TELEPORT.toSound(), 3, 1);
+        loc.getWorld().playSound(loc, VSound.ENTITY_ENDERMAN_TELEPORT.get(), 3, 1);
         new BukkitRunnable() {
             int ti = 0;
             final double r = 4;
@@ -42,8 +42,8 @@ public class Black_Hole extends SkillHandler<LocationSkillResult> {
                 if (ti++ > Math.min(300, duration))
                     cancel();
 
-                loc.getWorld().playSound(loc, VersionSound.BLOCK_NOTE_BLOCK_HAT.toSound(), 2, 2);
-                loc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, loc, 0);
+                loc.getWorld().playSound(loc, VSound.BLOCK_NOTE_BLOCK_HAT.get(), 2, 2);
+                loc.getWorld().spawnParticle(VParticle.LARGE_EXPLOSION.get(), loc, 0);
                 for (int j = 0; j < 3; j++) {
                     double ran = RANDOM.nextDouble() * Math.PI * 2;
                     double ran_y = RANDOM.nextDouble() * 2 - 1;
@@ -51,7 +51,7 @@ public class Black_Hole extends SkillHandler<LocationSkillResult> {
                     double z = Math.sin(ran) * Math.sin(ran_y * Math.PI * 2);
                     Location loc1 = loc.clone().add(x * r, ran_y * r, z * r);
                     Vector v = loc.toVector().subtract(loc1.toVector());
-                    loc1.getWorld().spawnParticle(Particle.SMOKE_LARGE, loc1, 0, v.getX(), v.getY(), v.getZ(), .1);
+                    loc1.getWorld().spawnParticle(VParticle.LARGE_SMOKE.get(), loc1, 0, v.getX(), v.getY(), v.getZ(), .1);
                 }
 
                 for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))

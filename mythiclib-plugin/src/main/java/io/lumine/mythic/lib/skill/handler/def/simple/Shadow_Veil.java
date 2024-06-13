@@ -6,10 +6,10 @@ import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -36,7 +36,7 @@ public class Shadow_Veil extends SkillHandler<SimpleSkillResult> {
 
         Player caster = skillMeta.getCaster().getPlayer();
 
-        caster.getWorld().playSound(caster.getLocation(), VersionSound.ENTITY_ENDERMAN_TELEPORT.toSound(), 3, 0);
+        caster.getWorld().playSound(caster.getLocation(), VSound.ENTITY_ENDERMAN_TELEPORT.get(), 3, 0);
         for (Player online : Bukkit.getOnlinePlayers())
             online.hidePlayer(MythicLib.plugin, caster);
 
@@ -76,8 +76,8 @@ public class Shadow_Veil extends SkillHandler<SimpleSkillResult> {
             if (ti < 0)
                 return;
 
-            player.getWorld().spawnParticle(Particle.SMOKE_LARGE, player.getLocation().add(0, 1, 0), 32, 0, 0, 0, .13);
-            player.getWorld().playSound(player.getLocation(), VersionSound.ENTITY_ENDERMAN_TELEPORT.toSound(), 3, 0);
+            player.getWorld().spawnParticle(VParticle.LARGE_SMOKE.get(), player.getLocation().add(0, 1, 0), 32, 0, 0, 0, .13);
+            player.getWorld().playSound(player.getLocation(), VSound.ENTITY_ENDERMAN_TELEPORT.get(), 3, 0);
 
             // sets time to -1 so that next calls know the handler has already
             // been closed
@@ -103,7 +103,7 @@ public class Shadow_Veil extends SkillHandler<SimpleSkillResult> {
                     y += .04;
                     for (int j = 0; j < 4; j++) {
                         double a = y * Math.PI * .8 + (j * Math.PI / 2);
-                        player.getWorld().spawnParticle(Particle.SMOKE_LARGE, loc.clone().add(Math.cos(a) * 2.5, y, Math.sin(a) * 2.5), 0);
+                        player.getWorld().spawnParticle(VParticle.LARGE_SMOKE.get(), loc.clone().add(Math.cos(a) * 2.5, y, Math.sin(a) * 2.5), 0);
                     }
                 }
 

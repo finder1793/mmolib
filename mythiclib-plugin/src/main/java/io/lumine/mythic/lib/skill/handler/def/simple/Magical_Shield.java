@@ -4,7 +4,8 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -50,7 +51,7 @@ public class Magical_Shield extends SkillHandler<SimpleSkillResult> {
             this.radius = radius;
             this.power = power;
 
-            caster.getWorld().playSound(caster.getLocation(), VersionSound.ENTITY_ENDERMAN_TELEPORT.toSound(), 3, 0);
+            caster.getWorld().playSound(caster.getLocation(), VSound.ENTITY_ENDERMAN_TELEPORT.get(), 3, 0);
 
             runTaskTimer(MythicLib.plugin, 0, 3);
             Bukkit.getPluginManager().registerEvents(this, MythicLib.plugin);
@@ -74,7 +75,7 @@ public class Magical_Shield extends SkillHandler<SimpleSkillResult> {
 
             for (double j = 0; j < Math.PI / 2; j += Math.PI / (28 + RANDOM.nextInt(5)))
                 for (double i = 0; i < Math.PI * 2; i += Math.PI / (14 + RANDOM.nextInt(5)))
-                    loc.getWorld().spawnParticle(Particle.REDSTONE,
+                    loc.getWorld().spawnParticle(VParticle.REDSTONE.get(),
                             loc.clone().add(2.5 * Math.cos(i + j) * Math.sin(j), 2.5 * Math.cos(j), 2.5 * Math.sin(i + j) * Math.sin(j)), 1,
                             new Particle.DustOptions(Color.FUCHSIA, 1));
         }

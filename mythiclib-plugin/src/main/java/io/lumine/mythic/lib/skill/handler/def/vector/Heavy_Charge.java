@@ -6,7 +6,7 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.VectorSkillResult;
-import org.bukkit.Particle;
+import io.lumine.mythic.lib.version.VParticle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -42,13 +42,13 @@ public class Heavy_Charge extends SkillHandler<VectorSkillResult> {
 
                 if (ti < 9) {
                     caster.setVelocity(vec);
-                    caster.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, caster.getLocation().add(0, 1, 0), 3, .13, .13, .13, 0);
+                    caster.getWorld().spawnParticle(VParticle.EXPLOSION.get(), caster.getLocation().add(0, 1, 0), 3, .13, .13, .13, 0);
                 }
 
                 for (Entity target : caster.getNearbyEntities(1, 1, 1))
                     if (UtilityMethods.canTarget(caster, target)) {
                         caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 1, 1);
-                        caster.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, target.getLocation().add(0, 1, 0), 0);
+                        caster.getWorld().spawnParticle(VParticle.LARGE_EXPLOSION.get(), target.getLocation().add(0, 1, 0), 0);
                         target.setVelocity(caster.getVelocity().setY(0.3).multiply(1.7 * knockback));
                         caster.setVelocity(caster.getVelocity().setX(0).setY(0).setZ(0));
                         skillMeta.getCaster().attack((LivingEntity) target, skillMeta.getParameter("damage"), DamageType.SKILL, DamageType.PHYSICAL);

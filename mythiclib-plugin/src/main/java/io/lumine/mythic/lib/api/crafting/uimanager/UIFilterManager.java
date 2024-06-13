@@ -6,7 +6,8 @@ import io.lumine.mythic.lib.api.util.ui.FFPMythicLib;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackCategory;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackProvider;
 import io.lumine.mythic.lib.api.util.ui.QuickNumberRange;
-import io.lumine.mythic.lib.version.VersionMaterial;
+import io.lumine.mythic.lib.version.VMaterial;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -104,7 +105,7 @@ public class UIFilterManager {
          */
         UIFilterBasicCountermatch tester = new UIFilterBasicCountermatch();
         filter.addMatchOverride(tester);
-        filter.matches(VersionMaterial.CAULDRON.toItem(), filter.exampleArgument(), filter.exampleData(), null);
+        filter.matches(new ItemStack(Material.CAULDRON), filter.exampleArgument(), filter.exampleData(), null);
 
         if (!tester.wasEvaluated()) {
 

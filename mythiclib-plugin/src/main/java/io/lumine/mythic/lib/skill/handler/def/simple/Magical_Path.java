@@ -4,9 +4,9 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Bukkit;
-import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -52,7 +52,7 @@ public class Magical_Path extends SkillHandler<SimpleSkillResult> {
             player.setAllowFlight(true);
             player.setFlying(true);
             player.setVelocity(player.getVelocity().setY(.5));
-            player.getWorld().playSound(player.getLocation(), VersionSound.ENTITY_ENDERMAN_TELEPORT.toSound(), 1, 1);
+            player.getWorld().playSound(player.getLocation(), VSound.ENTITY_ENDERMAN_TELEPORT.get(), 1, 1);
 
             runTaskTimer(MythicLib.plugin, 0, 2);
             Bukkit.getPluginManager().registerEvents(this, MythicLib.plugin);
@@ -70,9 +70,9 @@ public class Magical_Path extends SkillHandler<SimpleSkillResult> {
                 event.setCancelled(true);
                 safe = false;
 
-                player.getWorld().spawnParticle(Particle.SPELL, player.getLocation(), 8, .35, 0, .35, .08);
-                player.getWorld().spawnParticle(Particle.SPELL_INSTANT, player.getLocation(), 16, .35, 0, .35, .08);
-                player.getWorld().playSound(player.getLocation(), VersionSound.ENTITY_ENDERMAN_HURT.toSound(), 1, 2);
+                player.getWorld().spawnParticle(VParticle.EFFECT.get(), player.getLocation(), 8, .35, 0, .35, .08);
+                player.getWorld().spawnParticle(VParticle.INSTANT_EFFECT.get(), player.getLocation(), 16, .35, 0, .35, .08);
+                player.getWorld().playSound(player.getLocation(), VSound.ENTITY_ENDERMAN_HURT.get(), 1, 2);
             }
         }
 
@@ -85,14 +85,14 @@ public class Magical_Path extends SkillHandler<SimpleSkillResult> {
         public void run() {
 
             if (j++ > duration) {
-                player.getWorld().playSound(player.getLocation(), VersionSound.ENTITY_ENDERMAN_TELEPORT.toSound(), 1, 1);
+                player.getWorld().playSound(player.getLocation(), VSound.ENTITY_ENDERMAN_TELEPORT.get(), 1, 1);
                 player.setAllowFlight(false);
                 cancel();
                 return;
             }
 
-            player.getWorld().spawnParticle(Particle.SPELL, player.getLocation(), 8, .5, 0, .5, .1);
-            player.getWorld().spawnParticle(Particle.SPELL_INSTANT, player.getLocation(), 16, .5, 0, .5, .1);
+            player.getWorld().spawnParticle(VParticle.EFFECT.get(), player.getLocation(), 8, .5, 0, .5, .1);
+            player.getWorld().spawnParticle(VParticle.INSTANT_EFFECT.get(), player.getLocation(), 16, .5, 0, .5, .1);
         }
     }
 }

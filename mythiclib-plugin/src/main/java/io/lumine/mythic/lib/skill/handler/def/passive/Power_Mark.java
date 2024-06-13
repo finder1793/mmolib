@@ -12,15 +12,19 @@ import io.lumine.mythic.lib.skill.result.def.AttackSkillResult;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import io.lumine.mythic.lib.util.ParabolicProjectile;
-import io.lumine.mythic.lib.version.VersionSound;
-import org.bukkit.*;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VPotionEffectType;
+import io.lumine.mythic.lib.version.VSound;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -101,17 +105,17 @@ public class Power_Mark extends SkillHandler<AttackSkillResult> implements Liste
                 unregister();
 
                 for (double a = 0; a < Math.PI * 2; a += Math.PI * 2 / 17)
-                    new ParabolicProjectile(loc, loc.clone().add(6 * Math.cos(a), 0, 6 * Math.sin(a)), Particle.SPELL_WITCH);
+                    new ParabolicProjectile(loc, loc.clone().add(6 * Math.cos(a), 0, 6 * Math.sin(a)), VParticle.WITCH.get());
 
                 loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 2, 0);
-                loc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, loc.clone().add(0, 1, 0), 16, 2, 2, 2, 0);
-                loc.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, loc.clone().add(0, 1, 0), 24, 0, 0, 0, .3f);
+                loc.getWorld().spawnParticle(VParticle.LARGE_EXPLOSION.get(), loc.clone().add(0, 1, 0), 16, 2, 2, 2, 0);
+                loc.getWorld().spawnParticle(VParticle.EXPLOSION.get(), loc.clone().add(0, 1, 0), 24, 0, 0, 0, .3f);
 
                 stun += Math.log(Math.max(1, accumulate - 10)) / 8;
 
                 for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
                     if (entity.getLocation().distanceSquared(loc) < 25 && UtilityMethods.canTarget(caster.getPlayer(), entity)) {
-                        ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (stun * 20), 10, false, false));
+                        ((LivingEntity) entity).addPotionEffect(new PotionEffect(VPotionEffectType.SLOWNESS.get(), (int) (stun * 20), 10, false, false));
                         caster.attack((LivingEntity) entity, accumulate, DamageType.SKILL, DamageType.MAGIC);
                         entity.setVelocity(format(entity.getLocation().subtract(loc).toVector().setY(0)).setY(.3));
                     }
@@ -119,12 +123,12 @@ public class Power_Mark extends SkillHandler<AttackSkillResult> implements Liste
             }
 
             if (j % 2 == 0 && j > 20 * (duration - 2))
-                loc.getWorld().playSound(loc, VersionSound.BLOCK_NOTE_BLOCK_PLING.toSound(), 1, (float) (1 + (j - 20 * (duration - 2)) / 40));
+                loc.getWorld().playSound(loc, VSound.BLOCK_NOTE_BLOCK_PLING.get(), 1, (float) (1 + (j - 20 * (duration - 2)) / 40));
 
             double a = (double) j / 16;
             double r = Math.sqrt(Math.min(duration * 2 - (double) j / 10, 4)) * 2;
             for (double k = 0; k < Math.PI * 2; k += Math.PI * 2 / 5)
-                loc.getWorld().spawnParticle(Particle.SPELL_WITCH, loc.clone().add(r * Math.cos(k + a), 0, r * Math.sin(k + a)), 0);
+                loc.getWorld().spawnParticle(VParticle.WITCH.get(), loc.clone().add(r * Math.cos(k + a), 0, r * Math.sin(k + a)), 0);
         }
     }
 

@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.listener;
 
 import io.lumine.mythic.lib.entity.ProjectileMetadata;
+import io.lumine.mythic.lib.version.VEnchantment;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.LivingEntity;
@@ -40,8 +41,8 @@ public class CustomProjectileDamage implements Listener {
             if (projectile instanceof AbstractArrow
                     && data.getSourceItem() != null
                     && data.getSourceItem().getItem().hasItemMeta()
-                    && data.getSourceItem().getItem().getItemMeta().getEnchants().containsKey(Enchantment.ARROW_DAMAGE))
-                baseDamage *= 1.25 + (.25 * data.getSourceItem().getItem().getItemMeta().getEnchantLevel(Enchantment.ARROW_DAMAGE));
+                    && data.getSourceItem().getItem().getItemMeta().getEnchants().containsKey(VEnchantment.POWER.get()))
+                baseDamage *= 1.25 + (.25 * data.getSourceItem().getItem().getItemMeta().getEnchantLevel(VEnchantment.POWER.get()));
 
             event.setDamage(baseDamage);
         }

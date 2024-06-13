@@ -4,6 +4,7 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.TargetSkillResult;
+import io.lumine.mythic.lib.version.VParticle;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -43,7 +44,7 @@ public class Wither extends SkillHandler<TargetSkillResult> {
                         double a = y * Math.PI + (j * Math.PI * 2 / 3);
                         double x = Math.cos(a) * (3 - y) / 2.5;
                         double z = Math.sin(a) * (3 - y) / 2.5;
-                        loc.getWorld().spawnParticle(Particle.REDSTONE, loc.clone().add(x, y, z), 1, new Particle.DustOptions(Color.BLACK, 1));
+                        loc.getWorld().spawnParticle(VParticle.REDSTONE.get(), loc.clone().add(x, y, z), 1, new Particle.DustOptions(Color.BLACK, 1));
                     }
                 }
             }

@@ -4,10 +4,10 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.TargetSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -31,7 +31,7 @@ public class Shock extends SkillHandler<TargetSkillResult> {
 
         double duration = skillMeta.getParameter("duration");
 
-        target.getWorld().playSound(target.getLocation(), VersionSound.ENTITY_ZOMBIE_PIGMAN_ANGRY.toSound(), 1, 2);
+        target.getWorld().playSound(target.getLocation(), VSound.ENTITY_ZOMBIE_PIGMAN_ANGRY.get(), 1, 2);
         new BukkitRunnable() {
             final Location loc = target.getLocation();
             final double rads = Math.toRadians(caster.getEyeLocation().getYaw() - 90);
@@ -40,7 +40,7 @@ public class Shock extends SkillHandler<TargetSkillResult> {
             public void run() {
                 for (int j = 0; j < 3; j++) {
                     ti += Math.PI / 15;
-                    target.getWorld().spawnParticle(Particle.SMOKE_LARGE, loc.clone().add(Math.cos(ti), 1, Math.sin(ti)), 0);
+                    target.getWorld().spawnParticle(VParticle.LARGE_SMOKE.get(), loc.clone().add(Math.cos(ti), 1, Math.sin(ti)), 0);
                 }
                 if (ti >= Math.PI * 2 + rads)
                     cancel();

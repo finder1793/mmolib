@@ -6,7 +6,7 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.TargetSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -52,7 +52,7 @@ public class Targeted_Fireball extends SkillHandler<TargetSkillResult> {
                     loc.getWorld().spawnParticle(Particle.FLAME, loc, 0, rotated.getX(), rotated.getY(), rotated.getZ(), .06);
                 }
 
-                loc.getWorld().playSound(loc, VersionSound.BLOCK_NOTE_BLOCK_HAT.toSound(), 1, 1);
+                loc.getWorld().playSound(loc, VSound.BLOCK_NOTE_BLOCK_HAT.get(), 1, 1);
                 if (target.getLocation().add(0, target.getHeight() / 2, 0).distanceSquared(loc) < 1.3) {
                     loc.getWorld().spawnParticle(Particle.LAVA, loc, 8);
                     loc.getWorld().spawnParticle(Particle.FLAME, loc, 32, 0, 0, 0, .1);

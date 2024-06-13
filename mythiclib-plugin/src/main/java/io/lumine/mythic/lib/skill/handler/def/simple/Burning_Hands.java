@@ -7,6 +7,7 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
+import io.lumine.mythic.lib.version.VParticle;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -51,7 +52,7 @@ public class Burning_Hands extends SkillHandler<SimpleSkillResult> {
                     Location source = loc.clone().add(vec.clone().setY(0));
                     source.getWorld().spawnParticle(Particle.FLAME, source, 0, vec.getX(), vec.getY(), vec.getZ(), .5);
                     if (j % 2 == 0)
-                        source.getWorld().spawnParticle(Particle.SMOKE_NORMAL, source, 0, vec.getX(), vec.getY(), vec.getZ(), .5);
+                        source.getWorld().spawnParticle(VParticle.SMOKE.get(), source, 0, vec.getX(), vec.getY(), vec.getZ(), .5);
                 }
 
                 if (j % 5 == 0)

@@ -6,7 +6,8 @@ import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Color;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
@@ -33,7 +34,7 @@ public class Void_Zapper extends SkillHandler<SimpleSkillResult> {
     @Override
     public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         Player caster = skillMeta.getCaster().getPlayer();
-        caster.getWorld().playSound(caster.getLocation(), VersionSound.ENTITY_ENDERMAN_HURT.toSound(), 1, 1);
+        caster.getWorld().playSound(caster.getLocation(), VSound.ENTITY_ENDERMAN_HURT.get(), 1, 1);
         new SkillHandler(skillMeta);
     }
 
@@ -87,7 +88,7 @@ public class Void_Zapper extends SkillHandler<SimpleSkillResult> {
         void draw(Location loc, Vector dir, double length) {
             for (double dis = 0; dis < length; dis += STEP) {
                 Location intermediate = loc.clone().add(dir.clone().multiply(dis));
-                loc.getWorld().spawnParticle(Particle.REDSTONE, intermediate, 1, new Particle.DustOptions(Color.PURPLE, 1.2f));
+                loc.getWorld().spawnParticle(VParticle.REDSTONE.get(), intermediate, 1, new Particle.DustOptions(Color.PURPLE, 1.2f));
             }
         }
     }

@@ -4,8 +4,8 @@ import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.LocationSkillResult;
+import io.lumine.mythic.lib.version.VParticle;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -34,8 +34,8 @@ public class Corrosion extends SkillHandler<LocationSkillResult> {
         int amplifier = (int) skillMeta.getParameter("amplifier");
         double radiusSquared = Math.pow(skillMeta.getParameter("radius"), 2);
 
-        loc.getWorld().spawnParticle(Particle.SLIME, loc, 48, 2, 2, 2, 0);
-        loc.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, loc, 32, 2, 2, 2, 0);
+        loc.getWorld().spawnParticle(VParticle.ITEM_SLIME.get(), loc, 48, 2, 2, 2, 0);
+        loc.getWorld().spawnParticle(VParticle.HAPPY_VILLAGER.get(), loc, 32, 2, 2, 2, 0);
         loc.getWorld().playSound(loc, Sound.BLOCK_BREWING_STAND_BREW, 2, 0);
 
         for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))

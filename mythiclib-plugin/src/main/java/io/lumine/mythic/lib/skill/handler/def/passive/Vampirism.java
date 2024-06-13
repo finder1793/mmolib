@@ -10,7 +10,11 @@ import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.AttackSkillResult;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
-import org.bukkit.*;
+import io.lumine.mythic.lib.version.VParticle;
+import org.bukkit.Color;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -45,7 +49,7 @@ public class Vampirism extends SkillHandler<AttackSkillResult> implements Listen
                     dis += ti <= 10 ? .15 : -.15;
 
                     for (double j = 0; j < Math.PI * 2; j += Math.PI / 4)
-                        loc.getWorld().spawnParticle(Particle.REDSTONE,
+                        loc.getWorld().spawnParticle(VParticle.REDSTONE.get(),
                                 loc.clone().add(Math.cos(j + (ti / 20)) * dis, 0, Math.sin(j + (ti / 20)) * dis), 1,
                                 new Particle.DustOptions(Color.RED, 1));
                 }

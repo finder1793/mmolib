@@ -7,7 +7,8 @@ import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VPotionEffectType;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -18,7 +19,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -92,11 +92,11 @@ public class Fire_Rage extends SkillHandler<SimpleSkillResult> {
 
         private void fireball(boolean last) {
             if (last) {
-                caster.getPlayer().removePotionEffect(PotionEffectType.SLOW);
-                caster.getPlayer().removePotionEffect(PotionEffectType.SLOW);
+                caster.getPlayer().removePotionEffect(VPotionEffectType.SLOWNESS.get());
+                caster.getPlayer().removePotionEffect(VPotionEffectType.SLOWNESS.get());
             }
 
-            caster.getPlayer().getWorld().playSound(caster.getPlayer().getLocation(), VersionSound.ENTITY_FIREWORK_ROCKET_BLAST.toSound(), 1, last ? 0 : 1);
+            caster.getPlayer().getWorld().playSound(caster.getPlayer().getLocation(), VSound.ENTITY_FIREWORK_ROCKET_BLAST.get(), 1, last ? 0 : 1);
             new BukkitRunnable() {
                 int j = 0;
                 final Vector vec = caster.getPlayer().getEyeLocation().getDirection();

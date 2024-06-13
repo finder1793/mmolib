@@ -9,8 +9,8 @@ import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
+import io.lumine.mythic.lib.version.VParticle;
 import org.bukkit.GameMode;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
@@ -33,7 +33,7 @@ public class Backstab extends SkillHandler<SimpleSkillResult> implements Listene
     public void whenCast(SimpleSkillResult result, SkillMetadata skillMeta) {
         LivingEntity target = (LivingEntity) skillMeta.getTargetEntityOrNull();
         skillMeta.getAttackSource().getDamage().multiplicativeModifier(1 + skillMeta.getParameter("extra") / 100, DamageType.PHYSICAL);
-        target.getWorld().spawnParticle(Particle.CRIT_MAGIC, target.getLocation().add(0, target.getHeight() / 2, 0), 32, 0, 0, 0, .5);
+        target.getWorld().spawnParticle(VParticle.ENCHANTED_HIT.get(), target.getLocation().add(0, target.getHeight() / 2, 0), 32, 0, 0, 0, .5);
         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ENDERMAN_HURT, 1, 1.5f);
     }
 

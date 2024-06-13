@@ -8,6 +8,7 @@ import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.VectorSkillResult;
+import io.lumine.mythic.lib.version.VParticle;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -119,7 +120,7 @@ public class ShulkerMissile extends SkillHandler<VectorSkillResult> {
                         y += .04;
                         for (int j = 0; j < 2; j++) {
                             double xz = y * Math.PI * 1.3 + (j * Math.PI);
-                            loc.getWorld().spawnParticle(Particle.REDSTONE, loc.clone().add(Math.cos(xz), y, Math.sin(xz)), 1, new Particle.DustOptions(Color.MAROON, 1));
+                            loc.getWorld().spawnParticle(VParticle.REDSTONE.get(), loc.clone().add(Math.cos(xz), y, Math.sin(xz)), 1, new Particle.DustOptions(Color.MAROON, 1));
                         }
                     }
                     if (y >= 2) cancel();

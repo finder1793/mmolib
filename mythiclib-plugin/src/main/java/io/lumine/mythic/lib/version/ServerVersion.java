@@ -18,6 +18,7 @@ public class ServerVersion {
     private final int revNumber;
     private final int[] bukkitVersion;
     private final VersionWrapper versionWrapper;
+    private final boolean paper;
 
     private static final int MAXIMUM_INDEX = 3;
     private static final Map<String, Integer> REVISION_NUMBERS = generateRevisionNumbers();
@@ -47,6 +48,17 @@ public class ServerVersion {
             found = (VersionWrapper) Class.forName("io.lumine.mythic.lib.version.wrapper.VersionWrapper_Reflection").getDeclaredConstructor(ServerVersion.class).newInstance(this);
         }
         this.versionWrapper = found;
+
+        // Running Paper?
+        boolean isPaper = false;
+        try {
+            // Any other works, just the shortest I could find.
+            Class.forName("com.destroystokyo.paper.ParticleBuilder");
+            isPaper = true;
+        } catch (ClassNotFoundException ignored) {
+            // Ignored
+        }
+        this.paper = isPaper;
     }
 
     @BackwardsCompatibility(version = "1.20.5")
@@ -71,6 +83,10 @@ public class ServerVersion {
         }
 
         throw new RuntimeException("Version revision mapping not specified");
+    }
+
+    public boolean isPaper() {
+        return paper;
     }
 
     /**

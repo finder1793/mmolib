@@ -8,7 +8,6 @@ import io.lumine.mythic.lib.api.util.ItemFactory;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackCategory;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackProvider;
 import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
-import io.lumine.mythic.lib.version.VersionMaterial;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -203,12 +202,12 @@ public class IngredientUIFilter implements UIFilter {
 
         // Create that supreme sample ingredient
         ArrayList<ProvidedUIFilter> planks = new ArrayList<>();
-        planks.add(UIFilterManager.getUIFilter("v", VersionMaterial.OAK_PLANKS.toMaterial().toString(), "0", null, null));
-        planks.add(UIFilterManager.getUIFilter("v", VersionMaterial.SPRUCE_PLANKS.toMaterial().toString(), "0", null, null));
-        planks.add(UIFilterManager.getUIFilter("v", VersionMaterial.BIRCH_PLANKS.toMaterial().toString(), "0", null, null));
-        planks.add(UIFilterManager.getUIFilter("v", VersionMaterial.JUNGLE_PLANKS.toMaterial().toString(), "0", null, null));
-        planks.add(UIFilterManager.getUIFilter("v", VersionMaterial.ACACIA_PLANKS.toMaterial().toString(), "0", null, null));
-        planks.add(UIFilterManager.getUIFilter("v", VersionMaterial.DARK_OAK_PLANKS.toMaterial().toString(), "0", null, null));
+        planks.add(UIFilterManager.getUIFilter("v", Material.OAK_PLANKS.toString(), "0", null, null));
+        planks.add(UIFilterManager.getUIFilter("v", Material.SPRUCE_PLANKS.toString(), "0", null, null));
+        planks.add(UIFilterManager.getUIFilter("v", Material.BIRCH_PLANKS.toString(), "0", null, null));
+        planks.add(UIFilterManager.getUIFilter("v", Material.JUNGLE_PLANKS.toString(), "0", null, null));
+        planks.add(UIFilterManager.getUIFilter("v", Material.ACACIA_PLANKS.toString(), "0", null, null));
+        planks.add(UIFilterManager.getUIFilter("v", Material.DARK_OAK_PLANKS.toString(), "0", null, null));
         //todo  if (ServerVersion.get().getMinor() >= 16) {
         //          planks.add(UIFilterManager.getUIFilter("v", Material.CRIMSON_PLANKS.toString(), "0", null, null));
         //          planks.add(UIFilterManager.getUIFilter("v", Material.WARPED_PLANKS.toString(), "0", null, null)); }

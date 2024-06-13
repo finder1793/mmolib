@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.util;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.version.VParticle;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -21,7 +22,7 @@ public class ParabolicProjectile extends BukkitRunnable {
     private int j;
 
     public ParabolicProjectile(Location source, Location target, Color color) {
-        this(source, target, Particle.REDSTONE, () -> {
+        this(source, target, VParticle.REDSTONE.get(), () -> {
         }, 1, color, 1);
     }
 
@@ -32,7 +33,7 @@ public class ParabolicProjectile extends BukkitRunnable {
 
     public ParabolicProjectile(Location source, Location target, Runnable end, Color color) {
         this(source, target, target.clone().subtract(source).toVector().multiply(.1).setY(6).normalize().multiply(.3), end, 1,
-                (loc) -> loc.getWorld().spawnParticle(Particle.REDSTONE, loc, 1, new Particle.DustOptions(color, 1f)));
+                (loc) -> loc.getWorld().spawnParticle(VParticle.REDSTONE.get(), loc, 1, new Particle.DustOptions(color, 1f)));
     }
 
     public ParabolicProjectile(Location source, Location target, Particle particle) {

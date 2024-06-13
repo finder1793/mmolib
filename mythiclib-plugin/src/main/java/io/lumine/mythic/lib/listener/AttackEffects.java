@@ -7,6 +7,7 @@ import io.lumine.mythic.lib.api.stat.SharedStat;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.player.cooldown.CooldownType;
+import io.lumine.mythic.lib.version.VParticle;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -77,7 +78,7 @@ public class AttackEffects implements Listener {
             event.getDamage().multiplicativeModifier(stats.getStat("SKILL_CRITICAL_STRIKE_POWER") / 100, DamageType.SKILL);
             event.getDamage().registerSkillCriticalStrike();
             event.getEntity().getWorld().playSound(event.getEntity().getLocation(), Sound.ENTITY_PLAYER_ATTACK_CRIT, 1, 2);
-            applyCritEffects(event.getEntity(), Particle.TOTEM, 16, .4f);
+            applyCritEffects(event.getEntity(), VParticle.TOTEM_OF_UNDYING.get(), 16, .4f);
         }
 
         // Apply spell vamp and lifesteal

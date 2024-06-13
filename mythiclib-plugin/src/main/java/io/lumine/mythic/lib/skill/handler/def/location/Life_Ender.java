@@ -6,7 +6,8 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.LocationSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -37,7 +38,7 @@ public class Life_Ender extends SkillHandler<LocationSkillResult> {
         double knockback = skillMeta.getParameter("knockback");
         double radius = skillMeta.getParameter("radius");
 
-        caster.getWorld().playSound(caster.getLocation(), VersionSound.ENTITY_ENDERMAN_TELEPORT.toSound(), 2, 1);
+        caster.getWorld().playSound(caster.getLocation(), VSound.ENTITY_ENDERMAN_TELEPORT.get(), 2, 1);
         new BukkitRunnable() {
             final Location source = loc.clone().add(5 * Math.cos(RANDOM.nextDouble() * 2 * Math.PI), 20, 5 * Math.sin(RANDOM.nextDouble() * 2 * Math.PI));
             final Vector vec = loc.subtract(source).toVector().multiply((double) 1 / 30);
@@ -52,7 +53,7 @@ public class Life_Ender extends SkillHandler<LocationSkillResult> {
                     source.add(vec);
                     for (double i = 0; i < Math.PI * 2; i += Math.PI / 6) {
                         Vector vec = UtilityMethods.rotate(new Vector(Math.cos(i), Math.sin(i), 0), loc.getDirection());
-                        source.getWorld().spawnParticle(Particle.SMOKE_LARGE, source, 0, vec.getX(), vec.getY(), vec.getZ(), .1);
+                        source.getWorld().spawnParticle(VParticle.LARGE_SMOKE.get(), source, 0, vec.getX(), vec.getY(), vec.getZ(), .1);
                     }
                 }
 
@@ -61,7 +62,7 @@ public class Life_Ender extends SkillHandler<LocationSkillResult> {
                     source.getWorld().spawnParticle(Particle.FLAME, source, 64, 0, 0, 0, .25);
                     source.getWorld().spawnParticle(Particle.LAVA, source, 32);
                     for (double j = 0; j < Math.PI * 2; j += Math.PI / 24)
-                        source.getWorld().spawnParticle(Particle.SMOKE_LARGE, source, 0, Math.cos(j), 0, Math.sin(j), .5);
+                        source.getWorld().spawnParticle(VParticle.LARGE_SMOKE.get(), source, 0, Math.cos(j), 0, Math.sin(j), .5);
 
                     for (Entity entity : UtilityMethods.getNearbyChunkEntities(source))
                         if (entity.getLocation().distanceSquared(source) < radius * radius && UtilityMethods.canTarget(caster, entity)) {

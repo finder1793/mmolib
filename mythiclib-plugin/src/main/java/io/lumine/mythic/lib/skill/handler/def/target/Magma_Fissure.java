@@ -5,7 +5,8 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.TargetSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -47,8 +48,8 @@ public class Magma_Fissure extends SkillHandler<TargetSkillResult> {
 
                 loc.getWorld().spawnParticle(Particle.LAVA, loc, 2, .2, 0, .2, 0);
                 loc.getWorld().spawnParticle(Particle.FLAME, loc, 2, .2, 0, .2, 0);
-                loc.getWorld().spawnParticle(Particle.SMOKE_NORMAL, loc, 2, .2, 0, .2, 0);
-                loc.getWorld().playSound(loc, VersionSound.BLOCK_NOTE_BLOCK_HAT.toSound(), 1, 1);
+                loc.getWorld().spawnParticle(VParticle.SMOKE.get(), loc, 2, .2, 0, .2, 0);
+                loc.getWorld().playSound(loc, VSound.BLOCK_NOTE_BLOCK_HAT.get(), 1, 1);
 
                 if (target.getLocation().distanceSquared(loc) < 1) {
                     loc.getWorld().playSound(loc, Sound.ENTITY_BLAZE_HURT, 2, 1);

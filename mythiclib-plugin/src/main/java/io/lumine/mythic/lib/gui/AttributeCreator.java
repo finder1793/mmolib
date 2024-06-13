@@ -4,8 +4,6 @@ import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.explorer.ChatInput;
 import io.lumine.mythic.lib.api.explorer.ItemBuilder;
 import io.lumine.mythic.lib.api.util.AltChar;
-import io.lumine.mythic.lib.command.ExploreAttributesCommand;
-import io.lumine.mythic.lib.version.VersionMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -35,7 +33,7 @@ public class AttributeCreator extends PluginInventory {
     public Inventory getInventory() {
         Inventory inv = Bukkit.createInventory(this, 36, "Attribute Creation..");
 
-        inv.setItem(10, new ItemBuilder(VersionMaterial.OAK_SIGN.toMaterial(), "&6Name").setLore("", "&7Current Value: &6" + (name == null ? "None" : name)));
+        inv.setItem(10, new ItemBuilder(Material.OAK_SIGN, "&6Name").setLore("", "&7Current Value: &6" + (name == null ? "None" : name)));
         inv.setItem(11, new ItemBuilder(Material.CHEST, "&6Amount").setLore("", "&7Current Value: &6" + amount));
         inv.setItem(12, new ItemBuilder(Material.REPEATER, "&6Operation").setLore("", "&7Current Value: &6" + (operation == null ? "None" : operation.name())));
 

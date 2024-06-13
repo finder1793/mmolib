@@ -4,8 +4,8 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.TargetSkillResult;
+import io.lumine.mythic.lib.version.VParticle;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -36,7 +36,7 @@ public class Confuse extends SkillHandler<TargetSkillResult> {
                 for (int j1 = 0; j1 < 3; j1++) {
                     ti += Math.PI / 15;
                     Location loc1 = loc.clone().add(Math.cos(ti), 1, Math.sin(ti));
-                    loc.getWorld().spawnParticle(Particle.SPELL_WITCH, loc1, 0);
+                    loc.getWorld().spawnParticle(VParticle.WITCH.get(), loc1, 0);
                 }
                 if (ti >= Math.PI * 2 + rads)
                     cancel();

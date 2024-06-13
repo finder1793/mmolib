@@ -7,9 +7,9 @@ import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
 import io.lumine.mythic.lib.util.NoClipItem;
-import io.lumine.mythic.lib.version.VersionMaterial;
-import io.lumine.mythic.lib.version.VersionSound;
-import org.bukkit.Particle;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VSound;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -22,7 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.logging.Level;
 
 public class Present_Throw extends SkillHandler<SimpleSkillResult> {
-    private final ItemStack present = VersionMaterial.PLAYER_HEAD.toItem();
+    private final ItemStack present = new ItemStack(Material.PLAYER_HEAD);
 
     public Present_Throw() {
         super();
@@ -72,10 +72,10 @@ public class Present_Throw extends SkillHandler<SimpleSkillResult> {
                 }
 
                 double currentTrajRatio = item.getEntity().getVelocity().getX() / item.getEntity().getVelocity().getZ();
-                item.getEntity().getWorld().spawnParticle(Particle.SPELL_INSTANT, item.getEntity().getLocation().add(0, .1, 0), 0);
+                item.getEntity().getWorld().spawnParticle(VParticle.INSTANT_EFFECT.get(), item.getEntity().getLocation().add(0, .1, 0), 0);
                 if (item.getEntity().isOnGround() || Math.abs(trajRatio - currentTrajRatio) > .1) {
-                    item.getEntity().getWorld().spawnParticle(Particle.FIREWORKS_SPARK, item.getEntity().getLocation().add(0, .1, 0), 128, 0, 0, 0, .25);
-                    item.getEntity().getWorld().playSound(item.getEntity().getLocation(), VersionSound.ENTITY_FIREWORK_ROCKET_TWINKLE.toSound(), 2, 1.5f);
+                    item.getEntity().getWorld().spawnParticle(VParticle.FIREWORK.get(), item.getEntity().getLocation().add(0, .1, 0), 128, 0, 0, 0, .25);
+                    item.getEntity().getWorld().playSound(item.getEntity().getLocation(), VSound.ENTITY_FIREWORK_ROCKET_TWINKLE.get(), 2, 1.5f);
                     for (Entity entity : UtilityMethods.getNearbyChunkEntities(item.getEntity().getLocation()))
                         if (entity.getLocation().distanceSquared(item.getEntity().getLocation()) < radiusSquared && UtilityMethods.canTarget(caster, entity))
                             skillMeta.getCaster().attack((LivingEntity) entity, damage, DamageType.SKILL, DamageType.MAGIC, DamageType.PROJECTILE);

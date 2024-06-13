@@ -6,7 +6,8 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.LocationSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -44,17 +45,17 @@ public class Contamination extends SkillHandler<LocationSkillResult> {
                 if (j++ >= duration)
                     cancel();
 
-                loc.getWorld().spawnParticle(Particle.REDSTONE, loc.clone().add(Math.cos(ti / 3) * 5, 0, Math.sin(ti / 3) * 5), 1,
+                loc.getWorld().spawnParticle(VParticle.REDSTONE.get(), loc.clone().add(Math.cos(ti / 3) * 5, 0, Math.sin(ti / 3) * 5), 1,
                         new Particle.DustOptions(Color.PURPLE, 1));
                 for (int j = 0; j < 3; j++) {
                     ti += Math.PI / 32;
                     double r = Math.sin(ti / 2) * 4;
                     for (double k = 0; k < Math.PI * 2; k += Math.PI * 2 / 3)
-                        loc.getWorld().spawnParticle(Particle.SPELL_WITCH, loc.clone().add(r * Math.cos(k + ti / 4), 0, r * Math.sin(k + ti / 4)), 0);
+                        loc.getWorld().spawnParticle(VParticle.WITCH.get(), loc.clone().add(r * Math.cos(k + ti / 4), 0, r * Math.sin(k + ti / 4)), 0);
                 }
 
                 if (j % 10 == 0) {
-                    loc.getWorld().playSound(loc, VersionSound.ENTITY_ENDERMAN_HURT.toSound(), 2, 1);
+                    loc.getWorld().playSound(loc, VSound.ENTITY_ENDERMAN_HURT.get(), 2, 1);
                     for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
                         if (UtilityMethods.canTarget(caster, entity) && entity.getLocation().distanceSquared(loc) <= 25)
                             skillMeta.getCaster().attack((LivingEntity) entity, dps, false, DamageType.SKILL, DamageType.MAGIC);

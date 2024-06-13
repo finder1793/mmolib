@@ -3,10 +3,10 @@ package io.lumine.mythic.lib.skill.handler.def.simple;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
@@ -37,9 +37,9 @@ public class Blink extends SkillHandler<SimpleSkillResult> {
         final Vector dir = caster.getEyeLocation().getDirection();
 
         // Effects on prev position
-        caster.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, caster.getLocation().add(0, 1, 0), 0);
-        caster.getWorld().spawnParticle(Particle.SPELL_INSTANT, caster.getLocation().add(0, 1, 0), 32, 0, 0, 0, .1);
-        caster.getWorld().playSound(caster.getLocation(), VersionSound.ENTITY_ENDERMAN_TELEPORT.toSound(), 1, 1);
+        caster.getWorld().spawnParticle(VParticle.LARGE_EXPLOSION.get(), caster.getLocation().add(0, 1, 0), 0);
+        caster.getWorld().spawnParticle(VParticle.INSTANT_EFFECT.get(), caster.getLocation().add(0, 1, 0), 32, 0, 0, 0, .1);
+        caster.getWorld().playSound(caster.getLocation(), VSound.ENTITY_ENDERMAN_TELEPORT.get(), 1, 1);
 
         @Nullable final RayTraceResult rtResult = caster.getWorld().rayTraceBlocks(caster.getEyeLocation(), dir, range, FluidCollisionMode.NEVER, true);
         final Location loc = rtResult == null || rtResult.getHitBlock() == null ? caster.getLocation().add(dir.clone().multiply(range)) :
@@ -49,7 +49,7 @@ public class Blink extends SkillHandler<SimpleSkillResult> {
         caster.teleport(loc);
 
         // Effects on newest position
-        caster.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, caster.getLocation().add(0, 1, 0), 0);
-        caster.getWorld().spawnParticle(Particle.SPELL_INSTANT, caster.getLocation().add(0, 1, 0), 32, 0, 0, 0, .1);
+        caster.getWorld().spawnParticle(VParticle.LARGE_EXPLOSION.get(), caster.getLocation().add(0, 1, 0), 0);
+        caster.getWorld().spawnParticle(VParticle.INSTANT_EFFECT.get(), caster.getLocation().add(0, 1, 0), 32, 0, 0, 0, .1);
     }
 }

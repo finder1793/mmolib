@@ -6,6 +6,7 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.TargetSkillResult;
+import io.lumine.mythic.lib.version.VParticle;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -53,7 +54,7 @@ public class Tactical_Grenade extends SkillHandler<TargetSkillResult> {
                 loc.add(vec);
 
                 loc.getWorld().spawnParticle(Particle.CLOUD, loc, 32, 1, 0, 1, 0);
-                loc.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, loc, 16, 1, 0, 1, .05);
+                loc.getWorld().spawnParticle(VParticle.EXPLOSION.get(), loc, 16, 1, 0, 1, .05);
                 loc.getWorld().playSound(loc, Sound.BLOCK_ANVIL_LAND, 2, 0);
                 loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 2, 1);
 

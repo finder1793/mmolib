@@ -5,14 +5,14 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.VectorSkillResult;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VPotionEffectType;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 public class Thrust extends SkillHandler<VectorSkillResult> {
@@ -33,7 +33,7 @@ public class Thrust extends SkillHandler<VectorSkillResult> {
         final double damage = skillMeta.getParameter("damage");
 
         caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 1, 0);
-        caster.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 2, 3));
+        caster.addPotionEffect(new PotionEffect(VPotionEffectType.SLOWNESS.get(), 2, 3));
 
         Location loc = caster.getEyeLocation().clone();
         Vector vec = result.getTarget().multiply(.5);
@@ -42,7 +42,7 @@ public class Thrust extends SkillHandler<VectorSkillResult> {
             for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))
                 if (UtilityMethods.canTarget(caster, loc, entity))
                     skillMeta.getCaster().attack((LivingEntity) entity, damage, DamageType.SKILL, DamageType.PHYSICAL);
-            loc.getWorld().spawnParticle(Particle.SMOKE_LARGE, loc, 0);
+            loc.getWorld().spawnParticle(VParticle.LARGE_SMOKE.get(), loc, 0);
         }
     }
 }

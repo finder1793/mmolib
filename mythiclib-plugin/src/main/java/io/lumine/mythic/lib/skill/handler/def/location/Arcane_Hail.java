@@ -6,9 +6,9 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.LocationSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -46,16 +46,16 @@ public class Arcane_Hail extends SkillHandler<LocationSkillResult> {
                 }
 
                 Location loc1 = loc.clone().add(randomCoordMultiplier() * radius, 0, randomCoordMultiplier() * radius);
-                loc1.getWorld().playSound(loc1, VersionSound.ENTITY_ENDERMAN_HURT.toSound(), 1, 0);
+                loc1.getWorld().playSound(loc1, VSound.ENTITY_ENDERMAN_HURT.get(), 1, 0);
                 for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc1))
                     if (UtilityMethods.canTarget(caster, entity) && entity.getLocation().distanceSquared(loc1) <= 4)
                         skillMeta.getCaster().attack((LivingEntity) entity, damage, DamageType.SKILL, DamageType.MAGIC);
-                loc1.getWorld().spawnParticle(Particle.SPELL_WITCH, loc1, 12, 0, 0, 0, .1);
-                loc1.getWorld().spawnParticle(Particle.SMOKE_NORMAL, loc1, 6, 0, 0, 0, .1);
+                loc1.getWorld().spawnParticle(VParticle.WITCH.get(), loc1, 12, 0, 0, 0, .1);
+                loc1.getWorld().spawnParticle(VParticle.SMOKE.get(), loc1, 6, 0, 0, 0, .1);
 
                 Vector vector = new Vector(randomCoordMultiplier() * .03, .3, randomCoordMultiplier() * .03);
                 for (double k = 0; k < 60; k++)
-                    loc1.getWorld().spawnParticle(Particle.SPELL_WITCH, loc1.add(vector), 0);
+                    loc1.getWorld().spawnParticle(VParticle.WITCH.get(), loc1.add(vector), 0);
             }
         }.runTaskTimer(MythicLib.plugin, 0, 2);
     }

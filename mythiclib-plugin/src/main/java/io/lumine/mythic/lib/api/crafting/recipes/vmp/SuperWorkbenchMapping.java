@@ -19,7 +19,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -374,7 +373,7 @@ public class SuperWorkbenchMapping extends VanillaInventoryMapping implements Cu
     /**
      * The edge item used to limit the Super Workbench Area
      */
-    public static final ItemStack SWB_EDGE = ItemFactory.of(Material.GRAY_STAINED_GLASS_PANE).name("\u00a7\u02a4").flag(ItemFlag.HIDE_POTION_EFFECTS).model(3000).build();
+    public static final ItemStack SWB_EDGE = ItemFactory.of(Material.GRAY_STAINED_GLASS_PANE).name("\u00a7\u02a4").model(3000).build();
 
     /**
      * Creates a new instance of the super workbench, ready

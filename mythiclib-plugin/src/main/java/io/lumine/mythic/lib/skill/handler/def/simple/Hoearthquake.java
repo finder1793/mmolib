@@ -4,6 +4,7 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
+import io.lumine.mythic.lib.version.VMaterial;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -41,7 +42,7 @@ public class Hoearthquake extends SkillHandler<SimpleSkillResult> {
                 for (int x = -1; x < 2; x++)
                     for (int z = -1; z < 2; z++) {
                         Block b = loc.clone().add(x, -1, z).getBlock();
-                        if (b.getType() == Material.GRASS || b.getType() == Material.DIRT) {
+                        if (b.getType() == VMaterial.GRASS_BLOCK.get() || b.getType() == Material.DIRT) {
                             BlockBreakEvent event = new BlockBreakEvent(b, caster);
                             event.setDropItems(false);
                             Bukkit.getPluginManager().callEvent(event);

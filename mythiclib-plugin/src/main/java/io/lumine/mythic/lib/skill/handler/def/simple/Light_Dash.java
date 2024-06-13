@@ -6,8 +6,8 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
-import io.lumine.mythic.lib.version.VersionSound;
-import org.bukkit.Particle;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -46,8 +46,8 @@ public class Light_Dash extends SkillHandler<SimpleSkillResult> {
                     cancel();
 
                 caster.setVelocity(vec);
-                caster.getWorld().spawnParticle(Particle.SMOKE_LARGE, caster.getLocation().add(0, 1, 0), 0);
-                caster.getWorld().playSound(caster.getLocation(), VersionSound.ENTITY_ENDER_DRAGON_FLAP.toSound(), 1, 2);
+                caster.getWorld().spawnParticle(VParticle.LARGE_SMOKE.get(), caster.getLocation().add(0, 1, 0), 0);
+                caster.getWorld().playSound(caster.getLocation(), VSound.ENTITY_ENDER_DRAGON_FLAP.get(), 1, 2);
                 for (Entity entity : caster.getNearbyEntities(1, 1, 1))
                     if (!hit.contains(entity.getEntityId()) && UtilityMethods.canTarget(caster, entity)) {
                         hit.add(entity.getEntityId());

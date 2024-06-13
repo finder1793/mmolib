@@ -2,23 +2,20 @@ package io.lumine.mythic.lib.skill.handler.def.item;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.damage.AttackMetadata;
-import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.ItemSkillResult;
 import io.lumine.mythic.lib.util.NoClipItem;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VPotionEffectType;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class Item_Bomb extends SkillHandler<ItemSkillResult> {
@@ -55,12 +52,11 @@ public class Item_Bomb extends SkillHandler<ItemSkillResult> {
                     for (Entity entity : item.getEntity().getNearbyEntities(radius, radius, radius))
                         if (UtilityMethods.canTarget(caster, entity)) {
                             skillMeta.getCaster().attack((LivingEntity) entity, damage, DamageType.SKILL, DamageType.PHYSICAL);
-                            ((LivingEntity) entity).removePotionEffect(PotionEffectType.SLOW);
-                            ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, (int) (slowDuration * 20), (int) slowAmplifier));
+                            UtilityMethods.forcePotionEffect((LivingEntity) entity, VPotionEffectType.SLOWNESS.get(), slowDuration, (int) slowAmplifier);
                         }
 
-                    item.getEntity().getWorld().spawnParticle(Particle.EXPLOSION_LARGE, item.getEntity().getLocation(), 24, 2, 2, 2, 0);
-                    item.getEntity().getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, item.getEntity().getLocation(), 48, 0, 0, 0, .2);
+                    item.getEntity().getWorld().spawnParticle(VParticle.LARGE_EXPLOSION.get(), item.getEntity().getLocation(), 24, 2, 2, 2, 0);
+                    item.getEntity().getWorld().spawnParticle(VParticle.EXPLOSION.get(), item.getEntity().getLocation(), 48, 0, 0, 0, .2);
                     item.getEntity().getWorld().playSound(item.getEntity().getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 3, 0);
 
                     item.close();
@@ -68,9 +64,9 @@ public class Item_Bomb extends SkillHandler<ItemSkillResult> {
                     return;
                 }
 
-                item.getEntity().getWorld().spawnParticle(Particle.SMOKE_LARGE, item.getEntity().getLocation().add(0, .2, 0), 0);
-                item.getEntity().getWorld().spawnParticle(Particle.FIREWORKS_SPARK, item.getEntity().getLocation().add(0, .2, 0), 1, 0, 0, 0, .1);
-                item.getEntity().getWorld().playSound(item.getEntity().getLocation(), VersionSound.BLOCK_NOTE_BLOCK_HAT.toSound(), 2, (float) (.5 + (j / 40. * 1.5)));
+                item.getEntity().getWorld().spawnParticle(VParticle.LARGE_SMOKE.get(), item.getEntity().getLocation().add(0, .2, 0), 0);
+                item.getEntity().getWorld().spawnParticle(VParticle.FIREWORK.get(), item.getEntity().getLocation().add(0, .2, 0), 1, 0, 0, 0, .1);
+                item.getEntity().getWorld().playSound(item.getEntity().getLocation(), VSound.BLOCK_NOTE_BLOCK_HAT.get(), 2, (float) (.5 + (j / 40. * 1.5)));
             }
         }.runTaskTimer(MythicLib.plugin, 0, 1);
     }

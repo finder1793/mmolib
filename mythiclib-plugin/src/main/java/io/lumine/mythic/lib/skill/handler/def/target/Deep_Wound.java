@@ -4,6 +4,7 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.TargetSkillResult;
+import io.lumine.mythic.lib.version.VParticle;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -29,7 +30,7 @@ public class Deep_Wound extends SkillHandler<TargetSkillResult> {
         LivingEntity target = result.getTarget();
         target.getWorld().playSound(target.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2, 2);
         target.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0, target.getHeight() / 2, 0), 32, 0, 0, 0, .7);
-        target.getWorld().spawnParticle(Particle.BLOCK_CRACK, target.getLocation().add(0, target.getHeight() / 2, 0), 32, 0, 0, 0, 2,
+        target.getWorld().spawnParticle(VParticle.BLOCK.get(), target.getLocation().add(0, target.getHeight() / 2, 0), 32, 0, 0, 0, 2,
                 Material.REDSTONE_BLOCK.createBlockData());
 
         final double max = target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();

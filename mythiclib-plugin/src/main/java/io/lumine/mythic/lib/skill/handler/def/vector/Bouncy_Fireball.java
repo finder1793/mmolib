@@ -6,6 +6,7 @@ import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.VectorSkillResult;
+import io.lumine.mythic.lib.version.VParticle;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -42,7 +43,7 @@ public class Bouncy_Fireball extends SkillHandler<VectorSkillResult> {
 
             public void run() {
                 if (j++ > 100) {
-                    loc.getWorld().spawnParticle(Particle.SMOKE_LARGE, loc, 32, 0, 0, 0, .05);
+                    loc.getWorld().spawnParticle(VParticle.LARGE_SMOKE.get(), loc, 32, 0, 0, 0, .05);
                     loc.getWorld().playSound(loc, Sound.BLOCK_FIRE_EXTINGUISH, 1, 1);
                     cancel();
                     return;
@@ -55,7 +56,7 @@ public class Bouncy_Fireball extends SkillHandler<VectorSkillResult> {
 
                 loc.getWorld().spawnParticle(Particle.LAVA, loc, 0);
                 loc.getWorld().spawnParticle(Particle.FLAME, loc, 4, 0, 0, 0, .03);
-                loc.getWorld().spawnParticle(Particle.SMOKE_NORMAL, loc, 1, 0, 0, 0, .03);
+                loc.getWorld().spawnParticle(VParticle.SMOKE.get(), loc, 1, 0, 0, 0, .03);
 
                 if (loc.getBlock().getType().isSolid()) {
                     loc.add(0, -y, 0);
@@ -77,8 +78,8 @@ public class Bouncy_Fireball extends SkillHandler<VectorSkillResult> {
                                 entity.setFireTicks((int) (ignite * 20));
                             }
 
-                    loc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, loc, 12, 2, 2, 2, 0);
-                    loc.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, loc, 48, 0, 0, 0, .2);
+                    loc.getWorld().spawnParticle(VParticle.EXPLOSION.get(), loc, 12, 2, 2, 2, 0);
+                    loc.getWorld().spawnParticle(VParticle.LARGE_EXPLOSION.get(), loc, 48, 0, 0, 0, .2);
                     loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 3, 0);
                     cancel();
                 }

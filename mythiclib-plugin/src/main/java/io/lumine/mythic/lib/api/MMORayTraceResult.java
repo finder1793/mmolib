@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.api;
 
+import io.lumine.mythic.lib.version.VParticle;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -50,7 +51,7 @@ public class MMORayTraceResult {
      *            Redstone color
      */
     public void draw(Location source, Vector vec, double c, Color color) {
-        draw(source, vec, c, loc -> loc.getWorld().spawnParticle(Particle.REDSTONE, loc, 0, new Particle.DustOptions(Color.RED, 1)));
+        draw(source, vec, c, loc -> loc.getWorld().spawnParticle(VParticle.REDSTONE.get(), loc, 0, new Particle.DustOptions(Color.RED, 1)));
     }
 
     /***

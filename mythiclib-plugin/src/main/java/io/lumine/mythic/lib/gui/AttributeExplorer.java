@@ -5,6 +5,7 @@ import io.lumine.mythic.lib.api.explorer.AttributeData;
 import io.lumine.mythic.lib.api.explorer.ChatInput;
 import io.lumine.mythic.lib.api.explorer.ItemBuilder;
 import io.lumine.mythic.lib.api.util.AltChar;
+import io.lumine.mythic.lib.version.VMaterial;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -53,7 +54,7 @@ public class AttributeExplorer extends PluginInventory {
         ATTRIBUTES.put("ATTACK_DAMAGE", new AttributeData(Material.IRON_SWORD, "Attack damage of an Entity."));
         ATTRIBUTES.put("ATTACK_SPEED", new AttributeData(Material.LIGHT_GRAY_DYE, "Attack speed of an Entity."));
         ATTRIBUTES.put("KNOCKBACK_RESISTANCE", new AttributeData(Material.TNT_MINECART, "Resistance of an Entity to knockback."));
-        ATTRIBUTES.put("LUCK", new AttributeData(Material.GRASS, "Luck bonus of an Entity."));
+        ATTRIBUTES.put("LUCK", new AttributeData(VMaterial.GRASS_BLOCK.get(), "Luck bonus of an Entity."));
         ATTRIBUTES.put("MAX_HEALTH", new AttributeData(Material.GOLDEN_APPLE, "Maximum health of an Entity."));
         ATTRIBUTES.put("MOVEMENT_SPEED", new AttributeData(Material.LEATHER_BOOTS, "Movement speed of an Entity."));
     }

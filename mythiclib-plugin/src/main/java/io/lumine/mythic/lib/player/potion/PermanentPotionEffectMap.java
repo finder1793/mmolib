@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.player.potion;
 
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.player.modifier.ModifierMap;
+import io.lumine.mythic.lib.version.VPotionEffectType;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -88,6 +89,9 @@ public class PermanentPotionEffectMap extends ModifierMap<PermanentPotionEffect>
      *         "permanent" potion effects, depending on the potion effect type
      */
     private int getEffectDuration(PotionEffectType type) {
-        return type.equals(PotionEffectType.NIGHT_VISION) || type.equals(PotionEffectType.CONFUSION) ? 260 : type.equals(PotionEffectType.BLINDNESS) ? 140 : 80;
+        return type.equals(PotionEffectType.NIGHT_VISION)
+                || type.equals(VPotionEffectType.NAUSEA.get())
+                ? 260 :
+                type.equals(PotionEffectType.BLINDNESS) ? 140 : 80;
     }
 }

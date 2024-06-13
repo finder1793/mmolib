@@ -6,8 +6,8 @@ import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.TargetSkillResult;
 import io.lumine.mythic.lib.util.ParabolicProjectile;
 import io.lumine.mythic.lib.util.SmallParticleEffect;
+import io.lumine.mythic.lib.version.VParticle;
 import org.bukkit.Bukkit;
-import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -36,7 +36,7 @@ public class Weaken extends SkillHandler<TargetSkillResult> {
         new ParabolicProjectile(caster.getPlayer().getLocation().add(0, 1, 0), target.getLocation().add(0, target.getHeight() / 2, 0), randomVector(caster.getPlayer()), () -> {
             if (!target.isDead())
                 new Weakened(target, skillMeta.getParameter("ratio"), skillMeta.getParameter("duration"));
-        }, 2, Particle.SPELL_WITCH);
+        }, 2, VParticle.WITCH.get());
     }
 
     private Vector randomVector(Player player) {
@@ -53,7 +53,7 @@ public class Weaken extends SkillHandler<TargetSkillResult> {
             this.entity = entity;
             this.c = 1 + ratio / 100;
 
-            new SmallParticleEffect(entity, Particle.SPELL_WITCH);
+            new SmallParticleEffect(entity, VParticle.WITCH.get());
 
             Bukkit.getPluginManager().registerEvents(this, MythicLib.plugin);
             Bukkit.getScheduler().scheduleSyncDelayedTask(MythicLib.plugin, () -> EntityDamageByEntityEvent.getHandlerList().unregister(this), (int) duration * 20);
@@ -62,7 +62,7 @@ public class Weaken extends SkillHandler<TargetSkillResult> {
         @EventHandler
         public void a(EntityDamageByEntityEvent event) {
             if (event.getEntity().equals(entity)) {
-                event.getEntity().getWorld().spawnParticle(Particle.SPELL_WITCH, entity.getLocation().add(0, entity.getHeight() / 2, 0), 16, .5, .5, .5, 0);
+                event.getEntity().getWorld().spawnParticle(VParticle.WITCH.get(), entity.getLocation().add(0, entity.getHeight() / 2, 0), 16, .5, .5, .5, 0);
                 event.setDamage(event.getDamage() * c);
             }
         }

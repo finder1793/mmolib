@@ -7,10 +7,10 @@ import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.TargetSkillResult;
 import io.lumine.mythic.lib.util.ParabolicProjectile;
-import io.lumine.mythic.lib.version.VersionSound;
+import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VSound;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -64,8 +64,8 @@ public class Telekinesy extends SkillHandler<TargetSkillResult> {
         public void a(PlayerInteractEvent event) {
             if (event.getPlayer().equals(caster.getPlayer()) && event.getAction().name().contains("LEFT_CLICK")) {
                 entity.setVelocity(caster.getPlayer().getEyeLocation().getDirection().multiply(1.5 * f));
-                entity.getWorld().playSound(entity.getLocation(), VersionSound.ENTITY_FIREWORK_ROCKET_BLAST.toSound(), 2, 1);
-                entity.getWorld().spawnParticle(Particle.SPELL_WITCH, entity.getLocation().add(0, entity.getHeight() / 2, 0), 16);
+                entity.getWorld().playSound(entity.getLocation(), VSound.ENTITY_FIREWORK_ROCKET_BLAST.get(), 2, 1);
+                entity.getWorld().spawnParticle(VParticle.WITCH.get(), entity.getLocation().add(0, entity.getHeight() / 2, 0), 16);
                 close();
             }
         }
@@ -78,7 +78,7 @@ public class Telekinesy extends SkillHandler<TargetSkillResult> {
             }
 
             if (j % 8 == 0)
-                new ParabolicProjectile(caster.getPlayer().getEyeLocation(), entity.getLocation().add(0, entity.getHeight() / 2, 0), Particle.SPELL_WITCH);
+                new ParabolicProjectile(caster.getPlayer().getEyeLocation(), entity.getLocation().add(0, entity.getHeight() / 2, 0), VParticle.WITCH.get());
 
             Location loc = caster.getPlayer().getEyeLocation().add(caster.getPlayer().getEyeLocation().getDirection().multiply(d));
             entity.setVelocity(loc.subtract(entity.getLocation().add(0, entity.getHeight() / 2, 0)).toVector().multiply(2));

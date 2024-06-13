@@ -1,8 +1,8 @@
 package io.lumine.mythic.lib.skill.handler;
 
-import io.lumine.mythic.lib.skill.SkillMetadata;
-import io.lumine.mythic.lib.script.Script;
 import io.lumine.mythic.lib.script.MechanicQueue;
+import io.lumine.mythic.lib.script.Script;
+import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.result.MythicLibSkillResult;
 import org.bukkit.configuration.ConfigurationSection;
 
