@@ -7,6 +7,7 @@ import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
 import io.lumine.mythic.lib.player.PlayerMetadata;
+import io.lumine.mythic.lib.util.Tasks;
 import io.lumine.mythic.lib.util.annotation.BackwardsCompatibility;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import io.lumine.mythic.lib.version.VParticle;
@@ -435,16 +436,9 @@ public class UtilityMethods {
         return str.toUpperCase().replace("-", "_").replace(" ", "_");
     }
 
-    /**
-     * Wraps a task inside of a sync block to make sure the task runs
-     * in sync. Handy util when working with completable futures.
-     *
-     * @param plugin   Plugin performing the sync task
-     * @param syncTask Task to be performed sync
-     * @return Runnable wrapping another runnable in a sync block.
-     */
+    @Deprecated
     public static <T> Consumer<T> sync(@NotNull Plugin plugin, @NotNull Consumer<T> syncTask) {
-        return t -> Bukkit.getScheduler().runTask(plugin, () -> syncTask.accept(t));
+        return Tasks.sync(plugin, syncTask);
     }
 
     public static String ymlName(String str) {

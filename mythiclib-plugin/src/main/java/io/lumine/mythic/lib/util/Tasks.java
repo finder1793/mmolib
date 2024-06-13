@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 public class Tasks {
@@ -152,5 +153,17 @@ public class Tasks {
             future.complete(null);
         });
         return future;
+    }
+
+    /**
+     * Wraps a task inside a sync block to make sure the task runs
+     * in sync. Handy util when working with completable futures.
+     *
+     * @param plugin   Plugin performing the sync task
+     * @param syncTask Task to be performed sync
+     * @return Runnable wrapping another runnable in a sync block.
+     */
+    public static <T> Consumer<T> sync(@NotNull Plugin plugin, @NotNull Consumer<T> syncTask) {
+        return t -> Bukkit.getScheduler().runTask(plugin, () -> syncTask.accept(t));
     }
 }

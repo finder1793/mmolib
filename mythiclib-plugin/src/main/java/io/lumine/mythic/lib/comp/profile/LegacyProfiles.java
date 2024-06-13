@@ -10,6 +10,7 @@ import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.data.SynchronizedDataHolder;
 import io.lumine.mythic.lib.data.SynchronizedDataManager;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
+import io.lumine.mythic.lib.util.Tasks;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -53,7 +54,7 @@ public class LegacyProfiles implements Listener {
             final @NotNull H data = manager.get(event.getPlayer());
             if (data.isSynchronized()) event.validate(module); // More resilience
             else
-                manager.loadData(data).thenAccept(UtilityMethods.sync(manager.getOwningPlugin(), v -> {
+                manager.loadData(data).thenAccept(Tasks.sync(manager.getOwningPlugin(), v -> {
                     event.validate(module);
                     data.markAsSynchronized();
                     Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(manager, data, event));
@@ -64,7 +65,7 @@ public class LegacyProfiles implements Listener {
 
         // Save data on profile unload
         UtilityMethods.registerEvent(ProfileUnloadEvent.class, fictiveListener, quitEventPriority, event -> {
-            manager.unregister(event.getPlayer()).thenAccept(UtilityMethods.sync(manager.getOwningPlugin(), v -> event.validate(module)));
+            manager.unregister(event.getPlayer()).thenAccept(Tasks.sync(manager.getOwningPlugin(), v -> event.validate(module)));
         }, manager.getOwningPlugin(), false);
     }
 }

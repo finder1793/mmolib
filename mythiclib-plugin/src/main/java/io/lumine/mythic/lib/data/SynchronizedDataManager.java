@@ -121,7 +121,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         for (H holder : getLoaded())
             if (holder.isSynchronized()) {
                 if (holder instanceof Autosaveable) ((Autosaveable) holder).prepareSaving(true);
-                // TODO make sure there aren't too many requests being sent, perhaps add batch options to the config (batch size, frequency)
+                // TODO Batching
                 Tasks.runAsync(owning, () -> getDataHandler().saveData(holder, true));
             }
     }
@@ -203,11 +203,33 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
 
     /**
      * @param playerData Player data to be loaded.
-     * @return Async completable future that completes when the data is loaded.
+     * @return Completable future that completes when the data is loaded.
+     * The future is not guaranteed to be completed, if the player logs off
+     * while the worker thread loads its player data, it will not be completed
+     * when merged onto the main server thread.
      */
     @NotNull
     public CompletableFuture<Void> loadData(@NotNull H playerData) {
-        return Tasks.runAsync(owning, () -> dataHandler.loadData(playerData));
+        final CompletableFuture<Void> future = new CompletableFuture<>();
+        Tasks.runAsync(owning, () -> dataHandler.loadData(playerData)).thenAccept(Tasks.sync(owning, ignored -> {
+
+            // If player has logged off in the meantime, save data and do not complete
+            if (!playerData.getMMOPlayerData().isLookup() && !playerData.getMMOPlayerData().isOnline()) {
+                saveData(playerData);
+                return;
+            }
+
+            future.complete(null);
+        }));
+        return future;
+    }
+
+    /**
+     * @param playerData Player data to be saved.
+     * @return Completable future that completes when the data is loaded.
+     */
+    public CompletableFuture<Void> saveData(@NotNull H playerData) {
+        return Tasks.runSafeAsync(owning, () -> dataHandler.saveData(playerData, false));
     }
 
     /**
@@ -226,20 +248,33 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         final @NotNull H playerData = activeData.computeIfAbsent(player.getUniqueId(), uuid -> newPlayerData(MMOPlayerData.get(player.getUniqueId())));
 
         // Schedule data loading
-        if (requiresSynchronization(playerData)) loadData(playerData).thenAccept(UtilityMethods.sync(owning, v -> {
-            playerData.markAsSynchronized();
-            Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(this, playerData));
-        }));
+        if (requiresSynchronizationOnLogin(playerData))
+            loadData(playerData).thenAccept(Tasks.sync(owning, v -> {
+                playerData.markAsSynchronized();
+                Bukkit.getPluginManager().callEvent(new SynchronizedDataLoadEvent(this, playerData));
+            }));
 
         return playerData;
     }
 
-    private boolean requiresSynchronization(@NotNull H holder) {
+    private boolean requiresSynchronizationOnLogin(@NotNull H holder) {
+
+        // Safety - should never happen
         if (holder.isSynchronized()) return false;
+
+        // Profile plugins already require sync
         if (profilePlugin) return true;
+
+        // No profile plugin - sync like usual
         if (MythicLib.plugin.getProfileMode() == null) return true;
+
+        // Wait for the player to choose their profile
         if (MythicLib.plugin.getProfileMode() == ProfileMode.LEGACY) return false;
+
+        // Only if the player has chosen their profile
         if (MythicLib.plugin.getProfileMode() == ProfileMode.PROXY) return holder.getMMOPlayerData().hasProfile();
+
+        // Unhandled profile mode
         throw new RuntimeException("Unhandled profile mode");
     }
 
@@ -259,8 +294,8 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
         // Close and unregister data instantly if no error occurred
         if (playerData instanceof Closeable) ((Closeable) playerData).close();
 
-        // Save data async if required
-        return playerData.isSynchronized() ? Tasks.runSafeAsync(owning, () -> dataHandler.saveData(playerData, false)) : CompletableFuture.completedFuture(null);
+        // Save data if required
+        return playerData.isSynchronized() ? saveData(playerData) : CompletableFuture.completedFuture(null);
     }
 
     /**
