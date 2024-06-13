@@ -136,6 +136,18 @@ public class UtilityMethods {
         }
     }
 
+    @Nullable
+    public static ItemStack getHandItem(@NotNull LivingEntity entity, @NotNull org.bukkit.inventory.EquipmentSlot hand) {
+        switch (hand) {
+            case HAND:
+                return entity.getEquipment().getItemInMainHand();
+            case OFF_HAND:
+                return entity.getEquipment().getItemInOffHand();
+            default:
+                throw new IllegalArgumentException("Must provide a hand slot");
+        }
+    }
+
     @Deprecated
     public static void setTextureValue(@NotNull ItemMeta meta, @NotNull String textureValue) {
         if (meta instanceof SkullMeta) setTextureValue((SkullMeta) meta, textureValue, UUID.randomUUID());

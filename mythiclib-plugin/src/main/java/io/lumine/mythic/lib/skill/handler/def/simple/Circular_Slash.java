@@ -35,8 +35,8 @@ public class Circular_Slash extends SkillHandler<SimpleSkillResult> {
 
         Player caster = skillMeta.getCaster().getPlayer();
 
-        caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2, .5f);
-        caster.addPotionEffect(new PotionEffect(VPotionEffectType.SLOWNESS.get(), 2, 254));
+        caster.getWorld().playSound(caster.getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 2, .5f);
+        caster.addPotionEffect(new PotionEffect(VPotionEffectType.SLOWNESS.get(), 5, 100));
         for (Entity entity : caster.getNearbyEntities(radius, radius, radius)) {
             if (UtilityMethods.canTarget(caster, entity)) {
                 skillMeta.getCaster().attack((LivingEntity) entity, damage, DamageType.SKILL, DamageType.PHYSICAL);
@@ -53,6 +53,6 @@ public class Circular_Slash extends SkillHandler<SimpleSkillResult> {
             loc.add(Math.cos(j) * radius, .75, Math.sin(j) * radius);
             loc.getWorld().spawnParticle(VParticle.LARGE_SMOKE.get(), loc, 0);
         }
-        caster.getWorld().spawnParticle(VParticle.LARGE_EXPLOSION.get(), caster.getLocation().add(0, 1, 0), 0);
+        // caster.getWorld().spawnParticle(VParticle.LARGE_EXPLOSION.get(), caster.getLocation().add(0, 1, 0), 0);
     }
 }

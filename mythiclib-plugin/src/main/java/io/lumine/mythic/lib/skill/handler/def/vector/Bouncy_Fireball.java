@@ -78,8 +78,8 @@ public class Bouncy_Fireball extends SkillHandler<VectorSkillResult> {
                                 entity.setFireTicks((int) (ignite * 20));
                             }
 
-                    loc.getWorld().spawnParticle(VParticle.EXPLOSION.get(), loc, 12, 2, 2, 2, 0);
-                    loc.getWorld().spawnParticle(VParticle.LARGE_EXPLOSION.get(), loc, 48, 0, 0, 0, .2);
+                    loc.getWorld().spawnParticle(VParticle.LARGE_EXPLOSION.get(), loc, 12, 2, 2, 2, 0);
+                    loc.getWorld().spawnParticle(VParticle.EXPLOSION.get(), loc, 48, 0, 0, 0, .2);
                     loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 3, 0);
                     cancel();
                 }

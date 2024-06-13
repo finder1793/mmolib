@@ -5,32 +5,29 @@ import org.bukkit.Particle;
 import org.jetbrains.annotations.NotNull;
 
 public enum VParticle {
-    EXPLOSION("EXPLOSION", "EXPLOSION_NORMAL"),
-    @Deprecated
-    LARGE_EXPLOSION("EXPLOSION_EMITTER", "EXPLOSION_LARGE"),
+    EXPLOSION("POOF", "EXPLOSION_NORMAL"),
+    LARGE_EXPLOSION("EXPLOSION", "EXPLOSION_LARGE"), // EXPLOSION_EMITTER is a huge explosion
     WITCH("WITCH", "SPELL_WITCH"),
     LARGE_SMOKE("LARGE_SMOKE", "SMOKE_LARGE"),
     SMOKE("SMOKE", "SMOKE_NORMAL"),
-    @Deprecated
     REDSTONE("DUST", "REDSTONE"),
-    @Deprecated
     FIREWORK("FIREWORK", "FIREWORKS_SPARK"),
-    @Deprecated
     INSTANT_EFFECT("INSTANT_EFFECT", "SPELL_INSTANT"),
-    @Deprecated
     EFFECT("EFFECT", "SPELL"),
-    @Deprecated
+    /**
+     * Requires color
+     */
     ENTITY_EFFECT("ENTITY_EFFECT", "SPELL_MOB"),
     ENTITY_EFFECT_AMBIENT("ENTITY_EFFECT", "SPELL_MOB_AMBIENT"),
     TOTEM_OF_UNDYING("TOTEM_OF_UNDYING", "TOTEM"),
     HAPPY_VILLAGER("HAPPY_VILLAGER", "VILLAGER_HAPPY"),
-    @Deprecated
-    SNOWFLAKE("SNOWFLAKE", "SNOWBALL"),
-    @Deprecated
+    SNOWFLAKE("ITEM_SNOWBALL", "SNOWBALL"),
     BLOCK("BLOCK", "BLOCK_CRACK"),
-    @Deprecated
+    /**
+     * Requires material
+     */
     BLOCK_DUST("BLOCK", "BLOCK_DUST"),
-    ITEM_SNOWBALL("ITEM_SNOWBALL", "SNOW_SHOVEL"),
+    ITEM_SNOWBALL("SNOWFLAKE", "SNOW_SHOVEL"),
     ITEM_SLIME("ITEM_SLIME", "SLIME"),
     ENCHANTED_HIT("ENCHANTED_HIT", "CRIT_MAGIC"),
     ITEM("ITEM", "ITEM_CRACK"),

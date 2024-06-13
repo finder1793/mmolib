@@ -34,7 +34,7 @@ public class Minor_Explosion extends SkillHandler<LocationSkillResult> {
         double knockback = skillMeta.getParameter("knockback");
 
         loc.getWorld().spawnParticle(VParticle.LARGE_EXPLOSION.get(), loc.add(0, .1, 0), 32, 1.7, 1.7, 1.7, 0);
-        loc.getWorld().spawnParticle(VParticle.LARGE_EXPLOSION.get(), loc, 64, 0, 0, 0, .3);
+        loc.getWorld().spawnParticle(VParticle.EXPLOSION.get(), loc, 64, 0, 0, 0, .3);
         loc.getWorld().playSound(loc, Sound.ENTITY_GENERIC_EXPLODE, 2, 1);
 
         for (Entity entity : UtilityMethods.getNearbyChunkEntities(loc))

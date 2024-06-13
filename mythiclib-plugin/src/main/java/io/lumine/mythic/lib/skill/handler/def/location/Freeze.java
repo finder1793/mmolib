@@ -36,7 +36,7 @@ public class Freeze extends SkillHandler<LocationSkillResult> {
         int amplifier = (int) (skillMeta.getParameter("amplifier") - 1);
         double radiusSquared = Math.pow(skillMeta.getParameter("radius"), 2);
 
-        loc.getWorld().spawnParticle(VParticle.EXPLOSION.get(), loc.add(0, .1, 0), 0);
+        loc.getWorld().spawnParticle(VParticle.LARGE_EXPLOSION.get(), loc.add(0, .1, 0), 0);
         loc.getWorld().spawnParticle(VParticle.ITEM_SNOWBALL.get(), loc, 48, 0, 0, 0, .2);
         loc.getWorld().spawnParticle(VParticle.FIREWORK.get(), loc, 24, 0, 0, 0, .2);
         loc.getWorld().playSound(loc, VSound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST.get(), 2, 1);

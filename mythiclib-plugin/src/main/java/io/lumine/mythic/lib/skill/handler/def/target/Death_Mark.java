@@ -41,7 +41,7 @@ public class Death_Mark extends SkillHandler<TargetSkillResult> {
                     return;
                 }
 
-                target.getWorld().spawnParticle(VParticle.ENTITY_EFFECT.get(), target.getLocation(), 4, .2, 0, .2, 0);
+                target.getWorld().spawnParticle(VParticle.INSTANT_EFFECT.get(), target.getLocation(), 4, .2, 0, .2, 0);
 
                 if (ti % 20 == 0)
                     skillMeta.getCaster().attack(target, dps, false, DamageType.SKILL, DamageType.MAGIC);

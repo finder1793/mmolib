@@ -6,10 +6,10 @@ import org.jetbrains.annotations.NotNull;
 
 public enum VPotionEffectType {
     NAUSEA("NAUSEA", "CONFUSION"),
-    @Deprecated // TODO use UtilityMethods#forcePotionEffect
     SLOWNESS("SLOWNESS", "SLOW"),
     JUMP_BOOST("JUMP_BOOST", "JUMP"),
     MINING_FATIGUE("MINING_FATIGUE", "SLOW_DIGGING"),
+    HASTE("HASTE", "FAST_DIGGING"),
 
     ;
 
