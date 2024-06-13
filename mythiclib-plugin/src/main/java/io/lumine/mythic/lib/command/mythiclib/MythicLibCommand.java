@@ -13,6 +13,7 @@ public class MythicLibCommand extends CommandTreeRoot {
 
         addChild(new ReloadCommand(this));
         addChild(new CastCommand(this));
+        addChild(new DamageCommand(this));
         addChild(new DebugCommand(this));
         addChild(new StatModCommand(this));
         addChild(new TempStatCommand(this));
