@@ -2,9 +2,9 @@ package io.lumine.mythic.lib.listener;
 
 import io.lumine.mythic.lib.entity.ProjectileMetadata;
 import io.lumine.mythic.lib.version.VEnchantment;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,7 +24,9 @@ public class CustomProjectileDamage implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void customProjectileDamage(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Projectile) || !(event.getEntity() instanceof LivingEntity) || event.getEntity().hasMetadata("NPC"))
+        if (!(event.getDamager() instanceof Projectile)
+                || !(event.getEntity() instanceof LivingEntity)
+                || (event.getEntity() instanceof Player && event.getEntity().hasMetadata("NPC")))
             return;
 
         final Projectile projectile = (Projectile) event.getDamager();

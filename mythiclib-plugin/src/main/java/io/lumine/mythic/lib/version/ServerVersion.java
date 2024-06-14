@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.version;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.util.annotation.BackwardsCompatibility;
 import io.lumine.mythic.lib.version.wrapper.VersionWrapper;
 import org.apache.commons.lang.Validate;
@@ -8,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.logging.Level;
 
 public class ServerVersion {
     private final String craftBukkitVersion;
@@ -35,16 +37,14 @@ public class ServerVersion {
         revNumber = findRevisionNumber();
         craftBukkitVersion = craftBukkitVersion(revNumber); // "v1_20_R4"
 
-     /*   VersionWrapper found;
+        VersionWrapper found;
         try {
             found = (VersionWrapper) Class.forName("io.lumine.mythic.lib.version.wrapper.VersionWrapper_" + craftBukkitVersion.substring(1)).getDeclaredConstructor().newInstance();
         } catch (Exception exception) {
             MythicLib.plugin.getLogger().log(Level.WARNING, "Non-natively supported Spigot version detected, trying reflection-based compatibility mode");
-          found = (VersionWrapper) Class.forName("io.lumine.mythic.lib.version.wrapper.VersionWrapper_Reflection").getDeclaredConstructor(ServerVersion.class).newInstance(this);
+            found = (VersionWrapper) Class.forName("io.lumine.mythic.lib.version.wrapper.VersionWrapper_Reflection").getDeclaredConstructor(ServerVersion.class).newInstance(this);
         }
-        this.versionWrapper = found; */
-        this.versionWrapper = (VersionWrapper) Class.forName("io.lumine.mythic.lib.version.wrapper.VersionWrapper_Reflection").getDeclaredConstructor(ServerVersion.class).newInstance(this);
-        ;
+        this.versionWrapper = found;
 
         // Running Paper?
         boolean isPaper = false;

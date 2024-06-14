@@ -55,15 +55,11 @@ public class MultiplyDamageMechanic implements INoTargetSkill {
 
             final double a = this.amount.get(skillMetadata);
             if (additive) {
-                if (type == null)
-                    attackMeta.getDamage().additiveModifier(a);
-                else
-                    attackMeta.getDamage().additiveModifier(a, type);
+                if (type == null) attackMeta.getDamage().additiveModifier(a);
+                else attackMeta.getDamage().additiveModifier(a, type);
             } else {
-                if (type == null)
-                    attackMeta.getDamage().multiplicativeModifier(a);
-                else
-                    attackMeta.getDamage().multiplicativeModifier(a, type);
+                if (type == null) attackMeta.getDamage().multiplicativeModifier(a);
+                else attackMeta.getDamage().multiplicativeModifier(a, type);
             }
         }
 

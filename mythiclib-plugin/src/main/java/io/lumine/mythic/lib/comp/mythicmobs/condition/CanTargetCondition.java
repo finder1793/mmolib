@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.comp.mythicmobs.condition;
 import io.lumine.mythic.api.adapters.AbstractEntity;
 import io.lumine.mythic.api.adapters.AbstractPlayer;
 import io.lumine.mythic.api.config.MythicLineConfig;
+import io.lumine.mythic.api.skills.ThreadSafetyLevel;
 import io.lumine.mythic.api.skills.conditions.IEntityComparisonCondition;
 import io.lumine.mythic.core.skills.SkillCondition;
 import io.lumine.mythic.core.utils.annotations.MythicCondition;
@@ -19,6 +20,7 @@ public class CanTargetCondition extends SkillCondition implements IEntityCompari
     public CanTargetCondition(String line, MythicLineConfig mlc) {
         super(line);
 
+        this.threadSafetyLevel = ThreadSafetyLevel.SYNC_ONLY; // This condition calls a sync Bukkit event
         String interactionName = mlc.getString(new String[]{"interact", "type", "name", "interaction", "interactionType", "interactionName"}, "OFFENSE_SKILL");
         this.interaction = InteractionType.valueOf(UtilityMethods.enumName(interactionName));
     }
