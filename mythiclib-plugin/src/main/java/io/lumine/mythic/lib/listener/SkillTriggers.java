@@ -9,6 +9,7 @@ import io.lumine.mythic.lib.api.event.armorequip.ArmorEquipEvent;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.comp.profile.ProfileMode;
+import io.lumine.mythic.lib.damage.ProjectileAttackMetadata;
 import io.lumine.mythic.lib.entity.ProjectileMetadata;
 import io.lumine.mythic.lib.entity.ProjectileType;
 import io.lumine.mythic.lib.player.PlayerMetadata;
@@ -38,6 +39,7 @@ public class SkillTriggers implements Listener {
         Bukkit.getScheduler().runTaskTimer(MythicLib.plugin, () -> MMOPlayerData.forEachOnline(online -> online.getPassiveSkillMap().tickTimerSkills()), 0, 1);
     }
 
+    // TODO have it lookup ProjectileMetadata#cachedSkills instead
     @EventHandler
     public void killEntity(PlayerKillEntityEvent event) {
         event.getData().triggerSkills(new TriggerMetadata(event.getData(), TriggerType.KILL_ENTITY, event.getTarget()));
@@ -47,7 +49,19 @@ public class SkillTriggers implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void attack(PlayerAttackEvent event) {
-        event.getAttacker().getData().triggerSkills(new TriggerMetadata(event, TriggerType.ATTACK));
+        final TriggerMetadata triggerMetadata = new TriggerMetadata(event, TriggerType.ATTACK);
+
+        // Cast skills based on projectile
+        if (event.getAttack() instanceof ProjectileAttackMetadata) {
+            final ProjectileMetadata projectileMeta = ((ProjectileAttackMetadata) event.getAttack()).getProjectileMetadata();
+            if (projectileMeta != null) {
+                event.getAttacker().getData().triggerSkills(triggerMetadata, projectileMeta.getEffectiveSkills());
+                return;
+            }
+        }
+
+        // Normal skill casting
+        event.getAttacker().getData().triggerSkills(triggerMetadata);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

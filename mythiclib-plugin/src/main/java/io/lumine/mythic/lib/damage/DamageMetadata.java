@@ -42,6 +42,10 @@ public class DamageMetadata implements Cloneable {
         initialPacket = null;
     }
 
+    private DamageMetadata(@Nullable DamagePacket initialPacket) {
+        this.initialPacket = initialPacket;
+    }
+
     /**
      * Used to register an attack.
      *
@@ -323,11 +327,9 @@ public class DamageMetadata implements Cloneable {
 
     @Override
     public DamageMetadata clone() {
-        DamageMetadata clone = new DamageMetadata();
-
+        DamageMetadata clone = new DamageMetadata(initialPacket);
         for (DamagePacket packet : packets)
             clone.packets.add(packet.clone());
-
         return clone;
     }
 

@@ -217,7 +217,7 @@ public class DamageManager implements Listener {
                 final Projectile projectile = (Projectile) damager;
                 final @Nullable ProjectileMetadata projectileData = ProjectileMetadata.get(projectile);
                 if (projectileData != null) {
-                    final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE), (LivingEntity) event.getEntity(), projectileData.getShooter(), projectile);
+                    final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE), (LivingEntity) event.getEntity(), projectileData.getShooter(), projectile, projectileData);
                     markAsMetadata(attackMeta);
                     return attackMeta;
                 }
