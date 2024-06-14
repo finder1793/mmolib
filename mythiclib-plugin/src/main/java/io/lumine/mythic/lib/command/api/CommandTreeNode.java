@@ -115,7 +115,7 @@ public abstract class CommandTreeNode {
     public String formatParameters() {
         StringBuilder str = new StringBuilder();
         for (Parameter param : parameters)
-            str.append(param.getKey()).append(" ");
+            str.append(param.format()).append(" ");
         return (str.length() == 0) ? str.toString() : str.substring(0, str.length() - 1);
     }
 

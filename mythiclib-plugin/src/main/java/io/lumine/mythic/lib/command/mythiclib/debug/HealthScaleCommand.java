@@ -12,7 +12,7 @@ public class HealthScaleCommand extends CommandTreeNode {
         super(parent, "healthscale");
 
         addParameter(Parameter.AMOUNT);
-        addParameter(Parameter.PLAYER_OPTIONAL);
+        addParameter(Parameter.PLAYER.optional(true));
     }
 
     @Override

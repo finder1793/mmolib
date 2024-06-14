@@ -25,12 +25,9 @@ public class StatModCommand extends CommandTreeNode {
         super(parent, "statmod");
 
         addParameter(Parameter.PLAYER);
-        addParameter(new Parameter("<STAT_NAME>", (tree, list) -> list.add("ATTACK_DAMAGE")));
-        addParameter(new Parameter("<value>", (tree, list) -> list.add("10")));
-        addParameter(new Parameter("(duration)", (tree, list) -> {
-            for (int j = 1; j < 5; j++)
-                list.add(String.valueOf(20 * j));
-        }));
+        addParameter(Parameter.STAT);
+        addParameter(Parameter.AMOUNT.key("value"));
+        addParameter(Parameter.DURATION_TICKS.optional(true));
     }
 
     @Override

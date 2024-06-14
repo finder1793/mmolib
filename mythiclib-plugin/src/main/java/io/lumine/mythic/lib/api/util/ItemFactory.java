@@ -254,7 +254,7 @@ public class ItemFactory {
     }
 
     public ItemFactory hideAttributes() {
-        if (MythicLib.plugin.getVersion().isStrictlyHigher(1, 15)) {
+        if (MythicLib.plugin.getVersion().isAbove(1, 16)) {
             this.flag(ItemFlag.HIDE_DYE);
         }
 
@@ -262,7 +262,7 @@ public class ItemFactory {
     }
 
     public ItemFactory showAttributes() {
-        if (MythicLib.plugin.getVersion().isStrictlyHigher(1, 15)) {
+        if (MythicLib.plugin.getVersion().isAbove(1, 16)) {
             this.unflag(ItemFlag.HIDE_DYE);
         }
 

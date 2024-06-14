@@ -6,7 +6,6 @@ import io.lumine.mythic.lib.api.util.TemporaryListener;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.LocationSkillResult;
-import io.lumine.mythic.lib.version.VEntityType;
 import io.lumine.mythic.lib.version.VParticle;
 import io.lumine.mythic.lib.version.VPotionEffectType;
 import io.lumine.mythic.lib.version.VSound;

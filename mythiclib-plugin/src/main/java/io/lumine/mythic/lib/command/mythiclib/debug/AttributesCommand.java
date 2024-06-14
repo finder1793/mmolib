@@ -12,20 +12,20 @@ public class AttributesCommand extends CommandTreeNode {
     public AttributesCommand(CommandTreeNode parent) {
         super(parent, "attributes");
 
-        addParameter(Parameter.PLAYER_OPTIONAL);
+        addParameter(Parameter.PLAYER.optional(true));
     }
 
     @Override
     public CommandResult execute(CommandSender sender, String[] args) {
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "> This command is only for players.");
+            sender.sendMessage(ChatColor.RED + "This command is only for players.");
             return CommandResult.FAILURE;
         }
 
         final Player target = args.length > 2 ? Bukkit.getPlayer(args[2]) : (Player) sender;
         if (target == null) {
-            sender.sendMessage(ChatColor.RED + "> Could not find player called " + args[2] + ".");
+            sender.sendMessage(ChatColor.RED + "Could not find player called " + args[2] + ".");
             return CommandResult.FAILURE;
         }
 

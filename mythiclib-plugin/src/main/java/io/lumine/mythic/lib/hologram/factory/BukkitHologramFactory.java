@@ -52,6 +52,9 @@ public class BukkitHologramFactory implements HologramFactory {
             }
         }
 
+        //private static final float SCALE_FACTOR = 2f;
+        //private static final Transformation SCALE_UP = new Transformation(new Vector3f(), new AxisAngle4f(), new Vector3f(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR), new AxisAngle4f());
+
         public void spawn() {
             int linesSize = this.lines.size();
             int spawnedSize = this.spawnedEntities.size();
@@ -72,6 +75,7 @@ public class BukkitHologramFactory implements HologramFactory {
                     if (!chunk.isLoaded()) chunk.load();
                     final TextDisplay as = loc.getWorld().spawn(loc, TextDisplay.class);
                     as.setBillboard(Display.Billboard.CENTER);
+                  //  as.setTransformation(SCALE_UP);
                     this.spawnedEntities.add(as);
 
                     as.setText(line);

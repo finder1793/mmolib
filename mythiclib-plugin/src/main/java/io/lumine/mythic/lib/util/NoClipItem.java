@@ -104,8 +104,8 @@ public class NoClipItem extends TemporaryListener {
             newItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
 
-        // Copy CustomModelData. Only if 1.14+
-        if (MythicLib.plugin.getVersion().isStrictlyHigher(1, 13) && oldItem.getItemMeta().hasCustomModelData() && oldItem.getItemMeta().getCustomModelData() != 0) {
+        // Copy CustomModelData.
+        if (oldItem.getItemMeta().hasCustomModelData() && oldItem.getItemMeta().getCustomModelData() != 0) {
             newItemMeta.setCustomModelData(oldItem.getItemMeta().getCustomModelData());
         }
 

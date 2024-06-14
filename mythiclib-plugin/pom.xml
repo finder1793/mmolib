@@ -9,6 +9,7 @@
         <groupId>io.lumine</groupId>
         <version>1.6.2-SNAPSHOT</version>
     </parent>
+    <description>Hard dependency for the MMO plugins</description>
 
     <build>
         <finalName>${project.name}-${project.version}</finalName>

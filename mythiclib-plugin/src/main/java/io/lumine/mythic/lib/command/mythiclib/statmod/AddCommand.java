@@ -21,16 +21,19 @@ public class AddCommand extends CommandTreeNode {
         super(parent, "add");
 
         addParameter(Parameter.PLAYER);
-        addParameter(new Parameter("<STAT_NAME>", (tree, list) -> list.add("ATTACK_DAMAGE")));
-        addParameter(new Parameter("<value>", (tree, list) -> list.add("10")));
-        addParameter(new Parameter("(duration)", (tree, list) -> {
-            for (int j = 1; j < 5; j++)
-                list.add(String.valueOf(20 * j));
-        }));
-        addParameter(new Parameter("(key)", (tree, list) -> list.add("default")));
+        addParameter(Parameter.STAT);
+        addParameter(Parameter.AMOUNT.key("value"));
+        addParameter(Parameter.DURATION_TICKS.optional(true));
+        addParameter(STAT_KEY);
     }
 
-    public static final String DEFAULT_KEY = "default";
+    public static final String DEFAULT_STAT_KEY = "default";
+
+    public static final Parameter STAT_KEY = new Parameter("key", true, (tree, list) -> {
+        list.add(DEFAULT_STAT_KEY);
+        list.add("whatever");
+        list.add("my_plugin_name");
+    });
 
     @Override
     public CommandResult execute(CommandSender sender, String[] args) {
@@ -47,7 +50,7 @@ public class AddCommand extends CommandTreeNode {
         final ModifierType type = args[4].toCharArray()[args[4].length() - 1] == '%' ? ModifierType.RELATIVE : ModifierType.FLAT;
         final double value = Double.parseDouble(type == ModifierType.RELATIVE ? args[4].substring(0, args[4].length() - 1) : args[4]);
         final long duration = args.length > 5 ? Math.max(1, (long) Double.parseDouble(args[5])) : 0;
-        final String key = args.length > 6 ? args[6] : DEFAULT_KEY;
+        final String key = args.length > 6 ? args[6] : DEFAULT_STAT_KEY;
 
         if (duration <= 0)
             new StatModifier(key, statName, value, type, EquipmentSlot.OTHER, ModifierSource.OTHER).register(playerData);

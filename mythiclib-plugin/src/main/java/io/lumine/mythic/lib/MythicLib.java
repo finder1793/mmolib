@@ -138,7 +138,7 @@ public class MythicLib extends JavaPlugin {
 
         // Hologram provider
         Bukkit.getServicesManager().register(HologramFactory.class, new LegacyBukkitHologramFactory(), this, ServicePriority.Lowest);
-        if (version.isStrictlyHigher(1, 19, 3))
+        if (version.isAbove(1, 19, 4))
             Bukkit.getServicesManager().register(HologramFactory.class, new BukkitHologramFactory(), this, ServicePriority.Low);
 
         // Detect MMO plugins

@@ -90,20 +90,14 @@ public class ServerVersion {
     }
 
     /**
-     * @param version Two integers. {1, 12} corresponds to 1.12.x. It's useless to
-     *                provide more than 2 arguments
-     * @return If server version is lower than provided version
+     * This is the most useful function when dealing with compatibility. Since
+     * plugin features are, most of the time, only registered when the server
+     * version is found to be above a certain threshold.
+     *
+     * @param version Provided Minecraft version
+     * @return True if server version is either equal to or above provided version.
      */
-    public boolean isBelowOrEqual(int... version) {
-        return !isStrictlyHigher(version);
-    }
-
-    /**
-     * @param version At most three integers. [1, 20, 2] corresponds to 1.20.2
-     * @return If server version is higher than (and not equal to) provided
-     * version
-     */
-    public boolean isStrictlyHigher(int... version) {
+    public boolean isAbove(int... version) {
         Validate.isTrue(version.length >= 1 && version.length <= MAXIMUM_INDEX, "Provide at least 1 integer and at most " + MAXIMUM_INDEX);
 
         final int maxLength = Math.min(MAXIMUM_INDEX, Math.max(version.length, bukkitVersion.length));
@@ -113,7 +107,11 @@ public class ServerVersion {
             if (server != provided) return server > provided;
         }
 
-        return false;
+        return true;
+    }
+
+    public boolean isUnder(int... version) {
+        return !isAbove(version);
     }
 
     public String getCraftBukkitVersion() {
@@ -161,5 +159,24 @@ public class ServerVersion {
     @Deprecated
     public int[] getIntegers() {
         return getBukkitVersion();
+    }
+
+    @Deprecated
+    public boolean isStrictlyHigher(int... version) {
+        Validate.isTrue(version.length >= 1 && version.length <= MAXIMUM_INDEX, "Provide at least 1 integer and at most " + MAXIMUM_INDEX);
+
+        final int maxLength = Math.min(MAXIMUM_INDEX, Math.max(version.length, bukkitVersion.length));
+        for (int i = 0; i < maxLength; i++) {
+            final int server = i >= bukkitVersion.length ? 0 : bukkitVersion[i];
+            final int provided = i >= version.length ? 0 : version[i];
+            if (server != provided) return server > provided;
+        }
+
+        return false;
+    }
+
+    @Deprecated
+    public boolean isBelowOrEqual(int... version) {
+        return !isStrictlyHigher(version);
     }
 }

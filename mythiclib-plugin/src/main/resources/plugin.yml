@@ -8,13 +8,13 @@ website: www.phoenixdevt.fr
 softdepend: [ WorldGuard,Residence,Factions,MythicMobs,PlaceholderAPI ]
 commands:
   healthscale:
-    description: Scales the player's health. Deprecated, use /ml debug healthscale
+    description: 'No longer maintained, see ''/ml debug healthscale'' instead'
     permission: mythiclib.command.healthscale
   exploreattributes:
-    description: Explore player attributes. Deprecated, use /ml debug attributes
+    description: 'No longer maintained, see ''/ml debug attributes'' instead'
     permission: mythiclib.explore-attributes
   mmotempstat:
-    description: Add temporary stat modifier to player. Deprecated, use /ml statmod
+    description: 'No longer maintained, see ''/ml tempstat'' instead'
     permission: mythiclib.tempstat
   superworkbench:
     aliases: [ swb ]

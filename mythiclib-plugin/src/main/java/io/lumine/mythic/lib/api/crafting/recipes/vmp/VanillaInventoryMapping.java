@@ -727,7 +727,7 @@ public abstract class VanillaInventoryMapping {
         vanillaMappings.put(InventoryType.FURNACE, new FurnaceMapping());
         registerCustomMapping(SuperWorkbenchMapping.SWB);
         registerCustomMapping(MegaWorkbenchMapping.MWB);
-        if (MythicLib.plugin.getVersion().isStrictlyHigher(1, 15))
+        if (MythicLib.plugin.getVersion().isAbove(1, 16))
             vanillaMappings.put(InventoryType.valueOf("SMITHING"), new LegacySmithingStationMapping());
         // vanillaMappings.put(InventoryType.valueOf("SMITHING"), MythicLib.plugin.getVersion().isBelowOrEqual(1, 19) ? new LegacySmithingStationMapping() : new ModernSmithingStationMapping());
     }

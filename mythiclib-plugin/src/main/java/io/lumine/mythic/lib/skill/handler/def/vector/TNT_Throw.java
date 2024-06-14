@@ -5,7 +5,6 @@ import io.lumine.mythic.lib.api.util.TemporaryListener;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.VectorSkillResult;
-import io.lumine.mythic.lib.version.VEntityType;
 import io.lumine.mythic.lib.version.VParticle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;

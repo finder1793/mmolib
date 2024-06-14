@@ -16,8 +16,8 @@ public class RemoveCommand extends CommandTreeNode {
         super(parent, "remove");
 
         addParameter(Parameter.PLAYER);
-        addParameter(new Parameter("<STAT_NAME>", (tree, list) -> list.add("ATTACK_DAMAGE")));
-        addParameter(new Parameter("(key)", (tree, list) -> list.add("default")));
+        addParameter(Parameter.STAT);
+        addParameter(AddCommand.STAT_KEY);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class RemoveCommand extends CommandTreeNode {
 
         final String statName = UtilityMethods.enumName(args[3]);
         final MMOPlayerData playerData = MMOPlayerData.get(target);
-        final String key = args.length > 4 ? args[4] : AddCommand.DEFAULT_KEY;
+        final String key = args.length > 4 ? args[4] : AddCommand.DEFAULT_STAT_KEY;
 
         playerData.getStatMap().getInstance(statName).removeIf(key::equals);
         return CommandResult.SUCCESS;
