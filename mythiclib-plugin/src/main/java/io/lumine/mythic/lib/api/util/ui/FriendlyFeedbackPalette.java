@@ -193,7 +193,7 @@ public abstract class FriendlyFeedbackPalette {
     @NotNull public String parseForPlayer(@NotNull String message) {
 
         // If below 1.16, parse as console (which is guaranteed to have no HEX colors)
-        if (MythicLib.plugin.getVersion().isBelowOrEqual(1, 16)) { return parseForConsole(message); }
+        if (MythicLib.plugin.getVersion().isUnder(1, 16)) { return parseForConsole(message); }
 
         // Ay
         return message

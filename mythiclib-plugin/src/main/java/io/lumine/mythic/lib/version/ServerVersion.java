@@ -1,17 +1,13 @@
 package io.lumine.mythic.lib.version;
 
-import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.util.annotation.BackwardsCompatibility;
 import io.lumine.mythic.lib.version.wrapper.VersionWrapper;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.logging.Level;
 
 public class ServerVersion {
     private final String craftBukkitVersion;
@@ -21,7 +17,6 @@ public class ServerVersion {
     private final boolean paper;
 
     private static final int MAXIMUM_INDEX = 3;
-    private static final Map<String, Integer> REVISION_NUMBERS = generateRevisionNumbers();
 
     @Deprecated
     public ServerVersion(Class<?> ignored) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
@@ -38,16 +33,18 @@ public class ServerVersion {
 
         // Compute rev number
         revNumber = findRevisionNumber();
-        craftBukkitVersion = "v" + bukkitVersion[0] + "_" + bukkitVersion[1] + "_R" + revNumber; // "v1_20_R4"
+        craftBukkitVersion = craftBukkitVersion(revNumber); // "v1_20_R4"
 
-        VersionWrapper found;
+     /*   VersionWrapper found;
         try {
             found = (VersionWrapper) Class.forName("io.lumine.mythic.lib.version.wrapper.VersionWrapper_" + craftBukkitVersion.substring(1)).getDeclaredConstructor().newInstance();
         } catch (Exception exception) {
             MythicLib.plugin.getLogger().log(Level.WARNING, "Non-natively supported Spigot version detected, trying reflection-based compatibility mode");
-            found = (VersionWrapper) Class.forName("io.lumine.mythic.lib.version.wrapper.VersionWrapper_Reflection").getDeclaredConstructor(ServerVersion.class).newInstance(this);
+          found = (VersionWrapper) Class.forName("io.lumine.mythic.lib.version.wrapper.VersionWrapper_Reflection").getDeclaredConstructor(ServerVersion.class).newInstance(this);
         }
-        this.versionWrapper = found;
+        this.versionWrapper = found; */
+        this.versionWrapper = (VersionWrapper) Class.forName("io.lumine.mythic.lib.version.wrapper.VersionWrapper_Reflection").getDeclaredConstructor(ServerVersion.class).newInstance(this);
+        ;
 
         // Running Paper?
         boolean isPaper = false;
@@ -61,6 +58,14 @@ public class ServerVersion {
         this.paper = isPaper;
     }
 
+    @NotNull
+    private String craftBukkitVersion(int revNumber) {
+        return "v" + bukkitVersion[0] + "_" + bukkitVersion[1] + "_R" + revNumber;
+    }
+
+    private static final int MAXIMUM_REVISION_NUMBER = 10;
+    private static final String CLASS_NAME_USED = "CraftServer";
+
     @BackwardsCompatibility(version = "1.20.5")
     private int findRevisionNumber() {
 
@@ -73,16 +78,18 @@ public class ServerVersion {
             // Ignored
         }
 
-        // Paper 1.20.5+
-        try {
-            final String minecraftVersion = Bukkit.getBukkitVersion().split("\\-")[0]; // "1.20.6"
-            final @Nullable Integer found = REVISION_NUMBERS.get(minecraftVersion);
-            if (found != null) return found;
-        } catch (Throwable throwable) {
-            // Ignored
-        }
+        // Spigot 1.20.5+
+        for (int revNumber = 1; revNumber < MAXIMUM_REVISION_NUMBER; revNumber++)
+            try {
+                final String candidate = craftBukkitVersion(revNumber);
+                Class.forName("org.bukkit.craftbukkit." + candidate + "." + CLASS_NAME_USED);
+                return revNumber;
+            } catch (Throwable throwable) {
+                // Ignored
+            }
 
-        throw new RuntimeException("Version revision mapping not specified");
+        // Assume no need for the revision number (Paper 1.20.5+)
+        return 0;
     }
 
     public boolean isPaper() {
@@ -114,6 +121,7 @@ public class ServerVersion {
         return !isAbove(version);
     }
 
+    @NotNull
     public String getCraftBukkitVersion() {
         return craftBukkitVersion;
     }
@@ -126,6 +134,7 @@ public class ServerVersion {
         return bukkitVersion;
     }
 
+    @NotNull
     public VersionWrapper getWrapper() {
         return versionWrapper;
     }
@@ -136,14 +145,8 @@ public class ServerVersion {
                 "revision='" + craftBukkitVersion + '\'' +
                 ", revisionNumber=" + revNumber +
                 ", integers=" + Arrays.toString(bukkitVersion) +
+                ", paper=" + paper +
                 '}';
-    }
-
-    private static Map<String, Integer> generateRevisionNumbers() {
-        final Map<String, Integer> revisionNumbers = new LinkedHashMap<>();
-        revisionNumbers.put("1.20.5", 4);
-        revisionNumbers.put("1.20.6", 4);
-        return revisionNumbers;
     }
 
     @Deprecated

@@ -131,7 +131,7 @@ public class ItemFactory {
     }
 
     public ItemFactory durability(int durability) {
-        return MythicLib.plugin.getVersion().isBelowOrEqual(1, 14) ? this.transform((itemStack) -> {
+        return MythicLib.plugin.getVersion().isUnder(1, 15) ? this.transform((itemStack) -> {
             itemStack.setDurability((short) durability);
         }) : this.transformMeta((meta) -> {
             if (meta instanceof Damageable) {

@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.gui;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.explorer.AttributeData;
 import io.lumine.mythic.lib.api.explorer.ChatInput;
@@ -37,7 +38,7 @@ public class AttributeExplorer extends PluginInventory {
     private List<AttributeModifier> modifiers;
     private int page;
 
-    private static final int[] SLOTS = {8, 17, 26, 35, 44, 53, 7, 16, 25, 34, 43, 52},
+    private static final int[] SLOTS = {8, 17, 26, 35, 44, 53, 7, 16, 25, 34, 43, 52, 6, 15, 24, 33, 42, 51},
             MOD_SLOTS = {19, 20, 21, 22, 23, 28, 29, 30, 31, 32, 37, 38, 39, 40, 41};
 
     /**
@@ -50,13 +51,29 @@ public class AttributeExplorer extends PluginInventory {
 
     static {
         ATTRIBUTES.put("ARMOR", new AttributeData(Material.IRON_CHESTPLATE, "Armor bonus of an Entity."));
-        ATTRIBUTES.put("ARMOR_TOUGHNESS", new AttributeData(Material.GOLDEN_CHESTPLATE, "Armor durability bonus of an Entity."));
+        ATTRIBUTES.put("ARMOR_TOUGHNESS", new AttributeData(Material.GOLDEN_CHESTPLATE, "Armor toughness bonus of an Entity."));
         ATTRIBUTES.put("ATTACK_DAMAGE", new AttributeData(Material.IRON_SWORD, "Attack damage of an Entity."));
         ATTRIBUTES.put("ATTACK_SPEED", new AttributeData(Material.LIGHT_GRAY_DYE, "Attack speed of an Entity."));
         ATTRIBUTES.put("KNOCKBACK_RESISTANCE", new AttributeData(Material.TNT_MINECART, "Resistance of an Entity to knockback."));
         ATTRIBUTES.put("LUCK", new AttributeData(VMaterial.GRASS_BLOCK.get(), "Luck bonus of an Entity."));
-        ATTRIBUTES.put("MAX_HEALTH", new AttributeData(Material.GOLDEN_APPLE, "Maximum health of an Entity."));
+        ATTRIBUTES.put("MAX_HEALTH", new AttributeData(Material.APPLE, "Maximum health of an Entity."));
         ATTRIBUTES.put("MOVEMENT_SPEED", new AttributeData(Material.LEATHER_BOOTS, "Movement speed of an Entity."));
+
+        if (MythicLib.plugin.getVersion().isAbove(1, 20, 2)) {
+            ATTRIBUTES.put("MAX_ABSORPTION", new AttributeData(Material.GOLDEN_APPLE, "Max amount of absorption hearts."));
+        }
+
+        if (MythicLib.plugin.getVersion().isAbove(1, 20, 5)) {
+            ATTRIBUTES.put("BLOCK_BREAK_SPEED", new AttributeData(Material.IRON_PICKAXE, "Speed of breaking blocks."));
+            ATTRIBUTES.put("BLOCK_INTERACTION_RANGE", new AttributeData(Material.SPYGLASS, "How far players may break or interact with blocks."));
+            ATTRIBUTES.put("ENTITY_INTERACTION_RANGE", new AttributeData(Material.SPYGLASS, "How far players may hit or interact with entities."));
+            ATTRIBUTES.put("FALL_DAMAGE_MULTIPLIER", new AttributeData(Material.GOLDEN_APPLE, "Max amount of absorption hearts."));
+            ATTRIBUTES.put("GRAVITY", new AttributeData(Material.STONE, "How strong gravity is."));
+            ATTRIBUTES.put("JUMP_STRENGTH", new AttributeData(Material.FEATHER, "How high you can jump."));
+            ATTRIBUTES.put("SAFE_FALL_DISTANCE", new AttributeData(Material.RED_BED, "How high you can drop from without fall damage."));
+            ATTRIBUTES.put("SCALE", new AttributeData(Material.GUARDIAN_SPAWN_EGG, "Size of an entity."));
+            ATTRIBUTES.put("STEP_HEIGHT", new AttributeData(Material.OAK_SLAB, "How high you can climb blocks when walking."));
+        }
     }
 
     public AttributeExplorer(Player player, Player target) {
@@ -82,30 +99,28 @@ public class AttributeExplorer extends PluginInventory {
 
         int j = 0;
         for (Attribute attribute : Attribute.values()) {
-            AttributeInstance ins = target.getAttribute(attribute);
-            if (ins == null)
-                continue;
 
-            String key = attribute.name().substring("GENERIC_".length());
-            if (!ATTRIBUTES.containsKey(key))
-                continue;
+            final String key = attribute.name().replace("GENERIC_", "").replace("PLAYER_", "");
+            final AttributeData data = ATTRIBUTES.get(key);
+            if (data == null) continue;
 
-            AttributeData data = ATTRIBUTES.get(key);
+            final AttributeInstance ins = target.getAttribute(attribute);
+            if (ins == null) continue;
 
             ItemStack item = data.getIcon();
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName(ChatColor.GOLD + ">> " + getName(attribute));
+            meta.setDisplayName(ChatColor.GOLD + getName(attribute));
             meta.addItemFlags(ItemFlag.values());
 
             List<String> lore = new ArrayList<>();
             lore.add(ChatColor.GRAY + data.getDescription());
             lore.add("");
-            lore.add(ChatColor.GRAY + "Base Value: " + ChatColor.GOLD + FORMAT.format(ins.getBaseValue()));
-            lore.add(ChatColor.GRAY + "Default Value: " + ChatColor.GOLD + FORMAT.format(ins.getDefaultValue()));
             lore.add(ChatColor.GRAY + "Total Value: " + ChatColor.GOLD + ChatColor.BOLD + FORMAT.format(ins.getValue()));
+            lore.add(ChatColor.GRAY + AltChar.smallListDash + " Base Value: " + ChatColor.GOLD + FORMAT.format(ins.getBaseValue()));
+            lore.add(ChatColor.GRAY + AltChar.smallListDash + " Default Value: " + ChatColor.GOLD + FORMAT.format(ins.getDefaultValue()));
             lore.add("");
-            lore.add(ChatColor.GRAY + "Attribute Modifiers: " + ChatColor.GOLD + ins.getModifiers().size());
-            lore.add(ChatColor.GRAY + "Due to Modifiers: " + ChatColor.GOLD + FORMAT.format(ins.getValue() - ins.getBaseValue()));
+            lore.add(ChatColor.GRAY + "Modifier Count: " + ChatColor.GOLD + ins.getModifiers().size());
+            lore.add(ChatColor.GRAY + AltChar.smallListDash + " Due to Modifiers: " + ChatColor.GOLD + FORMAT.format(ins.getValue() - ins.getBaseValue()));
             lore.add("");
             lore.add(ChatColor.YELLOW + AltChar.smallListDash + " Left click to explore.");
             lore.add(ChatColor.YELLOW + AltChar.smallListDash + " Right click to set the base value.");
@@ -171,7 +186,10 @@ public class AttributeExplorer extends PluginInventory {
     }
 
     private String getName(Attribute attribute) {
-        return UtilityMethods.caseOnWords(attribute.name().substring("GENERIC_".length()).toLowerCase().replace("_", " "));
+        return UtilityMethods.caseOnWords(attribute.name()
+                .replace("GENERIC_", "")
+                .replace("PLAYER_", "")
+                .toLowerCase().replace("_", " "));
     }
 
     @Override

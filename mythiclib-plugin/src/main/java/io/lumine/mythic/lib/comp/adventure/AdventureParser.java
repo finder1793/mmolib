@@ -432,7 +432,7 @@ public class AdventureParser {
      * @param tag The tag to register.
      */
     public void add(AdventureTag tag) {
-        if (tag.backwardsCompatible() && MythicLib.plugin.getVersion().isBelowOrEqual(1, 15)) {
+        if (tag.backwardsCompatible() && MythicLib.plugin.getVersion().isUnder(1, 16)) {
             MythicLib.plugin.getLogger().warning(String.format("The tag %s is not compatible with your server version.", tag.name()));
             return;
         }

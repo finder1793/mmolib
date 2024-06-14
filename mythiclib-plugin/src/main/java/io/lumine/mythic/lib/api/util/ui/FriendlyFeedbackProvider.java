@@ -355,7 +355,7 @@ public class FriendlyFeedbackProvider {
     @NotNull public static String quickForPlayer(@NotNull FriendlyFeedbackPalette palette, @NotNull String message, String... replaces) {
 
         // Choose
-        if (MythicLib.plugin.getVersion().isBelowOrEqual(1, 15)) { return quickForConsole(palette, message, replaces); }
+        if (MythicLib.plugin.getVersion().isUnder(1, 16)) { return quickForConsole(palette, message, replaces); }
 
         // Generate
         FriendlyFeedbackMessage msg = generateMessage(null, message, replaces);

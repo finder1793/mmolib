@@ -78,7 +78,10 @@ public class VersionWrapper_Reflection implements VersionWrapper {
     }
 
     private Class<?> obcClass(String obcClassPath) throws ClassNotFoundException {
-        // TODO Paper 1.20.5+
+
+        // Paper 1.20.5+
+        if (version.isAbove(1, 20, 5) && version.isPaper())
+            return Class.forName("org.bukkit.craftbukkit." + obcClassPath);
 
         // Spigot || Paper <1.20.5
         return Class.forName("org.bukkit.craftbukkit." + version.getCraftBukkitVersion() + "." + obcClassPath);

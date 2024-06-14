@@ -128,13 +128,8 @@ public class MythicLib extends JavaPlugin {
             getLogger().warning("(Your config version: '" + configVersion + "' | Expected config version: '" + defConfigVersion + "')");
         }
 
-        // Fixes left clicks
-        try {
-            new MythicPacketSniffer(this);
-        } catch (Throwable throwable) {
-            MythicLib.plugin.getLogger().log(Level.WARNING, "Could not enable left-click packet fix:");
-            throwable.printStackTrace();
-        }
+        // Fixes left clicks 1.14 -> 1.20.4
+        if (version.isUnder(1, 20, 5)) new MythicPacketSniffer(this);
 
         // Hologram provider
         Bukkit.getServicesManager().register(HologramFactory.class, new LegacyBukkitHologramFactory(), this, ServicePriority.Lowest);

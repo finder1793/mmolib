@@ -118,7 +118,7 @@ public class FriendlyFeedbackMessage implements Cloneable {
     @NotNull public String forPlayer(@NotNull FriendlyFeedbackPalette pal) {
 
         // If below 1.16, parse as console (which is guaranteed to have no HEX colors)
-        if (MythicLib.plugin.getVersion().isBelowOrEqual(1, 15)) { return forConsole(pal); }
+        if (MythicLib.plugin.getVersion().isUnder(1, 16)) { return forConsole(pal); }
         StringBuilder actualMessage = new StringBuilder();
 
         // Add appropriate prefix
