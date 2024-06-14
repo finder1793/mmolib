@@ -85,6 +85,7 @@ public class MythicLib extends JavaPlugin {
     private Gson gson;
     private AntiCheatSupport antiCheatSupport;
     private ServerVersion version;
+    private HologramFactory hologramFactory;
     private AttackEffects attackEffects;
     private MitigationMechanics mitigationMechanics;
     private AdventureParser adventureParser;
@@ -163,14 +164,16 @@ public class MythicLib extends JavaPlugin {
         if (getConfig().getBoolean("fix-movement-speed"))
             Bukkit.getPluginManager().registerEvents(new FixMovementSpeed(), this);
 
-        // Custom hologram providers
-        for (HologramFactoryList custom : HologramFactoryList.values())
-            if (custom.isInstalled(getServer().getPluginManager())) try {
-                Bukkit.getServicesManager().register(HologramFactory.class, custom.generateFactory(), this, custom.getServicePriority());
-                getLogger().log(Level.INFO, "Hooked onto " + custom.getPluginName());
-            } catch (Exception exception) {
-                getLogger().log(Level.WARNING, "Could not hook onto " + custom.getPluginName() + ": " + exception.getMessage());
-            }
+        // Hologram provider
+        try {
+            final HologramFactoryList found = HologramFactoryList.valueOf(UtilityMethods.enumName(getConfig().getString("hologram-provider")));
+            hologramFactory = found.provide();
+            Bukkit.getServicesManager().register(HologramFactory.class, hologramFactory, this, ServicePriority.Normal); // Backwards compatibility
+            getLogger().log(Level.INFO, "Hooked onto " + found.getName() + " (holograms)");
+        } catch (Throwable throwable) {
+            hologramFactory = HologramFactoryList.LEGACY_ARMOR_STANDS.provide();
+            getLogger().log(Level.WARNING, "Could not hook onto hologram provider " + getConfig().getString("hologram-provider") + ", using default: " + throwable.getMessage());
+        }
 
         if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null) {
             damageManager.registerHandler(new MythicMobsAttackHandler());
@@ -446,5 +449,10 @@ public class MythicLib extends JavaPlugin {
     @NotNull
     public List<MMOPlugin> getMMOPlugins() {
         return new ArrayList<>(mmoPlugins);
+    }
+
+    @NotNull
+    public HologramFactory getHologramFactory() {
+        return hologramFactory;
     }
 }

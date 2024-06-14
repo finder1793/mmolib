@@ -1,8 +1,10 @@
 package io.lumine.mythic.lib.hologram.factory;
 
 import com.google.common.base.Preconditions;
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.hologram.Hologram;
 import io.lumine.mythic.lib.hologram.HologramFactory;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Display;
@@ -18,6 +20,7 @@ import java.util.Objects;
 
 public class BukkitHologramFactory implements HologramFactory {
     public BukkitHologramFactory() {
+        Validate.isTrue(MythicLib.plugin.getVersion().isAbove(1, 19, 4));
     }
 
     public Hologram newHologram(Location loc, List<String> lines) {
@@ -75,7 +78,7 @@ public class BukkitHologramFactory implements HologramFactory {
                     if (!chunk.isLoaded()) chunk.load();
                     final TextDisplay as = loc.getWorld().spawn(loc, TextDisplay.class);
                     as.setBillboard(Display.Billboard.CENTER);
-                  //  as.setTransformation(SCALE_UP);
+                    //  as.setTransformation(SCALE_UP);
                     this.spawnedEntities.add(as);
 
                     as.setText(line);

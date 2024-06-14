@@ -1,6 +1,6 @@
 package io.lumine.mythic.lib.hologram;
 
-import org.bukkit.Bukkit;
+import io.lumine.mythic.lib.MythicLib;
 import org.bukkit.Location;
 
 import java.util.List;
@@ -20,6 +20,6 @@ public interface Hologram {
     Location getLocation();
 
     static Hologram create(Location loc, List<String> lines) {
-        return Bukkit.getServicesManager().getRegistration(HologramFactory.class).getProvider().newHologram(loc, lines);
+        return MythicLib.plugin.getHologramFactory().newHologram(loc, lines);
     }
 }

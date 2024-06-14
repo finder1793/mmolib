@@ -1,41 +1,33 @@
 package io.lumine.mythic.lib.hologram;
 
 import io.lumine.mythic.lib.hologram.factory.*;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.ServicePriority;
+import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.InvocationTargetException;
+import java.util.function.Supplier;
 
 public enum HologramFactoryList {
-    HOLOGRAPHIC_DISPLAYS("HolographicDisplays", HDHologramFactory.class, ServicePriority.Normal),
-    DECENT_HOLOGRAMS("DecentHolograms", DecentHologramFactory.class, ServicePriority.High),
-    HOLOGRAMS("Holograms", HologramsHologramFactory.class, ServicePriority.Normal),
-    CMI("CMI", CMIHologramFactory.class, ServicePriority.Low),
-    TR_HOLOGRAM("TrHologram", TrHologramFactory.class, ServicePriority.Normal);
+    TEXT_DISPLAYS("TextDisplays", BukkitHologramFactory::new),
+    CMI("CMI", CMIHologramFactory::new),
+    DECENT_HOLOGRAMS("DecentHolograms", DecentHologramFactory::new),
+    HOLOGRAPHIC_DISPLAYS("HolographicDisplays", HDHologramFactory::new),
+    HOLOGRAMS("Holograms", HologramsHologramFactory::new),
+    LEGACY_ARMOR_STANDS("LegacyArmorStands", LegacyBukkitHologramFactory::new),
+    TR_HOLOGRAM("TrHologram", TrHologramFactory::new),
+    ;
 
-    private final String pluginName;
-    private final Class<? extends HologramFactory> factoryClass;
-    private final ServicePriority priority;
+    private final String name;
+    private final Supplier<HologramFactory> factoryProvider;
 
-    private HologramFactoryList(String pluginName, Class<? extends HologramFactory> factoryClass, ServicePriority priority) {
-        this.pluginName = pluginName;
-        this.factoryClass = factoryClass;
-        this.priority = priority;
+    private HologramFactoryList(@NotNull String name, @NotNull Supplier<HologramFactory> factoryProvider) {
+        this.name = name;
+        this.factoryProvider = factoryProvider;
     }
 
-    public String getPluginName() {
-        return pluginName;
+    public String getName() {
+        return name;
     }
 
-    public boolean isInstalled(PluginManager manager) {
-        return manager.getPlugin(pluginName) != null;
-    }
-
-    public HologramFactory generateFactory() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        return factoryClass.getConstructor().newInstance();
-    }
-
-    public ServicePriority getServicePriority() {
-        return priority;
+    public HologramFactory provide() {
+        return factoryProvider.get();
     }
 }
