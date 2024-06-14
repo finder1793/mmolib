@@ -38,16 +38,34 @@ public class StatManager {
             handlers.put(SharedStat.ATTACK_SPEED, new AttributeStatHandler(statsConfig, Attribute.GENERIC_ATTACK_SPEED, SharedStat.ATTACK_SPEED));
             handlers.put(SharedStat.KNOCKBACK_RESISTANCE, new AttributeStatHandler(statsConfig, Attribute.GENERIC_KNOCKBACK_RESISTANCE, SharedStat.KNOCKBACK_RESISTANCE));
             handlers.put(SharedStat.MAX_HEALTH, new AttributeStatHandler(statsConfig, Attribute.GENERIC_MAX_HEALTH, SharedStat.MAX_HEALTH));
-            StatHandler msStatHandler = new MovementSpeedStatHandler(statsConfig);
+            final StatHandler msStatHandler = new MovementSpeedStatHandler(statsConfig);
             handlers.put(SharedStat.MOVEMENT_SPEED, msStatHandler);
             handlers.put(SharedStat.SPEED_MALUS_REDUCTION, new DelegateStatHandler(statsConfig, SharedStat.SPEED_MALUS_REDUCTION, msStatHandler));
+
+            // 1.20.2
+            if (MythicLib.plugin.getVersion().isAbove(1, 20, 2))
+                handlers.put(SharedStat.MAX_ABSORPTION, new AttributeStatHandler(statsConfig, Attribute.GENERIC_MAX_ABSORPTION, SharedStat.MAX_ABSORPTION));
+
+            // 1.20.5
+            if (MythicLib.plugin.getVersion().isAbove(1, 20, 5)) {
+                handlers.put(SharedStat.BLOCK_BREAK_SPEED, new AttributeStatHandler(statsConfig, Attribute.PLAYER_BLOCK_BREAK_SPEED, SharedStat.BLOCK_BREAK_SPEED));
+                handlers.put(SharedStat.BLOCK_INTERACTION_RANGE, new AttributeStatHandler(statsConfig, Attribute.PLAYER_BLOCK_INTERACTION_RANGE, SharedStat.BLOCK_INTERACTION_RANGE));
+                handlers.put(SharedStat.ENTITY_INTERACTION_RANGE, new AttributeStatHandler(statsConfig, Attribute.PLAYER_ENTITY_INTERACTION_RANGE, SharedStat.ENTITY_INTERACTION_RANGE));
+                handlers.put(SharedStat.FALL_DAMAGE_MULTIPLIER, new AttributeStatHandler(statsConfig, Attribute.GENERIC_FALL_DAMAGE_MULTIPLIER, SharedStat.FALL_DAMAGE_MULTIPLIER));
+                handlers.put(SharedStat.GRAVITY, new AttributeStatHandler(statsConfig, Attribute.GENERIC_GRAVITY, SharedStat.GRAVITY));
+                handlers.put(SharedStat.JUMP_STRENGTH, new AttributeStatHandler(statsConfig, Attribute.GENERIC_JUMP_STRENGTH, SharedStat.JUMP_STRENGTH));
+                handlers.put(SharedStat.SAFE_FALL_DISTANCE, new AttributeStatHandler(statsConfig, Attribute.GENERIC_SAFE_FALL_DISTANCE, SharedStat.SAFE_FALL_DISTANCE));
+                handlers.put(SharedStat.SCALE, new AttributeStatHandler(statsConfig, Attribute.GENERIC_SCALE, SharedStat.SCALE));
+                handlers.put(SharedStat.STEP_HEIGHT, new AttributeStatHandler(statsConfig, Attribute.GENERIC_STEP_HEIGHT, SharedStat.STEP_HEIGHT));
+            }
+
         } catch (Exception exception) {
             MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load default stat handlers:");
             exception.printStackTrace();
         }
 
         // Load stat handlers
-        for (String key : collectKeys(statsConfig))
+        for (String key : collectReferencedStats(statsConfig))
             try {
                 final String stat = UtilityMethods.enumName(key);
                 handlers.putIfAbsent(stat, new StatHandler(statsConfig, stat));
@@ -57,7 +75,7 @@ public class StatManager {
     }
 
     @NotNull
-    private Iterable<String> collectKeys(ConfigurationSection config) {
+    private Iterable<String> collectReferencedStats(ConfigurationSection config) {
         final List<String> keys = new ArrayList<>();
         for (String key : config.getKeys(false))
             keys.addAll(config.getConfigurationSection(key).getKeys(false));

@@ -2,18 +2,26 @@ package io.lumine.mythic.lib.api.stat;
 
 public class SharedStat {
 
-    // Vanilla attributes
-    public static final String ATTACK_SPEED = "ATTACK_SPEED";
-    public static final String ATTACK_DAMAGE = "ATTACK_DAMAGE";
-    public static final String MAX_HEALTH = "MAX_HEALTH";
-    public static final String HEALTH_REGENERATION = "HEALTH_REGENERATION";
-
-    public static final String MOVEMENT_SPEED = "MOVEMENT_SPEED";
-    public static final String SPEED_MALUS_REDUCTION = "SPEED_MALUS_REDUCTION";
-    public static final String KNOCKBACK_RESISTANCE = "KNOCKBACK_RESISTANCE";
-
-    public static final String ARMOR = "ARMOR";
-    public static final String ARMOR_TOUGHNESS = "ARMOR_TOUGHNESS";
+    // Vanilla-attributes based stats
+    public static final String ATTACK_SPEED = "ATTACK_SPEED",
+            ATTACK_DAMAGE = "ATTACK_DAMAGE",
+            MAX_HEALTH = "MAX_HEALTH",
+            HEALTH_REGENERATION = "HEALTH_REGENERATION",
+            MOVEMENT_SPEED = "MOVEMENT_SPEED",
+            SPEED_MALUS_REDUCTION = "SPEED_MALUS_REDUCTION",
+            KNOCKBACK_RESISTANCE = "KNOCKBACK_RESISTANCE",
+            MAX_ABSORPTION = "MAX_ABSORPTION",
+            ARMOR = "ARMOR",
+            ARMOR_TOUGHNESS = "ARMOR_TOUGHNESS",
+            BLOCK_BREAK_SPEED = "BLOCK_BREAK_SPEED",
+            BLOCK_INTERACTION_RANGE = "BLOCK_INTERACTION_RANGE",
+            ENTITY_INTERACTION_RANGE = "ENTITY_INTERACTION_RANGE",
+            FALL_DAMAGE_MULTIPLIER = "FALL_DAMAGE_MULTIPLIER",
+            GRAVITY = "GRAVITY",
+            JUMP_STRENGTH = "JUMP_STRENGTH",
+            SAFE_FALL_DISTANCE = "SAFE_FALL_DISTANCE",
+            SCALE = "SCALE",
+            STEP_HEIGHT = "STEP_HEIGHT";
 
     // Resources
     public static final String MAX_MANA = "MAX_MANA";
