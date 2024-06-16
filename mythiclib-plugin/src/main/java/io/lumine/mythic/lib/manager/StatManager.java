@@ -32,33 +32,32 @@ public class StatManager {
 
         // Default stat handlers
         try {
-            handlers.put(SharedStat.ARMOR, new AttributeStatHandler(statsConfig, Attribute.GENERIC_ARMOR, SharedStat.ARMOR));
-            handlers.put(SharedStat.ARMOR_TOUGHNESS, new AttributeStatHandler(statsConfig, Attribute.GENERIC_ARMOR_TOUGHNESS, SharedStat.ARMOR_TOUGHNESS));
-            handlers.put(SharedStat.ATTACK_DAMAGE, new AttributeStatHandler(statsConfig, Attribute.GENERIC_ATTACK_DAMAGE, SharedStat.ATTACK_DAMAGE));
-            handlers.put(SharedStat.ATTACK_SPEED, new AttributeStatHandler(statsConfig, Attribute.GENERIC_ATTACK_SPEED, SharedStat.ATTACK_SPEED));
-            handlers.put(SharedStat.KNOCKBACK_RESISTANCE, new AttributeStatHandler(statsConfig, Attribute.GENERIC_KNOCKBACK_RESISTANCE, SharedStat.KNOCKBACK_RESISTANCE));
-            handlers.put(SharedStat.MAX_HEALTH, new AttributeStatHandler(statsConfig, Attribute.GENERIC_MAX_HEALTH, SharedStat.MAX_HEALTH));
-            final StatHandler msStatHandler = new MovementSpeedStatHandler(statsConfig);
-            handlers.put(SharedStat.MOVEMENT_SPEED, msStatHandler);
-            handlers.put(SharedStat.SPEED_MALUS_REDUCTION, new DelegateStatHandler(statsConfig, SharedStat.SPEED_MALUS_REDUCTION, msStatHandler));
+            // Register all vanilla attributes
+            for (Attribute attribute : Attribute.values()) {
+                final String stat = attribute.name();
 
-            // 1.20.2
-            if (MythicLib.plugin.getVersion().isAbove(1, 20, 2))
-                handlers.put(SharedStat.MAX_ABSORPTION, new AttributeStatHandler(statsConfig, Attribute.GENERIC_MAX_ABSORPTION, SharedStat.MAX_ABSORPTION));
+                StatHandler handler;
+                if (attribute == Attribute.GENERIC_MOVEMENT_SPEED) {
+                    // Handle movement speed separately
+                    handler = new MovementSpeedStatHandler(statsConfig);
+                    handlers.put(SharedStat.SPEED_MALUS_REDUCTION, new DelegateStatHandler(statsConfig, SharedStat.SPEED_MALUS_REDUCTION, handler));
+                } else {
+                    handler = new AttributeStatHandler(statsConfig, attribute, stat);
+                }
 
-            // 1.20.5
-            if (MythicLib.plugin.getVersion().isAbove(1, 20, 5)) {
-                handlers.put(SharedStat.BLOCK_BREAK_SPEED, new AttributeStatHandler(statsConfig, Attribute.PLAYER_BLOCK_BREAK_SPEED, SharedStat.BLOCK_BREAK_SPEED));
-                handlers.put(SharedStat.BLOCK_INTERACTION_RANGE, new AttributeStatHandler(statsConfig, Attribute.PLAYER_BLOCK_INTERACTION_RANGE, SharedStat.BLOCK_INTERACTION_RANGE));
-                handlers.put(SharedStat.ENTITY_INTERACTION_RANGE, new AttributeStatHandler(statsConfig, Attribute.PLAYER_ENTITY_INTERACTION_RANGE, SharedStat.ENTITY_INTERACTION_RANGE));
-                handlers.put(SharedStat.FALL_DAMAGE_MULTIPLIER, new AttributeStatHandler(statsConfig, Attribute.GENERIC_FALL_DAMAGE_MULTIPLIER, SharedStat.FALL_DAMAGE_MULTIPLIER));
-                handlers.put(SharedStat.GRAVITY, new AttributeStatHandler(statsConfig, Attribute.GENERIC_GRAVITY, SharedStat.GRAVITY));
-                handlers.put(SharedStat.JUMP_STRENGTH, new AttributeStatHandler(statsConfig, Attribute.GENERIC_JUMP_STRENGTH, SharedStat.JUMP_STRENGTH));
-                handlers.put(SharedStat.SAFE_FALL_DISTANCE, new AttributeStatHandler(statsConfig, Attribute.GENERIC_SAFE_FALL_DISTANCE, SharedStat.SAFE_FALL_DISTANCE));
-                handlers.put(SharedStat.SCALE, new AttributeStatHandler(statsConfig, Attribute.GENERIC_SCALE, SharedStat.SCALE));
-                handlers.put(SharedStat.STEP_HEIGHT, new AttributeStatHandler(statsConfig, Attribute.GENERIC_STEP_HEIGHT, SharedStat.STEP_HEIGHT));
+                // Register it!
+                handlers.put(stat, handler);
+
+                // Ensure backwards compatibility so for example GENERIC_ATTACK_DAMAGE is still accessible as ATTACK_DAMAGE
+                if (stat.startsWith("GENERIC_")) {
+                    String[] splitted = stat.split("_", 2);
+                    if (splitted.length == 2) {
+                        String statName = splitted[1];
+
+                        handlers.put(statName, handler);
+                    }
+                }
             }
-
         } catch (Exception exception) {
             MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load default stat handlers:");
             exception.printStackTrace();
