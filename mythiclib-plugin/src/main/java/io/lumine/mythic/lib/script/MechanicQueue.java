@@ -35,35 +35,35 @@ public class MechanicQueue {
     }
 
     /**
-     * Casts the next mechanic on the list. This method is
-     * recursive and will call itself until the list has been
-     * fully explored.
-     * <p>
-     * Call this method to start casting the skill.
+     * Casts the next mechanic in the queue. Calling this
+     * method for the first time starts casting a skill.
      *
      * @return False if the queue has no more mechanic to cast
+     * @implNote This method is implemented iteratively while a while loop
+     * and NOT recursively as skills can be composed of hundreds or thousands
+     * of mechanics leaving to the Java call stack able to freely grow and
+     * take loads of RAM, eventually killing performance (tail-end optimization
+     * does not work here).
      */
     public boolean next() {
-        if (!queue.hasNext())
-            return false;
+        while (queue.hasNext()) {
 
-        counter++;
-        final Mechanic mechanic = queue.next();
+            counter++;
+            final Mechanic mechanic = queue.next();
 
-        // Handles the delay mechanic
-        if (mechanic instanceof DelayMechanic)
-            Bukkit.getScheduler().scheduleSyncDelayedTask(MythicLib.plugin, () -> next(), ((DelayMechanic) mechanic).getDelay(meta));
+            // Schedule delayed execution of next mechanic
+            if (mechanic instanceof DelayMechanic) {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(MythicLib.plugin, this::next, ((DelayMechanic) mechanic).getDelay(meta));
+                return false;
+            }
 
-            // Any other mechanic
-        else
+            // Java does not support tail-end optimization. Avoid growing stack at all cost.
             try {
                 mechanic.cast(meta);
-
-                // The skill will end here if any error occurs
-                next();
             } catch (RuntimeException exception) {
                 MythicLib.plugin.getLogger().log(Level.WARNING, "Could not execute mechanic n" + counter + " from skill '" + skill.getId() + "': " + exception.getMessage());
             }
+        }
 
         return true;
     }
