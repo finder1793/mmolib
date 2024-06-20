@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.command.api;
 
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -64,6 +65,7 @@ public abstract class CommandTreeNode {
         parameters.add(parameter);
     }
 
+    @NotNull
     public abstract CommandResult execute(CommandSender sender, String[] args);
 
     public List<String> calculateTabCompletion(CommandTreeExplorer explorer, int parameterIndex) {

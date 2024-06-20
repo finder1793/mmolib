@@ -16,6 +16,7 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -475,6 +476,23 @@ public class UtilityMethods {
         }
 
         return null;
+    }
+
+    @BackwardsCompatibility(version = "1.20.5")
+    @NotNull
+    public static Enchantment findEnchant(@NotNull String id) {
+
+        // By key
+        id = id.toLowerCase().replace("-", "_");
+        Enchantment enchant = Enchantment.getByKey(NamespacedKey.minecraft(id));
+        if (enchant != null) return enchant;
+
+        // By name
+        id = id.toUpperCase();
+        enchant = Enchantment.getByName(id);
+        if (enchant != null) return enchant;
+
+        throw new IllegalArgumentException("Could not find enchant called '" + id + "'");
     }
 
     public static double[] getYawPitch(Vector axis) {

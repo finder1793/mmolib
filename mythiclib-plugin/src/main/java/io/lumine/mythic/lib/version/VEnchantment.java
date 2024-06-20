@@ -1,22 +1,26 @@
 package io.lumine.mythic.lib.version;
 
 import io.lumine.mythic.lib.UtilityMethods;
-import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public enum VEnchantment {
-    POWER("POWER", "ARROW_DAMAGE"),
-    FORTUNE("FORTUNE", "LOOT_BONUS_BLOCKS"),
-    UNBREAKING("UNBREAKING", "DURABILITY"),
-
+    POWER("power"),
+    FORTUNE("fortune"),
+    UNBREAKING("unbreaking"),
     ;
 
     private final Enchantment wrapped;
 
     VEnchantment(String... candidates) {
-        wrapped = UtilityMethods.resolveEnumField(Enchantment::getByName, candidates);
+        wrapped = UtilityMethods.resolveEnumField(VEnchantment::fromKey, candidates);
+    }
+
+    @Nullable
+    private static Enchantment fromKey(@NotNull String key) {
+        return Enchantment.getByKey(NamespacedKey.minecraft(key));
     }
 
     @NotNull

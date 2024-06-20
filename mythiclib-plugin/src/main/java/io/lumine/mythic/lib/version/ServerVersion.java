@@ -56,6 +56,18 @@ public class ServerVersion {
             // Ignored
         }
         this.paper = isPaper;
+
+        // Validate all mappings
+        try {
+            VEnchantment.values();
+            VEntityType.values();
+            VMaterial.values();
+            VParticle.values();
+            VPotionEffectType.values();
+            VSound.values();
+        } catch (Throwable throwable) {
+            throw new RuntimeException("Compatibility error: " + throwable.getMessage());
+        }
     }
 
     @NotNull

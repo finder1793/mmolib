@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.command.api;
 
+import org.apache.commons.lang3.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -54,10 +55,13 @@ public abstract class CommandTreeRoot extends CommandTreeNode implements Command
             public boolean execute(@NotNull CommandSender sender, @NotNull String s, @NotNull String[] args) {
                 if (!sender.hasPermission(permission))
                     return false;
-                CommandTreeNode explorer = new CommandTreeExplorer(CommandTreeRoot.this, args).getNode();
-                if (explorer.execute(sender, args) == CommandResult.THROW_USAGE)
+
+                final CommandTreeNode explorer = new CommandTreeExplorer(CommandTreeRoot.this, args).getNode();
+                final CommandResult executionResult = explorer.execute(sender, args);
+                Validate.notNull(executionResult, "Command execution result cannot be null");
+                if (executionResult == CommandResult.THROW_USAGE)
                     explorer.calculateUsageList().forEach(str -> sender.sendMessage(ChatColor.YELLOW + "/" + str));
-                return true;
+                return executionResult == CommandResult.SUCCESS;
             }
         };
     }
@@ -79,9 +83,11 @@ public abstract class CommandTreeRoot extends CommandTreeNode implements Command
             return false;
 
         CommandTreeNode explorer = new CommandTreeExplorer(this, args).getNode();
-        if (explorer.execute(sender, args) == CommandResult.THROW_USAGE)
+        CommandResult res = explorer.execute(sender, args);
+        Validate.notNull(res, "Command result cannot be null");
+        if (res == CommandResult.THROW_USAGE)
             explorer.calculateUsageList().forEach(str -> sender.sendMessage(ChatColor.YELLOW + "/" + str));
-        return true;
+        return res == CommandResult.SUCCESS;
     }
 
     /**

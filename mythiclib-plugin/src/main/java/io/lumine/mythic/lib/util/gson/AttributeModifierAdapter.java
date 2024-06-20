@@ -1,13 +1,8 @@
 package io.lumine.mythic.lib.util.gson;
 
 import com.google.gson.*;
-import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.EquipmentSlot;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
 import java.util.UUID;
