@@ -24,11 +24,15 @@ public class RegenIndicators extends GameIndicators {
         font = config.getBoolean("custom-font.enabled") ? new CustomFont(config.getConfigurationSection("custom-font")) : null;
     }
 
+    private static final double HEAL_EPSILON = 1e-3;
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void a(EntityRegainHealthEvent event) {
 
         Entity entity = event.getEntity();
-        if (!(entity instanceof LivingEntity) || event.getAmount() <= 0 || ((LivingEntity) entity).getHealth() >= ((LivingEntity) entity).getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue())
+        if (!(entity instanceof LivingEntity)
+                || event.getAmount() <= 0
+                || ((LivingEntity) entity).getHealth() + HEAL_EPSILON > ((LivingEntity) entity).getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue())
             return;
 
         // Display no indicator around vanished player
