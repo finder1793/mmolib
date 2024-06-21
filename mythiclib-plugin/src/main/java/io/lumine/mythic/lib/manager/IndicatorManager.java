@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.manager;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.comp.mythicmobs.MythicMobsHealIndicators;
 import io.lumine.mythic.lib.listener.option.DamageIndicators;
 import io.lumine.mythic.lib.listener.option.RegenIndicators;
 import org.bukkit.Bukkit;
@@ -43,9 +44,16 @@ public class IndicatorManager {
 
         // Regen
         if (configuration.getBoolean("game-indicators.regen.enabled")) {
-            Listener regenIndicators = new RegenIndicators(configuration.getConfigurationSection("game-indicators.regen"));
+            RegenIndicators regenIndicators = new RegenIndicators(configuration.getConfigurationSection("game-indicators.regen"));
             manager.registerEvents(regenIndicators, plugin);
             indicatorsListeners.add(regenIndicators);
+
+            // Support for MythicMobs heal mechanic
+            if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null) {
+                final MythicMobsHealIndicators mmIndicators = new MythicMobsHealIndicators(regenIndicators);
+                manager.registerEvents(mmIndicators, plugin);
+                indicatorsListeners.add(mmIndicators);
+            }
         }
     }
 

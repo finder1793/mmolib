@@ -6,6 +6,7 @@ import io.lumine.mythic.lib.api.event.AttackEvent;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.event.PlayerKillEntityEvent;
 import io.lumine.mythic.lib.damage.AttackMetadata;
+import io.lumine.mythic.lib.player.PlayerMetadata;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Damageable;
@@ -52,7 +53,7 @@ public class AttackEventListener implements Listener {
 
         // Call the Bukkit event with the attack meta found
         final @NotNull AttackMetadata attack = MythicLib.plugin.getDamage().findAttack(event);
-        if (attack.isPlayer() && attack.getPlayer().getGameMode() == GameMode.SPECTATOR) return;
+        if (attack.isPlayer() && ((PlayerMetadata) attack.getAttacker()).getPlayer().getGameMode() == GameMode.SPECTATOR) return;
 
         final AttackEvent attackEvent = attack.isPlayer() ? new PlayerAttackEvent(event, attack) : new AttackEvent(event, attack);
         Bukkit.getPluginManager().callEvent(attackEvent);

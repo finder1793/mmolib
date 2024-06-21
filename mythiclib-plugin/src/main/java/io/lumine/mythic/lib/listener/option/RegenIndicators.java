@@ -27,8 +27,7 @@ public class RegenIndicators extends GameIndicators {
     private static final double HEAL_EPSILON = 1e-3;
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void a(EntityRegainHealthEvent event) {
-
+    public void displayIndicators(EntityRegainHealthEvent event) {
         Entity entity = event.getEntity();
         if (!(entity instanceof LivingEntity)
                 || event.getAmount() <= 0
@@ -56,11 +55,11 @@ public class RegenIndicators extends GameIndicators {
     private Vector getIndicatorDirection(Entity entity) {
 
         if (entity instanceof Player) {
-            double a = Math.toRadians(((Player) entity).getEyeLocation().getYaw()) + Math.PI * (1 + (random.nextDouble() - .5) / 2);
+            final double a = Math.toRadians(((Player) entity).getEyeLocation().getYaw()) + Math.PI * (1 + (RANDOM.nextDouble() - .5) / 2);
             return new Vector(Math.cos(a), 0, Math.sin(a));
         }
 
-        double a = random.nextDouble() * Math.PI * 2;
+        final double a = RANDOM.nextDouble() * Math.PI * 2;
         return new Vector(Math.cos(a), 0, Math.sin(a));
     }
 }

@@ -21,7 +21,7 @@ public abstract class GameIndicators implements Listener {
     private final DecimalFormat decimalFormat;
     private final double radialVelocity, gravity, initialUpwardVelocity, entityHeightPercentage, yOffset;
 
-    protected static final Random random = new Random();
+    protected static final Random RANDOM = new Random();
 
     /**
      * Hologram life span in ticks
@@ -64,7 +64,7 @@ public abstract class GameIndicators implements Listener {
         if (called.isCancelled())
             return;
 
-        Location loc = entity.getLocation().add((random.nextDouble() - .5) * 1.2, yOffset + entity.getHeight() * entityHeightPercentage, (random.nextDouble() - .5) * 1.2);
+        Location loc = entity.getLocation().add((RANDOM.nextDouble() - .5) * 1.2, yOffset + entity.getHeight() * entityHeightPercentage, (RANDOM.nextDouble() - .5) * 1.2);
         displayIndicator(loc, called.getMessage(), dir);
     }
 

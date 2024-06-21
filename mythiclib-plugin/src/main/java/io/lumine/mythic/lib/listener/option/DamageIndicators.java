@@ -100,13 +100,13 @@ public class DamageIndicators extends GameIndicators {
                 double a = Math.atan2(dir.getZ(), dir.getX());
 
                 // Random angle offset
-                a += Math.PI / 2 * (random.nextDouble() - .5);
+                a += Math.PI / 2 * (RANDOM.nextDouble() - .5);
 
                 return new Vector(Math.cos(a), 0, Math.sin(a));
             }
         }
 
-        double a = random.nextDouble() * Math.PI * 2;
+        double a = RANDOM.nextDouble() * Math.PI * 2;
         return new Vector(Math.cos(a), 0, Math.sin(a));
     }
 
