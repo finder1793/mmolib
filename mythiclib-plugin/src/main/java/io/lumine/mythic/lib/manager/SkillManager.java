@@ -451,8 +451,9 @@ public class SkillManager {
         // Postload custom scripts and register a skill handler
         for (Script script : scripts.values())
             try {
+                final ConfigurationSection config = script.getPostLoadAction().getCachedConfig();
                 script.getPostLoadAction().performAction();
-                if (script.isPublic()) registerSkillHandler(new MythicLibSkillHandler(script));
+                registerSkillHandler(new MythicLibSkillHandler(config, script));
             } catch (PostLoadException exception) {
                 // Trying to load an alias, ignore
             } catch (RuntimeException exception) {

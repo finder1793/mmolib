@@ -8,6 +8,7 @@ import io.lumine.mythic.lib.skill.handler.def.passive.Backstab;
 import io.lumine.mythic.lib.skill.result.SkillResult;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -67,10 +68,7 @@ public abstract class SkillHandler<T extends SkillResult> {
      * @param id Skill handler identifier
      */
     public SkillHandler(@NotNull String id) {
-        this.id = UtilityMethods.enumName(id);
-        this.triggerable = true;
-
-        registerModifiers("cooldown", "mana", "stamina", "timer", "delay");
+        this(null, id);
     }
 
     /**
@@ -79,12 +77,12 @@ public abstract class SkillHandler<T extends SkillResult> {
      * @param config Configuration section to load the skill handler from
      * @param id     Skill handler identifier
      */
-    public SkillHandler(@NotNull ConfigurationSection config, @NotNull String id) {
+    public SkillHandler(@Nullable ConfigurationSection config, @NotNull String id) {
         this.id = UtilityMethods.enumName(id);
         this.triggerable = true;
 
         // Register custom modifiers
-        if (config.contains("modifiers"))
+        if (config != null && config.contains("modifiers"))
             registerModifiers(config.getStringList("modifiers"));
 
         // Default modifiers
