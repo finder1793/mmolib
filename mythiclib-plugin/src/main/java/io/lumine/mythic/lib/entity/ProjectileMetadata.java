@@ -3,6 +3,8 @@ package io.lumine.mythic.lib.entity;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.item.NBTItem;
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
+import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.util.TemporaryListener;
 import io.lumine.mythic.lib.damage.ProjectileAttackMetadata;
 import io.lumine.mythic.lib.player.PlayerMetadata;
@@ -165,8 +167,10 @@ public class ProjectileMetadata extends TemporaryListener {
     public void triggerLand(ProjectileHitEvent event) {
 
         // Make sure the projectile landed on a block
-        if (event.getHitBlock() != null && event.getEntity().getEntityId() == entityId)
-            shooter.getData().triggerSkills(projectileType.getLandTrigger(), shooter, cachedSkills, event.getEntity());
+        if (event.getHitBlock() != null && event.getEntity().getEntityId() == entityId) {
+            final TriggerMetadata meta = new TriggerMetadata(shooter, projectileType.getLandTrigger(), event.getEntity(), null);
+            shooter.getData().triggerSkills(meta, cachedSkills);
+        }
     }
 
     @EventHandler
@@ -198,8 +202,15 @@ public class ProjectileMetadata extends TemporaryListener {
 
     @NotNull
     public static ProjectileMetadata create(@NotNull PlayerMetadata shooter, @NotNull ProjectileType projectileType, @NotNull Entity projectile) {
-        final @Nullable ProjectileMetadata get = get(projectile);
-        if (get != null) return get;
+        final @Nullable ProjectileMetadata found = get(projectile);
+        if (found != null) return found;
         return new ProjectileMetadata(shooter, projectileType, projectile);
+    }
+
+    @NotNull
+    public static ProjectileMetadata create(@NotNull MMOPlayerData data, @NotNull EquipmentSlot actionHand, @NotNull ProjectileType projectileType, @NotNull Entity projectile) {
+        final @Nullable ProjectileMetadata found = get(projectile);
+        if (found != null) return found;
+        return new ProjectileMetadata(data.getStatMap().cache(actionHand), projectileType, projectile);
     }
 }

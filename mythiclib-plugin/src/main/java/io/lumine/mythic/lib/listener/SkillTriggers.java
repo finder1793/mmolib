@@ -9,10 +9,12 @@ import io.lumine.mythic.lib.api.event.armorequip.ArmorEquipEvent;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.comp.profile.ProfileMode;
+import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.ProjectileAttackMetadata;
 import io.lumine.mythic.lib.entity.ProjectileMetadata;
 import io.lumine.mythic.lib.entity.ProjectileType;
 import io.lumine.mythic.lib.player.PlayerMetadata;
+import io.lumine.mythic.lib.player.skill.PassiveSkill;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.bukkit.Bukkit;
@@ -34,34 +36,44 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+
 public class SkillTriggers implements Listener {
     public SkillTriggers() {
         Bukkit.getScheduler().runTaskTimer(MythicLib.plugin, () -> MMOPlayerData.forEachOnline(online -> online.getPassiveSkillMap().tickTimerSkills()), 0, 1);
     }
 
-    // TODO have it lookup ProjectileMetadata#cachedSkills instead
     @EventHandler
     public void killEntity(PlayerKillEntityEvent event) {
-        event.getData().triggerSkills(new TriggerMetadata(event.getData(), TriggerType.KILL_ENTITY, event.getTarget()));
-        if (event.getTarget() instanceof Player)
-            event.getData().triggerSkills(new TriggerMetadata(event.getData(), TriggerType.KILL_PLAYER, event.getTarget()));
+        final PlayerMetadata killer = (PlayerMetadata) event.getAttack().getAttacker();
+        TriggerMetadata triggerMetadata = new TriggerMetadata(killer, TriggerType.KILL_ENTITY, event.getTarget(), null);
+        final Collection<PassiveSkill> isolatedSkills = getSkills(triggerMetadata, killer, event.getAttack());
+        event.getData().triggerSkills(triggerMetadata, isolatedSkills);
+        if (event.getTarget() instanceof Player) {
+            triggerMetadata = new TriggerMetadata(killer, TriggerType.KILL_PLAYER, event.getTarget(), null);
+            event.getData().triggerSkills(triggerMetadata, isolatedSkills);
+        }
+    }
+
+    @NotNull
+    private Collection<PassiveSkill> getSkills(@NotNull TriggerMetadata triggerMeta,
+                                               @NotNull PlayerMetadata damager,
+                                               @NotNull AttackMetadata attack) {
+
+        // Skills for projectile attacks
+        if (attack instanceof ProjectileAttackMetadata
+                && ((ProjectileAttackMetadata) attack).getProjectileMetadata() != null)
+            return ((ProjectileAttackMetadata) attack).getProjectileMetadata().getEffectiveSkills();
+
+        // Skills for melee attacks
+        return damager.getData().isolateSkills(triggerMeta);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void attack(PlayerAttackEvent event) {
         final TriggerMetadata triggerMetadata = new TriggerMetadata(event, TriggerType.ATTACK);
-
-        // Cast skills based on projectile
-        if (event.getAttack() instanceof ProjectileAttackMetadata) {
-            final ProjectileMetadata projectileMeta = ((ProjectileAttackMetadata) event.getAttack()).getProjectileMetadata();
-            if (projectileMeta != null) {
-                event.getAttacker().getData().triggerSkills(triggerMetadata, projectileMeta.getEffectiveSkills());
-                return;
-            }
-        }
-
-        // Normal skill casting
-        event.getAttacker().getData().triggerSkills(triggerMetadata);
+        final Collection<PassiveSkill> skills = getSkills(triggerMetadata, event.getAttacker(), event.getAttack());
+        event.getAttacker().getData().triggerSkills(triggerMetadata, skills);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -102,11 +114,10 @@ public class SkillTriggers implements Listener {
             final EquipmentSlot actionHand = getShootHand(((Player) event.getEntity()).getInventory());
 
             // Register a runnable to trigger projectile skills
-            final PlayerMetadata shooterMeta = caster.getStatMap().cache(actionHand);
-            ProjectileMetadata.create(shooterMeta, ProjectileType.ARROW, event.getProjectile());
+            final ProjectileMetadata proj = ProjectileMetadata.create(caster, actionHand, ProjectileType.ARROW, event.getProjectile());
 
             // Cast on-shoot skills
-            caster.triggerSkills(new TriggerMetadata(caster, TriggerType.SHOOT_BOW, actionHand, null, event.getProjectile(), null, null, shooterMeta));
+            caster.triggerSkills(new TriggerMetadata(caster, TriggerType.SHOOT_BOW, actionHand, null, event.getProjectile(), null, null, proj.getShooter()));
         }
     }
 
@@ -118,11 +129,10 @@ public class SkillTriggers implements Listener {
             final EquipmentSlot actionHand = getShootHand(shooter.getInventory());
 
             // Register a runnable to trigger projectile skills
-            final PlayerMetadata shooterMeta = caster.getStatMap().cache(actionHand);
-            ProjectileMetadata.create(shooterMeta, ProjectileType.TRIDENT, event.getEntity());
+            final ProjectileMetadata proj = ProjectileMetadata.create(caster, actionHand, ProjectileType.TRIDENT, event.getEntity());
 
             // Cast on-shoot skills
-            caster.triggerSkills(new TriggerMetadata(caster, TriggerType.SHOOT_TRIDENT, actionHand, null, event.getEntity(), null, null, shooterMeta));
+            caster.triggerSkills(new TriggerMetadata(caster, TriggerType.SHOOT_TRIDENT, actionHand, null, event.getEntity(), null, null, proj.getShooter()));
         }
     }
 

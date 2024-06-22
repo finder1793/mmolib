@@ -225,49 +225,13 @@ public class MMOPlayerData {
         return passiveSkillMap;
     }
 
-    @Deprecated
-    public void triggerSkills(@NotNull TriggerType triggerType, @Nullable Entity target) {
-        Validate.isTrue(!triggerType.isActionHandSpecific(), "You must provide an action hand");
-        triggerSkills(triggerType, EquipmentSlot.MAIN_HAND, target);
-    }
-
-    @Deprecated
-    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull EquipmentSlot actionHand, @Nullable Entity target) {
-        Validate.notNull(actionHand, "Action hand cannot be null");
-        triggerSkills(triggerType, statMap.cache(actionHand), target);
-    }
-
-    @Deprecated
-    public void triggerSkills(@NotNull TriggerType triggerType, @Nullable PlayerMetadata caster, @Nullable AttackMetadata attackMetadata, @Nullable Entity target) {
-        triggerSkills(triggerType, caster, target, attackMetadata);
-    }
-
-    @Deprecated
-    public void triggerSkills(@NotNull TriggerType triggerType, @Nullable PlayerMetadata caster, @Nullable Entity target, @Nullable AttackMetadata attackMetadata) {
-        final Iterable<PassiveSkill> candidates = triggerType.isActionHandSpecific() ? passiveSkillMap.isolateModifiers(caster == null ? EquipmentSlot.MAIN_HAND : caster.getActionHand()) : passiveSkillMap.getModifiers();
-        triggerSkills(triggerType, caster, candidates, target, attackMetadata);
-    }
-
-    @Deprecated
-    public void triggerSkills(@NotNull TriggerType triggerType, @Nullable PlayerMetadata caster, @Nullable Entity target) {
-        final Iterable<PassiveSkill> candidates = triggerType.isActionHandSpecific() ? passiveSkillMap.isolateModifiers(caster == null ? EquipmentSlot.MAIN_HAND : caster.getActionHand()) : passiveSkillMap.getModifiers();
-        triggerSkills(triggerType, caster, candidates, target);
-    }
-
-    @Deprecated
-    public void triggerSkills(@NotNull TriggerType triggerType, @Nullable PlayerMetadata caster, @NotNull Iterable<PassiveSkill> skills, @Nullable Entity target) {
-        triggerSkills(triggerType, caster, skills, target, null);
-    }
-
-    @Deprecated
-    public void triggerSkills(@NotNull TriggerType triggerType, @Nullable PlayerMetadata caster, @NotNull Iterable<PassiveSkill> skills, @Nullable Entity target, @Nullable AttackMetadata attack) {
-        final TriggerMetadata meta = new TriggerMetadata(this, triggerType, caster == null ? EquipmentSlot.MAIN_HAND : caster.getActionHand(), null, target, null, attack, caster);
-        triggerSkills(meta, skills);
+    @NotNull
+    public Collection<PassiveSkill> isolateSkills(@NotNull TriggerMetadata triggerMetadata) {
+        return triggerMetadata.getTriggerType().isActionHandSpecific() ? passiveSkillMap.isolateModifiers(triggerMetadata.getActionHand()) : passiveSkillMap.getModifiers();
     }
 
     public void triggerSkills(@NotNull TriggerMetadata triggerMetadata) {
-        final Iterable<PassiveSkill> candidates = triggerMetadata.getTriggerType().isActionHandSpecific() ? passiveSkillMap.isolateModifiers(triggerMetadata.getActionHand()) : passiveSkillMap.getModifiers();
-        triggerSkills(triggerMetadata, candidates);
+        triggerSkills(triggerMetadata, isolateSkills(triggerMetadata));
     }
 
     /**
@@ -290,15 +254,6 @@ public class MMOPlayerData {
     @NotNull
     public VariableList getVariableList() {
         return variableList;
-    }
-
-    /**
-     * @return The last time, in millis, the player logged in or out
-     * @deprecated Use {@link #getLastLogActivity()} instead
-     */
-    @Deprecated
-    public long getLastLogin() {
-        return getLastLogActivity();
     }
 
     /**
@@ -446,19 +401,6 @@ public class MMOPlayerData {
         return found;
     }
 
-    /**
-     * This essentially checks if a player logged in since the last time the
-     * server started/was reloaded.
-     *
-     * @param uuid The player UUID to check
-     * @return If the MMOPlayerData instance is loaded for a specific player
-     * @deprecated Use {@link #has(UUID)} instead
-     */
-    @Deprecated
-    public static boolean isLoaded(UUID uuid) {
-        return has(uuid);
-    }
-
     @NotNull
     public static MMOPlayerData get(@NotNull OfflinePlayer player) {
         return get(player.getUniqueId());
@@ -469,16 +411,18 @@ public class MMOPlayerData {
         return Objects.requireNonNull(PLAYER_DATA.get(uuid), "Player data not loaded");
     }
 
-    @Deprecated
-    public static MMOPlayerData getOrNull(@NotNull OfflinePlayer player) {
-        return getOrNull(player.getUniqueId());
-    }
-
     @Nullable
     public static MMOPlayerData online(@NotNull Player player) {
         if (!player.isOnline()) return null;
         final MMOPlayerData found = PLAYER_DATA.get(player.getUniqueId());
         return found != null && found.isOnline() ? found : null;
+    }
+
+    /**
+     * Use it at your own risk! Player data might not be loaded
+     */
+    public static MMOPlayerData getOrNull(@NotNull OfflinePlayer player) {
+        return getOrNull(player.getUniqueId());
     }
 
     /**
@@ -546,5 +490,63 @@ public class MMOPlayerData {
             if (tempData.isTimedOut()) iterator.remove();
         }
     }
+
+    //region Deprecated API
+
+    @Deprecated
+    public long getLastLogin() {
+        return getLastLogActivity();
+    }
+
+    @Deprecated
+    public static boolean isLoaded(UUID uuid) {
+        return has(uuid);
+    }
+
+    @Deprecated
+    public void triggerSkills(@NotNull TriggerType triggerType, @Nullable Entity target) {
+        Validate.isTrue(!triggerType.isActionHandSpecific(), "You must provide an action hand");
+        triggerSkills(new TriggerMetadata(this, triggerType, target));
+    }
+
+    @Deprecated
+    public void triggerSkills(@NotNull TriggerType triggerType, @NotNull EquipmentSlot actionHand, @Nullable Entity target) {
+        Validate.notNull(actionHand, "Action hand cannot be null");
+        triggerSkills(new TriggerMetadata(this, triggerType, actionHand, null, target, null, null, null));
+    }
+
+    @Deprecated
+    public void triggerSkills(@NotNull TriggerType triggerType, @Nullable PlayerMetadata caster, @Nullable AttackMetadata attackMetadata, @Nullable Entity target) {
+        final TriggerMetadata meta = new TriggerMetadata(this, triggerType, null, null, target, null, attackMetadata, caster);
+        triggerSkills(meta);
+    }
+
+    @Deprecated
+    public void triggerSkills(@NotNull TriggerType triggerType, @Nullable PlayerMetadata caster, @Nullable Entity target, @Nullable AttackMetadata attackMetadata) {
+        final Iterable<PassiveSkill> candidates = triggerType.isActionHandSpecific() ? passiveSkillMap.isolateModifiers(caster == null ? EquipmentSlot.MAIN_HAND : caster.getActionHand()) : passiveSkillMap.getModifiers();
+        final TriggerMetadata meta = new TriggerMetadata(this, triggerType, null, null, target, null, attackMetadata, caster);
+        triggerSkills(meta, candidates);
+    }
+
+    @Deprecated
+    public void triggerSkills(@NotNull TriggerType triggerType, @Nullable PlayerMetadata caster, @Nullable Entity target) {
+        final Iterable<PassiveSkill> candidates = triggerType.isActionHandSpecific() ? passiveSkillMap.isolateModifiers(caster == null ? EquipmentSlot.MAIN_HAND : caster.getActionHand()) : passiveSkillMap.getModifiers();
+        final TriggerMetadata meta = new TriggerMetadata(this, triggerType, null, null, target, null, null, caster);
+        triggerSkills(meta, candidates);
+    }
+
+    @Deprecated
+    public void triggerSkills(@NotNull TriggerType triggerType, @Nullable PlayerMetadata caster, @NotNull Iterable<PassiveSkill> skills, @Nullable Entity target) {
+        final TriggerMetadata meta = new TriggerMetadata(this, triggerType, null, null, target, null, null, caster);
+        triggerSkills(meta, skills);
+    }
+
+    @Deprecated
+    public void triggerSkills(@NotNull TriggerType triggerType, @Nullable PlayerMetadata caster, @NotNull Iterable<PassiveSkill> skills, @Nullable Entity target, @Nullable AttackMetadata attack) {
+        final TriggerMetadata meta = new TriggerMetadata(this, triggerType, caster == null ? EquipmentSlot.MAIN_HAND : caster.getActionHand(), null, target, null, attack, caster);
+        triggerSkills(meta, skills);
+    }
+
+    //endregion
 }
 

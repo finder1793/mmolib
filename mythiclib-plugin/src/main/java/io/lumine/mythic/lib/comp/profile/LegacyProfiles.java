@@ -9,6 +9,7 @@ import io.lumine.mythic.lib.api.event.SynchronizedDataLoadEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.data.SynchronizedDataHolder;
 import io.lumine.mythic.lib.data.SynchronizedDataManager;
+import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import io.lumine.mythic.lib.util.Tasks;
 import org.bukkit.Bukkit;
@@ -21,7 +22,8 @@ public class LegacyProfiles implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onProfileChooseSkillTrigger(ProfileSelectEvent event) {
-        MMOPlayerData.get(event.getPlayer()).triggerSkills(TriggerType.LOGIN, null);
+        final MMOPlayerData playerData = MMOPlayerData.get(event.getPlayer());
+        playerData.triggerSkills(new TriggerMetadata(playerData, TriggerType.LOGIN));
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

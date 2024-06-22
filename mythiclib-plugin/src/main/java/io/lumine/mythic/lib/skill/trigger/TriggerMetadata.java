@@ -57,20 +57,20 @@ public class TriggerMetadata {
     @Nullable
     private PlayerMetadata caster;
 
-    public TriggerMetadata(@NotNull MMOPlayerData caster, @NotNull TriggerType triggerType) {
-        this(caster, triggerType, (Entity) null);
+    public TriggerMetadata(@NotNull MMOPlayerData playerData, @NotNull TriggerType triggerType) {
+        this(playerData, triggerType, (Entity) null);
     }
 
-    public TriggerMetadata(@NotNull MMOPlayerData caster, @NotNull TriggerType triggerType, @Nullable Entity target) {
-        this(caster, triggerType, EquipmentSlot.MAIN_HAND, null, target, null, null, null);
+    public TriggerMetadata(@NotNull MMOPlayerData playerData, @NotNull TriggerType triggerType, @Nullable Entity target) {
+        this(playerData, triggerType, EquipmentSlot.MAIN_HAND, null, target, null, null, null);
     }
 
-    public TriggerMetadata(@NotNull MMOPlayerData caster, @NotNull TriggerType triggerType, @Nullable Location targetLocation) {
-        this(caster, triggerType, EquipmentSlot.MAIN_HAND, null, null, targetLocation, null, null);
+    public TriggerMetadata(@NotNull MMOPlayerData playerData, @NotNull TriggerType triggerType, @Nullable Location targetLocation) {
+        this(playerData, triggerType, EquipmentSlot.MAIN_HAND, null, null, targetLocation, null, null);
     }
 
-    public TriggerMetadata(@NotNull MMOPlayerData caster, @NotNull TriggerType triggerType, @NotNull Location source, @Nullable Location targetLocation) {
-        this(caster, triggerType, EquipmentSlot.MAIN_HAND, source, null, targetLocation, null, null);
+    public TriggerMetadata(@NotNull MMOPlayerData playerData, @NotNull TriggerType triggerType, @NotNull Location source, @Nullable Location targetLocation) {
+        this(playerData, triggerType, EquipmentSlot.MAIN_HAND, source, null, targetLocation, null, null);
     }
 
     /**
