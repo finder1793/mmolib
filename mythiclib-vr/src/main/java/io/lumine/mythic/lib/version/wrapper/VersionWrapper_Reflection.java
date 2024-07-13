@@ -30,6 +30,8 @@ import net.minecraft.world.level.block.entity.SkullBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftItemStack;
@@ -44,6 +46,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerProfile;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -53,6 +56,7 @@ import java.util.logging.Level;
 
 public class VersionWrapper_Reflection implements VersionWrapper {
     private final Set<Material> generatorOutputs = new HashSet<>();
+    private final Map<Attribute, Double> playerDefaultBaseValues = new HashMap<>();
 
     // Reflection stuff
     private final ServerVersion version;
@@ -75,6 +79,25 @@ public class VersionWrapper_Reflection implements VersionWrapper {
         _CraftPlayer_getProfile = _CraftPlayer.getDeclaredMethod("getProfile");
         _CraftItemStack_asNMSCopy = _CraftItemStack.getDeclaredMethod("asNMSCopy", ItemStack.class);
         _CraftItemStack_asBukkitCopy = _CraftItemStack.getDeclaredMethod("asBukkitCopy", net.minecraft.world.item.ItemStack.class);
+
+        playerDefaultBaseValues.put(Attribute.GENERIC_MAX_HEALTH, 20d);
+        playerDefaultBaseValues.put(Attribute.GENERIC_KNOCKBACK_RESISTANCE, 0d);
+        playerDefaultBaseValues.put(Attribute.GENERIC_MOVEMENT_SPEED, .1);
+        playerDefaultBaseValues.put(Attribute.GENERIC_ATTACK_DAMAGE, 1d);
+        playerDefaultBaseValues.put(Attribute.GENERIC_ATTACK_SPEED, 4d);
+        playerDefaultBaseValues.put(Attribute.GENERIC_ARMOR, 0d);
+        playerDefaultBaseValues.put(Attribute.GENERIC_ARMOR_TOUGHNESS, 0d);
+        playerDefaultBaseValues.put(Attribute.GENERIC_FALL_DAMAGE_MULTIPLIER, 1d);
+        playerDefaultBaseValues.put(Attribute.GENERIC_LUCK, 0d);
+        playerDefaultBaseValues.put(Attribute.GENERIC_MAX_ABSORPTION, 0d);
+        playerDefaultBaseValues.put(Attribute.GENERIC_SAFE_FALL_DISTANCE, 3d);
+        playerDefaultBaseValues.put(Attribute.GENERIC_SCALE, 1d);
+        playerDefaultBaseValues.put(Attribute.GENERIC_STEP_HEIGHT, .6);
+        playerDefaultBaseValues.put(Attribute.GENERIC_GRAVITY, .08);
+        playerDefaultBaseValues.put(Attribute.GENERIC_JUMP_STRENGTH, .42);
+        playerDefaultBaseValues.put(Attribute.PLAYER_BLOCK_INTERACTION_RANGE, 4.5);
+        playerDefaultBaseValues.put(Attribute.PLAYER_ENTITY_INTERACTION_RANGE, 3d);
+        playerDefaultBaseValues.put(Attribute.PLAYER_BLOCK_BREAK_SPEED, 1d);
     }
 
     private Class<?> obcClass(String obcClassPath) throws ClassNotFoundException {
@@ -530,5 +553,15 @@ public class VersionWrapper_Reflection implements VersionWrapper {
         } catch (Exception exception) {
             throw new RuntimeException("Reflection error", exception);
         }
+    }
+
+    @Override
+    public double getPlayerDefaultBaseValue(Attribute attribute, @Nullable AttributeInstance instance) {
+        return Objects.requireNonNull(playerDefaultBaseValues.get(attribute), "Not a player attribute");
+    }
+
+    @Override
+    public Set<Attribute> getPlayerAttributes() {
+        return playerDefaultBaseValues.keySet();
     }
 }

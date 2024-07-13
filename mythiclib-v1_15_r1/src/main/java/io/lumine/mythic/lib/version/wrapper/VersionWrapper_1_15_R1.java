@@ -13,6 +13,8 @@ import net.minecraft.server.v1_15_R1.IChatBaseComponent.ChatSerializer;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.reflect.FieldUtils;
@@ -29,19 +31,26 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.util.*;
 
 public class VersionWrapper_1_15_R1 implements VersionWrapper {
-    private final Map<Material, Material> oreDrops = new HashMap<>();
     private final Set<Material> generatorOutputs = new HashSet<>();
+    private final Map<Attribute, Double> playerDefaultBaseValues = new HashMap<>();
 
     public VersionWrapper_1_15_R1() {
-        oreDrops.put(Material.IRON_ORE, Material.IRON_INGOT);
-        oreDrops.put(Material.GOLD_ORE, Material.GOLD_INGOT);
-
         generatorOutputs.add(Material.COBBLESTONE);
         generatorOutputs.add(Material.OBSIDIAN);
+
+        playerDefaultBaseValues.put(Attribute.GENERIC_MAX_HEALTH, 20d);
+        playerDefaultBaseValues.put(Attribute.GENERIC_KNOCKBACK_RESISTANCE, 0d);
+        playerDefaultBaseValues.put(Attribute.GENERIC_MOVEMENT_SPEED, .1);
+        playerDefaultBaseValues.put(Attribute.GENERIC_ATTACK_DAMAGE, 1d);
+        playerDefaultBaseValues.put(Attribute.GENERIC_ATTACK_SPEED, 4d);
+        playerDefaultBaseValues.put(Attribute.GENERIC_ARMOR, 0d);
+        playerDefaultBaseValues.put(Attribute.GENERIC_ARMOR_TOUGHNESS, 0d);
+        playerDefaultBaseValues.put(Attribute.GENERIC_LUCK, 0d);
     }
 
     @Override
@@ -477,5 +486,15 @@ public class VersionWrapper_1_15_R1 implements VersionWrapper {
     @Override
     public GameProfile getGameProfile(Player player) {
         return ((CraftPlayer) player).getProfile();
+    }
+
+    @Override
+    public double getPlayerDefaultBaseValue(Attribute attribute, @Nullable AttributeInstance instance) {
+        return Objects.requireNonNull(playerDefaultBaseValues.get(attribute), "Not a player attribute");
+    }
+
+    @Override
+    public Set<Attribute> getPlayerAttributes() {
+        return playerDefaultBaseValues.keySet();
     }
 }

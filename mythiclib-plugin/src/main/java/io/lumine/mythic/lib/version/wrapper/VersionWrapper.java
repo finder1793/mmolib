@@ -6,6 +6,8 @@ import io.lumine.mythic.lib.version.OreDrops;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
@@ -14,7 +16,10 @@ import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Set;
 import java.util.UUID;
 
 public interface VersionWrapper {
@@ -160,4 +165,8 @@ public interface VersionWrapper {
     void setUUID(Player player, UUID uniqueId);
 
     GameProfile getGameProfile(Player player);
+
+    double getPlayerDefaultBaseValue(@NotNull Attribute attribute, @Nullable AttributeInstance instance);
+
+    Set<Attribute> getPlayerAttributes();
 }
