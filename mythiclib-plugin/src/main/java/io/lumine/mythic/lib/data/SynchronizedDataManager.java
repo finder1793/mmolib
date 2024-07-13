@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
 /**
@@ -204,14 +205,21 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
     /**
      * @param playerData Player data to be loaded.
      * @return Completable future that completes when the data is loaded.
-     * The future is not guaranteed to be completed, if the player logs off
-     * while the worker thread loads its player data, it will not be completed
-     * when merged onto the main server thread.
+     * It will only complete if the following conditions are met:
+     * <ul>
+     * <li>data is loaded successfully</li>
+     * <li>player is still online when the worked thread is done loading data</li>
+     * </ul>
+     * If the player left the server while data was being loaded, player data will be re-saved if necessary.
      */
     @NotNull
     public CompletableFuture<Void> loadData(@NotNull H playerData) {
         final CompletableFuture<Void> future = new CompletableFuture<>();
-        Tasks.runAsync(owning, () -> dataHandler.loadData(playerData)).thenAccept(Tasks.sync(owning, ignored -> {
+        final AtomicBoolean success = new AtomicBoolean();
+        Tasks.runAsync(owning, () -> success.set(dataHandler.loadData(playerData))).thenAccept(Tasks.sync(owning, ignored -> {
+
+            // No success, do nothing
+            if (!success.get()) return;
 
             // If player has logged off in the meantime, save data and do not complete
             if (!playerData.getMMOPlayerData().isLookup() && !playerData.getMMOPlayerData().isOnline()) {

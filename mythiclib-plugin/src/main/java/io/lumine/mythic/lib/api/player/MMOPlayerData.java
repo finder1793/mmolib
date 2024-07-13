@@ -91,7 +91,7 @@ public class MMOPlayerData {
      * This object will have no effect whatsoever on databases.
      *
      * @param uniqueId Unique ID to lookup
-     * @see {@link #isLookup()}
+     * @see #isLookup()
      */
     public MMOPlayerData(@NotNull UUID uniqueId) {
         this.lookup = true;
