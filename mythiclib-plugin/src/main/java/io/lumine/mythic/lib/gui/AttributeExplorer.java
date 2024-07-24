@@ -2,15 +2,15 @@ package io.lumine.mythic.lib.gui;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.api.explorer.AttributeData;
 import io.lumine.mythic.lib.api.explorer.ChatInput;
 import io.lumine.mythic.lib.api.explorer.ItemBuilder;
+import io.lumine.mythic.lib.api.stat.handler.AttributeStatHandler;
 import io.lumine.mythic.lib.api.util.AltChar;
-import io.lumine.mythic.lib.version.VMaterial;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
@@ -21,12 +21,12 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AttributeExplorer extends PluginInventory {
     private final Player target;
@@ -36,51 +36,27 @@ public class AttributeExplorer extends PluginInventory {
      */
     private Attribute explored;
     private List<AttributeModifier> modifiers;
-    private int page;
+    private int modifierOffset, attributeOffset;
 
-    private static final int[] SLOTS = {8, 17, 26, 35, 44, 53, 7, 16, 25, 34, 43, 52, 6, 15, 24, 33, 42, 51},
-            MOD_SLOTS = {19, 20, 21, 22, 23, 28, 29, 30, 31, 32, 37, 38, 39, 40, 41};
+    private static final int[]
+            ATTRIBUTE_SLOTS = {37, 38, 39, 40, 41, 42, 43, 46, 47, 48, 49, 50, 51, 52},
+            MODIFIER_SLOTS = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25};
 
-    /**
-     * Using strings to store item makes compatibility
-     * with older and newer stats much easier.
-     */
-    private static final Map<String, AttributeData> ATTRIBUTES = new HashMap<>();
+    private final List<AttributeStatHandler> attributes;
 
     public static final DecimalFormat FORMAT = new DecimalFormat("0.#####");
-
-    static {
-        ATTRIBUTES.put("ARMOR", new AttributeData(Material.IRON_CHESTPLATE, "Armor bonus of an Entity."));
-        ATTRIBUTES.put("ARMOR_TOUGHNESS", new AttributeData(Material.GOLDEN_CHESTPLATE, "Armor toughness bonus of an Entity."));
-        ATTRIBUTES.put("ATTACK_DAMAGE", new AttributeData(Material.IRON_SWORD, "Attack damage of an Entity."));
-        ATTRIBUTES.put("ATTACK_SPEED", new AttributeData(Material.LIGHT_GRAY_DYE, "Attack speed of an Entity."));
-        ATTRIBUTES.put("KNOCKBACK_RESISTANCE", new AttributeData(Material.TNT_MINECART, "Resistance of an Entity to knockback."));
-        ATTRIBUTES.put("LUCK", new AttributeData(VMaterial.GRASS_BLOCK.get(), "Luck bonus of an Entity."));
-        ATTRIBUTES.put("MAX_HEALTH", new AttributeData(Material.APPLE, "Maximum health of an Entity."));
-        ATTRIBUTES.put("MOVEMENT_SPEED", new AttributeData(Material.LEATHER_BOOTS, "Movement speed of an Entity."));
-
-        if (MythicLib.plugin.getVersion().isAbove(1, 20, 2)) {
-            ATTRIBUTES.put("MAX_ABSORPTION", new AttributeData(Material.GOLDEN_APPLE, "Max amount of absorption hearts."));
-        }
-
-        if (MythicLib.plugin.getVersion().isAbove(1, 20, 5)) {
-            ATTRIBUTES.put("BLOCK_BREAK_SPEED", new AttributeData(Material.IRON_PICKAXE, "Speed of breaking blocks."));
-            ATTRIBUTES.put("BLOCK_INTERACTION_RANGE", new AttributeData(Material.SPYGLASS, "How far players may break or interact with blocks."));
-            ATTRIBUTES.put("ENTITY_INTERACTION_RANGE", new AttributeData(Material.SPYGLASS, "How far players may hit or interact with entities."));
-            ATTRIBUTES.put("FALL_DAMAGE_MULTIPLIER", new AttributeData(Material.GOLDEN_APPLE, "Max amount of absorption hearts."));
-            ATTRIBUTES.put("GRAVITY", new AttributeData(Material.STONE, "How strong gravity is."));
-            ATTRIBUTES.put("JUMP_STRENGTH", new AttributeData(Material.FEATHER, "How high you can jump."));
-            ATTRIBUTES.put("SAFE_FALL_DISTANCE", new AttributeData(Material.RED_BED, "How high you can drop from without fall damage."));
-            ATTRIBUTES.put("SCALE", new AttributeData(Material.GUARDIAN_SPAWN_EGG, "Size of an entity."));
-            ATTRIBUTES.put("STEP_HEIGHT", new AttributeData(Material.OAK_SLAB, "How high you can climb blocks when walking."));
-        }
-    }
 
     public AttributeExplorer(Player player, Player target) {
         super(player);
 
         Validate.notNull(target, "Target cannot be null");
         this.target = target;
+
+        // Read attributes
+        attributes = MythicLib.plugin.getStats().getHandlers().stream()
+                .filter(handler -> handler instanceof AttributeStatHandler)
+                .map(handler -> (AttributeStatHandler) handler)
+                .collect(Collectors.toList());
     }
 
     public Attribute getExplored() {
@@ -93,27 +69,24 @@ public class AttributeExplorer extends PluginInventory {
 
     @Override
     public Inventory getInventory() {
-        Inventory inv = Bukkit.createInventory(this, 54, explored == null ? "Attributes from " + target.getName() : "Exploring: " + getName(explored) + " (" + (page + 1) + ")");
+        Inventory inv = Bukkit.createInventory(this, 54, "Attributes of " + target.getName() + (explored == null ? "" : " (" + getName(explored) + ")"));
 
-        inv.setItem(3, new ItemBuilder(Material.WHITE_BED, "&6Refresh &8(Click)"));
+        inv.setItem(4, new ItemBuilder(Material.WHITE_BED, "&6Refresh &8(Click)"));
 
         int j = 0;
-        for (Attribute attribute : Attribute.values()) {
+        while (j < Math.min(ATTRIBUTE_SLOTS.length, attributes.size() - attributeOffset)) {
 
-            final String key = attribute.name().replace("GENERIC_", "").replace("PLAYER_", "");
-            final AttributeData data = ATTRIBUTES.get(key);
-            if (data == null) continue;
-
-            final AttributeInstance ins = target.getAttribute(attribute);
+            final AttributeStatHandler handler = attributes.get(attributeOffset + j);
+            final AttributeInstance ins = target.getAttribute(handler.getAttribute());
             if (ins == null) continue;
 
-            ItemStack item = data.getIcon();
+            ItemStack item = new ItemStack(handler.getMaterial());
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName(ChatColor.GOLD + getName(attribute));
+            meta.setDisplayName(ChatColor.GOLD + getName(handler.getAttribute()));
             meta.addItemFlags(ItemFlag.values());
 
             List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.GRAY + data.getDescription());
+            lore.add(ChatColor.GRAY + handler.getDescription());
             lore.add("");
             lore.add(ChatColor.GRAY + "Total Value: " + ChatColor.GOLD + ChatColor.BOLD + FORMAT.format(ins.getValue()));
             lore.add(ChatColor.GRAY + AltChar.smallListDash + " Base Value: " + ChatColor.GOLD + FORMAT.format(ins.getBaseValue()));
@@ -126,55 +99,57 @@ public class AttributeExplorer extends PluginInventory {
             lore.add(ChatColor.YELLOW + AltChar.smallListDash + " Right click to set the base value.");
             lore.add(ChatColor.YELLOW + AltChar.smallListDash + " Shift click to reset base value.");
 
+            meta.getPersistentDataContainer().set(ATTRIBUTE_KEY, PersistentDataType.STRING, handler.getAttribute().name());
             meta.setLore(lore);
             item.setItemMeta(meta);
-            inv.setItem(SLOTS[j++], item);
+            inv.setItem(ATTRIBUTE_SLOTS[j++], item);
         }
 
         ItemStack fillAttribute = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE, "&cNo Attribute");
-        while (j < SLOTS.length)
-            inv.setItem(SLOTS[j++], fillAttribute);
+        while (j < ATTRIBUTE_SLOTS.length) inv.setItem(ATTRIBUTE_SLOTS[j++], fillAttribute);
+
+        if (attributeOffset + ATTRIBUTE_SLOTS.length < attributes.size())
+            inv.setItem(53, new ItemBuilder(Material.ARROW, "&6Next Attributes"));
+
+        if (attributeOffset > 0)
+            inv.setItem(45, new ItemBuilder(Material.ARROW, "&6Previous Attributes"));
 
         if (explored != null) {
 
-            inv.setItem(1, new ItemBuilder(Material.WRITABLE_BOOK, "&6New Attribute.."));
-            inv.setItem(5, new ItemBuilder(Material.BARRIER, "&6" + AltChar.rightArrow + " Back"));
+            inv.setItem(1, new ItemBuilder(Material.WRITABLE_BOOK, "&6New Modifier.."));
+            inv.setItem(7, new ItemBuilder(Material.BARRIER, "&6" + AltChar.rightArrow + " Back"));
 
-            final int min = page * MOD_SLOTS.length, max = (page + 1) * MOD_SLOTS.length;
-            int k = min;
-
-            while (k < Math.min(modifiers.size(), max)) {
-                AttributeModifier modifier = modifiers.get(k);
+            j = 0;
+            while (j < Math.min(MODIFIER_SLOTS.length, modifiers.size() - modifierOffset)) {
+                AttributeModifier modifier = modifiers.get(modifierOffset + j);
 
                 ItemStack item = new ItemStack(Material.GRAY_DYE);
                 ItemMeta meta = item.getItemMeta();
-                meta.setDisplayName(ChatColor.GOLD + "Modifier n" + (k + 1));
+                meta.setDisplayName(ChatColor.GOLD + "Modifier n" + (j + 1));
 
                 List<String> lore = new ArrayList<>();
                 lore.add("");
-                lore.add(ChatColor.GRAY + "Name: " + ChatColor.GOLD + modifier.getName());
+                lore.add(ChatColor.GRAY + "Key: " + ChatColor.GOLD + modifier.getKey());
                 lore.add(ChatColor.GRAY + "Amount: " + ChatColor.GOLD + modifier.getAmount());
                 lore.add(ChatColor.GRAY + "Operation: " + ChatColor.GOLD + modifier.getOperation());
-                lore.add("");
-                lore.add(ChatColor.GRAY + "Slot: " + ChatColor.GOLD + (modifier.getSlot() == null ? "None" : modifier.getSlot().name()));
-                lore.add(ChatColor.GRAY + "ID: " + ChatColor.GOLD + modifier.getUniqueId());
+                lore.add(ChatColor.GRAY + "Slot Group: " + ChatColor.GOLD + modifier.getSlotGroup());
                 lore.add("");
                 lore.add(ChatColor.YELLOW + AltChar.smallListDash + " Right click to remove.");
 
+                meta.getPersistentDataContainer().set(MODIFIER_KEY, PersistentDataType.STRING, modifier.getKey().toString());
                 meta.setLore(lore);
                 item.setItemMeta(meta);
-                inv.setItem(MOD_SLOTS[k++ - min], item);
+                inv.setItem(MODIFIER_SLOTS[j++], item);
             }
 
-            if (modifiers.size() > max)
-                inv.setItem(33, new ItemBuilder(Material.ARROW, "&6Next Page"));
-
-            if (page > 0)
-                inv.setItem(27, new ItemBuilder(Material.ARROW, "&6Previous Page"));
-
             ItemStack fillModifier = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE, "&cNo Modifier");
-            while (k < max)
-                inv.setItem(MOD_SLOTS[k++ - min], fillModifier);
+            while (j < MODIFIER_SLOTS.length) inv.setItem(MODIFIER_SLOTS[j++], fillModifier);
+
+            if (modifierOffset + MODIFIER_SLOTS.length < modifiers.size())
+                inv.setItem(26, new ItemBuilder(Material.ARROW, "&6Next Page"));
+
+            if (modifierOffset > 0)
+                inv.setItem(18, new ItemBuilder(Material.ARROW, "&6Previous Page"));
         }
 
         return inv;
@@ -191,6 +166,9 @@ public class AttributeExplorer extends PluginInventory {
                 .replace("PLAYER_", "")
                 .toLowerCase().replace("_", " "));
     }
+
+    private static final NamespacedKey ATTRIBUTE_KEY = new NamespacedKey(MythicLib.plugin, "attribute");
+    private static final NamespacedKey MODIFIER_KEY = new NamespacedKey(MythicLib.plugin, "modifier");
 
     @Override
     public void whenClicked(InventoryClickEvent event) {
@@ -215,33 +193,47 @@ public class AttributeExplorer extends PluginInventory {
         }
 
         if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Next Page")) {
-            page++;
+            modifierOffset += MODIFIER_SLOTS.length;
             open();
             return;
         }
 
         if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Previous Page")) {
-            page--;
+            modifierOffset -= MODIFIER_SLOTS.length;
             open();
             return;
         }
 
-        if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "New Attribute..")) {
+        if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Next Attributes")) {
+            attributeOffset += ATTRIBUTE_SLOTS.length;
+            open();
+            return;
+        }
+
+        if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Previous Attributes")) {
+            attributeOffset -= ATTRIBUTE_SLOTS.length;
+            open();
+            return;
+        }
+
+        if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "New Modifier..")) {
             new AttributeCreator(this).open();
             return;
         }
 
-        if (item.getItemMeta().getDisplayName().startsWith(ChatColor.GOLD + "Modifier n") && event.getAction() == InventoryAction.PICKUP_HALF) {
-            int index = Integer.parseInt(item.getItemMeta().getDisplayName().substring((ChatColor.GOLD + "Modifier n").length())) - 1;
-            target.getAttribute(explored).removeModifier(modifiers.get(index));
-            getPlayer().sendMessage(ChatColor.YELLOW + "> Modifier n" + (index + 1) + " successfully deleted.");
+        String tag = item.getItemMeta().getPersistentDataContainer().get(MODIFIER_KEY, PersistentDataType.STRING);
+        if (tag != null && event.getAction() == InventoryAction.PICKUP_HALF) {
+            final AttributeModifier mod = getPlayer().getAttribute(explored).getModifier(NamespacedKey.fromString(tag));
+            target.getAttribute(explored).removeModifier(mod);
+            getPlayer().sendMessage(ChatColor.YELLOW + "> Modifier successfully removed.");
             setExplored(explored);
             open();
             return;
         }
 
-        if (item.getItemMeta().getDisplayName().startsWith(ChatColor.GOLD + ">> ")) {
-            Attribute attribute = Attribute.valueOf("GENERIC_" + item.getItemMeta().getDisplayName().substring((ChatColor.GOLD + ">> ").length()).toUpperCase().replace(" ", "_"));
+        tag = item.getItemMeta().getPersistentDataContainer().get(ATTRIBUTE_KEY, PersistentDataType.STRING);
+        if (tag != null) {
+            final Attribute attribute = Attribute.valueOf(tag);
 
             if (event.getAction() == InventoryAction.PICKUP_ALL) {
                 setExplored(attribute);

@@ -10,9 +10,6 @@ commands:
   healthscale:
     description: 'No longer maintained, see ''/ml debug healthscale'' instead'
     permission: mythiclib.command.healthscale
-  exploreattributes:
-    description: 'No longer maintained, see ''/ml debug attributes'' instead'
-    permission: mythiclib.explore-attributes
   mmotempstat:
     description: 'No longer maintained, see ''/ml tempstat'' instead'
     permission: mythiclib.tempstat
@@ -26,8 +23,6 @@ commands:
     permission: mythiclib.megaworkbench
 permissions:
   mythiclib.admin:
-    default: op
-  mythiclib.explore-attributes:
     default: op
   mythiclib.mythiclib.command.healthscale:
     default: op

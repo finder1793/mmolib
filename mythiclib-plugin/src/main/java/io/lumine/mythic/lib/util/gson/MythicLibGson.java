@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.util.gson;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.lumine.mythic.lib.MythicLib;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.attribute.AttributeModifier;
@@ -32,7 +33,7 @@ public class MythicLibGson {
         // Basic type adapters
         builder.registerTypeAdapter(PotionEffect.class, new PotionEffectAdapter());
         builder.registerTypeAdapter(Location.class, new LocationAdapter());
-        builder.registerTypeAdapter(AttributeModifier.class, new AttributeModifierAdapter());
+        builder.registerTypeAdapter(AttributeModifier.class, MythicLib.plugin.getVersion().isAbove(1, 21) ? new AttributeModifierAdapter() : new LegacyAttributeModifierAdapter());
 
         final Gson gson = builder.create();
         builder = null;

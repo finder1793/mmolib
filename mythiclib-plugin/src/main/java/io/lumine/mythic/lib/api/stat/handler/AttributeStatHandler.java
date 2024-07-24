@@ -1,7 +1,11 @@
 package io.lumine.mythic.lib.api.stat.handler;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.stat.StatInstance;
+import io.lumine.mythic.lib.version.VersionUtils;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
@@ -10,22 +14,32 @@ import org.jetbrains.annotations.NotNull;
 
 public class AttributeStatHandler extends StatHandler {
     protected final Attribute attribute;
+    private final Material material;
+    private final String description;
 
-    protected static final String ATTRIBUTE_NAME = "mythiclib.main";
+    protected static final NamespacedKey ATTRIBUTE_KEY = new NamespacedKey(MythicLib.plugin, "main");
     protected static final double EPSILON = .0001;
 
     /**
      * Statistics like Atk Damage, Atk Speed, Max Health...
      * which are based on vanilla player attributes.
      *
-     * @param config    The ROOT configuration file!
-     * @param attribute The corresponding vanilla player attribute
-     * @param stat      The stat identifier
+     * @param config      The root configuration file
+     * @param attribute   The corresponding vanilla player attribute
+     * @param stat        The stat identifier
+     * @param material    For usage, see {@link io.lumine.mythic.lib.gui.AttributeExplorer}
+     * @param description For usage, see {@link io.lumine.mythic.lib.gui.AttributeExplorer}
      */
-    public AttributeStatHandler(ConfigurationSection config, @NotNull Attribute attribute, @NotNull String stat) {
+    public AttributeStatHandler(ConfigurationSection config,
+                                @NotNull Attribute attribute,
+                                @NotNull String stat,
+                                @NotNull Material material,
+                                @NotNull String description) {
         super(config, stat);
 
         this.attribute = attribute;
+        this.material = material;
+        this.description = description;
     }
 
     @Override
@@ -42,7 +56,7 @@ public class AttributeStatHandler extends StatHandler {
          * value is different from the main one to save map updates.
          */
         if (Math.abs(difference) > EPSILON)
-            attrIns.addModifier(new AttributeModifier(ATTRIBUTE_NAME, difference, AttributeModifier.Operation.ADD_NUMBER));
+            attrIns.addModifier(VersionUtils.attrMod(ATTRIBUTE_KEY, difference, AttributeModifier.Operation.ADD_NUMBER));
     }
 
     @Override
@@ -56,7 +70,22 @@ public class AttributeStatHandler extends StatHandler {
     }
 
     protected void removeModifiers(@NotNull AttributeInstance ins) {
-        for (AttributeModifier attribute : ins.getModifiers())
-            if (attribute.getName().equals(ATTRIBUTE_NAME)) ins.removeModifier(attribute);
+        for (AttributeModifier mod : ins.getModifiers())
+            if (VersionUtils.matches(mod, ATTRIBUTE_KEY)) ins.removeModifier(mod);
+    }
+
+    @NotNull
+    public Attribute getAttribute() {
+        return attribute;
+    }
+
+    @NotNull
+    public Material getMaterial() {
+        return material;
+    }
+
+    @NotNull
+    public String getDescription() {
+        return description;
     }
 }

@@ -7,7 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
@@ -15,13 +14,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class ItemFactory {
-    private static final ItemFlag[] ALL_FLAGS = findAllFlags();
+    private static final ItemFlag[] ALL_FLAGS = ItemFlag.values();
     private final ItemStack itemStack;
     private boolean clone = true;
 
@@ -309,13 +308,5 @@ public class ItemFactory {
 
     public ItemStack build() {
         return this.itemStack.clone();
-    }
-
-    private static ItemFlag[] findAllFlags() {
-        try {
-            return ItemFlag.values();
-        } catch (Throwable ignored) {
-            return new ItemFlag[]{ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_DESTROYS, ItemFlag.HIDE_PLACED_ON};
-        }
     }
 }

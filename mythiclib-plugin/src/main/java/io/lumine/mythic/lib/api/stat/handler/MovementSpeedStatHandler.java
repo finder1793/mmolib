@@ -3,6 +3,8 @@ package io.lumine.mythic.lib.api.stat.handler;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.stat.SharedStat;
 import io.lumine.mythic.lib.api.stat.StatInstance;
+import io.lumine.mythic.lib.version.VersionUtils;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
@@ -11,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class MovementSpeedStatHandler extends AttributeStatHandler {
     public MovementSpeedStatHandler(@NotNull ConfigurationSection config) {
-        super(config, Attribute.GENERIC_MOVEMENT_SPEED, SharedStat.MOVEMENT_SPEED);
+        super(config, Attribute.GENERIC_MOVEMENT_SPEED, SharedStat.MOVEMENT_SPEED, Material.LEATHER_BOOTS, "Movement speed of an Entity.");
     }
 
     @Override
@@ -31,6 +33,6 @@ public class MovementSpeedStatHandler extends AttributeStatHandler {
          * value is different from the main one to save calculations.
          */
         if (Math.abs(difference) > EPSILON)
-            attrIns.addModifier(new AttributeModifier(ATTRIBUTE_NAME, difference, AttributeModifier.Operation.ADD_NUMBER));
+            attrIns.addModifier(VersionUtils.attrMod(ATTRIBUTE_KEY, difference, AttributeModifier.Operation.ADD_NUMBER));
     }
 }

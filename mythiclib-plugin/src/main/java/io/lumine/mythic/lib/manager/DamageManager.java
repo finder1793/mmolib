@@ -8,9 +8,11 @@ import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.damage.*;
 import io.lumine.mythic.lib.entity.ProjectileMetadata;
 import io.lumine.mythic.lib.player.PlayerMetadata;
+import io.lumine.mythic.lib.version.VersionUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
@@ -36,7 +38,7 @@ import java.util.logging.Level;
  *
  * @author jules
  */
-public class DamageManager implements Listener {
+public class DamageManager implements Listener, MMOManager {
 
     /**
      * External attack handlers
@@ -52,7 +54,12 @@ public class DamageManager implements Listener {
      */
     private final Map<UUID, AttackMetadata> attackMetadatas = new WeakHashMap<>();
 
-    private static final AttributeModifier NO_KNOCKBACK = new AttributeModifier(UUID.randomUUID(), "noKnockback", 100, AttributeModifier.Operation.ADD_NUMBER);
+    private AttributeModifier noKnockbackModifier;
+
+    @Override
+    public void initialize(boolean clearBefore) {
+        noKnockbackModifier = VersionUtils.attrMod(new NamespacedKey(MythicLib.plugin, "no_knockback"), 100, AttributeModifier.Operation.ADD_NUMBER);
+    }
 
     /**
      * Attack handlers are used by MythicLib to keep track of details of every
@@ -119,13 +126,13 @@ public class DamageManager implements Listener {
         if (!knockback) {
             final AttributeInstance instance = target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE);
             try {
-                instance.addModifier(NO_KNOCKBACK);
+                instance.addModifier(noKnockbackModifier);
                 applyDamage(damage, target, damager, true, ignoreImmunity);
             } catch (Exception anyError) {
                 MythicLib.plugin.getLogger().log(Level.SEVERE, "Caught an exception (2) while damaging entity '" + target.getUniqueId() + "':");
                 anyError.printStackTrace();
             } finally {
-                instance.removeModifier(NO_KNOCKBACK);
+                instance.removeModifier(noKnockbackModifier);
             }
 
             // Should damage immunity be taken into account

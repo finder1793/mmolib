@@ -1,15 +1,20 @@
 package io.lumine.mythic.lib.gui;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.explorer.ChatInput;
 import io.lumine.mythic.lib.api.explorer.ItemBuilder;
 import io.lumine.mythic.lib.api.util.AltChar;
+import io.lumine.mythic.lib.version.VersionUtils;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -18,11 +23,10 @@ import java.util.UUID;
 public class AttributeCreator extends PluginInventory {
     private final AttributeExplorer explorer;
 
-    private String name;
+    private String namespacedKey;
     private double amount;
     private AttributeModifier.Operation operation;
-    private EquipmentSlot slot;
-    private UUID uuid;
+    private EquipmentSlotGroup group;
 
     public AttributeCreator(AttributeExplorer inv) {
         super(inv.getPlayer());
@@ -33,12 +37,11 @@ public class AttributeCreator extends PluginInventory {
     public Inventory getInventory() {
         Inventory inv = Bukkit.createInventory(this, 36, "Attribute Creation..");
 
-        inv.setItem(10, new ItemBuilder(Material.OAK_SIGN, "&6Name").setLore("", "&7Current Value: &6" + (name == null ? "None" : name)));
+        inv.setItem(10, new ItemBuilder(Material.OAK_SIGN, "&6Name-spaced Key").setLore("", "&7Current Value: &6" + (namespacedKey == null ? "None" : namespacedKey)));
         inv.setItem(11, new ItemBuilder(Material.CHEST, "&6Amount").setLore("", "&7Current Value: &6" + amount));
         inv.setItem(12, new ItemBuilder(Material.REPEATER, "&6Operation").setLore("", "&7Current Value: &6" + (operation == null ? "None" : operation.name())));
 
-        inv.setItem(14, new ItemBuilder(Material.LEATHER_HELMET, "&6Slot").setLore("", "&7Current Value: &6" + (slot == null ? "None" : slot.name())));
-        inv.setItem(15, new ItemBuilder(Material.NAME_TAG, "&6ID").setLore("", "&7Current Value: &6" + (uuid == null ? "None" : uuid.toString())));
+        inv.setItem(14, new ItemBuilder(Material.LEATHER_HELMET, "&6Slot Group").setLore("", "&7Current Value: &6" + (group == null ? "None" : group.toString())));
 
         inv.setItem(30, new ItemBuilder(Material.BARRIER, "&6" + AltChar.rightArrow + " Back"));
         inv.setItem(32, new ItemBuilder(Material.GREEN_TERRACOTTA, "&aAdd Attribute!"));
@@ -61,24 +64,20 @@ public class AttributeCreator extends PluginInventory {
 
         else if (item.getItemMeta().getDisplayName().equals(ChatColor.GREEN + "Add Attribute!")) {
 
-            if (name == null) {
-                getPlayer().sendMessage(ChatColor.RED + "> You must specify an attribute name!");
-                return;
-            }
-
             if (amount == 0) {
                 getPlayer().sendMessage(ChatColor.RED + "> You must specify a valid amount!");
                 return;
             }
 
-            explorer.getTarget().getAttribute(explorer.getExplored()).addModifier(new AttributeModifier(uuid == null ? UUID.randomUUID() : uuid, name, amount, operation == null ? AttributeModifier.Operation.ADD_NUMBER : operation, slot));
+            final NamespacedKey key = this.namespacedKey == null ? new NamespacedKey(MythicLib.plugin, UUID.randomUUID().toString()) : NamespacedKey.fromString(this.namespacedKey, MythicLib.plugin);
+            explorer.getTarget().getAttribute(explorer.getExplored()).addModifier(VersionUtils.attrMod(key, amount, operation == null ? AttributeModifier.Operation.ADD_NUMBER : operation));
             explorer.open();
             getPlayer().sendMessage(ChatColor.YELLOW + "> Attribute successfully added.");
         }
 
-        else if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Name")) {
+        else if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Name-spaced Key")) {
             getPlayer().closeInventory();
-            getPlayer().sendMessage(ChatColor.YELLOW + "> Write in the chat the name you want. Type 'cancel' to abort.");
+            getPlayer().sendMessage(ChatColor.YELLOW + "> Write in the chat the key you want. Example: `myplugin:iron_skin_pot` Type 'cancel' to abort.");
             new ChatInput(getPlayer(), (output) -> {
 
                 if (output == null) {
@@ -86,39 +85,16 @@ public class AttributeCreator extends PluginInventory {
                     return true;
                 }
 
-                this.name = output;
-                getPlayer().sendMessage(ChatColor.YELLOW + "> Name set to " + ChatColor.GOLD + name + ChatColor.YELLOW + ".");
+                this.namespacedKey = output;
+                getPlayer().sendMessage(ChatColor.YELLOW + "> NSK set to " + ChatColor.GOLD + namespacedKey + ChatColor.YELLOW + ".");
                 open();
                 return true;
             });
         }
 
-        else if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "ID")) {
+        else if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Slot Group")) {
             getPlayer().closeInventory();
-            getPlayer().sendMessage(ChatColor.YELLOW + "> Write in the chat the UUID you want.");
-            new ChatInput(getPlayer(), (output) -> {
-
-                if (output == null) {
-                    open();
-                    return true;
-                }
-
-                try {
-                    uuid = UUID.fromString(output);
-                    getPlayer().sendMessage(ChatColor.YELLOW + "> ID set to " + ChatColor.GOLD + output + ChatColor.YELLOW + ".");
-                    open();
-                    return true;
-
-                } catch (IllegalArgumentException exception) {
-                    getPlayer().sendMessage(ChatColor.RED + "> " + output + " is not a valid UUID. Type 'cancel' to cancel.");
-                    return false;
-                }
-            });
-        }
-
-        else if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Slot")) {
-            getPlayer().closeInventory();
-            getPlayer().sendMessage(ChatColor.YELLOW + "> Write in the slot name.");
+            getPlayer().sendMessage(ChatColor.YELLOW + "> Write in the slot group name.");
             for (EquipmentSlot slot : EquipmentSlot.values())
                 getPlayer().sendMessage(ChatColor.YELLOW + "- " + slot.name().toLowerCase());
             new ChatInput(getPlayer(), (output) -> {
@@ -130,7 +106,8 @@ public class AttributeCreator extends PluginInventory {
 
                 String format = output.toUpperCase().replace(" ", "_").replace("-", "_");
                 try {
-                    slot = EquipmentSlot.valueOf(format);
+                    group = EquipmentSlotGroup.getByName(format);
+                    Validate.notNull(group, "Cannot find equipment slot group with ID '" + format + "'");
                     getPlayer().sendMessage(ChatColor.YELLOW + "> Slot set to " + ChatColor.GOLD + format + ChatColor.YELLOW + ".");
                     open();
                     return true;

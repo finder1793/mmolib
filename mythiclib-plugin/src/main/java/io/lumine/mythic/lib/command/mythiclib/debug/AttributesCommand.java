@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.command.mythiclib.debug;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.command.api.CommandTreeNode;
 import io.lumine.mythic.lib.command.api.Parameter;
 import io.lumine.mythic.lib.gui.AttributeExplorer;
@@ -17,6 +18,11 @@ public class AttributesCommand extends CommandTreeNode {
 
     @Override
     public CommandResult execute(CommandSender sender, String[] args) {
+
+        if (MythicLib.plugin.getVersion().isUnder(1, 21)) {
+            sender.sendMessage(ChatColor.RED + "This command is not available below 1.21");
+            return CommandResult.FAILURE;
+        }
 
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "This command is only for players.");

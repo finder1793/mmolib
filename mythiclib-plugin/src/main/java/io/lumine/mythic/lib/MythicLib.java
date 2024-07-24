@@ -8,7 +8,6 @@ import io.lumine.mythic.lib.api.crafting.uifilters.MythicItemUIFilter;
 import io.lumine.mythic.lib.api.event.armorequip.ArmorEquipEvent;
 import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.command.ExploreAttributesCommand;
 import io.lumine.mythic.lib.command.HealthScaleCommand;
 import io.lumine.mythic.lib.command.MMOTempStatCommand;
 import io.lumine.mythic.lib.comp.McMMOModule;
@@ -245,7 +244,6 @@ public class MythicLib extends JavaPlugin {
         }
 
         // Command executors
-        getCommand("exploreattributes").setExecutor(new ExploreAttributesCommand());
         getCommand("mmotempstat").setExecutor(new MMOTempStatCommand());
         getCommand("healthscale").setExecutor(new HealthScaleCommand());
 
