@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.version.wrapper;
 import com.mojang.authlib.GameProfile;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import io.lumine.mythic.lib.version.OreDrops;
+import io.lumine.mythic.lib.version.VInventoryView;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -11,6 +12,7 @@ import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -170,4 +172,8 @@ public interface VersionWrapper {
     default boolean matches(AttributeModifier modifier, NamespacedKey key) {
         return modifier.getName().equals(key.toString());
     }
+
+    VInventoryView getView(InventoryEvent event);
+
+    InventoryClickEvent newInventoryClickEvent(@NotNull VInventoryView view, @NotNull InventoryType.@NotNull SlotType type, int slot, @NotNull ClickType click, @NotNull InventoryAction action);
 }

@@ -8,6 +8,7 @@ import io.lumine.mythic.lib.api.item.NBTCompound;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import io.lumine.mythic.lib.api.util.NBTTypeHelper;
 import io.lumine.mythic.lib.version.OreDrops;
+import io.lumine.mythic.lib.version.VInventoryView;
 import net.minecraft.server.v1_14_R1.*;
 import net.minecraft.server.v1_14_R1.IChatBaseComponent.ChatSerializer;
 import org.bukkit.Material;
@@ -23,9 +24,12 @@ import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -477,4 +481,53 @@ public class VersionWrapper_1_14_R1 implements VersionWrapper {
     public GameProfile getGameProfile(Player player) {
         return ((CraftPlayer) player).getProfile();
     }
+
+    private static class InventoryViewImpl implements VInventoryView {
+        private final InventoryView view;
+
+        InventoryViewImpl(InventoryView view) {
+            this.view = view;
+        }
+
+        @Override
+        public String getTitle() {
+            return view.getTitle();
+        }
+
+        @Override
+        public InventoryType getType() {
+            return view.getType();
+        }
+
+        @Override
+        public Inventory getTopInventory() {
+            return view.getTopInventory();
+        }
+
+        @Override
+        public Inventory getBottomInventory() {
+            return view.getBottomInventory();
+        }
+
+        @Override
+        public void setCursor(ItemStack actualCursor) {
+            view.setCursor(actualCursor);
+        }
+
+        @Override
+        public HumanEntity getPlayer() {
+            return view.getPlayer();
+        }
+    }
+
+    @Override
+    public VInventoryView getView(InventoryEvent event) {
+        return new InventoryViewImpl(event.getView());
+    }
+
+    @Override
+    public InventoryClickEvent newInventoryClickEvent(VInventoryView view, InventoryType.SlotType type, int slot, ClickType click, InventoryAction action) {
+        return new InventoryClickEvent(((InventoryViewImpl) view).view, type, slot, click, action);
+    }
 }
+

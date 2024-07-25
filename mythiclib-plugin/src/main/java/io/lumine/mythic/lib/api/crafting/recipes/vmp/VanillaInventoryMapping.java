@@ -5,9 +5,9 @@ import io.lumine.mythic.lib.api.crafting.ingredients.MythicBlueprintInventory;
 import io.lumine.mythic.lib.api.crafting.ingredients.MythicRecipeInventory;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicCraftingManager;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicRecipeStation;
+import io.lumine.mythic.lib.version.VInventoryView;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -755,7 +755,7 @@ public abstract class VanillaInventoryMapping {
      *
      * @return The correct mapping, if found.
      */
-    @Nullable public static VanillaInventoryMapping getMappingFor(@NotNull InventoryView inven) {
+    @Nullable public static VanillaInventoryMapping getMappingFor(@NotNull VInventoryView inven) {
 
         // Is it a chest?
         if (inven.getType() == InventoryType.CHEST && customInventoryMappings.size() > 0) {
@@ -764,7 +764,7 @@ public abstract class VanillaInventoryMapping {
             for (VanillaInventoryMapping vmp : customInventoryMappings) {
 
                 // Good Inventory View?
-                if (((CustomInventoryCheck) vmp).IsTargetInventory(inven)) {
+                if (((CustomInventoryCheck) vmp).isTargetInventory(inven)) {
 
                     // Success this is it boys
                     return vmp;

@@ -1,5 +1,6 @@
 package io.lumine.mythic.lib.api.crafting.recipes.vmp;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.crafting.ingredients.MythicRecipeInventory;
 import io.lumine.mythic.lib.api.crafting.recipes.MythicRecipeStation;
 import io.lumine.mythic.lib.api.util.ItemFactory;
@@ -7,6 +8,8 @@ import io.lumine.mythic.lib.api.util.ui.FFPMythicLib;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackCategory;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackProvider;
 import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
+import io.lumine.mythic.lib.version.VInventoryView;
+import io.lumine.mythic.lib.version.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -18,8 +21,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -331,7 +332,7 @@ public class MegaWorkbenchMapping  extends VanillaInventoryMapping implements Cu
     public static final String MEGA_WORKBENCH = "\u00a7g\u00a7w\u00a7°\u00a7¡\u00a7v";
 
     @Override
-    public boolean IsTargetInventory(@NotNull InventoryView view) {
+    public boolean isTargetInventory(@NotNull VInventoryView view) {
 
         // Check size alv
         if (view.getTopInventory().getSize() != 54) { return false; }
@@ -490,20 +491,21 @@ public class MegaWorkbenchMapping  extends VanillaInventoryMapping implements Cu
     public void OnClick(InventoryClickEvent event) {
 
         // Easiest way to quit this method - is the size 5x9 = 45 slots?
-        int size = event.getView().getTopInventory().getSize();
+        final VInventoryView view = VersionUtils.getView(event);
+        int size = view.getTopInventory().getSize();
         if (size != 54) { return; }
 
         // Bruh what
-        if (!(event.getView().getPlayer() instanceof Player)) { return; }
+        if (!(view.getPlayer() instanceof Player)) { return; }
 
         // All right lets continue
         InventoryAction act = event.getAction();
 
         // Is this inventory the super workbench
-        if (!IsTargetInventory(event.getView())) { return; }
+        if (!isTargetInventory(VersionUtils.getView(event))) { return; }
 
         // Not a click on the top inventory, probably not our business
-        if (event.getRawSlot() >= event.getView().getTopInventory().getSize()) {
+        if (event.getRawSlot() >= view.getTopInventory().getSize()) {
 
             // Weird move to other inventory glitch
             if (act == InventoryAction.MOVE_TO_OTHER_INVENTORY && event.getCurrentItem() != null) {
@@ -524,7 +526,7 @@ public class MegaWorkbenchMapping  extends VanillaInventoryMapping implements Cu
                         int sl = getMainSlot(w, -h);
 
                         // Fill row
-                        ItemStack observed = get(event.getView().getTopInventory(), sl);
+                        ItemStack observed = get(view.getTopInventory(), sl);
                         boolean aero = SilentNumbers.isAir(observed);
 
                         // Is it air? or stackable?
@@ -548,14 +550,14 @@ public class MegaWorkbenchMapping  extends VanillaInventoryMapping implements Cu
                 for (Integer v : vibes) {
 
                     // Add all amount
-                    ItemStack observed = event.getView().getTopInventory().getItem(v);
+                    ItemStack observed = view.getTopInventory().getItem(v);
 
                     // Game
                     if (SilentNumbers.isAir(observed)) {
 
                         // Put remaining item there
                         event.getCurrentItem().setAmount(0);
-                        event.getView().getTopInventory().setItem(v, viableStacker);
+                        view.getTopInventory().setItem(v, viableStacker);
                         completion = true;
                         break;
 
@@ -573,7 +575,7 @@ public class MegaWorkbenchMapping  extends VanillaInventoryMapping implements Cu
                             viableStacker.setAmount(0);
                             event.getCurrentItem().setAmount(0);
                             observed.setAmount(observed.getAmount() + vsAmount);
-                            event.getView().getTopInventory().setItem(v, observed);
+                            view.getTopInventory().setItem(v, observed);
                             completion = true;
                             break;
 
@@ -583,7 +585,7 @@ public class MegaWorkbenchMapping  extends VanillaInventoryMapping implements Cu
                             // Transfer amounts yoi
                             viableStacker.setAmount(vsAmount - remainder);
                             observed.setAmount(observed.getAmount() + remainder);
-                            event.getView().getTopInventory().setItem(v, observed);
+                            view.getTopInventory().setItem(v, observed);
                         }
                     }
                 }
@@ -616,14 +618,15 @@ public class MegaWorkbenchMapping  extends VanillaInventoryMapping implements Cu
     public void OnClick(InventoryDragEvent event) {
 
         // Easiest way to quit this method - is the size 5x9 = 45 slots?
-        int size = event.getView().getTopInventory().getSize();
+        final VInventoryView view = VersionUtils.getView(event);
+        int size = view.getTopInventory().getSize();
         if (size != 54) { return; }
 
         // Bruh what
-        if (!(event.getView().getPlayer() instanceof Player)) { return; }
+        if (!(view.getPlayer() instanceof Player)) { return; }
 
         // Is this inventory the super workbench
-        if (!IsTargetInventory(event.getView())) { return; }
+        if (!isTargetInventory(view)) { return; }
 
         // Cancel if result slot is interacted-with
         for (Integer i : event.getRawSlots()) { if (i == 25) { event.setCancelled(true); return; } }
@@ -633,14 +636,15 @@ public class MegaWorkbenchMapping  extends VanillaInventoryMapping implements Cu
     public void OnInvenClose(InventoryCloseEvent event) {
 
         // Easiest way to quit this method - is the size 5x9 = 45 slots?
-        int size = event.getView().getTopInventory().getSize();
+        final VInventoryView view = VersionUtils.getView(event);
+        int size = view.getTopInventory().getSize();
         if (size != 54) { return; }
 
         // Bruh what
-        if (!(event.getView().getPlayer() instanceof Player)) { return; }
+        if (!(view.getPlayer() instanceof Player)) { return; }
 
         // Is this inventory the super workbench
-        if (!IsTargetInventory(event.getView())) { return; }
+        if (!isTargetInventory(VersionUtils.getView(event))) { return; }
 
         // Ok we must gather all items and drop them to the ground
         int z = 0;
@@ -659,7 +663,7 @@ public class MegaWorkbenchMapping  extends VanillaInventoryMapping implements Cu
             if (w < 0 || h > 0) { z++; continue; }
 
             // Get that item
-            ItemStack item = event.getView().getTopInventory().getItem(s);
+            ItemStack item = view.getTopInventory().getItem(s);
 
             // Valid
             if (SilentNumbers.isAir(item)) { continue; }

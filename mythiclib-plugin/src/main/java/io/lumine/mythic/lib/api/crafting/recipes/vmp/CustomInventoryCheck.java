@@ -1,8 +1,8 @@
 package io.lumine.mythic.lib.api.crafting.recipes.vmp;
 
 import io.lumine.mythic.lib.api.crafting.recipes.MythicRecipeStation;
+import io.lumine.mythic.lib.version.VInventoryView;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -22,7 +22,7 @@ public interface CustomInventoryCheck {
      *
      * @return If this view shall be used with this Mapping.
      */
-    boolean IsTargetInventory(@NotNull InventoryView view);
+    boolean isTargetInventory(@NotNull VInventoryView view);
 
     /**
      * When registering recipes, they specify which station

@@ -13,6 +13,7 @@ import io.lumine.mythic.lib.api.util.ui.FFPMythicLib;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackCategory;
 import io.lumine.mythic.lib.api.util.ui.FriendlyFeedbackProvider;
 import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
+import io.lumine.mythic.lib.version.VersionUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -678,7 +679,7 @@ public class MRORecipe extends MythicRecipeOutput implements VanillaBookableOutp
             map.applyToResultInventory(eventTrigger.getInventory(), resultInventory, false);
 
             // Apply result to the cursor
-            eventTrigger.getView().setCursor(actualCursor);
+            VersionUtils.getView(eventTrigger).setCursor(actualCursor);
 
             /*
              * Remove one of each ingredient (or however many are necessary)

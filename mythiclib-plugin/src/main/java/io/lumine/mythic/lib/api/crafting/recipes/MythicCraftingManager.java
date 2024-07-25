@@ -11,7 +11,8 @@ import io.lumine.mythic.lib.api.crafting.uifilters.IngredientUIFilter;
 import io.lumine.mythic.lib.api.crafting.uifilters.RecipeUIFilter;
 import io.lumine.mythic.lib.api.crafting.uifilters.VanillaUIFilter;
 import io.lumine.mythic.lib.api.util.Ref;
-import io.lumine.mythic.lib.api.util.ui.SilentNumbers;
+import io.lumine.mythic.lib.version.VInventoryView;
+import io.lumine.mythic.lib.version.VersionUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -200,22 +201,11 @@ public class MythicCraftingManager implements Listener {
         //RDR//log("\u00a78RDR \u00a741\u00a77 Event Fired - Click");
 
         // Find the correct inventory
-        Inventory inven = event.getView().getTopInventory();
-
-        //EVENT//log("\u00a78>\u00a7a>\u00a77 Inventory Click Event");
-        //EVENT//log("  \u00a78|\u00a7a|\u00a77 Event Name \u00a7f" + event.getEventName());
-        //EVENT//log("  \u00a78|\u00a7a|\u00a77 View Type \u00a7f" + event.getView().getType().toString());
-        //EVENT//log("  \u00a78|\u00a7a|\u00a77 Inven Type \u00a7f" + inven.getType().toString());
-        //EVENT//log("  \u00a78|\u00a7a|\u00a77 Inven Size \u00a7f" + inven.getSize());
-        //EVENT//log("  \u00a78|\u00a7a|\u00a77 Action \u00a7f" + event.getAction().toString());
-        //EVENT//log("  \u00a78|\u00a7a|\u00a77 Current \u00a7f" + SilentNumbers.getItemName(event.getCurrentItem()));
-        //EVENT//log("  \u00a78|\u00a7a|\u00a77 Cursor \u00a7f" + SilentNumbers.getItemName(event.getCursor()));
-        //EVENT//log("  \u00a78|\u00a7a|\u00a77 Slot \u00a7f" + event.getSlot());
-        //EVENT//log("  \u00a78>\u00a7a>\u00a77 Slot Contents: \u00a7f");
-        //EVENT//for (int s = 0; s < event.getInventory().getSize(); s++) { log("     \u00a78:\u00a7a:\u00a77 #" + s + " \u00a7f" + SilentNumbers.getItemName(event.getInventory().getItem(s))); }
+        final VInventoryView view = VersionUtils.getView(event);
+        Inventory inven = view.getTopInventory();
 
         // Find the mapping, and surely it must be intended for a vanilla station for this to work.
-        final VanillaInventoryMapping mapping = VanillaInventoryMapping.getMappingFor(event.getView());
+        final VanillaInventoryMapping mapping = VanillaInventoryMapping.getMappingFor(view);
         if ((mapping == null) || (mapping.getIntendedStation() == null)) { return; }
         //CRAFT//log("\u00a78Click \u00a76M\u00a77 Found Mapping \u00a7f" + mapping.getClass().getSimpleName());
 
@@ -236,24 +226,11 @@ public class MythicCraftingManager implements Listener {
     }
     @EventHandler(priority = EventPriority.LOWEST)
     public void onCraftingStationUse(InventoryDragEvent event) {
-
-        //RDR//log("\u00a78RDR \u00a741\u00a77 Event Fired - Drag");
-        //EVENT//log("\u00a78>\u00a7b>\u00a77 Inventory Drag Event");
-        //EVENT//log("  \u00a78|\u00a7b|\u00a77 Event Name \u00a7f" + event.getEventName());
-        //EVENT//log("  \u00a78|\u00a7b|\u00a77 View Type \u00a7f" + event.getView().getType().toString());
-        //EVENT//log("  \u00a78|\u00a7b|\u00a77 Inven Type \u00a7f" + event.getInventory().getType().toString());
-        //EVENT//log("  \u00a78|\u00a7b|\u00a77 Drag Type \u00a7f" + event.getType().toString());
-        //EVENT//log("  \u00a78|\u00a7b|\u00a77 Cursor \u00a7f" + SilentNumbers.getItemName(event.getCursor()));
-        //EVENT//log("  \u00a78|\u00a7b|\u00a77 Old Cur \u00a7f" + SilentNumbers.getItemName(event.getOldCursor()));
-        //EVENT//log("  \u00a78|\u00a7b|\u00a77 Slots \u00a7e" + SilentNumbers.collapseList( SilentNumbers.transcribeList(new ArrayList<>(event.getInventorySlots()), (s) -> String.valueOf(((Integer) s))), "\u00a77, \u00a7e"));
-        //EVENT//log("  \u00a78|\u00a7b|\u00a77 Raw Slots \u00a7a" + SilentNumbers.collapseList( SilentNumbers.transcribeList(new ArrayList<>(event.getRawSlots()), (s) -> String.valueOf(((Integer) s))), "\u00a77, \u00a7a"));
-        //EVENT//log("  \u00a78>\u00a7a>\u00a77 Slot Contents: \u00a7f");
-        //EVENT//for (int s = 0; s < event.getInventory().getSize(); s++) { log("     \u00a78:\u00a7a:\u00a77 #" + s + " \u00a7f" + SilentNumbers.getItemName(event.getInventory().getItem(s))); }
-
-        final Inventory inven = event.getView().getTopInventory();
+        final VInventoryView view = VersionUtils.getView(event);
+        final Inventory inven = view.getTopInventory();
 
         // Find the mapping, and surely it must be intended for a vanilla station for this to work.
-        final VanillaInventoryMapping mapping = VanillaInventoryMapping.getMappingFor(event.getView());
+        final VanillaInventoryMapping mapping = VanillaInventoryMapping.getMappingFor(view);
         if ((mapping == null) || (mapping.getIntendedStation() == null)) { return; }
         //CRAFT//log("\u00a78Drag \u00a76M\u00a77 Found Mapping \u00a7f" + mapping.getClass().getSimpleName());
 
@@ -292,7 +269,7 @@ public class MythicCraftingManager implements Listener {
             //RDR//log("\u00a78RDR \u00a743.5\u00a77 Drag Click Supported");
 
             // Translate event
-            InventoryClickEvent tEvent = new InventoryClickEvent(event.getView(), InventoryType.SlotType.CRAFTING, cSl, ClickType.LEFT, InventoryAction.PLACE_SOME);
+            InventoryClickEvent tEvent = VersionUtils.invClickEvent(view, InventoryType.SlotType.CRAFTING, cSl, ClickType.LEFT, InventoryAction.PLACE_SOME);
 
             // Compute changes
             computeCraftingAction(mapping, inven, liveRecipes, event.getViewers(), tEvent);
