@@ -10,8 +10,6 @@ import io.lumine.mythic.lib.player.modifier.ModifierType;
 import io.lumine.mythic.lib.skill.result.SkillResult;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -31,12 +29,14 @@ public class CastingDelayHandler extends TemporaryListener {
 
     @Nullable
     private final BossBar bossbar;
+    @Nullable
+    private final NamespacedKey bossbarKey;
 
     private static final String MOVEMENT_SPEED_MODIFIER_KEY = "mythiclibSkillCasting";
     private static final HandlerList[] HANDLER_LISTS = inferHandlerLists(CastingDelayHandler.class);
 
     /**
-     * Called when a skill has a non null casting delay.
+     * Called when a skill has a non-null casting delay.
      *
      * @param metadata Information about skill being cast
      * @param result   Result of skill being cast
@@ -67,8 +67,8 @@ public class CastingDelayHandler extends TemporaryListener {
 
                 // Terminate and cast
                 if (counter <= 0) {
-                    if (bossbar != null) bossbar.removeAll();
                     close();
+                    if (bossbarKey != null) Bukkit.getServer().removeBossBar(bossbarKey);
 
                     metadata.getCast().castInstantly(metadata, result);
                 }
@@ -84,7 +84,17 @@ public class CastingDelayHandler extends TemporaryListener {
             new StatModifier(MOVEMENT_SPEED_MODIFIER_KEY, "MOVEMENT_SPEED", -slowness, ModifierType.RELATIVE).register(getCaster());
 
         // Bossbar
-        bossbar = MythicLib.plugin.getMMOConfig().enableCastingDelayBossbar ? handleBossbar() : null;
+        if (MythicLib.plugin.getMMOConfig().enableCastingDelayBossbar) {
+            bossbarKey = new NamespacedKey(MythicLib.plugin, "skill_casting_" + getCaster().getUniqueId());
+            bossbar = Bukkit.createBossBar(bossbarKey,
+                    MythicLib.plugin.getMMOConfig().castingDelayBossbarFormat,
+                    MythicLib.plugin.getMMOConfig().castingDelayBarColor,
+                    MythicLib.plugin.getMMOConfig().castingDelayBarStyle);
+            bossbar.addPlayer(getCaster().getPlayer());
+        } else {
+            bossbarKey = null;
+            bossbar = null;
+        }
     }
 
     @NotNull
@@ -97,8 +107,7 @@ public class CastingDelayHandler extends TemporaryListener {
     }
 
     private void castIfNotNull(@Nullable Skill skill) {
-        if (skill != null)
-            skill.cast(new SkillMetadata(skill, getCaster()));
+        if (skill != null) skill.cast(new SkillMetadata(skill, getCaster()));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -129,14 +138,6 @@ public class CastingDelayHandler extends TemporaryListener {
     public void onLogout(PlayerQuitEvent event) {
         if (event.getPlayer().equals(getCaster().getPlayer()))
             close();
-    }
-
-    @NotNull
-    private BossBar handleBossbar() {
-        final NamespacedKey namespacedKey = new NamespacedKey(MythicLib.plugin, "mythiclib_casting_" + getCaster().getUniqueId());
-        final BossBar bossbar = Bukkit.createBossBar(namespacedKey, MythicLib.plugin.getMMOConfig().castingDelayBossbarFormat, BarColor.WHITE, BarStyle.SEGMENTED_20);
-        bossbar.addPlayer(getCaster().getPlayer());
-        return bossbar;
     }
 
     @Override

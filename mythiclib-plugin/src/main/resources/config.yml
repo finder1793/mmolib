@@ -81,11 +81,7 @@ casting-delay:
     enabled: true
     script:
       mechanics:
-        play_sound:
-          type: sound
-          sound: BLOCK_END_PORTAL_FRAME_FILL
-          volume: 1
-          pitch: 2
+        - 'sound{sound=BLOCK_END_PORTAL_FRAME_FILL;volume=1;pitch=2}'
 
   cancel-script: # MythicLib script called if the countdown is cancelled
     enabled: true
@@ -93,15 +89,13 @@ casting-delay:
     # script: <public_script_name>
     script:
       mechanics:
-        play_sound:
-          type: sound
-          sound: ENTITY_VILLAGER_NO
-          volume: 1
-          pitch: 2
+        - 'sound{sound=ENTITY_VILLAGER_NO;volume=1;pitch=2}'
 
   bossbar: # Displayed during casting delay
     enabled: true
     format: 'CASTING'
+    style: SEGMENTED_20
+    color: PURPLE
 
 # Default and max. values of armor/mitigation stats. These
 # stats all have a cooldown which can be reduced using the

@@ -1,12 +1,15 @@
 package io.lumine.mythic.lib.manager;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.comp.interaction.relation.EmptyPvPInteractionRules;
 import io.lumine.mythic.lib.comp.interaction.relation.InteractionRules;
 import io.lumine.mythic.lib.skill.SimpleSkill;
 import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.handler.MythicLibSkillHandler;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,6 +23,8 @@ public class ConfigManager {
     public DecimalFormat decimal, decimals;
     public boolean playerAbilityDamage, castingDelayCancelOnMove, enableCastingDelayBossbar, fixTooLargePackets, debugMode, ignoreShiftTriggers, ignoreOffhandClickTriggers, skipElementalDamageApplication;
     public String naturalDefenseFormula, elementalDefenseFormula, castingDelayBossbarFormat;
+    public BarColor castingDelayBarColor;
+    public BarStyle castingDelayBarStyle;
     public double castingDelaySlowness;
     public int maxSyncTries;
 
@@ -56,6 +61,8 @@ public class ConfigManager {
         castingDelayCancelOnMove = config.getBoolean("casting-delay.cancel-on-move");
         enableCastingDelayBossbar = config.getBoolean("casting-delay.bossbar.enabled");
         castingDelayBossbarFormat = config.getString("casting-delay.bossbar.format");
+        castingDelayBarColor = UtilityMethods.resolveEnumField(BarColor::valueOf, () -> BarColor.PURPLE, config.getString("casting-delay.bossbar.color", "PURPLE"));
+        castingDelayBarStyle = UtilityMethods.resolveEnumField(BarStyle::valueOf, () -> BarStyle.SEGMENTED_20, config.getString("casting-delay.bossbar.style", "SEGMENTED_20"));
         try {
             skillCastScript = config.getBoolean("casting-delay.cast-script.enabled") ?
                     new SimpleSkill(TriggerType.CAST, new MythicLibSkillHandler(MythicLib.plugin.getSkills().loadScript(config.get("casting-delay.cast-script.script")))) : null;
@@ -77,7 +84,7 @@ public class ConfigManager {
      *
      * @param pattern Something like "0.#"
      * @return New decimal format with the decimal separator given in the MythicLib
-     *         main plugin config.
+     * main plugin config.
      */
     public DecimalFormat newDecimalFormat(String pattern) {
         return new DecimalFormat(pattern, formatSymbols);

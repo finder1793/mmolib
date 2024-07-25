@@ -321,6 +321,11 @@ public class UtilityMethods {
         throw new RuntimeException("Could not find enum field called '" + Arrays.asList(candidates) + "'");
     }
 
+    public static double getPlayerDefaultBaseValue(@NotNull Attribute attribute, @Nullable AttributeInstance instance) {
+        final Double found = MythicLib.plugin.getStats().getPlayerDefaultBaseValue(attribute);
+        return found != null ? found : (instance != null ? instance.getDefaultValue() : 0);
+    }
+
     private static final String[] PREVIOUS_ATTRIBUTE_MODIFIER_NAMES = {"mmolib.", "mmoitems."};
 
     /**

@@ -16,6 +16,7 @@ public class AttributeStatHandler extends StatHandler {
     protected final Attribute attribute;
     private final Material material;
     private final String description;
+    private final double playerDefaultBase;
 
     protected static final NamespacedKey ATTRIBUTE_KEY = new NamespacedKey(MythicLib.plugin, "main");
     protected static final double EPSILON = .0001;
@@ -33,6 +34,7 @@ public class AttributeStatHandler extends StatHandler {
     public AttributeStatHandler(ConfigurationSection config,
                                 @NotNull Attribute attribute,
                                 @NotNull String stat,
+                                double playerDefaultBase,
                                 @NotNull Material material,
                                 @NotNull String description) {
         super(config, stat);
@@ -40,6 +42,7 @@ public class AttributeStatHandler extends StatHandler {
         this.attribute = attribute;
         this.material = material;
         this.description = description;
+        this.playerDefaultBase = playerDefaultBase;
     }
 
     @Override
@@ -87,5 +90,9 @@ public class AttributeStatHandler extends StatHandler {
     @NotNull
     public String getDescription() {
         return description;
+    }
+
+    public double getPlayerDefaultBase() {
+        return playerDefaultBase;
     }
 }

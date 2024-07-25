@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class MovementSpeedStatHandler extends AttributeStatHandler {
     public MovementSpeedStatHandler(@NotNull ConfigurationSection config) {
-        super(config, Attribute.GENERIC_MOVEMENT_SPEED, SharedStat.MOVEMENT_SPEED, Material.LEATHER_BOOTS, "Movement speed of an Entity.");
+        super(config, Attribute.GENERIC_MOVEMENT_SPEED, SharedStat.MOVEMENT_SPEED, .1, Material.LEATHER_BOOTS, "Movement speed of an Entity.");
     }
 
     @Override

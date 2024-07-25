@@ -31,7 +31,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.apache.commons.lang3.Validate;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
@@ -43,7 +42,6 @@ import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.profile.PlayerProfile;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -550,16 +548,6 @@ public class VersionWrapper_Reflection implements VersionWrapper {
         } catch (Exception exception) {
             throw new RuntimeException("Reflection error", exception);
         }
-    }
-
-    @Override
-    public double getPlayerDefaultBaseValue(Attribute attribute, @Nullable AttributeInstance instance) {
-        return Objects.requireNonNull(playerDefaultBaseValues.get(attribute), "Not a player attribute");
-    }
-
-    @Override
-    public Set<Attribute> getPlayerAttributes() {
-        return playerDefaultBaseValues.keySet();
     }
 
     @Override
