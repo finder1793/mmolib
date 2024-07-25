@@ -117,7 +117,8 @@ public class MythicLibSupportImpl extends ReloadableModule<MythicBukkit> impleme
             return String.valueOf(attackMeta.getDamage().getDamage());
         }));
 
-        final MetaPlaceholder mmostatMeta = Placeholder.meta((metadata, arg) -> {
+        // Stats
+        MythicBukkit.inst().getPlaceholderManager().register("mmostat", Placeholder.meta((metadata, arg) -> {
 
             /**
              * This has to be checked first before trying to get the stat value using
@@ -143,11 +144,7 @@ public class MythicLibSupportImpl extends ReloadableModule<MythicBukkit> impleme
 
             final MMOPlayerData playerData = MMOPlayerData.get(caster.getEntity().getUniqueId());
             return MythicLib.inst().getMMOConfig().decimals.format(playerData.getStatMap().getStat(arg.toUpperCase()));
-        });
-
-        // Stats
-        MythicBukkit.inst().getPlaceholderManager().register("stat", mmostatMeta);
-        MythicBukkit.inst().getPlaceholderManager().register("mmostat", mmostatMeta);
+        }));
 
         // Target Stats
         MythicBukkit.inst().getPlaceholderManager().register("target.stat", Placeholder.entity((entity, arg) -> {
