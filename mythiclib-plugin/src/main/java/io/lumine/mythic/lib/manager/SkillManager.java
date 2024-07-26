@@ -42,9 +42,9 @@ import io.lumine.mythic.lib.script.targeter.LocationTargeter;
 import io.lumine.mythic.lib.script.targeter.entity.*;
 import io.lumine.mythic.lib.script.targeter.location.LookingAtTargeter;
 import io.lumine.mythic.lib.script.targeter.location.*;
+import io.lumine.mythic.lib.skill.handler.FabledSkillHandler;
 import io.lumine.mythic.lib.skill.handler.MythicLibSkillHandler;
 import io.lumine.mythic.lib.skill.handler.MythicMobsSkillHandler;
-import io.lumine.mythic.lib.skill.handler.SkillAPISkillHandler;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.util.PostLoadException;
 import io.lumine.mythic.lib.util.RecursiveFolderExplorer;
@@ -78,7 +78,7 @@ import java.util.logging.Level;
  * The second thing is to make MythicLib a database combining:
  * - default MMOItems/MMOCore skills
  * - custom skills made using MythicMobs
- * - custom skills made using SkillAPI/ProSkillAPI
+ * - custom skills made using Fabled
  * - custom skills made using MythicLib
  * <p>
  * Then users can "register" any of these base skills inside MMOItems
@@ -102,7 +102,7 @@ public class SkillManager {
      * All registered skill handlers accessible by any external plugins. This uncludes:
      * - default skill handlers from both MI and MMOCore (found in /skill/handler/def)
      * - custom MM skill handlers
-     * - custom SkillAPI skill handlers
+     * - custom Fabled skill handlers
      * - custom ML skill handlers
      */
     private final Map<String, SkillHandler> handlers = new HashMap<>();
@@ -412,11 +412,11 @@ public class SkillManager {
 
             // MythicMobs skill handler type
             if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null)
-                registerSkillHandlerType(config -> config.contains("mythicmobs-skill-id"), config -> new MythicMobsSkillHandler(config));
+                registerSkillHandlerType(config -> config.contains("mythicmobs-skill-id"), MythicMobsSkillHandler::new);
 
-            // SkillAPI skill handler type
-            if (Bukkit.getPluginManager().getPlugin("SkillAPI") != null || Bukkit.getPluginManager().getPlugin("ProSkillAPI") != null)
-                registerSkillHandlerType(config -> config.contains("skillapi-skill-id"), config -> new SkillAPISkillHandler(config));
+            // Fabled skill handler type
+            if (Bukkit.getPluginManager().getPlugin("Fabled") != null)
+                registerSkillHandlerType(config -> config.contains("fabled-skill-id") || config.contains("skillapi-skill-id"), FabledSkillHandler::new);
         }
 
         // Load default skills

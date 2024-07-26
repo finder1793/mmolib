@@ -15,7 +15,7 @@ import java.util.Set;
  * <p>
  * That way there are two formats for creating a skill, either using
  * configuration sections (pro is that it takes more space and looks
- * less crammed, more familiar with SkillAPI) or line configs (for
+ * less crammed, more familiar with Fabled) or line configs (for
  * users more familiar with MM)
  * <p>
  * This is also used to restrain the methods from the ConfigurationSection

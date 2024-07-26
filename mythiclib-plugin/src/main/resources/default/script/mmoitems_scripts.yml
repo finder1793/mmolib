@@ -86,7 +86,7 @@ sae2:
 #
 # You can create new scripts there and use the 'Left Click Effect' item option to bind
 # a new attack effect to your MMOItems staff/wand item. These scripts are coded using
-# the MythicLib scripting language, but MythicMobs and SkillAPI are supported too.
+# the MythicLib scripting language, but MythicMobs and Fabled are supported too.
 #
 # Then, this system can be extended to create fully custom item types with custom effects
 # on right/left clicks, on melee attacks and on right-click entity interactions.

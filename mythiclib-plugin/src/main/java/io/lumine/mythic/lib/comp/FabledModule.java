@@ -1,7 +1,5 @@
 package io.lumine.mythic.lib.comp;
 
-import com.sucy.skill.api.DefaultCombatProtection;
-import com.sucy.skill.api.event.SkillDamageEvent;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.fake.FakeEventCaller;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
@@ -15,9 +13,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import studio.magemonkey.fabled.api.DefaultCombatProtection;
+import studio.magemonkey.fabled.api.event.SkillDamageEvent;
 
-public class SkillAPIModule implements Listener, FakeEventCaller<EntityDamageEvent> {
-    public SkillAPIModule() {
+public class FabledModule implements Listener, FakeEventCaller<EntityDamageEvent> {
+    public FabledModule() {
         MythicLib.plugin.getFakeEvents().registerFakeEventCaller(EntityDamageEvent.class, this);
         Bukkit.getPluginManager().registerEvents(this, MythicLib.plugin);
     }

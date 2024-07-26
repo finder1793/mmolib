@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
  * Here are some of the plugins that use fake events:
  * - MMO plugins (MythicLib)
  * - mcMMO
- * - SkillAPI and ProSkillAPI
+ * - Fabled
  * - Any plugin that uses 0 as damage for fake damage events
  *
  * @param <E> Class of event fired

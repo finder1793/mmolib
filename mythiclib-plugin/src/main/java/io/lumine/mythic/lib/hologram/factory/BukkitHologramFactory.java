@@ -20,7 +20,7 @@ import java.util.Objects;
 
 public class BukkitHologramFactory implements HologramFactory {
     public BukkitHologramFactory() {
-        Validate.isTrue(MythicLib.plugin.getVersion().isAbove(1, 19, 4));
+        Validate.isTrue(MythicLib.plugin.getVersion().isAbove(1, 19, 4), "Text displays are only available on 1.19.4 and higher");
     }
 
     public Hologram newHologram(Location loc, List<String> lines) {
