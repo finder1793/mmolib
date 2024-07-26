@@ -48,11 +48,9 @@ import io.lumine.mythic.lib.util.loadingorder.DependencyNode;
 import io.lumine.mythic.lib.util.network.MythicPacketSniffer;
 import io.lumine.mythic.lib.version.ServerVersion;
 import io.lumine.mythic.lib.version.SpigotPlugin;
-import io.lumine.mythic.lib.version.VInventoryView;
 import org.apache.commons.lang.Validate;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -291,11 +289,7 @@ public class MythicLib extends JavaPlugin {
     @Override
     public void onDisable() {
         //this.configuration.unload();
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            final VInventoryView view = version.getWrapper().getOpenInventory(player);
-            if (view.getTopInventory().getHolder() != null && view.getTopInventory().getHolder() instanceof PluginInventory)
-                player.closeInventory();
-        }
+        UtilityMethods.closeOpenViewsOfType(PluginInventory.class);
 
         glowModule.disable();
     }

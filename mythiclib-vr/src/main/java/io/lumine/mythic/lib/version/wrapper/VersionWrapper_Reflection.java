@@ -600,6 +600,11 @@ public class VersionWrapper_Reflection implements VersionWrapper {
         public HumanEntity getPlayer() {
             return view.getPlayer();
         }
+
+        @Override
+        public void close() {
+            view.close();
+        }
     }
 
     @Override

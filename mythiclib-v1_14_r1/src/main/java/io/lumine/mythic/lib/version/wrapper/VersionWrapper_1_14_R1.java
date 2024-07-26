@@ -518,6 +518,11 @@ public class VersionWrapper_1_14_R1 implements VersionWrapper {
         public HumanEntity getPlayer() {
             return view.getPlayer();
         }
+
+        @Override
+        public void close() {
+            view.close();
+        }
     }
 
     @Override

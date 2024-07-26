@@ -10,7 +10,9 @@ import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.util.Tasks;
 import io.lumine.mythic.lib.util.annotation.BackwardsCompatibility;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
+import io.lumine.mythic.lib.version.VInventoryView;
 import io.lumine.mythic.lib.version.VParticle;
+import io.lumine.mythic.lib.version.VersionUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -26,6 +28,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -371,6 +374,13 @@ public class UtilityMethods {
     public static void heal(@NotNull LivingEntity player, double heal, boolean allowNegatives) {
         if (heal > 0 || allowNegatives)
             player.setHealth(Math.min(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue(), player.getHealth() + heal));
+    }
+
+    public static void closeOpenViewsOfType(Class<?> inventoryHolderClass) {
+        for (Player online : Bukkit.getOnlinePlayers()) {
+            final VInventoryView view = VersionUtils.getOpen(online);
+            if (inventoryHolderClass.isInstance(view.getTopInventory().getHolder())) view.close();
+        }
     }
 
     private static final Random RANDOM = new Random();

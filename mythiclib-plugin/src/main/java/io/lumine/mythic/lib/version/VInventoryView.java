@@ -23,4 +23,6 @@ public interface VInventoryView {
     void setCursor(ItemStack actualCursor);
 
     HumanEntity getPlayer();
+
+    void close();
 }
