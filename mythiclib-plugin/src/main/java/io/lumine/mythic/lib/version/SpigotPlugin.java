@@ -11,7 +11,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Arrays;
@@ -29,8 +28,8 @@ public class SpigotPlugin {
         this.id = id;
     }
 
-    /*
-     * the request is executed asynchronously as not to block the main thread.
+    /**
+     * The request is executed asynchronously as not to block the main thread.
      */
     public void checkForUpdate() {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -38,20 +37,19 @@ public class SpigotPlugin {
                 HttpsURLConnection connection = (HttpsURLConnection) new URL("https://api.spigotmc.org/legacy/update.php?resource=" + id).openConnection();
                 connection.setRequestMethod("GET");
                 version = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine();
-            } catch (IOException e) {
-                plugin.getLogger().log(Level.INFO, "Couldn't check the latest plugin version :/");
+            } catch (Throwable throwable) {
+                plugin.getLogger().log(Level.INFO, "Could not check latest plugin version: " + throwable.getMessage());
                 return;
             }
 
-            if (!isOutdated(version, plugin.getDescription().getVersion()))
-                return;
+            if (!isOutdated(version, plugin.getDescription().getVersion())) return;
 
             plugin.getLogger().log(Level.INFO, "A new build is available: " + version + " (you are running " + plugin.getDescription().getVersion() + ")");
             plugin.getLogger().log(Level.INFO, "Download it here: " + getResourceUrl());
 
             /*
-             * registers the event to notify op players when they join only if
-             * the corresponding option is enabled
+             * Registers the event to notify op players when they
+             * join only if the corresponding option is enabled
              */
             if (plugin.getConfig().getBoolean("update-notify"))
                 Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getPluginManager().registerEvents(new Listener() {
@@ -68,8 +66,7 @@ public class SpigotPlugin {
     private boolean isOutdated(String v1, String v2) {
 
         // easy check first
-        if (v1.equals(v2))
-            return false;
+        if (v1.equals(v2)) return false;
 
         String[] netVersion = v1.replaceAll("[^0-9.]", "").split("\\.");
         String[] localVersion = v2.replaceAll("[^0-9.]", "").split("\\.");
