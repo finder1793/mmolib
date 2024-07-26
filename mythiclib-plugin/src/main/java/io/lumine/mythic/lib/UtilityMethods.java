@@ -28,7 +28,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -404,11 +403,11 @@ public class UtilityMethods {
         return builder.toString();
     }
 
-    public static void dropItemNaturally(Location loc, ItemStack stack) {
-        double dx = ((RANDOM.nextFloat() * 0.5F) + 0.25D) / 10;
-        double dy = ((RANDOM.nextFloat() * 0.5F) + 0.25D) / 10;
-        double dz = ((RANDOM.nextFloat() * 0.5F) + 0.25D) / 10;
-        loc.getWorld().dropItem(loc.add(0.5, 0.5, 0.5), stack).setVelocity(new Vector(dx, dy, dz));
+    public static void dropItemNaturally(@NotNull Location loc, @NotNull ItemStack stack) {
+        double xs = (RANDOM.nextFloat() * 0.5F) + 0.25D;
+        double ys = (RANDOM.nextFloat() * 0.5F) + 0.25D;
+        double zs = (RANDOM.nextFloat() * 0.5F) + 0.25D;
+        loc.getWorld().dropItem(loc.clone().add(xs, ys, zs), stack);
     }
 
     /**
