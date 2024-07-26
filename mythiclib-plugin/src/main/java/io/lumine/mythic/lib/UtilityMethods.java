@@ -309,7 +309,7 @@ public class UtilityMethods {
         // Try all candidates
         for (String candidate : candidates)
             try {
-                return resolver.apply(candidate);
+                return Objects.requireNonNull(resolver.apply(candidate));
             } catch (Throwable throwable) {
                 // Ignore & try next candidate
             }
