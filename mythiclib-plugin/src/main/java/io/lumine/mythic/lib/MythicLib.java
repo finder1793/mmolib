@@ -10,8 +10,8 @@ import io.lumine.mythic.lib.api.placeholders.MythicPlaceholders;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.command.HealthScaleCommand;
 import io.lumine.mythic.lib.command.MMOTempStatCommand;
-import io.lumine.mythic.lib.comp.McMMOModule;
 import io.lumine.mythic.lib.comp.FabledModule;
+import io.lumine.mythic.lib.comp.McMMOModule;
 import io.lumine.mythic.lib.comp.adventure.AdventureParser;
 import io.lumine.mythic.lib.comp.anticheat.AntiCheatSupport;
 import io.lumine.mythic.lib.comp.anticheat.SpartanPlugin;
@@ -48,6 +48,7 @@ import io.lumine.mythic.lib.util.loadingorder.DependencyNode;
 import io.lumine.mythic.lib.util.network.MythicPacketSniffer;
 import io.lumine.mythic.lib.version.ServerVersion;
 import io.lumine.mythic.lib.version.SpigotPlugin;
+import io.lumine.mythic.lib.version.VInventoryView;
 import org.apache.commons.lang.Validate;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -290,9 +291,11 @@ public class MythicLib extends JavaPlugin {
     @Override
     public void onDisable() {
         //this.configuration.unload();
-        for (Player player : Bukkit.getOnlinePlayers())
-            if (player.getOpenInventory() != null && player.getOpenInventory().getTopInventory().getHolder() != null && player.getOpenInventory().getTopInventory().getHolder() instanceof PluginInventory)
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            final VInventoryView view = version.getWrapper().getOpenInventory(player);
+            if (view.getTopInventory().getHolder() != null && view.getTopInventory().getHolder() instanceof PluginInventory)
                 player.closeInventory();
+        }
 
         glowModule.disable();
     }

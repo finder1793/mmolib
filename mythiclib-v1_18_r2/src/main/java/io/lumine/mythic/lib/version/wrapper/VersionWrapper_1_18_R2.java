@@ -515,6 +515,11 @@ public class VersionWrapper_1_18_R2 implements VersionWrapper {
     }
 
     @Override
+    public VInventoryView getOpenInventory(Player player) {
+        return new InventoryViewImpl(player.getOpenInventory());
+    }
+
+    @Override
     public InventoryClickEvent newInventoryClickEvent(VInventoryView view, InventoryType.SlotType type, int slot, ClickType click, InventoryAction action) {
         return new InventoryClickEvent(((InventoryViewImpl) view).view, type, slot, click, action);
     }

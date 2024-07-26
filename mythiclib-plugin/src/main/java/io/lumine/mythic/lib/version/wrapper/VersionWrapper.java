@@ -175,5 +175,7 @@ public interface VersionWrapper {
 
     VInventoryView getView(InventoryEvent event);
 
+    VInventoryView getOpenInventory(@NotNull Player player);
+
     InventoryClickEvent newInventoryClickEvent(@NotNull VInventoryView view, @NotNull InventoryType.@NotNull SlotType type, int slot, @NotNull ClickType click, @NotNull InventoryAction action);
 }
