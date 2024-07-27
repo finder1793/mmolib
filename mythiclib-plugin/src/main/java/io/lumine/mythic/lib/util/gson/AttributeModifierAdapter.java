@@ -22,7 +22,7 @@ public class AttributeModifierAdapter implements JsonSerializer<AttributeModifie
 
         if (object.has("Name")) {
             // UUID, Name, Slot
-            key = new NamespacedKey(MythicLib.plugin, object.get("UUID").getAsString() + "_" + object.get("Name"));
+            key = convertToNamespacedKey(object.get("UUID").getAsString(), object.get("Name").getAsString());
             group = object.has("Slot") ? EquipmentSlot.valueOf(object.get("Slot").getAsString()).getGroup() : EquipmentSlotGroup.ANY;
         } else {
             // Key, Group
@@ -31,6 +31,17 @@ public class AttributeModifierAdapter implements JsonSerializer<AttributeModifie
         }
 
         return new AttributeModifier(key, object.get("Amount").getAsDouble(), AttributeModifier.Operation.valueOf(object.get("Operation").getAsString()), group);
+    }
+
+    @BackwardsCompatibility(version = "1.21")
+    private NamespacedKey convertToNamespacedKey(String uuid, String name) {
+
+        // Exceptionally, convert into new MythicLib attributes
+        if (name.startsWith("mythiclib.") || name.startsWith("mmoitems.") || name.startsWith("mmolib."))
+            return new NamespacedKey(MythicLib.plugin, name.split("\\.", 2)[1]);
+
+        // Vanilla behaviour of converting old->new modifiers
+        return new NamespacedKey(MythicLib.plugin, uuid);
     }
 
     @Override
