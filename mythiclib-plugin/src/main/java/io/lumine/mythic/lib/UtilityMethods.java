@@ -328,11 +328,13 @@ public class UtilityMethods {
         return found != null ? found : (instance != null ? instance.getDefaultValue() : 0);
     }
 
-    private static final String[] PREVIOUS_ATTRIBUTE_MODIFIER_NAMES = {"mmolib.", "mmoitems."};
+    private static final String[] PREVIOUS_ATTRIBUTE_MODIFIER_NAMES = {"mmolib.", "mmoitems.", "mythiclib."};
 
     /**
      * Method called on login to flush old modifiers which
-     * paths used back in ML ~1.3
+     * paths used back in ML ~1.3 `mmolib.` and `mmoitems.` where
+     * back when stats were not centralizing in MythicLib.
+     * `mythiclib.` is for 1.21 as attribute names now start with `mythiclib:`
      */
     @BackwardsCompatibility(version = "1.3")
     public static void flushOldModifiers(@NotNull Player player) {
