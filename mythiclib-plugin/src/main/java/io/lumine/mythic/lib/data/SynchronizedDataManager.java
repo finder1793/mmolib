@@ -203,7 +203,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
     }
 
     /**
-     * @param playerData Player data to be loaded.
+     * @param playerData Empty player data which will be populated.
      * @return Completable future that completes when the data is loaded.
      * It will only complete if the following conditions are met:
      * <ul>

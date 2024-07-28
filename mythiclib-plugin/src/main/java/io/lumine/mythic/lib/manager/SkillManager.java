@@ -46,8 +46,8 @@ import io.lumine.mythic.lib.skill.handler.FabledSkillHandler;
 import io.lumine.mythic.lib.skill.handler.MythicLibSkillHandler;
 import io.lumine.mythic.lib.skill.handler.MythicMobsSkillHandler;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
+import io.lumine.mythic.lib.util.FileUtils;
 import io.lumine.mythic.lib.util.PostLoadException;
-import io.lumine.mythic.lib.util.RecursiveFolderExplorer;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -435,18 +435,10 @@ public class SkillManager {
             exception.printStackTrace();
         }
 
-        // Initialize custom skills
-        new RecursiveFolderExplorer(file -> {
-
-            FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-            for (String key : config.getKeys(false))
-                try {
-                    registerScript(new Script(Objects.requireNonNull(config.getConfigurationSection(key), "Config is null")));
-                } catch (RuntimeException exception) {
-                    MythicLib.plugin.getLogger().log(Level.WARNING, "Could not initialize script '" + key + "' from '" + file.getName() + "': " + exception.getMessage());
-                }
-
-        }, MythicLib.plugin, "Could not load scripts").explore(new File(MythicLib.plugin.getDataFolder() + "/script"));
+        // Initialize custom scripts/skills
+        FileUtils.loadObjectsFromFolder(MythicLib.plugin, "script", false, (key, config) -> {
+            registerScript(new Script(Objects.requireNonNull(config, "Config is null")));
+        }, "Could not load script '%s' from file '%s': '%s'");
 
         // Postload custom scripts and register a skill handler
         for (Script script : scripts.values())
@@ -461,7 +453,7 @@ public class SkillManager {
             }
 
         // Load skill handlers
-        new RecursiveFolderExplorer(file -> {
+        FileUtils.loadObjectsFromFolderRaw(MythicLib.plugin, "skill", file -> {
             final FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
             // Read as unique skill
@@ -479,6 +471,6 @@ public class SkillManager {
                     } catch (RuntimeException exception) {
                         MythicLib.plugin.getLogger().log(Level.WARNING, "Could not load skill handler '" + key + "' from file '" + file.getName() + "': " + exception.getMessage());
                     }
-        }, MythicLib.plugin, "Could not load skills").explore(new File(MythicLib.plugin.getDataFolder() + "/skill"));
+        }, "Could not load skill '%s': %s");
     }
 }
