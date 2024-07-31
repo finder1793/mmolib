@@ -10,7 +10,9 @@ import org.jetbrains.annotations.NotNull;
 public class VersionUtils {
 
     @NotNull
-    public static AttributeModifier attrMod(@NotNull NamespacedKey key, double amount, @NotNull AttributeModifier.Operation operation) {
+    public static AttributeModifier attrMod(@NotNull NamespacedKey key,
+                                            double amount,
+                                            @NotNull AttributeModifier.Operation operation) {
         return MythicLib.plugin.getVersion().getWrapper().newAttributeModifier(key, amount, operation);
     }
 

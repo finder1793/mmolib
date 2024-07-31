@@ -10,22 +10,29 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
 public class ChatInput implements Listener {
     private final Player player;
+    private final Function<String, Boolean> inputHandler;
+    private final Runnable cancelHandler;
 
-    /*
-     * if output is null, then it means the player typed "cancel" and wants to
-     * go back. if the function returns false, then the chat input is not
-     * cancelled.
-     */
-    private final Function<String, Boolean> output;
-
-    public ChatInput(Player player, Function<String, Boolean> output) {
+    @Deprecated
+    public ChatInput(Player player, Function<String, Boolean> inputHandler) {
         this.player = player;
-        this.output = output;
+        this.inputHandler = inputHandler;
+        this.cancelHandler = () -> inputHandler.apply(null);
+        Bukkit.getPluginManager().registerEvents(this, MythicLib.plugin);
+    }
+
+    public ChatInput(@NotNull Player player,
+                     @NotNull Function<String, Boolean> inputHandler,
+                     @NotNull Runnable cancelHandler) {
+        this.player = player;
+        this.inputHandler = inputHandler;
+        this.cancelHandler = cancelHandler;
         Bukkit.getPluginManager().registerEvents(this, MythicLib.plugin);
     }
 
@@ -37,8 +44,15 @@ public class ChatInput implements Listener {
     public void a(AsyncPlayerChatEvent event) {
         if (event.getPlayer().equals(player)) {
             event.setCancelled(true);
-            if (output.apply(event.getMessage().equalsIgnoreCase("cancel") ? null : event.getMessage()))
+
+            // Cancel input
+            if (event.getMessage().equalsIgnoreCase("cancel")) {
+                cancelHandler.run();
                 close();
+                return;
+            }
+
+            if (inputHandler.apply(event.getMessage())) close();
         }
     }
 

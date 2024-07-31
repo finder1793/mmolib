@@ -6,6 +6,7 @@ import io.lumine.mythic.lib.api.explorer.ChatInput;
 import io.lumine.mythic.lib.api.explorer.ItemBuilder;
 import io.lumine.mythic.lib.api.stat.handler.AttributeStatHandler;
 import io.lumine.mythic.lib.api.util.AltChar;
+import io.lumine.mythic.lib.util.ReflectionUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -23,13 +24,16 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class AttributeExplorer extends PluginInventory {
     private final Player target;
+    private final boolean legacy;
 
     /**
      * Explored attribute
@@ -53,6 +57,7 @@ public class AttributeExplorer extends PluginInventory {
         this.target = target;
 
         // Read attributes
+        legacy = MythicLib.plugin.getVersion().isUnder(1, 21);
         attributes = MythicLib.plugin.getStats().getHandlers().stream()
                 .filter(handler -> handler instanceof AttributeStatHandler)
                 .map(handler -> (AttributeStatHandler) handler)
@@ -65,6 +70,10 @@ public class AttributeExplorer extends PluginInventory {
 
     public Player getTarget() {
         return target;
+    }
+
+    public boolean isLegacy() {
+        return legacy;
     }
 
     @Override
@@ -129,14 +138,25 @@ public class AttributeExplorer extends PluginInventory {
 
                 List<String> lore = new ArrayList<>();
                 lore.add("");
-                lore.add(ChatColor.GRAY + "Key: " + ChatColor.GOLD + modifier.getKey());
+                if (!legacy) {
+                    lore.add(ChatColor.GRAY + "Key: " + ChatColor.GOLD + modifier.getKey());
+                } else {
+                    lore.add(ChatColor.GRAY + "UUID: " + ChatColor.GOLD + ReflectionUtils.invoke(AttributeModifier_getUniqueId, modifier));
+                    lore.add(ChatColor.GRAY + "Name: " + ChatColor.GOLD + modifier.getName());
+                }
                 lore.add(ChatColor.GRAY + "Amount: " + ChatColor.GOLD + modifier.getAmount());
                 lore.add(ChatColor.GRAY + "Operation: " + ChatColor.GOLD + modifier.getOperation());
-                lore.add(ChatColor.GRAY + "Slot Group: " + ChatColor.GOLD + modifier.getSlotGroup());
+                if (!legacy) {
+                    lore.add(ChatColor.GRAY + "Slot Group: " + ChatColor.GOLD + modifier.getSlotGroup());
+                } else {
+                    lore.add(ChatColor.GRAY + "Slot: " + ChatColor.GOLD + modifier.getSlot());
+                }
                 lore.add("");
                 lore.add(ChatColor.YELLOW + AltChar.smallListDash + " Right click to remove.");
 
-                meta.getPersistentDataContainer().set(MODIFIER_KEY, PersistentDataType.STRING, modifier.getKey().toString());
+                meta.getPersistentDataContainer().set(MODIFIER_KEY, PersistentDataType.STRING, !legacy
+                        ? modifier.getKey().toString()
+                        : ReflectionUtils.invoke(AttributeModifier_getUniqueId, modifier).toString());
                 meta.setLore(lore);
                 item.setItemMeta(meta);
                 inv.setItem(MODIFIER_SLOTS[j++], item);
@@ -154,6 +174,8 @@ public class AttributeExplorer extends PluginInventory {
 
         return inv;
     }
+
+    private static final Method AttributeModifier_getUniqueId = ReflectionUtils.getDeclaredMethod(AttributeModifier.class, "getUniqueId");
 
     public void setExplored(Attribute attribute) {
         explored = attribute;
@@ -223,7 +245,9 @@ public class AttributeExplorer extends PluginInventory {
 
         String tag = item.getItemMeta().getPersistentDataContainer().get(MODIFIER_KEY, PersistentDataType.STRING);
         if (tag != null && event.getAction() == InventoryAction.PICKUP_HALF) {
-            final AttributeModifier mod = getPlayer().getAttribute(explored).getModifier(NamespacedKey.fromString(tag));
+            final AttributeModifier mod = !legacy
+                    ? getPlayer().getAttribute(explored).getModifier(NamespacedKey.fromString(tag))
+                    : getPlayer().getAttribute(explored).getModifier(UUID.fromString(tag));
             target.getAttribute(explored).removeModifier(mod);
             getPlayer().sendMessage(ChatColor.YELLOW + "> Modifier successfully removed.");
             setExplored(explored);
@@ -270,6 +294,4 @@ public class AttributeExplorer extends PluginInventory {
             }
         }
     }
-
-
 }

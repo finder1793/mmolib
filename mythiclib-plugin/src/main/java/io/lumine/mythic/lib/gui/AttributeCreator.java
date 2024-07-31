@@ -5,8 +5,8 @@ import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.explorer.ChatInput;
 import io.lumine.mythic.lib.api.explorer.ItemBuilder;
 import io.lumine.mythic.lib.api.util.AltChar;
+import io.lumine.mythic.lib.util.annotation.BackwardsCompatibility;
 import io.lumine.mythic.lib.version.VersionUtils;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -17,31 +17,51 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Function;
 
 public class AttributeCreator extends PluginInventory {
     private final AttributeExplorer explorer;
+    private final boolean legacy;
 
-    private String namespacedKey;
+    private NamespacedKey namespacedKey;
     private double amount;
     private AttributeModifier.Operation operation;
     private EquipmentSlotGroup group;
+    @BackwardsCompatibility(version = "1.21")
+    private UUID legacyUuid;
+    @BackwardsCompatibility(version = "1.21")
+    private String legacyName;
+    @BackwardsCompatibility(version = "1.21")
+    private EquipmentSlot legacySlot;
 
     public AttributeCreator(AttributeExplorer inv) {
         super(inv.getPlayer());
         explorer = inv;
+        legacy = inv.isLegacy();
     }
 
     @Override
     public Inventory getInventory() {
         Inventory inv = Bukkit.createInventory(this, 36, "Attribute Creation..");
 
-        inv.setItem(10, new ItemBuilder(Material.OAK_SIGN, "&6Name-spaced Key").setLore("", "&7Current Value: &6" + (namespacedKey == null ? "None" : namespacedKey)));
-        inv.setItem(11, new ItemBuilder(Material.CHEST, "&6Amount").setLore("", "&7Current Value: &6" + amount));
-        inv.setItem(12, new ItemBuilder(Material.REPEATER, "&6Operation").setLore("", "&7Current Value: &6" + (operation == null ? "None" : operation.name())));
+        if (!legacy) {
+            inv.setItem(11, new ItemBuilder(Material.OAK_SIGN, "&6Name-Spaced Key").setLore("", "&7Current Value: &6" + (namespacedKey == null ? "None" : namespacedKey)));
+        } else {
+            inv.setItem(10, new ItemBuilder(Material.COMMAND_BLOCK_MINECART, "&6UUID").setLore("", "&7Current Value: &6" + (legacyUuid == null ? "None" : legacyUuid)));
+            inv.setItem(11, new ItemBuilder(Material.OAK_SIGN, "&6Name").setLore("", "&7Current Value: &6" + (legacyName == null ? "None" : legacyName)));
+        }
+        inv.setItem(12, new ItemBuilder(Material.CHEST, "&6Amount").setLore("", "&7Current Value: &6" + amount));
+        inv.setItem(13, new ItemBuilder(Material.REPEATER, "&6Operation").setLore("", "&7Current Value: &6" + (operation == null ? "None" : operation.name())));
 
-        inv.setItem(14, new ItemBuilder(Material.LEATHER_HELMET, "&6Slot Group").setLore("", "&7Current Value: &6" + (group == null ? "None" : group.toString())));
+        if (!legacy) {
+            inv.setItem(14, new ItemBuilder(Material.LEATHER_HELMET, "&6Slot Group").setLore("", "&7Current Value: &6" + (group == null ? "None" : group.toString())));
+        } else {
+            inv.setItem(14, new ItemBuilder(Material.LEATHER_HELMET, "&6Slot").setLore("", "&7Current Value: &6" + (legacySlot == null ? "None" : legacySlot.name())));
+        }
 
         inv.setItem(30, new ItemBuilder(Material.BARRIER, "&6" + AltChar.rightArrow + " Back"));
         inv.setItem(32, new ItemBuilder(Material.GREEN_TERRACOTTA, "&aAdd Attribute!"));
@@ -69,105 +89,97 @@ public class AttributeCreator extends PluginInventory {
                 return;
             }
 
-            final NamespacedKey key = this.namespacedKey == null ? new NamespacedKey(MythicLib.plugin, UUID.randomUUID().toString()) : NamespacedKey.fromString(this.namespacedKey, MythicLib.plugin);
-            explorer.getTarget().getAttribute(explorer.getExplored()).addModifier(VersionUtils.attrMod(key, amount, operation == null ? AttributeModifier.Operation.ADD_NUMBER : operation));
+            final AttributeModifier.Operation operation = this.operation == null ? AttributeModifier.Operation.ADD_NUMBER : this.operation;
+            final AttributeModifier modifier;
+            if (!legacy) {
+                final NamespacedKey key = this.namespacedKey == null ? new NamespacedKey(MythicLib.plugin, UUID.randomUUID().toString()) : this.namespacedKey;
+                //final EquipmentSlotGroup group = this.group == null ? EquipmentSlotGroup.ANY : group;
+                modifier = VersionUtils.attrMod(key, amount, operation);
+            } else {
+                final UUID uuid = this.legacyUuid == null ? UUID.randomUUID() : legacyUuid;
+                final String name = this.legacyName == null ? "" : legacyName;
+                modifier = new AttributeModifier(uuid, name, amount, operation);
+            }
+
+            explorer.getTarget().getAttribute(explorer.getExplored()).addModifier(modifier);
             explorer.open();
             getPlayer().sendMessage(ChatColor.YELLOW + "> Attribute successfully added.");
         }
 
-        else if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Name-spaced Key")) {
-            getPlayer().closeInventory();
-            getPlayer().sendMessage(ChatColor.YELLOW + "> Write in the chat the key you want. Example: `myplugin:iron_skin_pot` Type 'cancel' to abort.");
-            new ChatInput(getPlayer(), (output) -> {
-
-                if (output == null) {
-                    open();
-                    return true;
-                }
-
-                this.namespacedKey = output;
-                getPlayer().sendMessage(ChatColor.YELLOW + "> NSK set to " + ChatColor.GOLD + namespacedKey + ChatColor.YELLOW + ".");
-                open();
-                return true;
+        // NSK
+        else if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Name-Spaced Key")) {
+            input("name-spaced key (eg `myplugin:iron_skin_pot`)", input -> {
+                this.namespacedKey = Objects.requireNonNull(NamespacedKey.fromString(input, MythicLib.plugin));
+                return namespacedKey.toString();
             });
         }
 
+        // Slot group
         else if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Slot Group")) {
-            getPlayer().closeInventory();
-            getPlayer().sendMessage(ChatColor.YELLOW + "> Write in the slot group name.");
             for (EquipmentSlot slot : EquipmentSlot.values())
                 getPlayer().sendMessage(ChatColor.YELLOW + "- " + slot.name().toLowerCase());
-            new ChatInput(getPlayer(), (output) -> {
-
-                if (output == null) {
-                    open();
-                    return true;
-                }
-
-                String format = output.toUpperCase().replace(" ", "_").replace("-", "_");
-                try {
-                    group = EquipmentSlotGroup.getByName(format);
-                    Validate.notNull(group, "Cannot find equipment slot group with ID '" + format + "'");
-                    getPlayer().sendMessage(ChatColor.YELLOW + "> Slot set to " + ChatColor.GOLD + format + ChatColor.YELLOW + ".");
-                    open();
-                    return true;
-
-                } catch (IllegalArgumentException exception) {
-                    getPlayer().sendMessage(ChatColor.RED + "> " + format + " is not a valid slot name. Type 'cancel' to cancel.");
-                    return false;
-                }
+            input("slot group", input -> {
+                group = EquipmentSlotGroup.getByName(UtilityMethods.enumName(input));
+                return group.toString();
             });
         }
 
+        // Modifier operation
         else if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Operation")) {
-            getPlayer().closeInventory();
-            getPlayer().sendMessage(ChatColor.YELLOW + "> Write in the operation name.");
             for (AttributeModifier.Operation operation : AttributeModifier.Operation.values())
                 getPlayer().sendMessage(ChatColor.YELLOW + "- " + operation.name().toLowerCase());
-            new ChatInput(getPlayer(), (output) -> {
-
-                if (output == null) {
-                    open();
-                    return true;
-                }
-
-                String format = output.toUpperCase().replace(" ", "_").replace("-", "_");
-                try {
-                    operation = AttributeModifier.Operation.valueOf(format);
-                    getPlayer().sendMessage(ChatColor.YELLOW + "> Operation set to " + ChatColor.GOLD + format + ChatColor.YELLOW + ".");
-                    open();
-                    return true;
-
-                } catch (IllegalArgumentException exception) {
-                    getPlayer().sendMessage(ChatColor.RED + "> " + format + " is not a valid operation name. Type 'cancel' to cancel.");
-                    return false;
-                }
+            input("operation", input -> {
+                operation = AttributeModifier.Operation.valueOf(UtilityMethods.enumName(input));
+                return operation.name();
             });
         }
 
+        // Amount
         else if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Amount")) {
-            getPlayer().closeInventory();
-            getPlayer().sendMessage(ChatColor.YELLOW + "> Write in the chat the amount you want.");
-            new ChatInput(getPlayer(), (output) -> {
-
-                if (output == null) {
-                    open();
-                    return true;
-                }
-
-                double d;
-                try {
-                    d = Double.parseDouble(output);
-                    amount = d;
-                    getPlayer().sendMessage(ChatColor.YELLOW + "> Value set to " + ChatColor.GOLD + AttributeExplorer.FORMAT.format(d) + ChatColor.YELLOW + ".");
-                    open();
-                    return true;
-
-                } catch (NumberFormatException exception) {
-                    getPlayer().sendMessage(ChatColor.RED + "> " + output + " is not a valid number. Type 'cancel' to cancel.");
-                    return false;
-                }
+            input("amount", input -> {
+                this.amount = Double.parseDouble(input);
+                return AttributeExplorer.FORMAT.format(this.amount);
             });
         }
+
+        // Legacy slot
+        else if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Slot")) {
+            for (EquipmentSlot slot : EquipmentSlot.values())
+                getPlayer().sendMessage(ChatColor.YELLOW + "- " + slot.name());
+            input("slot", input -> {
+                this.legacySlot = EquipmentSlot.valueOf(UtilityMethods.enumName(input));
+                return legacySlot.name();
+            });
+        }
+
+        // Legacy UUID
+        else if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "UUID")) {
+            input("UUID", input -> {
+                this.legacyUuid = UUID.fromString(input);
+                return legacyUuid.toString();
+            });
+        }
+
+        // Legacy slot
+        else if (item.getItemMeta().getDisplayName().equals(ChatColor.GOLD + "Name"))
+            input("name", input -> this.legacyName = input);
+    }
+
+    private void input(@NotNull String inputChatMessageObject,
+                       @NotNull Function<String, String> inputHandler) {
+        getPlayer().closeInventory();
+        getPlayer().sendMessage(ChatColor.YELLOW + "Write in the chat the desired " + inputChatMessageObject + ".");
+        new ChatInput(getPlayer(), input -> {
+            try {
+                final String stringResult = inputHandler.apply(input);
+                getPlayer().sendMessage(ChatColor.YELLOW + "Value set to " + ChatColor.GOLD + stringResult + ChatColor.YELLOW + ".");
+                open();
+                return true;
+
+            } catch (Exception exception) {
+                getPlayer().sendMessage(ChatColor.RED + "'" + input + "' is not a valid input. Type 'cancel' to cancel.");
+                return false;
+            }
+        }, this::open);
     }
 }
