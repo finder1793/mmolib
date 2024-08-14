@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public interface VersionWrapper {
@@ -166,7 +167,8 @@ public interface VersionWrapper {
     GameProfile getGameProfile(Player player);
 
     default AttributeModifier newAttributeModifier(@NotNull NamespacedKey key, double amount, @NotNull AttributeModifier.Operation operation) {
-        return new AttributeModifier(key.toString(), amount, operation);
+        final String str = key.toString();
+        return new AttributeModifier(UUID.nameUUIDFromBytes(str.getBytes(StandardCharsets.UTF_8)), str, amount, operation);
     }
 
     default boolean matches(AttributeModifier modifier, NamespacedKey key) {
