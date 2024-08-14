@@ -104,7 +104,7 @@ public class MythicItemUIFilter implements UIFilter {
         Optional<MythicItem> hasMythicItem = MythicBukkit.inst().getItemManager().getItem(argument);
 
         // Thing
-        ItemStack item = ((BukkitItemStack) hasMythicItem.get().generateItemStack(1)).build();
+        ItemStack item = ((BukkitItemStack) hasMythicItem.get().generateItemStack(1)).getItemStack();
 
         FriendlyFeedbackProvider.log(ffp, FriendlyFeedbackCategory.SUCCESS,
                 "Successfully generated $r{0}$b. ", SilentNumbers.getItemName(item));
@@ -124,7 +124,7 @@ public class MythicItemUIFilter implements UIFilter {
         Optional<MythicItem> hasMythicItem = MythicBukkit.inst().getItemManager().getItem(argument);
 
         // Thing
-        ItemStack item = ((BukkitItemStack)hasMythicItem.get().generateItemStack(1)).build();
+        ItemStack item = ((BukkitItemStack)hasMythicItem.get().generateItemStack(1)).getItemStack();
 
         FriendlyFeedbackProvider.log(ffp, FriendlyFeedbackCategory.SUCCESS,
                 "Successfully generated $r{0}$b. ", SilentNumbers.getItemName(item));
@@ -144,7 +144,7 @@ public class MythicItemUIFilter implements UIFilter {
         Optional<MythicItem> hasMythicItem = MythicBukkit.inst().getItemManager().getItem(argument);
 
         // Description is thus
-        return SilentNumbers.toArrayList("This item must be a $r" + SilentNumbers.getItemName(((BukkitItemStack)((MythicItem)hasMythicItem.get()).generateItemStack(1)).build()) + "$b.");
+        return SilentNumbers.toArrayList("This item must be a $r" + SilentNumbers.getItemName(((BukkitItemStack) hasMythicItem.get().generateItemStack(1)).getItemStack()) + "$b.");
     }
 
     @Override public boolean determinateGeneration() { return true; }

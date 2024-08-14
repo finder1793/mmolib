@@ -1,13 +1,15 @@
 package io.lumine.mythic.lib.skill.handler;
 
 import io.lumine.mythic.api.config.MythicConfig;
+import io.lumine.mythic.api.skills.placeholders.PlaceholderBoolean;
 import io.lumine.mythic.api.skills.placeholders.PlaceholderDouble;
 import io.lumine.mythic.api.skills.placeholders.PlaceholderInt;
 import io.lumine.mythic.api.skills.placeholders.PlaceholderString;
 import io.lumine.mythic.bukkit.utils.serialize.Chroma;
 import io.lumine.mythic.bukkit.utils.text.Text;
 import io.lumine.mythic.core.config.GenericConfig;
-import io.lumine.mythic.core.skills.placeholders.parsers.PlaceholderColor;
+import io.lumine.mythic.core.skills.placeholders.parsers.PlaceholderBooleanImpl;
+import io.lumine.mythic.core.skills.placeholders.parsers.PlaceholderColorImpl;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -229,6 +231,70 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
 
     public boolean getBoolean(String field, boolean def) {
         return this.fc.getBoolean(this.getNode(field) + field, def);
+    }
+
+    @Override
+    public PlaceholderBoolean getPlaceholderBoolean(String field) {
+        ConfigurationSection var10000 = this.fc;
+        String var10001 = this.getNode(field);
+        if (var10000.isSet(var10001 + field)) {
+            var10000 = this.fc;
+            var10001 = this.getNode(field);
+            return PlaceholderBooleanImpl.of(var10000.getString(var10001 + field));
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public PlaceholderBoolean getPlaceholderBoolean(String[] strings) {
+        String[] var2 = strings;
+        int var3 = strings.length;
+
+        for(int var4 = 0; var4 < var3; ++var4) {
+            String key = var2[var4];
+            ConfigurationSection var10000 = this.fc;
+            String var10001 = this.getNode(key);
+            if (var10000.isSet(var10001 + key)) {
+                var10000 = this.fc;
+                var10001 = this.getNode(key);
+                return PlaceholderBooleanImpl.of(var10000.getString(var10001 + key));
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public PlaceholderBoolean getPlaceholderBoolean(String field, Boolean def) {
+        ConfigurationSection var10000 = this.fc;
+        String var10001 = this.getNode(field);
+        if (var10000.isSet(var10001 + field)) {
+            var10000 = this.fc;
+            var10001 = this.getNode(field);
+            return PlaceholderBooleanImpl.of(var10000.getString(var10001 + field));
+        } else {
+            return def == null ? null : PlaceholderBoolean.of(def.toString());
+        }
+    }
+
+    @Override
+    public PlaceholderBoolean getPlaceholderBoolean(String[] field, Boolean def) {
+        String[] var3 = field;
+        int var4 = field.length;
+
+        for(int var5 = 0; var5 < var4; ++var5) {
+            String key = var3[var5];
+            ConfigurationSection var10000 = this.fc;
+            String var10001 = this.getNode(key);
+            if (var10000.isSet(var10001 + key)) {
+                var10000 = this.fc;
+                var10001 = this.getNode(key);
+                return PlaceholderBooleanImpl.of(var10000.getString(var10001 + key));
+            }
+        }
+
+        return def == null ? null : PlaceholderBoolean.of(def.toString());
     }
 
     public Boolean getBooleanNullable(String field) {
@@ -522,9 +588,9 @@ public class MythicConfigImpl implements GenericConfig, Cloneable, MythicConfig 
         return s == null ? null : PlaceholderDouble.of(s);
     }
 
-    public PlaceholderColor getPlaceholderColor(String key, String def) {
+    public PlaceholderColorImpl getPlaceholderColor(String key, String def) {
         PlaceholderString s = this.getPlaceholderString(key, def);
-        return s == null ? null : new PlaceholderColor(s);
+        return s == null ? null : new PlaceholderColorImpl(s);
     }
 
     public <T extends Enum> T getEnum(String field, Class<T> clazz, T def) {
