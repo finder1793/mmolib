@@ -426,16 +426,6 @@ public class VersionWrapper_1_16_R3 implements VersionWrapper {
     }
 
     @Override
-    public NBTItem copyTexture(NBTItem item) {
-        return getNBTItem(new ItemStack(item.getItem().getType())).addTag(new ItemTag("CustomModelData", item.getInteger("CustomModelData")));
-    }
-
-    @Override
-    public ItemStack textureItem(Material material, int model) {
-        return getNBTItem(new ItemStack(material)).addTag(new ItemTag("CustomModelData", model)).toItem();
-    }
-
-    @Override
     public Enchantment getEnchantmentFromString(String s) {
         return Enchantment.getByKey(NamespacedKey.minecraft(s));
     }

@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.version.wrapper;
 
 import com.mojang.authlib.GameProfile;
+import io.lumine.mythic.lib.api.item.ItemTag;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import io.lumine.mythic.lib.version.OreDrops;
 import io.lumine.mythic.lib.version.VInventoryView;
@@ -16,6 +17,7 @@ import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.NotNull;
 
@@ -96,9 +98,19 @@ public interface VersionWrapper {
 
     FurnaceRecipe getFurnaceRecipe(String path, ItemStack item, Material material, float exp, int cook);
 
-    NBTItem copyTexture(NBTItem item);
+    @Deprecated
+    default NBTItem copyTexture(NBTItem item) {
+        return getNBTItem(new ItemStack(item.getItem().getType())).addTag(new ItemTag("CustomModelData", item.getInteger("CustomModelData")));
+    }
 
-    ItemStack textureItem(Material material, int model);
+    @Deprecated
+    default ItemStack textureItem(Material material, int modelData) {
+        final ItemStack stack = new ItemStack(material);
+        final ItemMeta meta = stack.getItemMeta();
+        meta.setCustomModelData(modelData);
+        stack.setItemMeta(meta);
+        return stack;
+    }
 
     Enchantment getEnchantmentFromString(String s);
 
