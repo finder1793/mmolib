@@ -252,6 +252,8 @@ public class MythicLib extends JavaPlugin {
         getCommand("megaworkbench").setExecutor(MegaWorkbenchMapping.MWB);
         Bukkit.getPluginManager().registerEvents(MegaWorkbenchMapping.MWB, this);
 
+        damageManager.initialize(false);
+
         // Loads commands
         commandManager.initialize(false);
 
