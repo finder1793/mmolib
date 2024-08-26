@@ -1,6 +1,8 @@
 package io.lumine.mythic.lib.api.event;
 
+import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.stat.provider.PlayerStatProvider;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import org.apache.commons.lang.Validate;
@@ -24,8 +26,8 @@ public class PlayerAttackEvent extends AttackEvent implements Cancellable {
     public PlayerAttackEvent(EntityDamageEvent event, AttackMetadata attack) {
         super(event, attack);
 
-        Validate.isTrue(attack.isPlayer(), "Attack was not performed by a player");
-        this.attacker = (PlayerMetadata) attack.getAttacker();
+        Validate.isTrue(attack.isPlayer(), "Not a player attack");
+        this.attacker = ((PlayerStatProvider) attack.getAttacker()).cache(EquipmentSlot.MAIN_HAND);
     }
 
     @NotNull

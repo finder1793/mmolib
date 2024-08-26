@@ -5,7 +5,7 @@ import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatInstance;
 import io.lumine.mythic.lib.api.stat.StatMap;
-import io.lumine.mythic.lib.api.stat.provider.StatProvider;
+import io.lumine.mythic.lib.api.stat.provider.PlayerStatProvider;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
@@ -30,7 +30,7 @@ import java.util.Objects;
  *
  * @author jules
  */
-public class PlayerMetadata implements StatProvider {
+public class PlayerMetadata implements PlayerStatProvider {
     private final Player player;
     private final MMOPlayerData playerData;
     private final Map<String, Double> playerStats;
@@ -46,8 +46,8 @@ public class PlayerMetadata implements StatProvider {
     }
 
     public PlayerMetadata(StatMap statMap, @NotNull EquipmentSlot actionHand) {
-        this.player = statMap.getPlayerData().getPlayer();
-        this.playerData = statMap.getPlayerData();
+        this.player = statMap.getData().getPlayer();
+        this.playerData = statMap.getData();
         this.playerStats = new HashMap<>();
         this.actionHand = actionHand;
 
@@ -58,24 +58,12 @@ public class PlayerMetadata implements StatProvider {
             this.playerStats.put(ins.getStat(), ins.getFilteredTotal(actionHand::isCompatible));
     }
 
-    /**
-     * @return The cached Player instance. Player instances are cached so
-     * that even if the player logs out, the ability can still be
-     * cast without additional errors
-     */
-    public Player getPlayer() {
-        return player;
-    }
-
-    @Override
-    public LivingEntity getEntity() {
-        return player;
-    }
-
+    @NotNull
     public MMOPlayerData getData() {
         return playerData;
     }
 
+    @NotNull
     public EquipmentSlot getActionHand() {
         return actionHand;
     }
@@ -110,6 +98,7 @@ public class PlayerMetadata implements StatProvider {
      * @param types  Type of target
      * @return The (modified) attack metadata
      */
+    @NotNull
     public AttackMetadata attack(LivingEntity target, double damage, DamageType... types) {
         return attack(target, damage, true, types);
     }
@@ -126,6 +115,7 @@ public class PlayerMetadata implements StatProvider {
      * @param types     Type of target
      * @return The (modified) attack metadata
      */
+    @NotNull
     public AttackMetadata attack(LivingEntity target, double damage, boolean knockback, DamageType... types) {
 
         // Check if entity is not already being damaged
@@ -142,5 +132,11 @@ public class PlayerMetadata implements StatProvider {
 
     public void triggerSkills(TriggerType triggerType, @Nullable Entity entity, @Nullable AttackMetadata attack) {
         playerData.triggerSkills(new TriggerMetadata(this, triggerType, entity, attack));
+    }
+
+    @Override
+    public @NotNull PlayerMetadata cache(@NotNull EquipmentSlot castHand) {
+        // Data is already cached
+        return this;
     }
 }

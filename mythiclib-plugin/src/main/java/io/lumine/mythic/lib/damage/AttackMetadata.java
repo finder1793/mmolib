@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.damage;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.stat.provider.PlayerStatProvider;
 import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import org.apache.commons.lang.Validate;
@@ -91,7 +92,7 @@ public class AttackMetadata {
      * @return If this is a player attack
      */
     public boolean isPlayer() {
-        return attacker != null && attacker instanceof PlayerMetadata;
+        return attacker != null && attacker instanceof PlayerStatProvider;
     }
 
     /**

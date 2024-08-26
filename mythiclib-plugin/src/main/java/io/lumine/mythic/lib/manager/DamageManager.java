@@ -7,7 +7,6 @@ import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.stat.provider.StatProvider;
 import io.lumine.mythic.lib.damage.*;
 import io.lumine.mythic.lib.entity.ProjectileMetadata;
-import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.version.VersionUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
@@ -18,7 +17,6 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -111,7 +109,7 @@ public class DamageManager implements Listener, MMOManager {
         markAsMetadata(attack);
 
         try {
-            applyDamage(attack.getDamage().getDamage(), attack.getTarget(), attack.isPlayer() ? ((PlayerMetadata) attack.getAttacker()).getPlayer() : null, knockback, ignoreImmunity);
+            applyDamage(attack.getDamage().getDamage(), attack.getTarget(), attack.getAttacker() != null ? attack.getAttacker().getEntity() : null, knockback, ignoreImmunity);
         } catch (Exception exception) {
             MythicLib.plugin.getLogger().log(Level.SEVERE, "Caught an exception (1) while damaging entity '" + attack.getTarget().getUniqueId() + "':");
             exception.printStackTrace();
@@ -120,7 +118,7 @@ public class DamageManager implements Listener, MMOManager {
         }
     }
 
-    private void applyDamage(double damage, @NotNull LivingEntity target, @Nullable Player damager, boolean knockback, boolean ignoreImmunity) {
+    private void applyDamage(double damage, @NotNull LivingEntity target, @Nullable LivingEntity damager, boolean knockback, boolean ignoreImmunity) {
 
         // Should knockback be applied
         if (!knockback) {

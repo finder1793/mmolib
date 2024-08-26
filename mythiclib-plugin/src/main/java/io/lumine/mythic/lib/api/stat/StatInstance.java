@@ -114,7 +114,7 @@ public class StatInstance extends ModifiedInstance<StatModifier> {
     }
 
     private boolean hasHandler() {
-        if (!map.getPlayerData().hasFullySynchronized()) return false;
+        if (!map.getData().hasFullySynchronized()) return false;
         return cachedHandler.get().isPresent();
     }
 

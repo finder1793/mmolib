@@ -47,10 +47,10 @@ public class AttributeStatHandler extends StatHandler {
 
     @Override
     public void runUpdate(@NotNull StatInstance instance) {
-        final AttributeInstance attrIns = instance.getMap().getPlayerData().getPlayer().getAttribute(attribute);
+        final AttributeInstance attrIns = instance.getMap().getData().getPlayer().getAttribute(attribute);
         removeModifiers(attrIns);
 
-        final double vanillaBase = instance.getMap().getPlayerData().getPlayer().getAttribute(attribute).getBaseValue();
+        final double vanillaBase = instance.getMap().getData().getPlayer().getAttribute(attribute).getBaseValue();
         final double mmoFinal = clampValue(instance.getFilteredTotal(vanillaBase + this.baseValue, EquipmentSlot.MAIN_HAND::isCompatible));
         final double difference = mmoFinal - vanillaBase;
 
@@ -64,12 +64,12 @@ public class AttributeStatHandler extends StatHandler {
 
     @Override
     public double getBaseValue(@NotNull StatInstance instance) {
-        return this.baseValue + instance.getMap().getPlayerData().getPlayer().getAttribute(attribute).getBaseValue();
+        return this.baseValue + instance.getMap().getData().getPlayer().getAttribute(attribute).getBaseValue();
     }
 
     @Override
     public double getFinalValue(@NotNull StatInstance instance) {
-        return instance.getMap().getPlayerData().getPlayer().getAttribute(attribute).getValue();
+        return instance.getMap().getData().getPlayer().getAttribute(attribute).getValue();
     }
 
     protected void removeModifiers(@NotNull AttributeInstance ins) {

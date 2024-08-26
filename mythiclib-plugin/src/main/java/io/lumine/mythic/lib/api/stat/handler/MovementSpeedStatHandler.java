@@ -18,13 +18,13 @@ public class MovementSpeedStatHandler extends AttributeStatHandler {
 
     @Override
     public void runUpdate(@NotNull StatInstance instance) {
-        final AttributeInstance attrIns = instance.getMap().getPlayerData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+        final AttributeInstance attrIns = instance.getMap().getData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
         removeModifiers(attrIns);
 
         // Calculate speed malus reduction (capped at 80%)
         final double coef = 1 - instance.getMap().getStat(SharedStat.SPEED_MALUS_REDUCTION) / 100;
 
-        final double vanillaBase = instance.getMap().getPlayerData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue();
+        final double vanillaBase = instance.getMap().getData().getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getBaseValue();
         final double mmoFinal = clampValue(instance.getFilteredTotal(vanillaBase + this.baseValue, EquipmentSlot.MAIN_HAND::isCompatible, mod -> mod.getValue() < 0 ? mod.multiply(coef) : mod));
         final double difference = mmoFinal - vanillaBase;
 

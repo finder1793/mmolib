@@ -44,7 +44,8 @@ public interface StatProvider {
     @NotNull
     static StatProvider get(LivingEntity living, EquipmentSlot actionHand, boolean cache) {
         if (!UtilityMethods.isRealPlayer(living)) return new EntityStatProvider(living);
-        Player player = (Player) living;
+
+        final Player player = (Player) living;
         final StatMap statMap = MMOPlayerData.get(player).getStatMap();
         return cache ? statMap.cache(actionHand) : statMap;
     }
