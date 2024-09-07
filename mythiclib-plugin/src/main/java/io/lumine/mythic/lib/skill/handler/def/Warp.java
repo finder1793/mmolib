@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 public class Warp extends SkillHandler<Warp.WarpSkillResult> {
@@ -51,8 +52,11 @@ public class Warp extends SkillHandler<Warp.WarpSkillResult> {
             Player caster = meta.getCaster().getPlayer();
             RayTraceResult res = caster.rayTraceBlocks(meta.getParameter("range"), FluidCollisionMode.NEVER);
             loc = res == null ? null : res.getHitPosition().toLocation(caster.getWorld());
-            if (loc != null)
-                loc.setDirection(caster.getEyeLocation().getDirection());
+            if (loc != null) {
+                final Vector dir = caster.getEyeLocation().getDirection();
+                loc.setDirection(dir);
+                loc.add(dir.setY(0).multiply(-.5));
+            }
         }
 
         @Override
