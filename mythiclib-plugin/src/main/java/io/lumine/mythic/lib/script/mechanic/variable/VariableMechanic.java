@@ -1,10 +1,10 @@
 package io.lumine.mythic.lib.script.mechanic.variable;
 
+import io.lumine.mythic.lib.script.mechanic.Mechanic;
 import io.lumine.mythic.lib.script.variable.VariableList;
 import io.lumine.mythic.lib.script.variable.VariableScope;
-import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import io.lumine.mythic.lib.skill.SkillMetadata;
-import io.lumine.mythic.lib.script.mechanic.Mechanic;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 
 /**
  * Mechanic that affects a new value to a variable. It is

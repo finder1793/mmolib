@@ -1,6 +1,8 @@
 package io.lumine.mythic.lib.util.configobject;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.MemoryConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.Set;
@@ -52,9 +54,25 @@ public class ConfigSectionObject implements ConfigObject {
         return config.getBoolean(key, defaultValue);
     }
 
+    @NotNull
     @Override
     public ConfigSectionObject getObject(String key) {
         return new ConfigSectionObject(Objects.requireNonNull(config.getConfigurationSection(key), "Could not find section with key '" + key + "'"));
+    }
+
+    @NotNull
+    @Override
+    public ConfigSectionObject adaptObject(String key) {
+        final Object found = config.get(key);
+
+        final ConfigurationSection loadFrom;
+        if (found instanceof ConfigurationSection) loadFrom = (ConfigurationSection) found;
+        else if (found instanceof String) {
+            loadFrom = new MemoryConfiguration();
+            loadFrom.set("type", found);
+        } else throw new IllegalArgumentException("Expecting either a string or object");
+
+        return new ConfigSectionObject(loadFrom);
     }
 
     @Override
@@ -62,6 +80,7 @@ public class ConfigSectionObject implements ConfigObject {
         return config.contains(key);
     }
 
+    @NotNull
     @Override
     public Set<String> getKeys() {
         return config.getKeys(false);

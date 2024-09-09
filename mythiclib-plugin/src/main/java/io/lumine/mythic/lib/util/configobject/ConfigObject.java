@@ -2,6 +2,8 @@ package io.lumine.mythic.lib.util.configobject;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.script.Script;
+import io.lumine.mythic.lib.script.targeter.EntityTargeter;
+import io.lumine.mythic.lib.script.targeter.LocationTargeter;
 import io.lumine.mythic.lib.util.DoubleFormula;
 import org.apache.commons.lang.Validate;
 import org.jetbrains.annotations.NotNull;
@@ -65,7 +67,29 @@ public interface ConfigObject {
         return MythicLib.plugin.getSkills().getScriptOrThrow(getString(key));
     }
 
+    @NotNull
+    default EntityTargeter getEntityTargeter(String key) {
+        return MythicLib.plugin.getSkills().loadEntityTargeter(adaptObject(key));
+    }
+
+    @NotNull
+    default LocationTargeter getLocationTargeter(String key) {
+        return MythicLib.plugin.getSkills().loadLocationTargeter(adaptObject(key));
+    }
+
+    @NotNull
     ConfigObject getObject(String key);
+
+    /**
+     * This either retrieves the object with given key if it exists,
+     * or if the given key is associated to a string, encapsulates this
+     * string value into a new object and sets the `type` key of that new
+     * object to the retrieved string value.
+     * <p>
+     * This is primarily used for targeters and condition shortcuts.
+     */
+    @NotNull
+    ConfigObject adaptObject(String key);
 
     boolean contains(String key);
 

@@ -25,14 +25,14 @@ public class ParabolaMechanic extends Mechanic {
     private final Script onStart, onTick, onEnd;
 
     public ParabolaMechanic(ConfigObject config) {
-        sourceLocation = config.contains("source") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("source")) : new SourceLocationTargeter();
-        targetLocation = config.contains("target") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("target")) : new TargetLocationTargeter();
+        sourceLocation = config.contains("source") ? config.getLocationTargeter("source") : new SourceLocationTargeter();
+        targetLocation = config.contains("target") ? config.getLocationTargeter("target") : new TargetLocationTargeter();
 
         config.validateKeys("tick");
 
-        onStart = config.contains("start") ? MythicLib.plugin.getSkills().getScriptOrThrow(config.getString("start")) : null;
-        onTick = MythicLib.plugin.getSkills().getScriptOrThrow(config.getString("tick"));
-        onEnd = config.contains("end") ? MythicLib.plugin.getSkills().getScriptOrThrow(config.getString("end")) : null;
+        onStart = config.contains("start") ? config.getScript("start") : null;
+        onTick = config.getScript("tick");
+        onEnd = config.contains("end") ? config.getScript("end") : null;
 
         height = config.getDouble("height");
         speed = config.getDouble("speed", 1);

@@ -12,8 +12,6 @@ import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
-
 @MechanicMetadata
 public class MultiplyDamageMechanic extends TargetMechanic {
     private final DoubleFormula amount;

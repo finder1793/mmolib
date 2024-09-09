@@ -1,5 +1,7 @@
 package io.lumine.mythic.lib.util.configobject;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,6 +38,12 @@ public class EmptyConfigObject implements ConfigObject {
         return defaultValue;
     }
 
+    @NotNull
+    @Override
+    public ConfigObject adaptObject(String key) {
+        throw new NullPointerException("Could not find entity targeter with key '" + key + "'");
+    }
+
     @Override
     public boolean getBoolean(String key) {
         throw new NullPointerException("Could not find boolean with key '" + key + "'");
@@ -46,6 +54,7 @@ public class EmptyConfigObject implements ConfigObject {
         return defaultValue;
     }
 
+    @NotNull
     @Override
     public ConfigObject getObject(String key) {
         throw new NullPointerException("Could not find object with key '" + key + "'");

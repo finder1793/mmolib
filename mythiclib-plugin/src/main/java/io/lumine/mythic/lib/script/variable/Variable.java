@@ -11,15 +11,15 @@ import javax.annotation.Nullable;
  * Names are really important because it's what the user
  * interacts with.
  *
- * @param <T> The object stored in that variable. This can be a string,
+ * @param <D> The object stored in that variable. This can be a string,
  *            double, integer, string list, location, vector...
  */
-public abstract class Variable<T> implements VariableContainer {
+public abstract class Variable<D> implements VariableContainer {
     private final String name;
 
-    private T stored;
+    private D stored;
 
-    public Variable(String name, T stored) {
+    public Variable(String name, D stored) {
         this.name = name;
         this.stored = stored;
 
@@ -30,19 +30,19 @@ public abstract class Variable<T> implements VariableContainer {
         return name;
     }
 
-    public T getStored() {
+    public D getStored() {
         return stored;
     }
 
-    public void setStored(T t) {
-        stored = t;
+    public void setStored(D d) {
+        stored = d;
     }
 
-    public abstract VariableRegistry getVariableRegistry();
+    public abstract VariableRegistry<Variable<D>> getVariableRegistry();
 
     @Override
     @Nullable
-    public Variable getVariable(String name) {
+    public Variable<?> getVariable(String name) {
         return getVariableRegistry().accessVariable(this, name);
     }
 

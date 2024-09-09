@@ -1,9 +1,9 @@
 package io.lumine.mythic.lib.script.mechanic.visual;
 
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.script.mechanic.MechanicMetadata;
 import io.lumine.mythic.lib.script.mechanic.type.LocationMechanic;
+import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.util.DoubleFormula;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.bukkit.Location;

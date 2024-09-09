@@ -2,12 +2,12 @@ package io.lumine.mythic.lib.script.mechanic.shaped;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.script.Script;
+import io.lumine.mythic.lib.script.mechanic.Mechanic;
 import io.lumine.mythic.lib.script.targeter.LocationTargeter;
 import io.lumine.mythic.lib.script.targeter.location.ConstantLocationTargeter;
 import io.lumine.mythic.lib.script.targeter.location.DefaultLocationTargeter;
 import io.lumine.mythic.lib.skill.SkillMetadata;
-import io.lumine.mythic.lib.script.Script;
-import io.lumine.mythic.lib.script.mechanic.Mechanic;
 import io.lumine.mythic.lib.util.DoubleFormula;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
@@ -27,8 +27,8 @@ public class HelixMechanic extends Mechanic {
     private final Script onStart, onTick, onEnd;
 
     public HelixMechanic(ConfigObject config) {
-        targetLocation = config.contains("source") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("source")) : new DefaultLocationTargeter();
-        direction = config.contains("direction") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("direction")) : new ConstantLocationTargeter(1, 0, 0);
+        targetLocation = config.contains("source") ? config.getLocationTargeter("source") : new DefaultLocationTargeter();
+        direction = config.contains("direction") ? config.getLocationTargeter("direction") : new ConstantLocationTargeter(1, 0, 0);
 
         config.validateKeys("tick");
 

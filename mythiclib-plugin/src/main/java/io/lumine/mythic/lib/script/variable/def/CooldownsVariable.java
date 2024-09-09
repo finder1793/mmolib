@@ -8,11 +8,11 @@ import org.jetbrains.annotations.NotNull;
 
 @VariableMetadata(name = "cooldownMap")
 public class CooldownsVariable extends Variable<CooldownMap> {
-    public static final VariableRegistry<CooldownsVariable> VARIABLE_REGISTRY = new VariableRegistry<CooldownsVariable>() {
+    public static final VariableRegistry<Variable<CooldownMap>> VARIABLE_REGISTRY = new VariableRegistry<Variable<CooldownMap>>() {
 
         @NotNull
         @Override
-        public Variable accessVariable(@NotNull CooldownsVariable cdVariable, @NotNull String name) {
+        public Variable<?> accessVariable(@NotNull Variable<CooldownMap> cdVariable, @NotNull String name) {
             return new DoubleVariable("temp", cdVariable.getStored().getCooldown(name));
         }
 
@@ -28,7 +28,7 @@ public class CooldownsVariable extends Variable<CooldownMap> {
     }
 
     @Override
-    public VariableRegistry getVariableRegistry() {
+    public VariableRegistry<Variable<CooldownMap>> getVariableRegistry() {
         return VARIABLE_REGISTRY;
     }
 

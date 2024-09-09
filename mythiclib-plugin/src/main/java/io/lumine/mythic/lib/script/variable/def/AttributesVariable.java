@@ -9,11 +9,11 @@ import org.bukkit.attribute.Attribute;
 
 @VariableMetadata(name = "attributes")
 public class AttributesVariable extends Variable<Attributable> {
-    public static final SimpleVariableRegistry<AttributesVariable> VARIABLE_REGISTRY = new SimpleVariableRegistry();
+    public static final SimpleVariableRegistry<Attributable> VARIABLE_REGISTRY = new SimpleVariableRegistry<>();
 
     static {
         for (Attribute attribute : Attribute.values())
-            VARIABLE_REGISTRY.registerVariable(attribute.name().substring("GENERIC_".length()).toLowerCase(), var -> new DoubleVariable("temp", var.getStored().getAttribute(attribute).getValue()));
+            VARIABLE_REGISTRY.registerVariable(attribute.name().substring("GENERIC_".length()).toLowerCase(), var -> new DoubleVariable("temp", var.getAttribute(attribute).getValue()));
     }
 
     public AttributesVariable(String name, Attributable attr) {
@@ -21,7 +21,7 @@ public class AttributesVariable extends Variable<Attributable> {
     }
 
     @Override
-    public VariableRegistry getVariableRegistry() {
+    public VariableRegistry<Variable<Attributable>> getVariableRegistry() {
         return VARIABLE_REGISTRY;
     }
 

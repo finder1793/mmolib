@@ -1,11 +1,10 @@
 package io.lumine.mythic.lib.script.targeter.entity;
 
-import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.script.targeter.EntityTargeter;
 import io.lumine.mythic.lib.script.targeter.LocationTargeter;
-import io.lumine.mythic.lib.util.configobject.ConfigObject;
+import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.util.DoubleFormula;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
@@ -20,8 +19,8 @@ public class ConeTargeter implements EntityTargeter {
     public ConeTargeter(ConfigObject config) {
         config.validateKeys("radius", "angle");
 
-        sourceLocation = config.contains("source") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("source")) : null;
-        direction = config.contains("direction") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("direction")) : null;
+        sourceLocation = config.contains("source") ? config.getLocationTargeter("source") : null;
+        direction = config.contains("direction") ? config.getLocationTargeter("direction") : null;
 
         angle = new DoubleFormula(config.getString("angle"));
         radius = new DoubleFormula(config.getString("radius"));

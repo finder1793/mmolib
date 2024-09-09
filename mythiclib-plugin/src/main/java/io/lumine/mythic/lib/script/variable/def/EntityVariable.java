@@ -11,21 +11,23 @@ import org.bukkit.entity.LivingEntity;
 
 @VariableMetadata(name = "entity")
 public class EntityVariable extends Variable<Entity> {
-    public static final SimpleVariableRegistry<EntityVariable> VARIABLE_REGISTRY = new SimpleVariableRegistry();
+    public static final SimpleVariableRegistry<Entity> VARIABLE_REGISTRY = new SimpleVariableRegistry<>();
 
     static {
-        VARIABLE_REGISTRY.registerVariable("id", var -> new IntegerVariable("temp", var.getStored().getEntityId()));
-        VARIABLE_REGISTRY.registerVariable("uuid", var -> new StringVariable("temp", var.getStored().getUniqueId().toString()));
-        VARIABLE_REGISTRY.registerVariable("type", var -> new StringVariable("temp", var.getStored().getType().name()));
-        VARIABLE_REGISTRY.registerVariable("location", var -> new PositionVariable("temp", var.getStored().getLocation()));
-        VARIABLE_REGISTRY.registerVariable("bb_center", var -> new PositionVariable("temp", var.getStored().getBoundingBox().getCenter().toLocation(var.getStored().getWorld())));
-        VARIABLE_REGISTRY.registerVariable("eye_location", var -> new PositionVariable("temp", ((LivingEntity) var.getStored()).getEyeLocation()));
-        VARIABLE_REGISTRY.registerVariable("health", var -> new DoubleVariable("temp", ((Damageable) var.getStored()).getHealth()));
-        VARIABLE_REGISTRY.registerVariable("looking", var -> new PositionVariable("temp", var.getStored().getWorld(), ((LivingEntity) var.getStored()).getEyeLocation().getDirection()));
-        VARIABLE_REGISTRY.registerVariable("velocity", var -> new PositionVariable("temp", var.getStored().getWorld(), var.getStored().getVelocity()));
-        VARIABLE_REGISTRY.registerVariable("height", var -> new DoubleVariable("temp", var.getStored().getHeight()));
-        VARIABLE_REGISTRY.registerVariable("attribute", var -> new AttributesVariable("temp", (Attributable) var.getStored()));
-        VARIABLE_REGISTRY.registerVariable("fire_ticks", var -> new IntegerVariable("temp", var.getStored().getFireTicks()));
+        VARIABLE_REGISTRY.registerVariable("id", var -> new IntegerVariable("temp", var.getEntityId()));
+        VARIABLE_REGISTRY.registerVariable("uuid", var -> new StringVariable("temp", var.getUniqueId().toString()));
+        VARIABLE_REGISTRY.registerVariable("type", var -> new StringVariable("temp", var.getType().name()));
+        VARIABLE_REGISTRY.registerVariable("location", var -> new PositionVariable("temp", var.getLocation()));
+        VARIABLE_REGISTRY.registerVariable("bb_center", var -> new PositionVariable("temp", var.getBoundingBox().getCenter().toLocation(var.getWorld())));
+        VARIABLE_REGISTRY.registerVariable("eye_location", var -> new PositionVariable("temp", ((LivingEntity) var).getEyeLocation()));
+        VARIABLE_REGISTRY.registerVariable("health", var -> new DoubleVariable("temp", ((Damageable) var).getHealth()));
+        VARIABLE_REGISTRY.registerVariable("looking", var -> new PositionVariable("temp", var.getWorld(), ((LivingEntity) var).getEyeLocation().getDirection()));
+        VARIABLE_REGISTRY.registerVariable("velocity", var -> new PositionVariable("temp", var.getWorld(), var.getVelocity()));
+        VARIABLE_REGISTRY.registerVariable("height", var -> new DoubleVariable("temp", var.getHeight()));
+        VARIABLE_REGISTRY.registerVariable("attribute", var -> new AttributesVariable("temp", (Attributable) var));
+        VARIABLE_REGISTRY.registerVariable("fire_ticks", var -> new IntegerVariable("temp", var.getFireTicks()));
+
+        VARIABLE_REGISTRY.transferTo(PlayerVariable.VARIABLE_REGISTRY);
     }
 
     public EntityVariable(String name, Entity entity) {
@@ -33,7 +35,7 @@ public class EntityVariable extends Variable<Entity> {
     }
 
     @Override
-    public VariableRegistry getVariableRegistry() {
+    public VariableRegistry<Variable<Entity>> getVariableRegistry() {
         return VARIABLE_REGISTRY;
     }
 

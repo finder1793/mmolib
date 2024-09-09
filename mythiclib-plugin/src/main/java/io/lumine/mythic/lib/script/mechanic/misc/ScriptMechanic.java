@@ -47,9 +47,9 @@ public class ScriptMechanic extends Mechanic {
         iterations = config.getDoubleFormula("iterations", DoubleFormula.constant(1));
 
         // Targeters
-        sourceLocation = config.contains("source") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("source")) : null;
-        targetEntity = config.contains("target") ? MythicLib.plugin.getSkills().loadEntityTargeter(config.getObject("target")) : null;
-        targetLocation = config.contains("target_location") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("target_location")) : null;
+        sourceLocation = config.contains("source") ? config.getLocationTargeter("source") : null;
+        targetEntity = config.contains("target") ? config.getEntityTargeter("target") : null;
+        targetLocation = config.contains("target_location") ? config.getLocationTargeter("target_location") : null;
 
         skill = MythicLib.plugin.getSkills().getScriptOrThrow(config.getString("name"));
     }

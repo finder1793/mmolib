@@ -1,7 +1,10 @@
 package io.lumine.mythic.lib.util.configobject;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
@@ -29,7 +32,7 @@ public class JsonWrapper implements ConfigObject {
 
         // Load Json object
         final int begin = value.indexOf("{"), end = value.lastIndexOf("}") + 1;
-        object = new JsonParser().parse(value.substring(begin, end)).getAsJsonObject();
+        object = JsonParser.parseString(value.substring(begin, end)).getAsJsonObject();
         key = nullify(value.substring(0, begin));
     }
 
@@ -68,6 +71,21 @@ public class JsonWrapper implements ConfigObject {
         return object.has(key) ? getInt(key) : defaultValue;
     }
 
+    @NotNull
+    @Override
+    public ConfigObject adaptObject(String key) {
+        final JsonElement found = object.get(key);
+
+        final JsonObject loadFrom;
+        if (found instanceof JsonObject) loadFrom = found.getAsJsonObject();
+        else if (found instanceof JsonPrimitive) {
+            loadFrom = new JsonObject();
+            loadFrom.addProperty("type", found.getAsString());
+        } else throw new IllegalArgumentException("Expecting either a string or object");
+
+        return new JsonWrapper(key, loadFrom);
+    }
+
     @Override
     public boolean getBoolean(String key) {
         return object.get(key).getAsBoolean();
@@ -78,6 +96,7 @@ public class JsonWrapper implements ConfigObject {
         return object.has(key) ? getBoolean(key) : defaultValue;
     }
 
+    @NotNull
     @Override
     public ConfigObject getObject(String key) {
         return new JsonWrapper(key, object.getAsJsonObject(key));
@@ -88,6 +107,7 @@ public class JsonWrapper implements ConfigObject {
         return object.has(key);
     }
 
+    @NotNull
     @Override
     public Set<String> getKeys() {
         return object.keySet();

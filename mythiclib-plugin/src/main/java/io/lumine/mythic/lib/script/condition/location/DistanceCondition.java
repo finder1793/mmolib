@@ -1,9 +1,8 @@
 package io.lumine.mythic.lib.script.condition.location;
 
-import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.script.condition.type.LocationCondition;
 import io.lumine.mythic.lib.script.targeter.LocationTargeter;
 import io.lumine.mythic.lib.skill.SkillMetadata;
-import io.lumine.mythic.lib.script.condition.type.LocationCondition;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
@@ -19,7 +18,7 @@ public class DistanceCondition extends LocationCondition {
 
         config.validateKeys("location", "max");
 
-        center = MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("location"));
+        center = config.getLocationTargeter("location");
         distanceMax = config.getDouble("max");
     }
 

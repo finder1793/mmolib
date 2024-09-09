@@ -8,11 +8,11 @@ import org.bukkit.World;
 
 @VariableMetadata(name = "world")
 public class WorldVariable extends Variable<World> {
-    public static final SimpleVariableRegistry<WorldVariable> VARIABLE_REGISTRY = new SimpleVariableRegistry();
+    public static final SimpleVariableRegistry<World> VARIABLE_REGISTRY = new SimpleVariableRegistry<>();
 
     static {
-        VARIABLE_REGISTRY.registerVariable("time", var -> new IntegerVariable("temp", (int) var.getStored().getTime()));
-        VARIABLE_REGISTRY.registerVariable("name", var -> new StringVariable("temp", var.getStored().getName()));
+        VARIABLE_REGISTRY.registerVariable("time", var -> new IntegerVariable("temp", (int) var.getTime()));
+        VARIABLE_REGISTRY.registerVariable("name", var -> new StringVariable("temp", var.getName()));
     }
 
     public WorldVariable(String name, World world) {
@@ -20,7 +20,7 @@ public class WorldVariable extends Variable<World> {
     }
 
     @Override
-    public VariableRegistry getVariableRegistry() {
+    public VariableRegistry<Variable<World>> getVariableRegistry() {
         return VARIABLE_REGISTRY;
     }
 

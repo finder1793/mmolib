@@ -8,11 +8,11 @@ import org.jetbrains.annotations.NotNull;
 
 @VariableMetadata(name = "statMap")
 public class StatsVariable extends Variable<StatProvider> {
-    public static final VariableRegistry<StatsVariable> VARIABLE_REGISTRY = new VariableRegistry<StatsVariable>() {
+    public static final VariableRegistry<Variable<StatProvider>> VARIABLE_REGISTRY = new VariableRegistry<Variable<StatProvider>>() {
 
         @NotNull
         @Override
-        public Variable accessVariable(@NotNull StatsVariable statsVariable, @NotNull String name) {
+        public Variable<?> accessVariable(@NotNull Variable<StatProvider> statsVariable, @NotNull String name) {
             return new DoubleVariable("temp", statsVariable.getStored().getStat(name.toUpperCase()));
         }
 
@@ -27,7 +27,7 @@ public class StatsVariable extends Variable<StatProvider> {
     }
 
     @Override
-    public VariableRegistry getVariableRegistry() {
+    public VariableRegistry<Variable<StatProvider>> getVariableRegistry() {
         return VARIABLE_REGISTRY;
     }
 

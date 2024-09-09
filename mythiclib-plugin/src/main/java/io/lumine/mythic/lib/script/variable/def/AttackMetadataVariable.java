@@ -1,17 +1,17 @@
 package io.lumine.mythic.lib.script.variable.def;
 
 import io.lumine.mythic.lib.damage.AttackMetadata;
+import io.lumine.mythic.lib.script.variable.SimpleVariableRegistry;
 import io.lumine.mythic.lib.script.variable.Variable;
 import io.lumine.mythic.lib.script.variable.VariableMetadata;
 import io.lumine.mythic.lib.script.variable.VariableRegistry;
-import io.lumine.mythic.lib.script.variable.SimpleVariableRegistry;
 
 @VariableMetadata(name = "attackMeta")
 public class AttackMetadataVariable extends Variable<AttackMetadata> {
-    public static final SimpleVariableRegistry<AttackMetadataVariable> VARIABLE_REGISTRY = new SimpleVariableRegistry<>();
+    public static final SimpleVariableRegistry<AttackMetadata> VARIABLE_REGISTRY = new SimpleVariableRegistry<>();
 
     static {
-        VARIABLE_REGISTRY.registerVariable("damage", var -> new DoubleVariable("temp", var.getStored().getDamage().getDamage()));
+        VARIABLE_REGISTRY.registerVariable("damage", var -> new DoubleVariable("temp", var.getDamage().getDamage()));
     }
 
     public AttackMetadataVariable(String name, AttackMetadata attackMetadata) {
@@ -19,7 +19,7 @@ public class AttackMetadataVariable extends Variable<AttackMetadata> {
     }
 
     @Override
-    public VariableRegistry getVariableRegistry() {
+    public VariableRegistry<Variable<AttackMetadata>> getVariableRegistry() {
         return VARIABLE_REGISTRY;
     }
 

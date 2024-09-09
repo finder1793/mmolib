@@ -1,12 +1,12 @@
 package io.lumine.mythic.lib.script.mechanic.shaped;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.script.Script;
+import io.lumine.mythic.lib.script.mechanic.Mechanic;
 import io.lumine.mythic.lib.script.targeter.LocationTargeter;
 import io.lumine.mythic.lib.script.targeter.location.CasterLocationTargeter;
 import io.lumine.mythic.lib.script.targeter.location.DefaultDirectionTargeter;
-import io.lumine.mythic.lib.script.Script;
 import io.lumine.mythic.lib.skill.SkillMetadata;
-import io.lumine.mythic.lib.script.mechanic.Mechanic;
 import io.lumine.mythic.lib.util.EntityLocationType;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
@@ -27,8 +27,8 @@ public class SlashMechanic extends Mechanic {
     private final Script onStart, onTick, onEnd;
 
     public SlashMechanic(ConfigObject config) {
-        sourceLocation = config.contains("source") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("source")) : new CasterLocationTargeter(EntityLocationType.EYES);
-        targetLocation = config.contains("target") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("target")) : new DefaultDirectionTargeter();
+        sourceLocation = config.contains("source") ? config.getLocationTargeter("source") : new CasterLocationTargeter(EntityLocationType.EYES);
+        targetLocation = config.contains("target") ? config.getLocationTargeter("target") : new DefaultDirectionTargeter();
 
         config.validateKeys("tick");
 

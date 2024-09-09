@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.script.mechanic.player;
 
-import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.script.mechanic.type.TargetMechanic;
+import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;

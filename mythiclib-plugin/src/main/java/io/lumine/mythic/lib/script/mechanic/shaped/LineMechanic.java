@@ -27,8 +27,8 @@ public class LineMechanic extends Mechanic {
     public LineMechanic(ConfigObject config) {
         config.validateKeys("source", "target");
 
-        source = MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("source"));
-        target = MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("target"));
+        source = config.getLocationTargeter("source");
+        target = config.getLocationTargeter("target");
 
         step = config.getDoubleFormula("step", DoubleFormula.constant(.5));
         instant = config.getBoolean("instant", false);

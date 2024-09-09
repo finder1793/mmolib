@@ -7,14 +7,14 @@ import io.lumine.mythic.lib.script.variable.VariableRegistry;
 
 @VariableMetadata(name = "integer")
 public class IntegerVariable extends Variable<Integer> {
-    public static final VariableRegistry<IntegerVariable> VARIABLE_REGISTRY = new SimpleVariableRegistry();
+    public static final SimpleVariableRegistry<Integer> VARIABLE_REGISTRY = new SimpleVariableRegistry<>();
 
     public IntegerVariable(String name, int value) {
         super(name, value);
     }
 
     @Override
-    public VariableRegistry getVariableRegistry() {
+    public VariableRegistry<Variable<Integer>> getVariableRegistry() {
         return VARIABLE_REGISTRY;
     }
 }

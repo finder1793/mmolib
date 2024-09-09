@@ -1,11 +1,11 @@
 package io.lumine.mythic.lib.script.mechanic.misc;
 
-import io.lumine.mythic.lib.util.configobject.ConfigObject;
-import io.lumine.mythic.lib.util.DoubleFormula;
 import io.lumine.mythic.lib.script.MechanicQueue;
-import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.script.mechanic.Mechanic;
 import io.lumine.mythic.lib.script.mechanic.MechanicMetadata;
+import io.lumine.mythic.lib.skill.SkillMetadata;
+import io.lumine.mythic.lib.util.DoubleFormula;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 
 /**
  * Used to add delay inside of a skill before casting

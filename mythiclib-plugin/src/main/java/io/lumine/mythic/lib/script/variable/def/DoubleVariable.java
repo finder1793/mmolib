@@ -7,10 +7,10 @@ import io.lumine.mythic.lib.script.variable.VariableRegistry;
 
 @VariableMetadata(name = "double")
 public class DoubleVariable extends Variable<Double> {
-    public static final SimpleVariableRegistry<DoubleVariable> VARIABLE_REGISTRY = new SimpleVariableRegistry();
+    public static final SimpleVariableRegistry<Double> VARIABLE_REGISTRY = new SimpleVariableRegistry<>();
 
     static {
-        VARIABLE_REGISTRY.registerVariable("int", var -> new IntegerVariable("temp", (int) (double) var.getStored()));
+        VARIABLE_REGISTRY.registerVariable("int", var -> new IntegerVariable("temp", (int) (double) var));
     }
 
     public DoubleVariable(String name, double value) {
@@ -18,7 +18,7 @@ public class DoubleVariable extends Variable<Double> {
     }
 
     @Override
-    public VariableRegistry getVariableRegistry() {
+    public VariableRegistry<Variable<Double>> getVariableRegistry() {
         return VARIABLE_REGISTRY;
     }
 }

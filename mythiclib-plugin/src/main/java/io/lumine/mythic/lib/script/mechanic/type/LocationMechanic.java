@@ -1,11 +1,10 @@
 package io.lumine.mythic.lib.script.mechanic.type;
 
-import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.script.mechanic.Mechanic;
 import io.lumine.mythic.lib.script.targeter.LocationTargeter;
 import io.lumine.mythic.lib.script.targeter.location.DefaultLocationTargeter;
-import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import io.lumine.mythic.lib.skill.SkillMetadata;
-import io.lumine.mythic.lib.script.mechanic.Mechanic;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.bukkit.Location;
 
 /**
@@ -17,7 +16,7 @@ public abstract class LocationMechanic extends Mechanic {
     private final LocationTargeter targeter;
 
     public LocationMechanic(ConfigObject config) {
-        this.targeter = config.contains("target") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("target")) : new DefaultLocationTargeter();
+        this.targeter = config.contains("target") ? config.getLocationTargeter("target") : new DefaultLocationTargeter();
     }
 
     public LocationTargeter getTargeter() {

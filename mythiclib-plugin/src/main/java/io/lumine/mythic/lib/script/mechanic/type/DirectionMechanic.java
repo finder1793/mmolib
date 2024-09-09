@@ -1,6 +1,5 @@
 package io.lumine.mythic.lib.script.mechanic.type;
 
-import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.script.mechanic.Mechanic;
 import io.lumine.mythic.lib.script.targeter.LocationTargeter;
 import io.lumine.mythic.lib.script.targeter.location.CasterLocationTargeter;
@@ -24,8 +23,8 @@ public abstract class DirectionMechanic extends Mechanic {
     private final LocationTargeter sourceLocation, targetLocation;
 
     public DirectionMechanic(ConfigObject config) {
-        sourceLocation = config.contains("source") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("source")) : new CasterLocationTargeter(EntityLocationType.EYES);
-        targetLocation = config.contains("target") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("target")) : new DefaultDirectionTargeter();
+        sourceLocation = config.contains("source") ? config.getLocationTargeter("source") : new CasterLocationTargeter(EntityLocationType.EYES);
+        targetLocation = config.contains("target") ? config.getLocationTargeter("target") : new DefaultDirectionTargeter();
     }
 
     public LocationTargeter getSource() {

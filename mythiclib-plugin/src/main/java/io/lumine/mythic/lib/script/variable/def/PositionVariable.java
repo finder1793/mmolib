@@ -22,19 +22,18 @@ import org.bukkit.util.Vector;
  */
 @VariableMetadata(name = "position")
 public class PositionVariable extends Variable<Position> {
-    public static final SimpleVariableRegistry<PositionVariable> VARIABLE_REGISTRY = new SimpleVariableRegistry();
+    public static final SimpleVariableRegistry<Position> VARIABLE_REGISTRY = new SimpleVariableRegistry<>();
 
     static {
-        VARIABLE_REGISTRY.registerVariable("x", var -> new DoubleVariable("temp", var.getStored().getX()));
-        VARIABLE_REGISTRY.registerVariable("y", var -> new DoubleVariable("temp", var.getStored().getY()));
-        VARIABLE_REGISTRY.registerVariable("z", var -> new DoubleVariable("temp", var.getStored().getZ()));
-        VARIABLE_REGISTRY.registerVariable("yaw", var -> new DoubleVariable("temp", UtilityMethods.getYawPitch(var.getStored().toVector())[0]));
-        VARIABLE_REGISTRY.registerVariable("pitch", var -> new DoubleVariable("temp", UtilityMethods.getYawPitch(var.getStored().toVector())[1]));
-        VARIABLE_REGISTRY.registerVariable("length", var -> new DoubleVariable("temp", var.getStored().length()), "norm", "len");
-        VARIABLE_REGISTRY.registerVariable("world", var -> new WorldVariable("temp", var.getStored().getWorld()));
-        VARIABLE_REGISTRY.registerVariable("biome", var -> new StringVariable("temp", getBiomeAt(var.getStored()).name()));
-
-        VARIABLE_REGISTRY.registerVariable("altitude", var -> new DoubleVariable("temp", UtilityMethods.getAltitude(var.getStored().toLocation())));
+        VARIABLE_REGISTRY.registerVariable("x", var -> new DoubleVariable("temp", var.getX()));
+        VARIABLE_REGISTRY.registerVariable("y", var -> new DoubleVariable("temp", var.getY()));
+        VARIABLE_REGISTRY.registerVariable("z", var -> new DoubleVariable("temp", var.getZ()));
+        VARIABLE_REGISTRY.registerVariable("yaw", var -> new DoubleVariable("temp", UtilityMethods.getYawPitch(var.toVector())[0]));
+        VARIABLE_REGISTRY.registerVariable("pitch", var -> new DoubleVariable("temp", UtilityMethods.getYawPitch(var.toVector())[1]));
+        VARIABLE_REGISTRY.registerVariable("length", var -> new DoubleVariable("temp", var.length()), "norm", "len");
+        VARIABLE_REGISTRY.registerVariable("world", var -> new WorldVariable("temp", var.getWorld()));
+        VARIABLE_REGISTRY.registerVariable("biome", var -> new StringVariable("temp", getBiomeAt(var).name()));
+        VARIABLE_REGISTRY.registerVariable("altitude", var -> new DoubleVariable("temp", UtilityMethods.getAltitude(var.toLocation())));
     }
 
     public PositionVariable(String name, Position position) {
@@ -49,12 +48,12 @@ public class PositionVariable extends Variable<Position> {
         super(name, new Position(world, vec));
     }
 
-    @Override
-    public VariableRegistry getVariableRegistry() {
-        return VARIABLE_REGISTRY;
-    }
-
     private static Biome getBiomeAt(Position loc) {
         return loc.getWorld().getBiome(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+    }
+
+    @Override
+    public VariableRegistry<Variable<Position>> getVariableRegistry() {
+        return VARIABLE_REGISTRY;
     }
 }

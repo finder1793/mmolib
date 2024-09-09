@@ -1,11 +1,10 @@
 package io.lumine.mythic.lib.script.mechanic.movement;
 
-import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.script.mechanic.type.TargetMechanic;
 import io.lumine.mythic.lib.script.targeter.LocationTargeter;
 import io.lumine.mythic.lib.script.targeter.location.DefaultLocationTargeter;
-import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import io.lumine.mythic.lib.skill.SkillMetadata;
-import io.lumine.mythic.lib.script.mechanic.type.TargetMechanic;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 
@@ -17,7 +16,7 @@ public class TeleportMechanic extends TargetMechanic {
         super(config);
 
         yOffset = config.getDouble("y_offset", 0);
-        targetLocation = config.contains("target_location") ? MythicLib.plugin.getSkills().loadLocationTargeter(config.getObject("target_location")) : new DefaultLocationTargeter();
+        targetLocation = config.contains("target_location") ? config.getLocationTargeter("target_location") : new DefaultLocationTargeter();
     }
 
     @Override

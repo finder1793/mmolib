@@ -11,12 +11,10 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * Any variable registry can be accessed just like a bukkit event
  * handler list.
- * <p>
- * TODO implement parent variable registries to support class inheritence
  *
  * @param <T> One variable class like {@link PositionVariable}
  */
-public interface VariableRegistry<T extends Variable> {
+public interface VariableRegistry<T> {
 
     /**
      * Called when retrieving a subvariable from a variable.
@@ -28,7 +26,7 @@ public interface VariableRegistry<T extends Variable> {
      * @return The corresponding subvariable
      */
     @NotNull
-    public Variable accessVariable(@NotNull T t, @NotNull String name);
+    public Variable<?> accessVariable(@NotNull T t, @NotNull String name);
 
     /**
      * @param name Subvariable name

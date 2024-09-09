@@ -1,10 +1,10 @@
 package io.lumine.mythic.lib.script.mechanic.movement;
 
-import io.lumine.mythic.lib.script.variable.Variable;
-import io.lumine.mythic.lib.util.configobject.ConfigObject;
-import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.script.mechanic.type.TargetMechanic;
+import io.lumine.mythic.lib.script.variable.Variable;
 import io.lumine.mythic.lib.script.variable.def.PositionVariable;
+import io.lumine.mythic.lib.skill.SkillMetadata;
+import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
