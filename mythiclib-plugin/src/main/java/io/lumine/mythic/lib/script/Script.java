@@ -120,8 +120,15 @@ public class Script implements PreloadedObject {
      */
     public boolean cast(SkillMetadata meta) {
 
+        int conditionCounter = 0;
         for (Condition condition : conditions)
-            if (!condition.checkIfMet(meta)) return false;
+            try {
+                conditionCounter += 1;
+                if (!condition.checkIfMet(meta)) return false;
+            } catch (RuntimeException exception) {
+                MythicLib.plugin.getLogger().log(Level.WARNING, "Could not check condition n" + conditionCounter + " from script '" + id + "': " + exception.getMessage());
+                return false;
+            }
 
         new MechanicQueue(meta, this).next();
         return true;
