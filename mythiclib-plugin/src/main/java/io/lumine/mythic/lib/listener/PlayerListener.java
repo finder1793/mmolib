@@ -1,13 +1,17 @@
 package io.lumine.mythic.lib.listener;
 
 import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.api.event.PlayerLogoutEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.gui.PluginInventory;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener {
@@ -28,8 +32,19 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void registerOfflinePlayers(PlayerQuitEvent event) {
-        MMOPlayerData.get(event.getPlayer()).updatePlayer(null);
+    public void onPlayerKick(PlayerKickEvent event) {
+        registerLogout(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        registerLogout(event.getPlayer());
+    }
+
+    private void registerLogout(Player player) {
+        final MMOPlayerData playerData = MMOPlayerData.get(player);
+        Bukkit.getPluginManager().callEvent(new PlayerLogoutEvent(playerData));
+        playerData.updatePlayer(null);
     }
 
     @EventHandler

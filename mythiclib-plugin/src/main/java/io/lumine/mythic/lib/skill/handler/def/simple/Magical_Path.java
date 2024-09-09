@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.skill.handler.def.simple;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.api.event.PlayerLogoutEvent;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
@@ -14,7 +15,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class Magical_Path extends SkillHandler<SimpleSkillResult> {
@@ -77,8 +77,8 @@ public class Magical_Path extends SkillHandler<SimpleSkillResult> {
         }
 
         @EventHandler
-        public void b(PlayerQuitEvent event) {
-            close();
+        public void b(PlayerLogoutEvent event) {
+            if (event.getPlayer().equals(player)) close();
         }
 
         @Override
