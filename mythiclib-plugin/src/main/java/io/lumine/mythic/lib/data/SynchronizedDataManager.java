@@ -5,6 +5,7 @@ import fr.phoenixdevt.profiles.ProfileProvider;
 import fr.phoenixdevt.profiles.placeholder.PlaceholderProcessor;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.api.event.PlayerLogoutEvent;
 import io.lumine.mythic.lib.api.event.SynchronizedDataLoadEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.comp.profile.LegacyProfiles;
@@ -19,7 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -156,7 +156,7 @@ public abstract class SynchronizedDataManager<H extends SynchronizedDataHolder, 
 
         // Save data on logout
         if (profilePlugin || MythicLib.plugin.getProfileMode() != ProfileMode.LEGACY)
-            UtilityMethods.registerEvent(PlayerQuitEvent.class, FICTIVE_LISTENER, quitEventPriority, event -> unregister(event.getPlayer()), owning, false);
+            UtilityMethods.registerEvent(PlayerLogoutEvent.class, FICTIVE_LISTENER, quitEventPriority, event -> unregister(event.getPlayer()), owning, false);
 
         // ProfileAPI compatibility
         if (!profilePlugin && MythicLib.plugin.hasProfiles()) {
