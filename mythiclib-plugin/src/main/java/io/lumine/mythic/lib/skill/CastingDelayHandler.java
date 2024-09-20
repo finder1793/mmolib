@@ -2,7 +2,6 @@ package io.lumine.mythic.lib.skill;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.api.event.PlayerLogoutEvent;
 import io.lumine.mythic.lib.api.event.skill.PlayerCastSkillEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.modifier.StatModifier;
@@ -16,6 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
@@ -135,7 +135,7 @@ public class CastingDelayHandler extends TemporaryListener {
     }
 
     @EventHandler
-    public void onLogout(PlayerLogoutEvent event) {
+    public void onLogout(PlayerQuitEvent event) {
         if (event.getPlayer().equals(getCaster().getPlayer())) close();
     }
 

@@ -2,7 +2,6 @@ package io.lumine.mythic.lib.entity;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
-import io.lumine.mythic.lib.api.event.PlayerLogoutEvent;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import io.lumine.mythic.lib.api.player.EquipmentSlot;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
@@ -19,6 +18,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -179,7 +179,7 @@ public class ProjectileMetadata extends TemporaryListener {
     }
 
     @EventHandler
-    public void unregisterOnLogout(PlayerLogoutEvent event) {
+    public void unregisterOnLogout(PlayerQuitEvent event) {
         if (event.getPlayer().getUniqueId().equals(shooter.getData().getUniqueId())) close();
     }
 

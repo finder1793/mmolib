@@ -245,7 +245,7 @@ public class MMOPlayerData {
             return;
 
         for (PassiveSkill skill : skills) {
-            final SkillHandler handler = skill.getTriggeredSkill().getHandler();
+            final SkillHandler<?> handler = skill.getTriggeredSkill().getHandler();
             if (handler.isTriggerable() && skill.getType().equals(triggerMetadata.getTriggerType()))
                 skill.getTriggeredSkill().cast(triggerMetadata);
         }
@@ -337,7 +337,7 @@ public class MMOPlayerData {
 
     /**
      * @param cd Cooldown type
-     * @return If the mecanic is currently on cooldown for the player
+     * @return If the mechanic is currently on cooldown for the player
      */
     public boolean isOnCooldown(CooldownType cd) {
         return cooldownMap.isOnCooldown(cd.name());
@@ -421,6 +421,7 @@ public class MMOPlayerData {
     /**
      * Use it at your own risk! Player data might not be loaded
      */
+    @Nullable
     public static MMOPlayerData getOrNull(@NotNull OfflinePlayer player) {
         return getOrNull(player.getUniqueId());
     }
@@ -449,7 +450,7 @@ public class MMOPlayerData {
      * a real player/profile or a Citizens NPC. Citizens NPCs do not have any player
      * data associated to them
      *
-     * @return Checks if plater data is loaded for a specific profile UUID
+     * @return Checks if player data is loaded for a specific profile UUID
      */
     public static boolean has(@NotNull UUID uuid) {
         return PLAYER_DATA.containsKey(uuid);

@@ -4,6 +4,7 @@ import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+@Deprecated
 public class PlayerLogoutEvent extends MMOPlayerDataEvent {
     private static final HandlerList HANDLERS = new HandlerList();
 

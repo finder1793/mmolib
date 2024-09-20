@@ -11,7 +11,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerListener implements Listener {
@@ -29,11 +28,6 @@ public class PlayerListener implements Listener {
 
         // Flush old modifiers
         UtilityMethods.flushOldModifiers(data.getPlayer());
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerKick(PlayerKickEvent event) {
-        registerLogout(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
