@@ -199,7 +199,7 @@ public class DamageManager implements Listener, MMOManager {
             final Entity damager = ((EntityDamageByEntityEvent) event).getDamager();
             if (damager instanceof LivingEntity) {
                 final StatProvider attacker = StatProvider.get((LivingEntity) damager, EquipmentSlot.MAIN_HAND, true);
-                final AttackMetadata attackMeta = new MeleeAttackMetadata(new DamageMetadata(event.getDamage(), getVanillaDamageTypes((EntityDamageByEntityEvent) event, EquipmentSlot.MAIN_HAND)), entity, attacker);
+                final AttackMetadata attackMeta = new MeleeAttackMetadata(new DamageMetadata(event.getDamage(EntityDamageEvent.DamageModifier.BASE), getVanillaDamageTypes((EntityDamageByEntityEvent) event, EquipmentSlot.MAIN_HAND)), entity, attacker);
                 markAsMetadata(attackMeta);
                 return attackMeta;
             }
@@ -222,7 +222,7 @@ public class DamageManager implements Listener, MMOManager {
                 final Projectile projectile = (Projectile) damager;
                 final @Nullable ProjectileMetadata projectileData = ProjectileMetadata.get(projectile);
                 if (projectileData != null) {
-                    final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE), (LivingEntity) event.getEntity(), projectileData.getShooter(), projectile, projectileData);
+                    final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(EntityDamageEvent.DamageModifier.BASE), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE), (LivingEntity) event.getEntity(), projectileData.getShooter(), projectile, projectileData);
                     markAsMetadata(attackMeta);
                     return attackMeta;
                 }
@@ -231,7 +231,7 @@ public class DamageManager implements Listener, MMOManager {
                 final ProjectileSource source = projectile.getShooter();
                 if (source != null && !source.equals(event.getEntity()) && source instanceof LivingEntity) {
                     final StatProvider attacker = StatProvider.get((LivingEntity) source, EquipmentSlot.MAIN_HAND, true);
-                    final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE), (LivingEntity) event.getEntity(), attacker, projectile);
+                    final AttackMetadata attackMeta = new ProjectileAttackMetadata(new DamageMetadata(event.getDamage(EntityDamageEvent.DamageModifier.BASE), DamageType.WEAPON, DamageType.PHYSICAL, DamageType.PROJECTILE), (LivingEntity) event.getEntity(), attacker, projectile);
                     markAsMetadata(attackMeta);
                     return attackMeta;
                 }
@@ -239,7 +239,7 @@ public class DamageManager implements Listener, MMOManager {
         }
 
         // Attacks with NO damager
-        final @NotNull AttackMetadata vanillaAttack = new AttackMetadata(new DamageMetadata(event.getDamage(), getVanillaDamageTypes(event)), entity, null);
+        final @NotNull AttackMetadata vanillaAttack = new AttackMetadata(new DamageMetadata(event.getDamage(EntityDamageEvent.DamageModifier.BASE), getVanillaDamageTypes(event)), entity, null);
         markAsMetadata(vanillaAttack);
         return vanillaAttack;
     }

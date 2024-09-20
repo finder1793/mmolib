@@ -18,6 +18,7 @@ import org.bukkit.entity.Snowman;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -95,7 +96,7 @@ public class Snowman_Turret extends SkillHandler<LocationSkillResult> {
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void a(EntityDamageByEntityEvent event) {
             if (entities.contains(event.getDamager().getUniqueId()))
-                event.setDamage(damage);
+                event.setDamage(EntityDamageEvent.DamageModifier.BASE, damage);
         }
 
         @Override

@@ -24,7 +24,7 @@ public class FakeEventManager {
          * for code-specific hooks. This classifies damage events with 0
          * damage as fake. These will be instantly ignored!
          */
-        registerFakeEventCaller(EntityDamageEvent.class, damageEvent -> damageEvent.getDamage() == 0);
+        registerFakeEventCaller(EntityDamageEvent.class, damageEvent -> damageEvent.getDamage(EntityDamageEvent.DamageModifier.BASE) == 0);
 
         // MythicLib fake events
         registerFakeEventCaller(EntityDamageEvent.class, damageEvent -> damageEvent instanceof FakeEntityDamageByEntityEvent);

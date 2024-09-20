@@ -72,6 +72,10 @@ public class UtilityMethods {
         entity.addPotionEffect(new PotionEffect(type, (int) (duration * 20), amplifier));
     }
 
+    public static void multiplyBaseDamage(@NotNull EntityDamageEvent event, double coef) {
+        event.setDamage(EntityDamageEvent.DamageModifier.BASE, event.getDamage(EntityDamageEvent.DamageModifier.BASE) * coef);
+    }
+
     @NotNull
     public static Pattern internalPlaceholderPattern(char start, char end) {
         return Pattern.compile(start + "[^&|!=" + start + end + "]*?" + end);
@@ -223,10 +227,10 @@ public class UtilityMethods {
     /**
      * @param loc Where we are looking for nearby entities
      * @return List of all entities surrounding a location. This method loops
-     * through the 9 surrounding chunks and collect all entities from
-     * them. This list can be cached and used multiple times in the same
-     * tick for projectile based spells which need to run entity
-     * checkups
+     *         through the 9 surrounding chunks and collect all entities from
+     *         them. This list can be cached and used multiple times in the same
+     *         tick for projectile based spells which need to run entity
+     *         checkups
      */
     public static List<Entity> getNearbyChunkEntities(Location loc) {
         final List<Entity> entities = new ArrayList<>();
@@ -489,7 +493,7 @@ public class UtilityMethods {
      *
      * @param event Some damage event
      * @return The player, if this event is due to him. It is the player which
-     * is taken into account when PvP is toggled on.
+     *         is taken into account when PvP is toggled on.
      */
     @Nullable
     public static Player getPlayerDamager(EntityDamageByEntityEvent event) {

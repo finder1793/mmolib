@@ -19,6 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.ShulkerBullet;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -102,7 +103,7 @@ public class ShulkerMissile extends SkillHandler<VectorSkillResult> {
             }
 
             final LivingEntity entity = (LivingEntity) event.getEntity();
-            event.setDamage(damage);
+            event.setDamage(EntityDamageEvent.DamageModifier.BASE, damage);
 
             new BukkitRunnable() {
                 final Location loc = entity.getLocation();

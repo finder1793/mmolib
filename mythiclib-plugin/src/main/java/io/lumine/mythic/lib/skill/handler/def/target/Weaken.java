@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.skill.handler.def.target;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.TargetSkillResult;
@@ -63,7 +64,7 @@ public class Weaken extends SkillHandler<TargetSkillResult> {
         public void a(EntityDamageByEntityEvent event) {
             if (event.getEntity().equals(entity)) {
                 event.getEntity().getWorld().spawnParticle(VParticle.WITCH.get(), entity.getLocation().add(0, entity.getHeight() / 2, 0), 16, .5, .5, .5, 0);
-                event.setDamage(event.getDamage() * c);
+                UtilityMethods.multiplyBaseDamage(event, c);
             }
         }
     }

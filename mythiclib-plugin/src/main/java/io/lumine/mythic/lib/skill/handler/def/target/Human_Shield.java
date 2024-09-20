@@ -63,8 +63,8 @@ public class Human_Shield extends SkillHandler<TargetSkillResult> {
         public void a(EntityDamageEvent event) {
             if (event.getEntity().equals(target)) {
 
-                double damage = event.getDamage() * damageCoefficient;
-                event.setDamage(damage);
+                final double damage = event.getDamage(EntityDamageEvent.DamageModifier.BASE) * damageCoefficient;
+                event.setDamage(EntityDamageEvent.DamageModifier.BASE, damage);
 
                 double health = caster.getPlayer().getHealth() - damage * redirectRate;
                 if (health > caster.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * minimumHealthPercentage)

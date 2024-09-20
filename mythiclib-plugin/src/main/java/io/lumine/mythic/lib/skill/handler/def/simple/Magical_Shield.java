@@ -1,6 +1,7 @@
 package io.lumine.mythic.lib.skill.handler.def.simple;
 
 import io.lumine.mythic.lib.MythicLib;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
@@ -65,7 +66,7 @@ public class Magical_Shield extends SkillHandler<SimpleSkillResult> {
         @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
         public void a(EntityDamageEvent event) {
             if (event.getEntity() instanceof Player && event.getEntity().getWorld().equals(loc.getWorld()) && event.getEntity().getLocation().distanceSquared(loc) < radius)
-                event.setDamage(event.getDamage() * (1 - power));
+                UtilityMethods.multiplyBaseDamage(event, 1 - power);
         }
 
         @Override

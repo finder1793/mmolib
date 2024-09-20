@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -44,7 +45,7 @@ public class Chicken_Wraith extends SkillHandler<SimpleSkillResult> {
 
             public void run() {
                 if (j++ > duration) {
-                    handler.close(5 * 20);
+                    handler.close(10 * 20);
                     cancel();
                     return;
                 }
@@ -81,7 +82,7 @@ public class Chicken_Wraith extends SkillHandler<SimpleSkillResult> {
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void b(EntityDamageByEntityEvent event) {
             if (entities.contains(event.getDamager().getEntityId()))
-                event.setDamage(damage);
+                event.setDamage(EntityDamageEvent.DamageModifier.BASE, damage);
         }
 
         @Override
