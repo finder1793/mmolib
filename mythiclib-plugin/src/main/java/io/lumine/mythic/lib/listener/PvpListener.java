@@ -15,12 +15,10 @@ public class PvpListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void a(EntityDamageByEntityEvent event) {
-        if (!UtilityMethods.isRealPlayer(event.getEntity()))
-            return;
+        if (!UtilityMethods.isRealPlayer(event.getEntity())) return;
 
         final @Nullable Player source = UtilityMethods.getPlayerDamager(event);
-        if (source == null)
-            return;
+        if (source == null) return;
 
         // Apply PvpInteractionRules
         final Player target = (Player) event.getEntity();

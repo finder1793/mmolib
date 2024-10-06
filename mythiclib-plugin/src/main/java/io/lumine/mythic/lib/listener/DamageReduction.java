@@ -1,6 +1,5 @@
 package io.lumine.mythic.lib.listener;
 
-import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.AttackEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.api.stat.StatMap;
@@ -8,7 +7,6 @@ import io.lumine.mythic.lib.damage.DamageMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.element.Element;
 import io.lumine.mythic.lib.util.DefenseFormula;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -29,11 +27,12 @@ public class DamageReduction implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void damageMitigation(AttackEvent event) {
-        if (!UtilityMethods.isRealPlayer(event.getEntity()))
-            return;
+
+        // Skip invalid players
+        final MMOPlayerData data = MMOPlayerData.getOrNull(event.getEntity());
+        if (data == null) return;
 
         // Applies specific damage reduction
-        final MMOPlayerData data = MMOPlayerData.get((OfflinePlayer) event.getEntity());
         for (SpecificDamageReductionType type : SpecificDamageReductionType.values())
             type.applyReduction(data.getStatMap(), event.getDamage(), event.toBukkit());
 

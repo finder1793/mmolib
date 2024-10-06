@@ -59,12 +59,13 @@ public class MitigationMechanics implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void applyMitigation(AttackEvent event) {
-        if (!UtilityMethods.isRealPlayer(event.getEntity()) || !MITIGATION_CAUSES.contains(event.toBukkit().getCause()))
-            return;
+        if (!MITIGATION_CAUSES.contains(event.toBukkit().getCause())) return;
 
-        Player player = (Player) event.getEntity();
-        MMOPlayerData playerData = MMOPlayerData.get(player);
-        StatMap stats = playerData.getStatMap();
+        final MMOPlayerData playerData = MMOPlayerData.getOrNull(event.getEntity());
+        if (playerData == null) return;
+
+        final Player player = (Player) event.getEntity();
+        final StatMap stats = playerData.getStatMap();
 
         // Dodging
         double dodgeRating = stats.getStat("DODGE_RATING") / 100;
@@ -160,7 +161,7 @@ public class MitigationMechanics implements Listener {
     /**
      * @param victim Entity being hit
      * @return If there is a damager, returns a vector pointing towards damager.
-     * Otherwise, just returns the victim's eye location.
+     *         Otherwise, just returns the victim's eye location.
      */
     @NotNull
     private Vector getVector(LivingEntity victim, AttackEvent event) {

@@ -360,6 +360,18 @@ public class UtilityMethods {
         }
     }
 
+    /**
+     * This method can be used to check if the player is a NPC. This
+     * method checks for the "NPC" tag in the entity metadata which is
+     * implemented by Citizens and Sentinels.
+     * <p>
+     * Other NPC plugins are not guaranteed to follow this convention
+     * however, so it if always safer to simply check if the MMOPlayerData
+     * of the player has been loaded or not, through {@link MMOPlayerData#getOrNull(UUID)}
+     *
+     * @param entity Some (fake?) player
+     * @return If the player is fake
+     */
     public static boolean isRealPlayer(Entity entity) {
         return entity instanceof Player && !entity.hasMetadata("NPC");
     }
