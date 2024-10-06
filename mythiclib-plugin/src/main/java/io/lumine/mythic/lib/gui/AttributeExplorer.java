@@ -7,6 +7,7 @@ import io.lumine.mythic.lib.api.explorer.ItemBuilder;
 import io.lumine.mythic.lib.api.stat.handler.AttributeStatHandler;
 import io.lumine.mythic.lib.api.util.AltChar;
 import io.lumine.mythic.lib.util.ReflectionUtils;
+import io.lumine.mythic.lib.util.annotation.BackwardsCompatibility;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -23,6 +24,8 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
@@ -247,7 +250,7 @@ public class AttributeExplorer extends PluginInventory {
         if (tag != null && event.getAction() == InventoryAction.PICKUP_HALF) {
             final AttributeModifier mod = !legacy
                     ? getPlayer().getAttribute(explored).getModifier(NamespacedKey.fromString(tag))
-                    : getPlayer().getAttribute(explored).getModifier(UUID.fromString(tag));
+                    : getModifier(getPlayer().getAttribute(explored), UUID.fromString(tag));
             target.getAttribute(explored).removeModifier(mod);
             getPlayer().sendMessage(ChatColor.YELLOW + "> Modifier successfully removed.");
             setExplored(explored);
@@ -293,5 +296,18 @@ public class AttributeExplorer extends PluginInventory {
                 });
             }
         }
+    }
+
+    /**
+     * AttributeInstance#getModifier(UUID) does not exist in 1.19 and lower
+     */
+    @Nullable
+    @SuppressWarnings("removal")
+    @BackwardsCompatibility(version = "1.19")
+    private static AttributeModifier getModifier(@NotNull AttributeInstance instance, @NotNull UUID uuid) {
+        for (AttributeModifier modifier : instance.getModifiers())
+            if (modifier.getUniqueId().equals(uuid))
+                return modifier;
+        return null;
     }
 }

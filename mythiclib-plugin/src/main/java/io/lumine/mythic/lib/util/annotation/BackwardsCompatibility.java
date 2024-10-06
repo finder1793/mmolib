@@ -11,5 +11,5 @@ public @interface BackwardsCompatibility {
      * the first release version that would break if the annotated feature
      * were not implemented.
      */
-    public String version();
+    String version();
 }
