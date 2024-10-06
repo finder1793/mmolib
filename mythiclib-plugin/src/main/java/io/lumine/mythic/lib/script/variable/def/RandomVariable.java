@@ -12,8 +12,6 @@ public class RandomVariable extends Variable<Random> {
     public static final SimpleVariableRegistry<Random> VARIABLE_REGISTRY = new SimpleVariableRegistry<>();
     public static final RandomVariable INSTANCE = new RandomVariable();
 
-    private static final Random RANDOM = new Random();
-
     static {
         VARIABLE_REGISTRY.registerVariable("uniform", rand -> new DoubleVariable("temp", rand.nextDouble()), "unif", "double");
         VARIABLE_REGISTRY.registerVariable("gaussian", rand -> new DoubleVariable("temp", rand.nextGaussian()), "gauss");
@@ -22,7 +20,7 @@ public class RandomVariable extends Variable<Random> {
     }
 
     private RandomVariable() {
-        super("random", RANDOM);
+        super("random", new Random());
     }
 
     @Override
