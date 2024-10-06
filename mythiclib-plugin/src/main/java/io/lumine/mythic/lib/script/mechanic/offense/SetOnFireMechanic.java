@@ -10,7 +10,7 @@ import org.bukkit.entity.Entity;
 @MechanicMetadata
 public class SetOnFireMechanic extends TargetMechanic {
     private final DoubleFormula ticks;
-    private final boolean stack;
+    private final boolean stack, min, max;
 
     public SetOnFireMechanic(ConfigObject config) {
         super(config);
@@ -18,12 +18,18 @@ public class SetOnFireMechanic extends TargetMechanic {
         config.validateKeys("ticks");
 
         stack = config.getBoolean("stack", false);
+        min = config.getBoolean("min", false);
+        max = config.getBoolean("max", false);
         ticks = config.getDoubleFormula("ticks");
     }
 
     @Override
     public void cast(SkillMetadata meta, Entity target) {
-        final int ticks = (int) this.ticks.evaluate(meta);
-        target.setFireTicks(ticks + (stack ? target.getFireTicks() : 0));
+        int ticks = (int) this.ticks.evaluate(meta);
+        if (stack) ticks += target.getFireTicks();
+        else if (max) ticks = Math.max(ticks, target.getFireTicks());
+        else if (min) ticks = Math.min(ticks, target.getFireTicks());
+
+        target.setFireTicks(ticks);
     }
 }
