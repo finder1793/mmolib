@@ -251,6 +251,7 @@ public class AttributeExplorer extends PluginInventory {
             final AttributeModifier mod = !legacy
                     ? getPlayer().getAttribute(explored).getModifier(NamespacedKey.fromString(tag))
                     : getModifier(getPlayer().getAttribute(explored), UUID.fromString(tag));
+            Validate.notNull(mod, "Could not find attribute modifier with tag '" + tag + "'");
             target.getAttribute(explored).removeModifier(mod);
             getPlayer().sendMessage(ChatColor.YELLOW + "> Modifier successfully removed.");
             setExplored(explored);
