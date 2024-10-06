@@ -229,13 +229,6 @@ game-indicators:
       'dot': 'ᜊ'
       'inter': 'ᜍ'
 
-# Due to a change made in 1.1.6 related to the movement speed
-# attribute, players see their movement speed reset to .1 when logging in
-#
-# Set to false when having issues with another plugin interfering
-# with the player's movement speed
-fix-movement-speed: true
-
 # Limits the amount of damage particles that can be sent to a player
 # every tick. By default it's set to 10 particles/tick. These particles
 # can be quite annoying and can even crash the client if there are too many.
@@ -243,12 +236,45 @@ damage-particles-cap:
   max-per-tick: 10
   enabled: false
 
+# Due to a change made in 1.1.6 related to the movement speed
+# attribute, players see their movement speed reset to .1 when logging in
+#
+# Set to false when having issues with another plugin interfering
+# with the player's movement speed
+fix-movement-speed: false
+
 # By enabling this option, the plugin will attempt to fix
 # too large packets sent to the client. This can happen
 # when the recipes are too large and the client cannot
 # handle them.
 # Changes apply on server restart.
 fix-too-large-packets: false
+
+# In 1.21, Minecraft transferred old modifiers into a new format,
+# fully erasing modifier IDs and only keeping modifier UUIDs. This
+# change prevents plugins from isolating modifiers from their plugin
+# and forces a complete player data reset for attribute modifiers.
+#
+# This will erase attribute modifiers from other plugins, not only
+# the MMO plugins. The MMO plugins will then re-apply the up-to-date
+# attribute modifiers to the player.
+#
+# Attributes are reset on player login.
+#
+# Restart server to apply changes.
+fix_reset_attribute_modifiers:
+
+  enabled: false
+
+  # Increase this number everytime you want to reset your players'
+  # attribute modifiers again.
+  rev_id: 1
+
+  # Set to [] to apply
+  attributes:
+    - MAX_HEALTH
+    - ATTACK_DAMAGE
+    - MOVEMENT_SPEED
 
 # Whether or not a player performing an offensive/support action
 # can interact with another player. This accounts for skills,

@@ -73,7 +73,7 @@ public abstract class SynchronizedDataHolder implements OfflineDataHolder {
     }
 
     /**
-     * @return The UUID used to save player data inside of the database.
+     * @return The UUID used to save player data inside the database.
      */
     @NotNull
     public UUID getEffectiveId() {

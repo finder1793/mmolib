@@ -37,6 +37,7 @@ import io.lumine.mythic.lib.hologram.factory.BukkitHologramFactory;
 import io.lumine.mythic.lib.hologram.factory.LegacyBukkitHologramFactory;
 import io.lumine.mythic.lib.listener.*;
 import io.lumine.mythic.lib.listener.event.AttackEventListener;
+import io.lumine.mythic.lib.listener.option.FixAttributeModifiers;
 import io.lumine.mythic.lib.listener.option.FixMovementSpeed;
 import io.lumine.mythic.lib.listener.option.HealthScale;
 import io.lumine.mythic.lib.listener.option.VanillaDamageModifiers;
@@ -161,6 +162,12 @@ public class MythicLib extends JavaPlugin {
 
         if (getConfig().getBoolean("fix-movement-speed"))
             Bukkit.getPluginManager().registerEvents(new FixMovementSpeed(), this);
+
+        if (getConfig().getBoolean("fix_reset_attribute_modifiers.enabled")) try {
+            new FixAttributeModifiers(getConfig().getConfigurationSection("fix_reset_attribute_modifiers"));
+        } catch (RuntimeException exception) {
+            getLogger().log(Level.WARNING, "Could not enable fix_reset_attribute_modifiers: " + exception.getMessage());
+        }
 
         // Hologram provider
         try {
