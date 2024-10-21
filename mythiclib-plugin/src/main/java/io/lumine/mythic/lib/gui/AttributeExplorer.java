@@ -8,6 +8,7 @@ import io.lumine.mythic.lib.api.stat.handler.AttributeStatHandler;
 import io.lumine.mythic.lib.api.util.AltChar;
 import io.lumine.mythic.lib.util.ReflectionUtils;
 import io.lumine.mythic.lib.util.annotation.BackwardsCompatibility;
+import io.lumine.mythic.lib.version.VersionUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -96,16 +97,17 @@ public class AttributeExplorer extends PluginInventory {
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName(ChatColor.GOLD + getName(handler.getAttribute()));
             meta.addItemFlags(ItemFlag.values());
+            if (MythicLib.plugin.getVersion().isAbove(1, 20, 5)) VersionUtils.addEmptyAttributeModifier(meta);
 
             List<String> lore = new ArrayList<>();
             lore.add(ChatColor.GRAY + handler.getDescription());
             lore.add("");
             lore.add(ChatColor.GRAY + "Total Value: " + ChatColor.GOLD + ChatColor.BOLD + FORMAT.format(ins.getValue()));
             lore.add(ChatColor.GRAY + AltChar.smallListDash + " Base Value: " + ChatColor.GOLD + FORMAT.format(ins.getBaseValue()));
+            lore.add(ChatColor.GRAY + AltChar.smallListDash + " Due to Modifiers: " + ChatColor.GOLD + FORMAT.format(ins.getValue() - ins.getBaseValue()));
             lore.add(ChatColor.GRAY + AltChar.smallListDash + " Default Value: " + ChatColor.GOLD + FORMAT.format(ins.getDefaultValue()));
             lore.add("");
             lore.add(ChatColor.GRAY + "Modifier Count: " + ChatColor.GOLD + ins.getModifiers().size());
-            lore.add(ChatColor.GRAY + AltChar.smallListDash + " Due to Modifiers: " + ChatColor.GOLD + FORMAT.format(ins.getValue() - ins.getBaseValue()));
             lore.add("");
             lore.add(ChatColor.YELLOW + AltChar.smallListDash + " Left click to explore.");
             lore.add(ChatColor.YELLOW + AltChar.smallListDash + " Right click to set the base value.");
