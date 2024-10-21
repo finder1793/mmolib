@@ -1,9 +1,12 @@
 package io.lumine.mythic.lib.api.item;
 
 import io.lumine.mythic.lib.MythicLib;
+import org.apache.commons.lang.NotImplementedException;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -52,6 +55,11 @@ public abstract class NBTItem {
 
     public boolean hasType() {
         return hasTag("MMOITEMS_ITEM_TYPE");
+    }
+
+    @Deprecated
+    public void setCanMine(Collection<Material> blocks) {
+        throw new NotImplementedException("Not implemented in <1.21");
     }
 
     public String getType() {

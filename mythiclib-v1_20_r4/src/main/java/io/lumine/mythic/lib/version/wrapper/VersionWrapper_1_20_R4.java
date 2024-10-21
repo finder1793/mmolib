@@ -12,6 +12,7 @@ import io.lumine.mythic.lib.version.VInventoryView;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
+import net.minecraft.advancements.critereon.BlockPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -24,6 +25,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.AdventureModePredicate;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.level.block.entity.SkullBlockEntity;
@@ -36,6 +38,7 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.craftbukkit.v1_20_R4.CraftWorld;
+import org.bukkit.craftbukkit.v1_20_R4.block.CraftBlockType;
 import org.bukkit.craftbukkit.v1_20_R4.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_20_R4.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
@@ -293,6 +296,14 @@ public class VersionWrapper_1_20_R4 implements VersionWrapper {
                 }
             });
             return this;
+        }
+
+        @Override
+        public void setCanMine(Collection<Material> blocks) {
+            net.minecraft.world.level.block.Block[] arr = blocks.stream().map(CraftBlockType::bukkitToMinecraft).toArray(net.minecraft.world.level.block.Block[]::new);
+            List<BlockPredicate> list = new ArrayList<>();
+            list.add(BlockPredicate.Builder.block().of(arr).build());
+            nms.set(DataComponents.CAN_BREAK, new AdventureModePredicate(list, false));
         }
 
         @Override
