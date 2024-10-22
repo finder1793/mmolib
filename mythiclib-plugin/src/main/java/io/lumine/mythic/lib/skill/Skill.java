@@ -3,12 +3,13 @@ package io.lumine.mythic.lib.skill;
 import io.lumine.mythic.lib.api.event.skill.PlayerCastSkillEvent;
 import io.lumine.mythic.lib.api.event.skill.SkillCastEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
-import io.lumine.mythic.lib.player.cooldown.CooldownObject;
+import io.lumine.mythic.lib.player.cooldown.CooldownReference;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.SkillResult;
 import io.lumine.mythic.lib.skill.trigger.TriggerMetadata;
 import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -19,14 +20,14 @@ import java.util.Objects;
  * This class implements all skill restrictions and behaviours
  * that are SPECIFIC to MMOItems or MMOCore like resource costs,
  * cooldown messages, no-cooldown modes...
- *
+ * <p>
  * TODO move trigger type to a higher class like PassiveSkill,
  * TODO has NOTHING to do here and is very impractical when
  * TODO trying to cast skills
  *
  * @author jules
  */
-public abstract class Skill implements CooldownObject {
+public abstract class Skill implements CooldownReference {
     private final TriggerType trigger;
 
     public Skill(@NotNull TriggerType trigger) {
@@ -148,7 +149,7 @@ public abstract class Skill implements CooldownObject {
     }
 
     @Override
-    public String getCooldownPath() {
-        return "skill_" + getHandler().getId();
+    public NamespacedKey getCooldownKey() {
+        return getHandler().getCooldownKey();
     }
 }

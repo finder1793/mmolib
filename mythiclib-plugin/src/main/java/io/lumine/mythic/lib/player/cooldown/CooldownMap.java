@@ -1,109 +1,177 @@
 package io.lumine.mythic.lib.player.cooldown;
 
-import io.lumine.mythic.lib.UtilityMethods;
+import org.bukkit.NamespacedKey;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class CooldownMap {
-    private final Map<String, CooldownInfo> map = new HashMap<>();
+    private final Map<NamespacedKey, CooldownInfo> map = new HashMap<>();
 
     /**
-     * Sets current cooldown to the maximum value
-     * of the current and input cooldown values.
+     * Sets current cooldown of given reference. If the player
+     * already has a cooldown registered to the provided reference,
+     * the maximum of the two values is used.
      *
-     * @param obj      The skill or action
-     * @param cooldown Initial skill or action cooldown
-     * @return The newly registered cooldown info
+     * @param provider Skill or action provider
+     * @return The current player's cooldown info
      */
-    public CooldownInfo applyCooldown(CooldownObject obj, double cooldown) {
-        return applyCooldown(obj.getCooldownPath(), cooldown);
+    @NotNull
+    public CooldownInfo applyCooldown(@NotNull CooldownProvider provider) {
+        return applyCooldown(provider.getCooldownKey(), ((double) provider.getCooldown()) / 1000d);
     }
 
     /**
-     * Sets current cooldown to the maximum value
-     * of the current and input cooldown values.
+     * Sets current cooldown of given reference. If the player
+     * already has a cooldown registered to the provided reference,
+     * the maximum of the two values is used.
      *
-     * @param path     The skill or action path, must be completely unique
+     * @param ref      The skill or action reference, must be completely unique
      * @param cooldown Initial skill or action cooldown
-     * @return The newly registered cooldown info
+     * @return The current player's cooldown info
      */
-    public CooldownInfo applyCooldown(String path, double cooldown) {
-        final String key = UtilityMethods.enumName(path);
-        @Nullable CooldownInfo current = map.get(key);
-        if (current != null && current.getRemaining() >= cooldown * 1000) return current;
-
-        current = new CooldownInfo(cooldown);
-        map.put(key, current);
-        return current;
+    @NotNull
+    public CooldownInfo applyCooldown(@NotNull CooldownReference ref, double cooldown) {
+        return applyCooldown(ref.getCooldownKey(), cooldown);
     }
 
     /**
-     * @return Finds the cooldown info for a specific action or skill
+     * Sets current cooldown of given reference. If the player
+     * already has a cooldown registered to the provided reference,
+     * the maximum of the two values is used.
+     *
+     * @param ref      The skill or action reference, must be completely unique
+     * @param cooldown Initial skill or action cooldown
+     * @return The current player's cooldown info
+     */
+    @NotNull
+    public CooldownInfo applyCooldown(@NotNull NamespacedKey ref, double cooldown) {
+        return map.compute(ref, (ignored, current) -> {
+            if (current != null && current.getRemaining() >= cooldown * 1000) return current;
+            return new CooldownInfo(cooldown);
+        });
+    }
+
+    /**
+     * @return Cooldown info for provided cooldown reference
      */
     @Nullable
-    public CooldownInfo getInfo(CooldownObject obj) {
-        return getInfo(obj.getCooldownPath());
+    public CooldownInfo getInfo(@NotNull CooldownReference ref) {
+        return getInfo(ref.getCooldownKey());
     }
 
     /**
-     * @return Finds the cooldown info for a specific action or skill
+     * @return Cooldown info for provided cooldown reference
      */
     @Nullable
-    public CooldownInfo getInfo(String path) {
-        return map.get(UtilityMethods.enumName(path));
+    public CooldownInfo getInfo(@NotNull NamespacedKey path) {
+        return map.get(path);
     }
 
     /**
-     * @param obj The skill or action
+     * @param ref The skill or action reference, must be completely unique
      * @return Retrieves the remaining cooldown in seconds
      */
-    public double getCooldown(CooldownObject obj) {
-        return getCooldown(obj.getCooldownPath());
+    public double getCooldown(@NotNull CooldownReference ref) {
+        return getCooldown(ref.getCooldownKey());
     }
 
     /**
-     * @param path The skill or action path, must be completely unique
+     * @param key The skill or action reference, must be completely unique
      * @return Retrieves the remaining cooldown in seconds
      */
-    public double getCooldown(String path) {
-        final @Nullable CooldownInfo info = map.get(UtilityMethods.enumName(path));
+    public double getCooldown(@NotNull NamespacedKey key) {
+        final @Nullable CooldownInfo info = map.get(key);
         return info == null ? 0 : (double) info.getRemaining() / 1000;
     }
 
     /**
-     * @param obj The skill or action
-     * @return If the mechanic can be used by the player
+     * @param ref The skill or action reference, must be completely unique
+     * @return The last time some action or skill was performed
      */
-    public boolean isOnCooldown(CooldownObject obj) {
-        return isOnCooldown(obj.getCooldownPath());
+    public long getLast(@NotNull CooldownReference ref) {
+        return getLast(ref.getCooldownKey());
     }
 
     /**
-     * @param path The skill or action path, must be completely unique
+     * @param key The skill or action reference, must be completely unique
+     * @return The last time some action or skill was performed
+     */
+    public long getLast(@NotNull NamespacedKey key) {
+        final @Nullable CooldownInfo info = map.get(key);
+        return info == null ? 0 : info.getLast();
+    }
+
+    /**
+     * @param ref The skill or action reference, must be completely unique
      * @return If the mechanic can be used by the player
      */
-    public boolean isOnCooldown(String path) {
-        final @Nullable CooldownInfo found = map.get(UtilityMethods.enumName(path));
+    public boolean isOnCooldown(@NotNull CooldownReference ref) {
+        return isOnCooldown(ref.getCooldownKey());
+    }
+
+    /**
+     * @param key The skill or action reference, must be completely unique
+     * @return If the mechanic can be used by the player
+     */
+    public boolean isOnCooldown(@NotNull NamespacedKey key) {
+        final @Nullable CooldownInfo found = map.get(key);
         return found != null && !found.hasEnded();
     }
 
     /**
      * Entirely resets a cooldown for given action.
      *
-     * @param obj The skill or action
+     * @param ref The skill or action
      */
-    public void resetCooldown(CooldownObject obj) {
-        resetCooldown(obj.getCooldownPath());
+    @Nullable
+    public CooldownInfo resetCooldown(@NotNull CooldownReference ref) {
+        return resetCooldown(ref.getCooldownKey());
     }
 
     /**
      * Entirely resets a cooldown for given path.
      *
-     * @param path The skill or action path, must be completely unique
+     * @param key The skill or action path, must be completely unique
      */
-    public void resetCooldown(String path) {
-        map.remove(UtilityMethods.enumName(path));
+    @Nullable
+    public CooldownInfo resetCooldown(@NotNull NamespacedKey key) {
+        return map.remove(key);
     }
+
+    //region deprecated
+
+    @Deprecated
+    public CooldownInfo applyCooldown(String path, double cooldown) {
+        return applyCooldown(new NamespacedKey("legacy", path), cooldown);
+    }
+
+    @Deprecated
+    public CooldownInfo getInfo(String path) {
+        return getInfo(new NamespacedKey("legacy", path));
+    }
+
+    @Deprecated
+    public double getCooldown(String path) {
+        return getCooldown(legacyKey(path));
+    }
+
+    @Deprecated
+    public boolean isOnCooldown(String path) {
+        return isOnCooldown(legacyKey(path));
+    }
+
+    @Deprecated
+    public void resetCooldown(String path) {
+        resetCooldown(legacyKey(path));
+    }
+
+    @Deprecated
+    public static NamespacedKey legacyKey(String path) {
+        return new NamespacedKey("legacy", path);
+    }
+
+    //endregion
 }

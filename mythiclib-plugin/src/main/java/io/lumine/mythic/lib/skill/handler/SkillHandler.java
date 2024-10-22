@@ -1,11 +1,14 @@
 package io.lumine.mythic.lib.skill.handler;
 
+import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.player.cooldown.CooldownReference;
 import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.def.passive.Backstab;
 import io.lumine.mythic.lib.skill.result.SkillResult;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,11 +33,14 @@ import java.util.*;
  * all of this data which is SPECIFIC to the plugin using the skills.
  * Other plugins like MMOCore and MMOItems store {@link Skill} instances.
  *
+ * TODO have the possibility to bind different cooldown keys to skills
+ *
  * @param <T> Skill result class being used by that skill behaviour
  * @author jules
  */
-public abstract class SkillHandler<T extends SkillResult> {
+public abstract class SkillHandler<T extends SkillResult> implements CooldownReference {
     private final String id;
+    private final NamespacedKey cooldownNsk;
     private final Set<String> parameters = new HashSet<>();
     private final boolean triggerable;
 
@@ -58,6 +64,7 @@ public abstract class SkillHandler<T extends SkillResult> {
     public SkillHandler(boolean triggerable) {
         this.id = UtilityMethods.enumName(getClass().getSimpleName());
         this.triggerable = triggerable;
+        this.cooldownNsk = new NamespacedKey(MythicLib.plugin, id);
 
         registerModifiers("cooldown", "mana", "stamina", "timer", "delay");
     }
@@ -80,6 +87,7 @@ public abstract class SkillHandler<T extends SkillResult> {
     public SkillHandler(@Nullable ConfigurationSection config, @NotNull String id) {
         this.id = UtilityMethods.enumName(id);
         this.triggerable = true;
+        this.cooldownNsk = new NamespacedKey(MythicLib.plugin, id);
 
         // Register custom modifiers
         if (config != null && config.contains("modifiers"))
@@ -93,6 +101,7 @@ public abstract class SkillHandler<T extends SkillResult> {
         return id;
     }
 
+    @Deprecated
     public String getLowerCaseId() {
         return id.toLowerCase().replace("_", "-");
     }
@@ -168,6 +177,11 @@ public abstract class SkillHandler<T extends SkillResult> {
      * @param skillMeta Info of skill being cast
      */
     public abstract void whenCast(T result, SkillMetadata skillMeta);
+
+    @Override
+    public NamespacedKey getCooldownKey() {
+        return cooldownNsk;
+    }
 
     @Override
     public boolean equals(Object o) {

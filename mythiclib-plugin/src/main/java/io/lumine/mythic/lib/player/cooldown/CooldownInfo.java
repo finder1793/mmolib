@@ -4,7 +4,7 @@ package io.lumine.mythic.lib.player.cooldown;
 import org.apache.commons.lang.Validate;
 
 public class CooldownInfo {
-    private final long initialCooldown, castTime = System.currentTimeMillis();
+    private final long initialCooldown, last = System.currentTimeMillis();
 
     private long nextUse;
 
@@ -20,14 +20,14 @@ public class CooldownInfo {
      */
     public CooldownInfo(double initialCooldown) {
         this.initialCooldown = (long) (initialCooldown * 1000);
-        this.nextUse = castTime + this.initialCooldown;
+        this.nextUse = last + this.initialCooldown;
     }
 
     /**
      * @return Time in millis where the cooldown info was initialized
      */
-    public long getCastTime() {
-        return castTime;
+    public long getLast() {
+        return last;
     }
 
     /**
@@ -88,5 +88,10 @@ public class CooldownInfo {
      */
     public void reduceFlat(double t) {
         nextUse -= 1000 * t;
+    }
+
+    @Deprecated
+    public long getCastTime() {
+        return getLast();
     }
 }
