@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.skill;
 import io.lumine.mythic.lib.api.event.skill.PlayerCastSkillEvent;
 import io.lumine.mythic.lib.api.event.skill.SkillCastEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.data.SynchronizedDataHolder;
 import io.lumine.mythic.lib.player.cooldown.CooldownObject;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.SkillResult;
@@ -19,7 +20,7 @@ import java.util.Objects;
  * This class implements all skill restrictions and behaviours
  * that are SPECIFIC to MMOItems or MMOCore like resource costs,
  * cooldown messages, no-cooldown modes...
- *
+ * <p>
  * TODO move trigger type to a higher class like PassiveSkill,
  * TODO has NOTHING to do here and is very impractical when
  * TODO trying to cast skills
@@ -36,6 +37,11 @@ public abstract class Skill implements CooldownObject {
     @NotNull
     public SkillResult cast(@NotNull MMOPlayerData caster) {
         return cast(new TriggerMetadata(caster, trigger));
+    }
+
+    @NotNull
+    public SkillResult cast(@NotNull SynchronizedDataHolder caster) {
+        return cast(caster.getMMOPlayerData());
     }
 
     @NotNull

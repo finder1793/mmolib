@@ -84,6 +84,13 @@ public class AttackEventListener implements Listener {
      * @author Jules
      */
     private void applyDamage(@NotNull EntityDamageEvent event, double baseDamage) {
+
+        // Not applicable, just edit base damage. Fixes MythicLib#290
+        if (!event.isApplicable(MODIFIER_USED)) {
+            event.setDamage(EntityDamageEvent.DamageModifier.BASE, Math.max(1, baseDamage));
+            return;
+        }
+
         final double compensate = Math.max(0, MINIMUM_BASE_DAMAGE - baseDamage);
 
         // No need for compensation

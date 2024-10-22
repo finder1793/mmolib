@@ -24,7 +24,7 @@ public class MythicGlowModule implements GlowModule {
     /**
      * Glow color is saved at this location in the entity NBT tag
      */
-    private final NamespacedKey colorTagPath = new NamespacedKey(MythicLib.plugin, "GlowColor");
+    private static final NamespacedKey COLOR_TAG_PATH = new NamespacedKey(MythicLib.plugin, "glow_color");
 
     private int counter;
 
@@ -56,13 +56,13 @@ public class MythicGlowModule implements GlowModule {
     public void setGlowing(Entity entity, ChatColor color) {
         Validate.isTrue(color.isColor(), "Not a color");
         scoreboardTeams.get(color).addEntry(entity.getUniqueId().toString());
-        entity.getPersistentDataContainer().set(colorTagPath, PersistentDataType.STRING, color.name());
+        entity.getPersistentDataContainer().set(COLOR_TAG_PATH, PersistentDataType.STRING, color.name());
         entity.setGlowing(true);
     }
 
     @Override
     public void disableGlowing(Entity entity) {
-        entity.getPersistentDataContainer().remove(colorTagPath);
+        entity.getPersistentDataContainer().remove(COLOR_TAG_PATH);
         entity.setGlowing(false);
     }
 }
