@@ -19,40 +19,8 @@ import java.util.regex.Pattern;
  * @see io.lumine.mythic.lib.util.PreloadedObject
  */
 @NotUsed
-@Deprecated
 public abstract class GeneralManager {
-    private final MMOPluginImpl plugin;
-    private final String id;
     private final List<String> dependencies = new ArrayList<>();
-
-    public GeneralManager(@NotNull MMOPluginImpl plugin, @NotNull String id) {
-        this.plugin = plugin;
-        this.id = id;
-
-        plugin.registerManager(this);
-    }
-
-    @NotNull
-    public String getId() {
-        return id;
-    }
-
-    @NotNull
-    public MMOPluginImpl getPlugin() {
-        return plugin;
-    }
-
-    private static final Pattern NAMESPACED_KEY = Pattern.compile("[a-z_]+:[a-z_]+");
-    // private static final Pattern LOWER_CASE = Pattern.compile("[a-z_]+:[a-z_]+");
-
-    public void addDependency(String... dependencies) {
-        Validate.isTrue(MMOPluginRegistry.getInstance().isRegistrationAllowed(), "Dependency registration is not allowed");
-
-        for (String dependency : dependencies) {
-            Validate.isTrue(NAMESPACED_KEY.matcher(dependency).matches());
-            this.dependencies.add(dependency.toLowerCase());
-        }
-    }
 
     public void validateDependencies(@NotNull Set<String> activePlugins) {
         Validate.isTrue(MMOPluginRegistry.getInstance().isRegistrationAllowed(), "Dependency validation is not allowed");

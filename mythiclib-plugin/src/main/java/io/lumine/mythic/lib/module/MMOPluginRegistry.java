@@ -1,23 +1,19 @@
 package io.lumine.mythic.lib.module;
 
 import io.lumine.mythic.lib.util.annotation.NotUsed;
-import org.apache.commons.lang.Validate;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @NotUsed
-@Deprecated
 public class MMOPluginRegistry {
     private final List<MMOPluginImpl> plugins = new ArrayList<>();
 
     /**
      * Sorted list including all managers from all registered MMO plugins
      */
-    private final List<GeneralManager> sorted = new ArrayList<>();
+    private final List<Module> sorted = new ArrayList<>();
 
     private boolean registration = true;
 
@@ -40,6 +36,7 @@ public class MMOPluginRegistry {
         return registration;
     }
 
+    /*
     public void prepareManagers() {
         Validate.isTrue(registration, "Managers were already prepared");
 
@@ -55,6 +52,8 @@ public class MMOPluginRegistry {
 
         registration = false;
     }
+    */
+
     private void sortManagers() {
         // TODO topological sorting of all managers based on dependencies
     }

@@ -1,18 +1,14 @@
 package io.lumine.mythic.lib.module;
 
 import io.lumine.mythic.lib.util.annotation.NotUsed;
-import org.apache.commons.lang.Validate;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @NotUsed
-@Deprecated
 public class MMOPluginImpl extends JavaPlugin {
-
-    private final List<GeneralManager> managers = new ArrayList<>();
+    private final List<Module> modules = new ArrayList<>();
 
     public MMOPluginImpl() {
         MMOPluginRegistry.getInstance().registerPlugin(this);
@@ -34,6 +30,7 @@ public class MMOPluginImpl extends JavaPlugin {
         return false;
     }
 
+    /*
     @NotNull
     public List<GeneralManager> getManagers() {
         return managers;
@@ -47,5 +44,5 @@ public class MMOPluginImpl extends JavaPlugin {
                 throw new IllegalArgumentException("A manager with the same name already exists");
 
         this.managers.add(manager);
-    }
+    }*/
 }

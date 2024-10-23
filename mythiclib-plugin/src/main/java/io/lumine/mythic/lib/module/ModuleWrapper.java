@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
-@Deprecated
+// TODO what is this for
 @NotUsed
 public class ModuleWrapper<T extends Module> {
     private final Supplier<T> supplier;
