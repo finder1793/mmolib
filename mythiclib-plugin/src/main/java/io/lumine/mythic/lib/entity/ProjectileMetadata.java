@@ -183,11 +183,6 @@ public class ProjectileMetadata extends TemporaryListener {
         if (event.getPlayer().getUniqueId().equals(shooter.getData().getUniqueId())) close();
     }
 
-    @Override
-    public void whenClosed() {
-        // Nothing
-    }
-
     @Deprecated
     public static ProjectileMetadata getCustomData(Entity proj) {
         return get(proj);

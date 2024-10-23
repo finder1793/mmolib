@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.skill.handler.def.target;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.api.event.AttackEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
 import io.lumine.mythic.lib.comp.interaction.InteractionType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
@@ -14,9 +15,9 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class Human_Shield extends SkillHandler<TargetSkillResult> {
@@ -59,14 +60,14 @@ public class Human_Shield extends SkillHandler<TargetSkillResult> {
             Bukkit.getPluginManager().registerEvents(this, MythicLib.plugin);
         }
 
-        @EventHandler
-        public void a(EntityDamageEvent event) {
+        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        public void a(AttackEvent event) {
             if (event.getEntity().equals(target)) {
 
-                final double damage = event.getDamage(EntityDamageEvent.DamageModifier.BASE) * damageCoefficient;
-                event.setDamage(EntityDamageEvent.DamageModifier.BASE, damage);
+                final double initialDamage = event.getDamage().getDamage();
+                event.getDamage().multiplicativeModifier(damageCoefficient);
 
-                double health = caster.getPlayer().getHealth() - damage * redirectRate;
+                double health = caster.getPlayer().getHealth() - initialDamage * redirectRate;
                 if (health > caster.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * minimumHealthPercentage)
                     caster.getPlayer().setHealth(health);
                 else {

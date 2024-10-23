@@ -1,21 +1,18 @@
 package io.lumine.mythic.lib.skill.handler.def.simple;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.api.event.AttackEvent;
+import io.lumine.mythic.lib.api.util.TemporaryListener;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
 import io.lumine.mythic.lib.version.VParticle;
 import io.lumine.mythic.lib.version.VSound;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class Magical_Shield extends SkillHandler<SimpleSkillResult> {
@@ -39,46 +36,38 @@ public class Magical_Shield extends SkillHandler<SimpleSkillResult> {
         new MagicalShieldEffect(skillMeta.getCaster().getPlayer(), duration, radiusSquared, power);
     }
 
-    public class MagicalShieldEffect extends BukkitRunnable implements Listener {
+    public static class MagicalShieldEffect extends TemporaryListener {
         private final Location loc;
-        private final double duration, radius, power;
-
-        private int ti = 0;
+        private final double radiusSquared, power;
 
         public MagicalShieldEffect(Player caster, double duration, double radius, double power) {
             this.loc = caster.getLocation().clone();
 
-            this.duration = duration;
-            this.radius = radius;
+            this.radiusSquared = radius * radius;
             this.power = power;
 
             caster.getWorld().playSound(caster.getLocation(), VSound.ENTITY_ENDERMAN_TELEPORT.get(), 3, 0);
 
-            runTaskTimer(MythicLib.plugin, 0, 3);
-            Bukkit.getPluginManager().registerEvents(this, MythicLib.plugin);
+            registerRunnable(new BukkitRunnable() {
+                @Override
+                public void run() {
+                    for (double j = 0; j < Math.PI / 2; j += Math.PI / (28 + RANDOM.nextInt(5)))
+                        for (double i = 0; i < Math.PI * 2; i += Math.PI / (14 + RANDOM.nextInt(5)))
+                            loc.getWorld().spawnParticle(VParticle.REDSTONE.get(),
+                                    loc.clone().add(2.5 * Math.cos(i + j) * Math.sin(j), 2.5 * Math.cos(j), 2.5 * Math.sin(i + j) * Math.sin(j)), 1,
+                                    new Particle.DustOptions(Color.FUCHSIA, 1));
+                }
+            }, runnable -> runnable.runTaskTimer(MythicLib.plugin, 0, 3));
+
+            close((long) (duration * 20));
         }
 
-        private void close() {
-            cancel();
-            EntityDamageEvent.getHandlerList().unregister(this);
-        }
-
-        @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-        public void a(EntityDamageEvent event) {
-            if (event.getEntity() instanceof Player && event.getEntity().getWorld().equals(loc.getWorld()) && event.getEntity().getLocation().distanceSquared(loc) < radius)
-                UtilityMethods.multiplyBaseDamage(event, 1 - power);
-        }
-
-        @Override
-        public void run() {
-            if (ti++ > duration * 20. / 3.)
-                close();
-
-            for (double j = 0; j < Math.PI / 2; j += Math.PI / (28 + RANDOM.nextInt(5)))
-                for (double i = 0; i < Math.PI * 2; i += Math.PI / (14 + RANDOM.nextInt(5)))
-                    loc.getWorld().spawnParticle(VParticle.REDSTONE.get(),
-                            loc.clone().add(2.5 * Math.cos(i + j) * Math.sin(j), 2.5 * Math.cos(j), 2.5 * Math.sin(i + j) * Math.sin(j)), 1,
-                            new Particle.DustOptions(Color.FUCHSIA, 1));
+        @EventHandler
+        public void a(AttackEvent event) {
+            if (event.getEntity() instanceof Player
+                    && event.getEntity().getWorld().equals(loc.getWorld())
+                    && event.getEntity().getLocation().distanceSquared(loc) < radiusSquared)
+                event.getDamage().multiplicativeModifier(1 - power);
         }
     }
 }

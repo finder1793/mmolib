@@ -10,7 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 public class CustomProjectileDamage implements Listener {
 
@@ -47,7 +46,7 @@ public class CustomProjectileDamage implements Listener {
                     && data.getSourceItem().getItem().getItemMeta().getEnchants().containsKey(VEnchantment.POWER.get()))
                 baseDamage *= 1.25 + (.25 * data.getSourceItem().getItem().getItemMeta().getEnchantLevel(VEnchantment.POWER.get()));
 
-            event.setDamage(EntityDamageEvent.DamageModifier.BASE, baseDamage);
+            event.setDamage(baseDamage);
         }
     }
 }

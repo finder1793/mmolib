@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -63,31 +62,24 @@ public class Chicken_Wraith extends SkillHandler<SimpleSkillResult> {
         }.runTaskTimer(MythicLib.plugin, 0, 2);
     }
 
-    public class CustomEggRegistry extends TemporaryListener {
+    public static class CustomEggRegistry extends TemporaryListener {
         private final List<Integer> entities = new ArrayList<>();
         private final double damage;
 
         public CustomEggRegistry(double damage) {
-            super(EntityDamageByEntityEvent.getHandlerList(), PlayerEggThrowEvent.getHandlerList());
-
             this.damage = damage;
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
         public void a(PlayerEggThrowEvent event) {
             if (entities.contains(event.getEgg().getEntityId()))
                 event.setHatching(false);
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
         public void b(EntityDamageByEntityEvent event) {
             if (entities.contains(event.getDamager().getEntityId()))
-                event.setDamage(EntityDamageEvent.DamageModifier.BASE, damage);
-        }
-
-        @Override
-        public void whenClosed() {
-            // Nothing
+                event.setDamage(damage);
         }
     }
 }

@@ -47,8 +47,6 @@ public class TNT_Throw extends SkillHandler<VectorSkillResult> {
         private final TNTPrimed tnt;
 
         public CancelTeamDamage(Player player, TNTPrimed tnt) {
-            super(EntityDamageByEntityEvent.getHandlerList());
-
             this.player = player;
             this.tnt = tnt;
 

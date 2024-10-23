@@ -10,7 +10,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
@@ -28,8 +27,6 @@ import java.util.logging.Level;
 public class NoClipItem extends TemporaryListener {
     private final Item item;
 
-    private static final HandlerList[] HANDLER_LISTS = inferHandlerLists(NoClipItem.class);
-
     /**
      * Util class which creates an item which cannot be picked up. Item is
      * removed if it tries to go through a nether portal, if it is picked up
@@ -40,8 +37,6 @@ public class NoClipItem extends TemporaryListener {
      * @param item ItemStack used to summon the entity
      */
     public NoClipItem(@NotNull Location loc, @NotNull ItemStack item) {
-        super(HANDLER_LISTS);
-
         this.item = loc.getWorld().dropItem(loc, stripItemData(item));
         this.item.setPickupDelay(1000000);
     }

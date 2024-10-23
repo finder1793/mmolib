@@ -19,7 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.ShulkerBullet;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -69,8 +68,6 @@ public class ShulkerMissile extends SkillHandler<VectorSkillResult> {
         private final int effectDuration;
 
         public ShulkerMissileHandler(PlayerMetadata caster, ShulkerBullet bullet, Vector vel, long duration, double damage, int effectDuration) {
-            super(EntityDamageByEntityEvent.getHandlerList());
-
             this.caster = caster;
             this.bullet = bullet;
             this.vel = vel;
@@ -103,7 +100,7 @@ public class ShulkerMissile extends SkillHandler<VectorSkillResult> {
             }
 
             final LivingEntity entity = (LivingEntity) event.getEntity();
-            event.setDamage(EntityDamageEvent.DamageModifier.BASE, damage);
+            event.setDamage(damage);
 
             new BukkitRunnable() {
                 final Location loc = entity.getLocation();

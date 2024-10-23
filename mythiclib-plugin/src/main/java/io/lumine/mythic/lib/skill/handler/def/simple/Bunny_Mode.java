@@ -39,7 +39,7 @@ public class Bunny_Mode extends SkillHandler<SimpleSkillResult> {
         Player caster = skillMeta.getCaster().getPlayer();
 
         new BukkitRunnable() {
-            final BunnyModeEffect handler = new BunnyModeEffect(caster, duration);
+            final BunnyModeEffect handler = new BunnyModeEffect(caster);
             int j = 0;
 
             long lastJump = 0;
@@ -66,21 +66,13 @@ public class Bunny_Mode extends SkillHandler<SimpleSkillResult> {
     public static class BunnyModeEffect extends TemporaryListener {
         private final Player player;
 
-        public BunnyModeEffect(Player player, double duration) {
-            super(EntityDamageEvent.getHandlerList());
-
+        public BunnyModeEffect(Player player) {
             this.player = player;
         }
 
-        @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+        @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
         public void a(EntityDamageEvent event) {
-            if (event.getEntity().equals(player) && event.getCause() == DamageCause.FALL)
-                event.setCancelled(true);
-        }
-
-        @Override
-        public void whenClosed() {
-            // Nothing
+            if (event.getEntity().equals(player) && event.getCause() == DamageCause.FALL) event.setCancelled(true);
         }
     }
 }

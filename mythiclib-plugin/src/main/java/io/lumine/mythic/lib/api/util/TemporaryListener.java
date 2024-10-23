@@ -4,6 +4,7 @@ import io.lumine.mythic.lib.MythicLib;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -48,11 +49,10 @@ public abstract class TemporaryListener implements Listener {
      * Used to register listeners which should be unregistered after a specific
      * period of time.
      *
-     * @param plugin       Plugin registering the listener
-     * @param handlerLists Handler lists which will be used to unregister the listener
+     * @param plugin Plugin registering the listener
      */
     public TemporaryListener(@NotNull JavaPlugin plugin, @NotNull HandlerList... handlerLists) {
-        this.handlerLists = handlerLists;
+        this.handlerLists = handlerLists.length == 0 ? inferHandlerLists(this.getClass()) : handlerLists;
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
@@ -79,9 +79,9 @@ public abstract class TemporaryListener implements Listener {
     }
 
     /**
-     * Immediately unregisters the listener
+     * Immediately unregisters the listener.
      *
-     * @return If it's the first time this method is called for this instance
+     * @return If it is the first time this method is called
      */
     public boolean close() {
         if (closed) return false;
@@ -99,15 +99,20 @@ public abstract class TemporaryListener implements Listener {
      * If {@link #close()} is called a second time after the listener
      * was already closed, this method will NOT get called a second time
      */
-    public abstract void whenClosed();
+    public void whenClosed() {
+        // Nothing by default
+    }
 
-    protected static HandlerList[] inferHandlerLists(@NotNull Class<?> clazz) {
+    public static HandlerList[] inferHandlerLists(@NotNull Class<?> clazz) {
         final List<HandlerList> lists = new ArrayList<>();
         for (Method method : clazz.getDeclaredMethods())
             try {
-                if (method.getParameterCount() != 1) continue;
+                EventHandler annot = method.getAnnotation(EventHandler.class);
+                if (annot == null) continue;
+
+                Validate.isTrue(method.getParameterCount() == 1, "Wrong param count for event handler");
                 final Class<?> paramType = method.getParameters()[0].getType();
-                if (!isEventClass(paramType)) continue;
+                Validate.isTrue(isEventClass(paramType), "Param of event handler is not an event class");
                 final HandlerList handlerList = (HandlerList) paramType.getMethod("getHandlerList").invoke(null);
                 lists.add(handlerList);
             } catch (Throwable any) {

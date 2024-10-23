@@ -107,8 +107,6 @@ public class Explosive_Turkey extends SkillHandler<VectorSkillResult> {
         private final Chicken chicken;
 
         public ChickenHandler(Chicken chicken) {
-            super(EntityDeathEvent.getHandlerList());
-
             this.chicken = chicken;
         }
 

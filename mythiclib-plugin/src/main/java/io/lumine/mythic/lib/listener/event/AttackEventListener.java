@@ -59,22 +59,22 @@ public class AttackEventListener implements Listener {
         Bukkit.getPluginManager().callEvent(attackEvent);
         if (attackEvent.isCancelled()) return;
 
-        applyDamage(event, attackEvent.getDamage().getDamage());
+        event.setDamage(attackEvent.getDamage().getDamage());
+        fixDamage(event);
 
         // Call the death event if the entity is being killed
         if (attack.isPlayer() && event.getFinalDamage() >= ((Damageable) event.getEntity()).getHealth())
             Bukkit.getPluginManager().callEvent(new PlayerKillEntityEvent(attack, (LivingEntity) event.getEntity()));
     }
 
-    private static final double MINIMUM_BASE_DAMAGE = 1;
-
+    private static final double MINIMUM_BASE_DAMAGE = 1 + 1e-6;
     private static final EntityDamageEvent.DamageModifier MODIFIER_USED = EntityDamageEvent.DamageModifier.ARMOR;
 
     /**
      * For some obscure reason, Minecraft base damage must not be lower than 1. This never
      * happens in vanilla Minecraft because the base damage of anything (entity attack, tick
-     * damage like cactus or lava) is always higher. However, the final damage can be arbitrarily
-     * close to 1 due to other modifiers (like armor, absorption).
+     * damage like cactus or lava) is always higher. However, the final damage output by
+     * MythicLib may be arbitrarily close to 1 due to defense, stats...
      * <p>
      * A solution for supporting attacks with small damage amounts is to set the base damage to 1
      * and add a fictive damage modifier to compensate for the higher base damage.
@@ -83,24 +83,20 @@ public class AttackEventListener implements Listener {
      *
      * @author Jules
      */
-    private void applyDamage(@NotNull EntityDamageEvent event, double baseDamage) {
+    private void fixDamage(@NotNull EntityDamageEvent event) {
 
-        // Not applicable, just edit base damage. Fixes MythicLib#290
-        if (!event.isApplicable(MODIFIER_USED)) {
-            event.setDamage(EntityDamageEvent.DamageModifier.BASE, Math.max(1, baseDamage));
-            return;
-        }
+        // Not applicable, cannot fix
+        if (!event.isApplicable(MODIFIER_USED)) return;
 
-        final double compensate = Math.max(0, MINIMUM_BASE_DAMAGE - baseDamage);
+        final double baseDamage = event.getDamage(EntityDamageEvent.DamageModifier.BASE),
+                compensate = Math.max(0, MINIMUM_BASE_DAMAGE - baseDamage);
 
         // No need for compensation
-        if (compensate <= 0) event.setDamage(EntityDamageEvent.DamageModifier.BASE, baseDamage);
+        if (compensate <= 0) return;
 
-            // Increase base damage and use fictive damage modifier
-        else {
-            event.setDamage(EntityDamageEvent.DamageModifier.BASE, MINIMUM_BASE_DAMAGE);
-            event.setDamage(MODIFIER_USED, event.getDamage(MODIFIER_USED) - compensate);
-        }
+        // Increase base damage and use fictive damage modifier
+        event.setDamage(EntityDamageEvent.DamageModifier.BASE, MINIMUM_BASE_DAMAGE);
+        event.setDamage(MODIFIER_USED, event.getDamage(MODIFIER_USED) - compensate);
     }
 }
 

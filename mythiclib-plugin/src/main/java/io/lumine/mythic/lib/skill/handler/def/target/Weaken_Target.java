@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.skill.handler.def.target;
 
 import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.api.event.AttackEvent;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.TargetSkillResult;
@@ -16,7 +16,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
@@ -68,15 +67,15 @@ public class Weaken_Target extends SkillHandler<TargetSkillResult> implements Li
     }
 
     @EventHandler
-    public void a(EntityDamageEvent event) {
-        if (event.getCause() != DamageCause.ENTITY_ATTACK
-                && event.getCause() != DamageCause.ENTITY_EXPLOSION
-                && event.getCause() != DamageCause.PROJECTILE) return;
+    public void a(AttackEvent event) {
+        if (event.toBukkit().getCause() != DamageCause.ENTITY_ATTACK
+                && event.toBukkit().getCause() != DamageCause.ENTITY_EXPLOSION
+                && event.toBukkit().getCause() != DamageCause.PROJECTILE) return;
 
         final Entity entity = event.getEntity();
         final Double found = MARKED_ENTITIES.get(entity.getUniqueId());
         if (found != null) {
-            UtilityMethods.multiplyBaseDamage(event, found);
+            event.getDamage().multiplicativeModifier(found);
             playWeakenEffect(entity.getLocation());
             MARKED_ENTITIES.remove(entity.getUniqueId());
             entity.getWorld().playSound(entity.getLocation(), VSound.ENTITY_ENDERMAN_DEATH.get(), 2, 2);

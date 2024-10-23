@@ -40,13 +40,11 @@ public class ShulkerBulletMechanic extends DirectionMechanic {
 
     public class ShulkerBulletHandler extends TemporaryListener {
         private final ShulkerBullet bullet;
-        private final Vector direction;
+        //private final Vector direction;
         private final SkillMetadata skillMetadata;
 
         public ShulkerBulletHandler(ShulkerBullet bullet, SkillMetadata skillMetadata, Vector direction) {
-            super(EntityDamageByEntityEvent.getHandlerList());
-
-            this.direction = direction;
+            //this.direction = direction;
             this.bullet = bullet;
             this.skillMetadata = skillMetadata;
 

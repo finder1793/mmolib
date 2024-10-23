@@ -1,23 +1,20 @@
 package io.lumine.mythic.lib.skill.handler.def.simple;
 
-import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.event.PlayerAttackEvent;
 import io.lumine.mythic.lib.api.player.MMOPlayerData;
+import io.lumine.mythic.lib.api.util.TemporaryListener;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.SimpleSkillResult;
 import io.lumine.mythic.lib.util.SmallParticleEffect;
 import io.lumine.mythic.lib.version.VSound;
-import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class Evade extends SkillHandler<SimpleSkillResult> {
     public Evade() {
@@ -39,41 +36,30 @@ public class Evade extends SkillHandler<SimpleSkillResult> {
         new EvadeSkill(skillMeta.getCaster().getData(), skillMeta.getParameter("duration"));
     }
 
-    private static class EvadeSkill extends BukkitRunnable implements Listener {
+    private static class EvadeSkill extends TemporaryListener {
         private final MMOPlayerData data;
 
         public EvadeSkill(MMOPlayerData data, double duration) {
             this.data = data;
 
-            Bukkit.getPluginManager().registerEvents(this, MythicLib.plugin);
-            runTaskTimer(MythicLib.plugin, 0, 1);
-            Bukkit.getScheduler().runTaskLater(MythicLib.plugin, this::close, (long) (duration * 20));
+            close((long) (20 * duration));
         }
 
-        private void close() {
-            cancel();
-            EntityDamageEvent.getHandlerList().unregister(this);
-        }
-
-        @EventHandler(priority = EventPriority.LOW)
+        @EventHandler(priority = EventPriority.LOWEST)
         public void a(EntityDamageEvent event) {
-            if (!data.isOnline()) return;
-            if (event.getEntity().equals(data.getPlayer()))
-                event.setCancelled(true);
+            if (UtilityMethods.isInvalidated(data)) {
+                close();
+                return;
+            }
+
+            if (event.getEntity().equals(data.getPlayer())) event.setCancelled(true);
         }
 
         @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
         public void b(PlayerAttackEvent event) {
-            if (event.getAttack().getDamage().hasType(DamageType.WEAPON)
+            if ((event.getAttack().getDamage().hasType(DamageType.WEAPON) || event.getAttack().getDamage().hasType(DamageType.UNARMED))
                     && event.getAttacker().getData().equals(data))
                 close();
-        }
-
-        @Override
-        public void run() {
-            if (UtilityMethods.isInvalidated(data)) close();
-            else
-                data.getPlayer().getWorld().spawnParticle(Particle.CLOUD, data.getPlayer().getLocation().add(0, 1, 0), 0);
         }
     }
 }

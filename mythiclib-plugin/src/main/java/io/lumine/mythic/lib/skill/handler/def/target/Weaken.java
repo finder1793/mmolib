@@ -1,20 +1,17 @@
 package io.lumine.mythic.lib.skill.handler.def.target;
 
-import io.lumine.mythic.lib.MythicLib;
-import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.api.event.AttackEvent;
+import io.lumine.mythic.lib.api.util.TemporaryListener;
 import io.lumine.mythic.lib.skill.SkillMetadata;
 import io.lumine.mythic.lib.skill.handler.SkillHandler;
 import io.lumine.mythic.lib.skill.result.def.TargetSkillResult;
 import io.lumine.mythic.lib.util.ParabolicProjectile;
 import io.lumine.mythic.lib.util.SmallParticleEffect;
 import io.lumine.mythic.lib.version.VParticle;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.util.Vector;
 
 public class Weaken extends SkillHandler<TargetSkillResult> {
@@ -46,25 +43,24 @@ public class Weaken extends SkillHandler<TargetSkillResult> {
         return new Vector(Math.cos(a), .8, Math.sin(a)).normalize().multiply(.4);
     }
 
-    public static class Weakened implements Listener {
+    public static class Weakened extends TemporaryListener {
         private final Entity entity;
-        private final double c;
+        private final double coef;
 
         public Weakened(Entity entity, double ratio, double duration) {
             this.entity = entity;
-            this.c = 1 + ratio / 100;
+            this.coef = 1 + ratio / 100;
 
             new SmallParticleEffect(entity, VParticle.WITCH.get());
 
-            Bukkit.getPluginManager().registerEvents(this, MythicLib.plugin);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(MythicLib.plugin, () -> EntityDamageByEntityEvent.getHandlerList().unregister(this), (int) duration * 20);
+            close((long) (duration * 20));
         }
 
         @EventHandler
-        public void a(EntityDamageByEntityEvent event) {
+        public void a(AttackEvent event) {
             if (event.getEntity().equals(entity)) {
                 event.getEntity().getWorld().spawnParticle(VParticle.WITCH.get(), entity.getLocation().add(0, entity.getHeight() / 2, 0), 16, .5, .5, .5, 0);
-                UtilityMethods.multiplyBaseDamage(event, c);
+                event.getDamage().multiplicativeModifier(coef);
             }
         }
     }

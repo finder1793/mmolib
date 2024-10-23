@@ -12,7 +12,6 @@ import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -67,20 +66,13 @@ public class Blizzard extends SkillHandler<SimpleSkillResult> {
         private final double damage;
 
         public CustomSnowballRegistry(double damage) {
-            super(EntityDamageByEntityEvent.getHandlerList());
-
             this.damage = damage;
         }
 
         @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
         public void a(EntityDamageByEntityEvent event) {
             if (entities.remove(event.getDamager().getUniqueId()))
-                event.setDamage(EntityDamageEvent.DamageModifier.BASE, damage);
-        }
-
-        @Override
-        public void whenClosed() {
-            // Nothing
+                event.setDamage(damage);
         }
     }
 }

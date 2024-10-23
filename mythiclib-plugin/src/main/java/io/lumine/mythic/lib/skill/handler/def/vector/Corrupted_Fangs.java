@@ -67,8 +67,6 @@ public class Corrupted_Fangs extends SkillHandler<VectorSkillResult> {
         private final double skillDamage;
 
         public FangsHandler(PlayerMetadata caster, double skillDamage) {
-            super(EntityDamageByEntityEvent.getHandlerList());
-
             this.caster = caster;
             this.skillDamage = skillDamage;
         }
@@ -81,11 +79,6 @@ public class Corrupted_Fangs extends SkillHandler<VectorSkillResult> {
                 if (UtilityMethods.canTarget(caster.getPlayer(), event.getEntity()))
                     caster.attack((LivingEntity) event.getEntity(), skillDamage, DamageType.MAGIC, DamageType.SKILL);
             }
-        }
-
-        @Override
-        public void whenClosed() {
-            // Nothing
         }
     }
 }
