@@ -29,16 +29,16 @@ public class HologramsHologramFactory implements HologramFactory {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(MMOItems.plugin, () -> hologramManager.deleteHologram(hologram), 20);
 	} */
 
-    @Override
-    public Hologram newHologram(Location loc, List<String> lines) {
-        return new CustomHologram(loc, lines);
+    @NotNull
+    public Hologram newHologram(@NotNull Location loc, @NotNull List<String> lines) {
+        return new HologramImpl(loc, lines);
     }
 
-    public class CustomHologram implements Hologram {
+    private final class HologramImpl extends Hologram {
         private final com.sainttx.holograms.api.Hologram holo;
         private boolean spawned = true;
 
-        public CustomHologram(Location loc, List<String> list) {
+        public HologramImpl(Location loc, List<String> list) {
             holo = new com.sainttx.holograms.api.Hologram("MythicLib-" + UUID.randomUUID(), loc);
             for (String str : list)
                 holo.addLine(new TextLine(holo, str));
@@ -72,7 +72,7 @@ public class HologramsHologramFactory implements HologramFactory {
         }
 
         @Override
-        public void updateLocation(Location loc) {
+        public void updateLocation(@NotNull Location loc) {
             holo.teleport(loc);
         }
     }

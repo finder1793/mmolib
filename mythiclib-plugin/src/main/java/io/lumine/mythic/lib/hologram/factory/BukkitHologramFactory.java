@@ -4,38 +4,39 @@ import com.google.common.base.Preconditions;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.hologram.Hologram;
 import io.lumine.mythic.lib.hologram.HologramFactory;
+import io.lumine.mythic.lib.listener.option.GameIndicators;
 import org.apache.commons.lang.Validate;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.TextDisplay;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
 public class BukkitHologramFactory implements HologramFactory {
     public BukkitHologramFactory() {
-        Validate.isTrue(MythicLib.plugin.getVersion().isAbove(1, 19, 4), "Text displays are only available on 1.19.4 and higher");
+        Validate.isTrue(MythicLib.plugin.getVersion().isAbove(1, 19, 4), "Text displays are only available on 1.19.4+");
     }
 
-    public Hologram newHologram(Location loc, List<String> lines) {
-        return new TextDisplayHologram(loc, lines);
+    @NotNull
+    public Hologram newHologram(@NotNull Location loc, @NotNull List<String> lines) {
+        return new HologramImpl(loc, lines);
     }
 
-    private static final class TextDisplayHologram implements Hologram {
+    private static final class HologramImpl extends Hologram {
         private final List<String> lines = new ArrayList<>();
         private final List<TextDisplay> spawnedEntities = new ArrayList<>();
 
         private Location loc;
         private boolean spawned = false;
 
-        TextDisplayHologram(@NotNull Location loc, @NotNull List<String> lines) {
-            this.loc = Objects.requireNonNull(loc, "hologram location").clone();
+        HologramImpl(@NotNull Location loc, @NotNull List<String> lines) {
+            this.loc = Objects.requireNonNull(loc, "Location cannot be null").clone();
             this.updateLines(lines);
 
             spawn();
@@ -46,49 +47,21 @@ public class BukkitHologramFactory implements HologramFactory {
             return lines;
         }
 
-        private Location getNewLinePosition() {
-            if (this.spawnedEntities.isEmpty()) {
-                return this.loc;
-            } else {
-                TextDisplay last = this.spawnedEntities.get(this.spawnedEntities.size() - 1);
-                return last.getLocation().subtract(0.0D, 0.25D, 0.0D);
-            }
-        }
+        private static final double LINE_OFFSET = .25;
 
-        //private static final float SCALE_FACTOR = 2f;
-        //private static final Transformation SCALE_UP = new Transformation(new Vector3f(), new AxisAngle4f(), new Vector3f(SCALE_FACTOR, SCALE_FACTOR, SCALE_FACTOR), new AxisAngle4f());
-
-        public void spawn() {
-            int linesSize = this.lines.size();
-            int spawnedSize = this.spawnedEntities.size();
-
-            // Remove un-necessary entities
-            final int tooMuch = spawnedSize - linesSize;
-            for (int j = 0; j < tooMuch; ++j)
-                this.spawnedEntities.remove(this.spawnedEntities.size() - 1).remove();
+        private void spawn() {
 
             // Add new lines
-            for (int i = 0; i < this.lines.size(); ++i) {
-                final String line = this.lines.get(i);
+            Location clone = loc.clone();
+            for (String line : lines) {
+                final TextDisplay as = clone.getWorld().spawn(clone, TextDisplay.class);
+                as.setBillboard(Display.Billboard.CENTER);
+                // as.setInterpolationDuration(INTERPOLATION_DURATION);
 
-                // Add new entity
-                if (i >= this.spawnedEntities.size()) {
-                    final Location loc = this.getNewLinePosition();
-                    final Chunk chunk = loc.getChunk();
-                    if (!chunk.isLoaded()) chunk.load();
-                    final TextDisplay as = loc.getWorld().spawn(loc, TextDisplay.class);
-                    as.setBillboard(Display.Billboard.CENTER);
-                    //  as.setTransformation(SCALE_UP);
-                    this.spawnedEntities.add(as);
+                this.spawnedEntities.add(as);
+                as.setText(line);
 
-                    as.setText(line);
-                }
-
-                // Entity exists
-                else {
-                    final TextDisplay entity = this.spawnedEntities.get(i);
-                    if (!Objects.equals(entity.getText(), line)) entity.setText(line);
-                }
+                clone.subtract(0, LINE_OFFSET, 0);
             }
 
             this.spawned = true;
@@ -103,52 +76,75 @@ public class BukkitHologramFactory implements HologramFactory {
 
         @Override
         public boolean isSpawned() {
-            if (!this.spawned) {
-                return false;
-            } else {
-                Iterator<TextDisplay> var1 = this.spawnedEntities.iterator();
+            return spawned;
+        }
 
-                TextDisplay stand;
-                do {
-                    if (!var1.hasNext()) {
-                        return true;
-                    }
+        @Override
+        public void updateLocation(@NotNull Location newLoc) {
+            Validate.isTrue(spawned, "Hologram is not spawned");
+            if (loc.distanceSquared(newLoc) < EPSILON) return;
+            loc = newLoc.clone();
 
-                    stand = var1.next();
-                } while (stand.isValid());
-
-                return false;
+            Location clone = loc.clone();
+            for (TextDisplay textDisplay : getSpawnedEntities()) {
+                textDisplay.teleport(clone);
+                clone.subtract(0, LINE_OFFSET, 0);
             }
         }
 
-        // private static final double EPSILON = 1e-5;
+        private static final double EPSILON = 1e-5;
 
+        /*
+        private static final int OVERSHOOT = 3;
+        private static final int INTERPOLATION_DURATION = 3 * OVERSHOOT;
+        private static final AxisAngle4f NULL_ROTATION = new AxisAngle4f(0, 0, 1, 0);
+        private static final Vector3f VECTOR_ONE = new Vector3f(1, 1, 1);
+        */
+
+        /**
+         * Move around holograms using transforms and no teleports. This
+         * is much better for server tick and animation smoothness.
+         */
         @Override
-        public void updateLocation(Location newLoc) {
-            /* Not very pretty to move around display entities
-            Objects.requireNonNull(newLoc, "position");
-            if (loc.distanceSquared(newLoc) < EPSILON) return;
-            loc = newLoc.clone();
-            if (!this.isSpawned()) {
-                this.spawn();
-            } else {
-                double offset = 0.0D;
+        public void flyOut(@NotNull GameIndicators settings, @NotNull Vector dir) {
 
-                for (Iterator<TextDisplay> var4 = this.getSpawnedEntities().iterator(); var4.hasNext(); offset += 0.25D) {
-                    TextDisplay as = var4.next();
-                    final Location asLoc = loc.clone().add(0.0D, offset, 0.0D);
-                    as.setVelocity(asLoc.toVector().subtract(as.getLocation().toVector()).multiply(10));
-                    as.teleport(asLoc);
+            for (TextDisplay td : getSpawnedEntities())
+                td.setTeleportDuration((int) settings.tickPeriod);
+
+            super.flyOut(settings, dir);
+            /*
+            Validate.isTrue(spawned, "Hologram is not spawned");
+
+            new BukkitRunnable() {
+
+                @Override
+                public void run() {
+
+                    // Transformation applied to text displays
+                    Transformation transf = new Transformation(toJoml(newLoc.toVector().subtract(initLoc.toVector()).multiply(OVERSHOOT)), NULL_ROTATION, VECTOR_ONE, NULL_ROTATION);
+
+                    // Update delay and transform
+                    for (TextDisplay textDisplay : getSpawnedEntities()) {
+                        textDisplay.setInterpolationDelay(0);
+                        textDisplay.setTransformation(transf);
+                    }
                 }
-            }*/
+            }.runTaskTimer(MythicLib.plugin, 0, settings.tickPeriod);
+            */
         }
+
+        /*
+        private Vector3f toJoml(Vector vec) {
+            return new Vector3f((float) vec.getX(), (float) vec.getY(), (float) vec.getZ());
+        }
+        */
 
         @Override
         public void updateLines(@Nonnull List<String> lines) {
             Objects.requireNonNull(lines, "lines");
-            Preconditions.checkArgument(!lines.isEmpty(), "lines cannot be empty");
+            Preconditions.checkArgument(!lines.isEmpty(), "Lines cannot be empty");
             for (String line : lines)
-                Preconditions.checkArgument(line != null, "null line");
+                Preconditions.checkArgument(line != null, "Null line");
 
             this.lines.clear();
             this.lines.addAll(lines);

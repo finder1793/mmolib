@@ -6,6 +6,7 @@ import io.lumine.mythic.lib.hologram.HologramFactory;
 import net.Zrips.CMILib.Container.CMILocation;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,16 +33,16 @@ public class CMIHologramFactory implements HologramFactory {
         Bukkit.getScheduler().scheduleSyncDelayedTask(MythicLib.plugin, () -> CMI.getInstance().getHologramManager().removeHolo(hologram), 20);
     }*/
 
-    @Override
-    public Hologram newHologram(Location loc, List<String> lines) {
-        return new CMIHologram(loc, lines);
+    @NotNull
+    public Hologram newHologram(@NotNull Location loc, @NotNull List<String> lines) {
+        return new HologramImpl(loc, lines);
     }
 
-    public class CMIHologram implements Hologram {
+    private static final class HologramImpl extends Hologram {
         private final com.Zrips.CMI.Modules.Holograms.CMIHologram holo;
         private boolean spawned = true;
 
-        public CMIHologram(Location loc, List<String> list) {
+        public HologramImpl(Location loc, List<String> list) {
             holo = new com.Zrips.CMI.Modules.Holograms.CMIHologram("MythicLib-" + UUID.randomUUID().toString(), new CMILocation(loc));
             holo.setLines(list);
 
@@ -73,7 +74,7 @@ public class CMIHologramFactory implements HologramFactory {
         }
 
         @Override
-        public void updateLocation(Location loc) {
+        public void updateLocation(@NotNull Location loc) {
             holo.setLoc(loc);
             holo.update();
         }

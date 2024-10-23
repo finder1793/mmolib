@@ -198,22 +198,22 @@ game-indicators:
         normal: '&6★'
         crit: '&6&l★'
     split-holograms: true
+    move: true
     radial-velocity: 1
     gravity: 1
     initial-upward-velocity: 1
-    entity-height-percent: 0.75
     y-offset: 0.1
+    entity-height-percent: 0.75
+    r-offset: 0.5
+    entity-width-percent: 0.75
+    tick-period: 3
+    lifespan: 20
 
   # When an entity regens some health
   regen:
     enabled: false
     decimal-format: '0.#'
     format: '&a+#'
-    radial-velocity: 1
-    gravity: 1
-    initial-upward-velocity: 1
-    entity-height-percent: 0.75
-    y-offset: 0.1
     custom-font:
       enabled: false
       '0': 'ᜀ'
@@ -228,6 +228,16 @@ game-indicators:
       '9': 'ᜉ'
       'dot': 'ᜊ'
       'inter': 'ᜍ'
+    move: true
+    radial-velocity: 1
+    gravity: 1
+    initial-upward-velocity: 1
+    y-offset: 0.1
+    entity-height-percent: 0.75
+    r-offset: 0.5
+    entity-radius-percent: 0.75
+    tick-period: 3
+    lifespan: 20
 
 # Limits the amount of damage particles that can be sent to a player
 # every tick. By default it's set to 10 particles/tick. These particles

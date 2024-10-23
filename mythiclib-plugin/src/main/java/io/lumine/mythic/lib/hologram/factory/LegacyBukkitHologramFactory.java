@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
@@ -17,21 +18,20 @@ import java.util.List;
 import java.util.Objects;
 
 public class LegacyBukkitHologramFactory implements HologramFactory {
-    public LegacyBukkitHologramFactory() {
+
+    @NotNull
+    public Hologram newHologram(@NotNull Location loc, @NotNull List<String> lines) {
+        return new HologramImpl(loc, lines);
     }
 
-    public Hologram newHologram(Location loc, List<String> lines) {
-        return new BukkitHologram(loc, lines);
-    }
-
-    private static final class BukkitHologram implements Hologram {
+    static final class HologramImpl extends Hologram {
         private static final Method SET_CAN_TICK;
         private Location loc;
-        private final List<String> lines = new ArrayList();
-        private final List<ArmorStand> spawnedEntities = new ArrayList();
+        private final List<String> lines = new ArrayList<>();
+        private final List<ArmorStand> spawnedEntities = new ArrayList<>();
         private boolean spawned = false;
 
-        BukkitHologram(Location loc, List<String> lines) {
+        HologramImpl(Location loc, List<String> lines) {
             this.loc = Objects.requireNonNull(loc, "position");
             this.updateLines(lines);
 
@@ -60,7 +60,7 @@ public class LegacyBukkitHologramFactory implements HologramFactory {
             if (linesSize < spawnedSize) {
                 i = spawnedSize - linesSize;
 
-                for (int j = 0; j < i; ++i) {
+                for (int j = 0; j < i; ++j) {
                     as = (ArmorStand) this.spawnedEntities.remove(this.spawnedEntities.size() - 1);
                     as.remove();
                 }
@@ -125,7 +125,7 @@ public class LegacyBukkitHologramFactory implements HologramFactory {
             if (!this.spawned) {
                 return false;
             } else {
-                Iterator var1 = this.spawnedEntities.iterator();
+                Iterator<ArmorStand> var1 = this.spawnedEntities.iterator();
 
                 ArmorStand stand;
                 do {
@@ -141,7 +141,7 @@ public class LegacyBukkitHologramFactory implements HologramFactory {
         }
 
         @Override
-        public void updateLocation(Location loc) {
+        public void updateLocation(@NotNull Location loc) {
             Objects.requireNonNull(loc, "position");
             if (!this.loc.equals(loc)) {
                 this.loc = loc;
@@ -150,7 +150,7 @@ public class LegacyBukkitHologramFactory implements HologramFactory {
                 } else {
                     double offset = 0.0D;
 
-                    for (Iterator var4 = this.getSpawnedEntities().iterator(); var4.hasNext(); offset += 0.25D) {
+                    for (Iterator<ArmorStand> var4 = this.getSpawnedEntities().iterator(); var4.hasNext(); offset += 0.25D) {
                         ArmorStand as = (ArmorStand) var4.next();
                         as.teleport(loc.add(0.0D, offset, 0.0D));
                     }
@@ -163,10 +163,8 @@ public class LegacyBukkitHologramFactory implements HologramFactory {
         public void updateLines(@Nonnull List<String> lines) {
             Objects.requireNonNull(lines, "lines");
             Preconditions.checkArgument(!lines.isEmpty(), "lines cannot be empty");
-            Iterator var2 = lines.iterator();
 
-            while (var2.hasNext()) {
-                String line = (String) var2.next();
+            for (String line : lines) {
                 Preconditions.checkArgument(line != null, "null line");
             }
 
@@ -193,7 +191,7 @@ public class LegacyBukkitHologramFactory implements HologramFactory {
 
             try {
                 setCanTick = ArmorStand.class.getDeclaredMethod("setCanTick", Boolean.TYPE);
-            } catch (Throwable var2) {
+            } catch (Throwable ignored) {
             }
 
             SET_CAN_TICK = setCanTick;

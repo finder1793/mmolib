@@ -6,6 +6,7 @@ import io.lumine.mythic.lib.hologram.Hologram;
 import io.lumine.mythic.lib.hologram.HologramFactory;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,17 +14,17 @@ import java.util.stream.Collectors;
 
 public class DecentHologramFactory implements HologramFactory {
 
-    @Override
-    public Hologram newHologram(Location loc, List<String> lines) {
-        return new CustomHologram(loc, lines);
+    @NotNull
+    public Hologram newHologram(@NotNull Location loc, @NotNull List<String> lines) {
+        return new HologramImpl(loc, lines);
     }
 
-    public class CustomHologram implements Hologram {
+    private static final class HologramImpl extends Hologram {
         private final eu.decentsoftware.holograms.api.holograms.Hologram holo;
         private final HologramPage page;
         private boolean spawned = true;
 
-        public CustomHologram(Location loc, List<String> lines) {
+        public HologramImpl(Location loc, List<String> lines) {
             holo = new eu.decentsoftware.holograms.api.holograms.Hologram(UUID.randomUUID().toString(), loc, false);
             page = holo.getPage(0);
             for (String line : lines)
@@ -64,7 +65,7 @@ public class DecentHologramFactory implements HologramFactory {
         }
 
         @Override
-        public void updateLocation(Location loc) {
+        public void updateLocation(@NotNull Location loc) {
             holo.setLocation(loc);
             holo.realignLines();
         }

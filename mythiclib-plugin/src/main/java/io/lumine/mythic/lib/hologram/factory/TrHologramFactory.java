@@ -2,18 +2,20 @@ package io.lumine.mythic.lib.hologram.factory;
 
 import io.lumine.mythic.lib.hologram.Hologram;
 import io.lumine.mythic.lib.hologram.HologramFactory;
+import io.lumine.mythic.lib.listener.option.GameIndicators;
 import me.arasple.mc.trhologram.api.TrHologramAPI;
 import me.arasple.mc.trhologram.api.hologram.HologramBuilder;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 /**
- * Handles compatibility with TrHologram using HologramFactory from LumineUtils.
+ * Handles compatibility with TrHologram
  *
- * @author TUCAOEVER, indyuce
+ * @author TUCAOEVER, Jules
  */
 public class TrHologramFactory implements HologramFactory {
 
@@ -24,17 +26,17 @@ public class TrHologramFactory implements HologramFactory {
         Bukkit.getScheduler().scheduleSyncDelayedTask(MythicLib.plugin, hologram::destroy, 20L);
     }*/
 
-    @Override
-    public Hologram newHologram(Location loc, List<String> lines) {
-        return new TrHologram(loc, lines);
+    @NotNull
+    public Hologram newHologram(@NotNull Location loc, @NotNull List<String> lines) {
+        return new HologramImpl(loc, lines);
     }
 
-    public class TrHologram implements Hologram {
+    static final class HologramImpl extends Hologram {
         private final me.arasple.mc.trhologram.module.display.Hologram holo;
         private final List<String> lines;
         private boolean spawned = true;
 
-        public TrHologram(Location loc, List<String> lines) {
+        public HologramImpl(Location loc, List<String> lines) {
             HologramBuilder builder = TrHologramAPI.builder(loc);
             for (String line : lines)
                 builder.append(line);
@@ -64,6 +66,11 @@ public class TrHologramFactory implements HologramFactory {
 
         @Override
         public void updateLocation(Location loc) {
+            // Not supported
+        }
+
+        @Override
+        public void flyOut(@NotNull GameIndicators settings, @NotNull Vector dir) {
             // Not supported
         }
 

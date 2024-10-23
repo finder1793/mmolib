@@ -8,7 +8,6 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.Listener;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,14 +18,13 @@ import java.util.Random;
 public abstract class GameIndicators implements Listener {
     private final String format;
     private final DecimalFormat decimalFormat;
-    private final double radialVelocity, gravity, initialUpwardVelocity, entityHeightPercentage, yOffset;
+    private final boolean move;
+
+    // Options to be used by the hologram module
+    public final double radialVelocity, gravity, initialUpwardVelocity, entityHeightPercent, yOffset, rOffset, entityWidthPercent;
+    public final long lifespan, tickPeriod;
 
     protected static final Random RANDOM = new Random();
-
-    /**
-     * Hologram life span in ticks
-     */
-    private static final int HOLOGRAM_LIFE_SPAN = 7;
 
     public GameIndicators(ConfigurationSection config) {
         decimalFormat = MythicLib.plugin.getMMOConfig().newDecimalFormat(config.getString("decimal-format"));
@@ -34,14 +32,21 @@ public abstract class GameIndicators implements Listener {
         radialVelocity = config.getDouble("radial-velocity", 1);
         gravity = config.getDouble("gravity", 1);
         initialUpwardVelocity = config.getDouble("initial-upward-velocity", 1);
-        entityHeightPercentage = config.getDouble("entity-height-percent", .75);
+        entityHeightPercent = config.getDouble("entity-height-percent", .75);
+        entityWidthPercent = config.getDouble("entity-width-percent", .75);
         yOffset = config.getDouble("y-offset", .1);
+        rOffset = config.getDouble("r-offset", 0.1);
+        move = config.getBoolean("move", true);
+        lifespan = config.getLong("lifespan", 20);
+        tickPeriod = config.getLong("tick-period", 3);
     }
 
+    @NotNull
     public String formatNumber(double d) {
         return decimalFormat.format(d);
     }
 
+    @NotNull
     public String getRaw() {
         return format;
     }
@@ -58,45 +63,29 @@ public abstract class GameIndicators implements Listener {
      * @param message Message to display
      * @param dir     Average direction of the hologram indicator
      */
-    public void displayIndicator(Entity entity, String message, @NotNull Vector dir, IndicatorDisplayEvent.IndicatorType type) {
+    public void displayIndicator(@NotNull Entity entity, @NotNull String message, @NotNull Vector dir, @NotNull IndicatorDisplayEvent.IndicatorType type) {
         IndicatorDisplayEvent called = new IndicatorDisplayEvent(entity, message, type);
         Bukkit.getPluginManager().callEvent(called);
         if (called.isCancelled())
             return;
 
-        Location loc = entity.getLocation().add((RANDOM.nextDouble() - .5) * 1.2, yOffset + entity.getHeight() * entityHeightPercentage, (RANDOM.nextDouble() - .5) * 1.2);
-        displayIndicator(loc, called.getMessage(), dir);
-    }
+        final double a = RANDOM.nextDouble() * 2 * Math.PI,
 
-    private void displayIndicator(Location loc, String message, @NotNull Vector dir) {
-        // Use individual holo to hide the temporary armor stand
-        Hologram holo = Hologram.create(loc, MythicLib.plugin.parseColors(Collections.singletonList(message)));
+                // Entity width defined as arithmetical mean of widths across the two dimensions
+                width = (entity.getBoundingBox().getWidthX() + entity.getBoundingBox().getWidthZ()) / 2,
 
-        // Parabola trajectory
-        new BukkitRunnable() {
-            double v = 6 * initialUpwardVelocity; // Initial upward velocity
-            int i = 0; // Counter
+                // Starting distance to center location
+                r = rOffset + width * entityWidthPercent,
 
-            private final double acc = -10 * gravity; // Downwards acceleration
-            private final double dt = 3d / 20d; // Delta_t used to integrate acceleration and velocity
+                // Starting Z coordinate
+                h = yOffset + entity.getHeight() * entityHeightPercent;
 
-            @Override
-            public void run() {
+        final Location loc = entity.getLocation().add(Math.cos(a) * r, h, Math.sin(a) * r);
+        Hologram holo = Hologram.create(loc, Collections.singletonList(MythicLib.plugin.parseColors(called.getMessage())));
 
-                if (i == 0)
-                    dir.multiply(2 * radialVelocity);
-
-                // Remove hologram when reaching end of life
-                if (i++ >= HOLOGRAM_LIFE_SPAN) {
-                    holo.despawn();
-                    cancel();
-                    return;
-                }
-
-                v += acc * dt;
-                loc.add(dir.getX() * dt, v * dt, dir.getZ() * dt);
-                holo.updateLocation(loc);
-            }
-        }.runTaskTimer(MythicLib.plugin, 0, 3);
+        // No movement
+        if (!move)
+            Bukkit.getScheduler().runTaskLater(MythicLib.plugin, holo::despawn, lifespan);
+        else holo.flyOut(this, dir);
     }
 }
