@@ -1,5 +1,7 @@
 package io.lumine.mythic.lib.skill.result;
 
+import io.lumine.mythic.lib.skill.SkillMetadata;
+
 /**
  * When the player tries to cast a skill either through
  * MMOCore or MMOItems, a skill result instance is created.
@@ -21,4 +23,13 @@ public interface SkillResult {
      * of this method. FOr this reason, no instance of metadata is provided as parameter.
      */
     public boolean isSuccessful();
+
+    /**
+     * @see #isSuccessful()
+     * @deprecated
+     */
+    @Deprecated
+    public default boolean isSuccessful(SkillMetadata ignored) {
+        return isSuccessful();
+    }
 }
