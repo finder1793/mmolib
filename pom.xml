@@ -4,7 +4,7 @@
     <groupId>io.lumine</groupId>
     <artifactId>MythicLib</artifactId>
     <packaging>pom</packaging>
-    <version>1.6.2-SNAPSHOT</version>
+    <version>1.7.1-SNAPSHOT</version>
     <modules>
         <module>mythiclib-plugin</module>
         <module>mythiclib-dist</module>

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>MythicLib</artifactId>
         <groupId>io.lumine</groupId>
-        <version>1.6.2-SNAPSHOT</version>
+        <version>1.7.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -82,126 +82,126 @@
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>mythiclib-plugin</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>mythiclib-vr</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>mythiclib-v1_14_r1</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>mythiclib-v1_15_r1</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>mythiclib-v1_16_r1</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>mythiclib-v1_16_r2</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>mythiclib-v1_16_r3</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>mythiclib-v1_17_r1</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>mythiclib-v1_18_r1</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>mythiclib-v1_18_r2</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>mythiclib-v1_19_r1</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>mythiclib-v1_19_r2</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>mythiclib-v1_19_r3</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>mythiclib-v1_20_r1</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>mythiclib-v1_20_r2</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>mythiclib-v1_20_r3</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>mythiclib-v1_20_r4</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>mythiclib-v1_21_r1</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.7.1-SNAPSHOT</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
