@@ -22,6 +22,11 @@ public class StatHandler {
     protected final String stat;
 
     /**
+     * Should this stat force updates on player login
+     */
+    protected boolean forceUpdate;
+
+    /**
      * @param config Root stat handlers configuration file
      * @param stat   Unique string identifier of stat
      */
@@ -75,6 +80,10 @@ public class StatHandler {
      */
     public double getBaseValue(@NotNull StatInstance instance) {
         return baseValue;
+    }
+
+    public boolean forcesUpdates() {
+        return forceUpdate;
     }
 
     /**

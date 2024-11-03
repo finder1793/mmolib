@@ -43,6 +43,9 @@ public class AttributeStatHandler extends StatHandler {
         this.material = material;
         this.description = description;
         this.playerDefaultBase = playerDefaultBase;
+
+        // Force update on login
+        this.forceUpdate = true;
     }
 
     @Override

@@ -165,7 +165,7 @@ public class MMOPlayerData {
     }
 
     public boolean hasFullySynchronized() {
-        return pluginLoadQueue == null || pluginLoadQueue.isEmpty();
+        return pluginLoadQueue == null;
     }
 
     public void markAsSynchronized(@NotNull MMOPlugin plugin, @NotNull SynchronizedDataHolder holder) {
@@ -174,11 +174,11 @@ public class MMOPlayerData {
 
         // Full MMO plugin synchronization
         if (pluginLoadQueue.isEmpty()) {
-
-            // If player is online
-            if (!lookup) statMap.updateAll();
-
             pluginLoadQueue = null;
+            if (lookup) return;
+
+            // Ran when all plugin data has finished loading
+            statMap.updateAll();
         }
     }
 
