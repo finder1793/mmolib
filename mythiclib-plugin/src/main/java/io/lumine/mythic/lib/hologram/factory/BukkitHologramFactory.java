@@ -108,6 +108,9 @@ public class BukkitHologramFactory implements HologramFactory {
         @Override
         public void flyOut(@NotNull GameIndicators settings, @NotNull Vector dir) {
 
+            // Teleport duration is not implemented in 1.20.1 and below
+            Validate.isTrue(MythicLib.plugin.getVersion().isAbove(1, 20, 2), "Moving indicators is only available in 1.20.2 and above");
+
             for (TextDisplay td : getSpawnedEntities())
                 td.setTeleportDuration((int) settings.tickPeriod);
 

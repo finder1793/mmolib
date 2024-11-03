@@ -131,7 +131,7 @@ public class MythicLib extends JavaPlugin {
         // Fixes left clicks 1.14 -> 1.20.4
         if (version.isUnder(1, 20, 5)) new MythicPacketSniffer(this);
 
-        // Hologram provider
+        // Hologram provider TODO remove
         Bukkit.getServicesManager().register(HologramFactory.class, new LegacyBukkitHologramFactory(), this, ServicePriority.Lowest);
         if (version.isAbove(1, 19, 4))
             Bukkit.getServicesManager().register(HologramFactory.class, new BukkitHologramFactory(), this, ServicePriority.Low);
