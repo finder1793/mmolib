@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.manager;
 
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
+import io.lumine.mythic.lib.api.event.SkillRegistrationEvent;
 import io.lumine.mythic.lib.script.Script;
 import io.lumine.mythic.lib.script.condition.Condition;
 import io.lumine.mythic.lib.script.condition.generic.BooleanCondition;
@@ -419,6 +420,9 @@ public class SkillManager {
                 registerSkillHandlerType(config -> config.contains("fabled-skill-id") || config.contains("skillapi-skill-id"), FabledSkillHandler::new);
         }
 
+        SkillRegistrationEvent event = new SkillRegistrationEvent();
+        event.CallEvent();
+        
         // Load default skills
         try {
             JarFile file = new JarFile(MythicLib.plugin.getJarFile());
