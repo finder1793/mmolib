@@ -1,10 +1,10 @@
 package io.lumine.mythic.lib.hologram.factory;
 
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.hologram.Hologram;
 import io.lumine.mythic.lib.hologram.HologramFactory;
 import io.lumine.mythic.lib.util.lang3.Validate;
+import me.filoghost.holographicdisplays.api.HolographicDisplaysAPI;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,15 +34,15 @@ public class HDHologramFactory implements HologramFactory {
     }
 
     private static final class HologramImpl extends Hologram {
-        private final com.gmail.filoghost.holographicdisplays.api.Hologram holo;
+        private final me.filoghost.holographicdisplays.api.hologram.Hologram holo;
         private final List<String> lines;
         private boolean spawned = true;
 
         public HologramImpl(Location loc, List<String> list) {
-            holo = HologramsAPI.createHologram(MythicLib.plugin, loc);
+            holo = HolographicDisplaysAPI.get(MythicLib.plugin).createHologram(loc);
             this.lines = list;
             for (String line : lines)
-                holo.appendTextLine(line);
+                holo.getLines().appendText(line);
         }
 
         @Override
@@ -57,12 +57,12 @@ public class HDHologramFactory implements HologramFactory {
 
         @Override
         public Location getLocation() {
-            return holo.getLocation();
+            return holo.getPosition().toLocation();
         }
 
         @Override
         public void updateLocation(@NotNull Location loc) {
-            holo.teleport(loc);
+            holo.setPosition(loc);
         }
 
         @Override
