@@ -2,6 +2,7 @@ package io.lumine.mythic.lib.module;
 
 import io.lumine.mythic.lib.util.annotation.NotUsed;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,10 @@ public class MMOPluginImpl extends JavaPlugin {
      */
     public boolean hasProfiles() {
         return false;
+    }
+
+    public void registerModule(@NotNull Module module) {
+        this.modules.add(module);
     }
 
     /*

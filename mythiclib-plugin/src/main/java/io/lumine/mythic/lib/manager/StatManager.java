@@ -12,7 +12,7 @@ import io.lumine.mythic.lib.api.stat.handler.MovementSpeedStatHandler;
 import io.lumine.mythic.lib.api.stat.handler.StatHandler;
 import io.lumine.mythic.lib.util.ConfigFile;
 import io.lumine.mythic.lib.version.VMaterial;
-import org.apache.commons.lang.Validate;
+import io.lumine.mythic.lib.util.lang3.Validate;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;

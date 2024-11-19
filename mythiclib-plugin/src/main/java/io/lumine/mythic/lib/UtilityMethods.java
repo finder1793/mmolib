@@ -10,10 +10,10 @@ import io.lumine.mythic.lib.player.PlayerMetadata;
 import io.lumine.mythic.lib.util.Tasks;
 import io.lumine.mythic.lib.util.annotation.BackwardsCompatibility;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
+import io.lumine.mythic.lib.util.lang3.Validate;
 import io.lumine.mythic.lib.version.VInventoryView;
 import io.lumine.mythic.lib.version.VParticle;
 import io.lumine.mythic.lib.version.VersionUtils;
-import org.apache.commons.lang.Validate;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -223,10 +223,10 @@ public class UtilityMethods {
     /**
      * @param loc Where we are looking for nearby entities
      * @return List of all entities surrounding a location. This method loops
-     * through the 9 surrounding chunks and collect all entities from
-     * them. This list can be cached and used multiple times in the same
-     * tick for projectile based spells which need to run entity
-     * checkups
+     *         through the 9 surrounding chunks and collect all entities from
+     *         them. This list can be cached and used multiple times in the same
+     *         tick for projectile based spells which need to run entity
+     *         checkups
      */
     public static List<Entity> getNearbyChunkEntities(Location loc) {
         final List<Entity> entities = new ArrayList<>();
@@ -354,6 +354,21 @@ public class UtilityMethods {
                 for (String prev : PREVIOUS_ATTRIBUTE_MODIFIER_NAMES)
                     if (mod.getName().startsWith(prev)) ins.removeModifier(mod);
         }
+    }
+
+    public static String substringBetween(final String str, final String open, final String close) {
+        Validate.notNull(str);
+        Validate.notNull(open);
+        Validate.notNull(close);
+
+        final int start = str.indexOf(open);
+        if (start != -1) {
+            final int end = str.indexOf(close, start + open.length());
+            if (end != -1) {
+                return str.substring(start + open.length(), end);
+            }
+        }
+        return null;
     }
 
     /**
@@ -501,7 +516,7 @@ public class UtilityMethods {
      *
      * @param event Some damage event
      * @return The player, if this event is due to him. It is the player which
-     * is taken into account when PvP is toggled on.
+     *         is taken into account when PvP is toggled on.
      */
     @Nullable
     public static Player getPlayerDamager(EntityDamageByEntityEvent event) {

@@ -1,7 +1,7 @@
 package io.lumine.mythic.lib.api.item;
 
 import io.lumine.mythic.lib.MythicLib;
-import org.apache.commons.lang.NotImplementedException;
+import io.lumine.mythic.lib.util.lang3.NotImplementedException;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

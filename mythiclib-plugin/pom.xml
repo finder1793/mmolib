@@ -75,6 +75,7 @@
             <id>sonatype-oss-snapshots1</id>
             <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
+        <!-- HolographicDisplays -->
         <repository>
             <id>codemc-repo</id>
             <url>https://repo.codemc.io/repository/maven-public/</url>
@@ -137,7 +138,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21.1-R0.1-SNAPSHOT</version>
+            <version>1.21.3-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
@@ -222,9 +223,9 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>com.gmail.filoghost.holographicdisplays</groupId>
+            <groupId>me.filoghost.holographicdisplays</groupId>
             <artifactId>holographicdisplays-api</artifactId>
-            <version>2.4.9-SNAPSHOT</version>
+            <version>3.0.0</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
@@ -339,15 +340,6 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- TODO remove this dep, will be unshaded from Paper/Spigot in the future. Move to lang3 -->
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
-            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
 

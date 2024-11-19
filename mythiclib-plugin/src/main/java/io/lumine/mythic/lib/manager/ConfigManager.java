@@ -4,6 +4,9 @@ import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.comp.interaction.relation.EmptyPvPInteractionRules;
 import io.lumine.mythic.lib.comp.interaction.relation.InteractionRules;
+import io.lumine.mythic.lib.module.GeneralManager;
+import io.lumine.mythic.lib.module.MMOPluginImpl;
+import io.lumine.mythic.lib.module.ModuleInfo;
 import io.lumine.mythic.lib.skill.SimpleSkill;
 import io.lumine.mythic.lib.skill.Skill;
 import io.lumine.mythic.lib.skill.handler.MythicLibSkillHandler;
@@ -17,7 +20,8 @@ import javax.annotation.Nullable;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
-public class ConfigManager {
+@ModuleInfo(key = "config", load = false)
+public class ConfigManager extends GeneralManager {
     public final DecimalFormatSymbols formatSymbols = new DecimalFormatSymbols();
 
     public DecimalFormat decimal, decimals;
@@ -34,7 +38,12 @@ public class ConfigManager {
     @Nullable
     public Skill skillCastScript, skillCancelScript;
 
-    public void reload() {
+    public ConfigManager(MMOPluginImpl plugin) {
+        super(plugin);
+    }
+
+    @Override
+    public void onEnable() {
         final ConfigurationSection config = MythicLib.plugin.getConfig();
 
         // Decimal formatting
@@ -84,7 +93,7 @@ public class ConfigManager {
      *
      * @param pattern Something like "0.#"
      * @return New decimal format with the decimal separator given in the MythicLib
-     * main plugin config.
+     *         main plugin config.
      */
     public DecimalFormat newDecimalFormat(String pattern) {
         return new DecimalFormat(pattern, formatSymbols);

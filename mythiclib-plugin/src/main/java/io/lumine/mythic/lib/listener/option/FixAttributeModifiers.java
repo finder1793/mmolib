@@ -6,7 +6,7 @@ import fr.phoenixdevt.profiles.event.PlayerIdDispatchEvent;
 import fr.phoenixdevt.profiles.event.ProfileSelectedEvent;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.UtilityMethods;
-import org.apache.commons.lang.Validate;
+import io.lumine.mythic.lib.util.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;

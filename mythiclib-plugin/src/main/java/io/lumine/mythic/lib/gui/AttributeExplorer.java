@@ -9,7 +9,7 @@ import io.lumine.mythic.lib.api.util.AltChar;
 import io.lumine.mythic.lib.util.ReflectionUtils;
 import io.lumine.mythic.lib.util.annotation.BackwardsCompatibility;
 import io.lumine.mythic.lib.version.VersionUtils;
-import org.apache.commons.lang.Validate;
+import io.lumine.mythic.lib.util.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

@@ -4,8 +4,7 @@ import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.hologram.Hologram;
 import io.lumine.mythic.lib.hologram.HologramFactory;
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.Validate;
+import io.lumine.mythic.lib.util.lang3.Validate;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,7 +52,7 @@ public class HDHologramFactory implements HologramFactory {
 
         @Override
         public void updateLines(@NotNull List<String> list) {
-            throw new NotImplementedException("Adding lines is not supported");
+            throw new RuntimeException("Adding lines is not supported");
         }
 
         @Override

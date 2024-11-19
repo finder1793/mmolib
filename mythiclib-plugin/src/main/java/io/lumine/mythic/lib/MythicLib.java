@@ -42,19 +42,19 @@ import io.lumine.mythic.lib.listener.option.FixMovementSpeed;
 import io.lumine.mythic.lib.listener.option.HealthScale;
 import io.lumine.mythic.lib.listener.option.VanillaDamageModifiers;
 import io.lumine.mythic.lib.manager.*;
+import io.lumine.mythic.lib.module.MMOPluginImpl;
 import io.lumine.mythic.lib.util.MMOPlugin;
 import io.lumine.mythic.lib.util.gson.MythicLibGson;
+import io.lumine.mythic.lib.util.lang3.Validate;
 import io.lumine.mythic.lib.util.loadingorder.DependencyCycleCheck;
 import io.lumine.mythic.lib.util.loadingorder.DependencyNode;
 import io.lumine.mythic.lib.util.network.MythicPacketSniffer;
 import io.lumine.mythic.lib.version.ServerVersion;
 import io.lumine.mythic.lib.version.SpigotPlugin;
-import org.apache.commons.lang.Validate;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,17 +65,17 @@ import java.util.List;
 import java.util.Stack;
 import java.util.logging.Level;
 
-public class MythicLib extends JavaPlugin {
+public class MythicLib extends MMOPluginImpl {
     public static MythicLib plugin;
 
-    private final DamageManager damageManager = new DamageManager();
+    private final DamageManager damageManager = new DamageManager(this);
     private final MythicLibCommandManager commandManager = new MythicLibCommandManager();
     private final EntityManager entityManager = new EntityManager();
     private final StatManager statManager = new StatManager();
     private final JsonManager jsonManager = new JsonManager();
-    private final ConfigManager configManager = new ConfigManager();
-    private final ElementManager elementManager = new ElementManager();
-    private final SkillManager skillManager = new SkillManager();
+    private final ConfigManager configManager = new ConfigManager(this);
+    private final ElementManager elementManager = new ElementManager(this);
+    private final SkillManager skillManager = new SkillManager(this);
     private final ModifierManager modifierManager = new ModifierManager();
     private final FlagHandler flagHandler = new FlagHandler();
     private final IndicatorManager indicatorManager = new IndicatorManager();
@@ -259,7 +259,7 @@ public class MythicLib extends JavaPlugin {
         getCommand("megaworkbench").setExecutor(MegaWorkbenchMapping.MWB);
         Bukkit.getPluginManager().registerEvents(MegaWorkbenchMapping.MWB, this);
 
-        damageManager.initialize(false);
+        damageManager.enable();
 
         // Loads commands
         commandManager.initialize(false);
@@ -276,7 +276,7 @@ public class MythicLib extends JavaPlugin {
         // Loop for flushing temporary player data
         Bukkit.getScheduler().runTaskTimer(this, MMOPlayerData::flushOfflinePlayerData, 20 * 60 * 60, 20 * 60 * 60);
 
-        configManager.reload();
+        configManager.enable();
         statManager.initialize(false);
     }
 
