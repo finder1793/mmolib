@@ -3,6 +3,7 @@ package io.lumine.mythic.lib.version;
 import io.lumine.mythic.lib.MythicLib;
 import io.lumine.mythic.lib.version.wrapper.VersionWrapper;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
@@ -53,6 +54,11 @@ public class VersionUtils {
     @NotNull
     public static String name(@NotNull Biome biome) {
         return VersionWrapper.get().getBiomeName(biome);
+    }
+
+    @NotNull
+    public static String name(@NotNull Sound sound) {
+        return VersionWrapper.get().getSoundName(sound);
     }
 
     @NotNull

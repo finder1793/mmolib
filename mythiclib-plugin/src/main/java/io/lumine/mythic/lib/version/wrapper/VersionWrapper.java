@@ -199,6 +199,14 @@ public interface VersionWrapper {
         return biome.getKey().getKey().toUpperCase();
     }
 
+    /**
+     * In 1.21.2+ Sound was changed from an Enum to an interface.
+     */
+    @BackwardsCompatibility(version = "1.21.2")
+    default String getSoundName(@NotNull Sound sound) {
+        return sound.getKey().getKey().toUpperCase();
+    }
+
     default boolean matches(AttributeModifier modifier, NamespacedKey key) {
         return modifier.getName().equals(key.toString());
     }

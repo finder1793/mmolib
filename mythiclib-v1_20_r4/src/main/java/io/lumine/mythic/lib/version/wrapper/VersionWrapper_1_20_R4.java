@@ -73,6 +73,11 @@ public class VersionWrapper_1_20_R4 implements VersionWrapper {
     }
 
     @Override
+    public String getSoundName(Sound sound) {
+        return sound.name();
+    }
+
+    @Override
     public PlayerProfile getProfile(SkullMeta meta) {
         return meta.getOwnerProfile();
     }

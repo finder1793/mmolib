@@ -313,16 +313,16 @@ public class UtilityMethods {
         // Try all candidates
         for (String candidate : candidates)
             try {
-                return Objects.requireNonNull(resolver.apply(candidate));
+                return Objects.requireNonNull(resolver.apply(candidate), "Null supplied value");
             } catch (Throwable throwable) {
                 // Ignore & try next candidate
             }
 
         // Default value if any
-        if (defaultValue != null) return Objects.requireNonNull(defaultValue.get(), "Null supplied value");
-
+        if (defaultValue != null) return Objects.requireNonNull(defaultValue.get(), "Null supplied default value");
+     
         // Error otherwise
-        throw new RuntimeException("Could not find enum field called '" + Arrays.asList(candidates) + "'");
+        throw new RuntimeException("Could not find enum field given candidates " + Arrays.asList(candidates));
     }
 
     public static double getPlayerDefaultBaseValue(@NotNull Attribute attribute, @Nullable AttributeInstance instance) {

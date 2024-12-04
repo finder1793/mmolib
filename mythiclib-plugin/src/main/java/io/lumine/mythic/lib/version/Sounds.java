@@ -47,7 +47,12 @@ public class Sounds {
             ENTITY_LLAMA_ANGRY = fromName("ENTITY_LLAMA_ANGRY"),
             ENTITY_WITHER_SHOOT = fromName("ENTITY_WITHER_SHOOT"),
             BLOCK_ANVIL_LAND = fromName("BLOCK_ANVIL_LAND"),
-            ENTITY_CHICKEN_HURT = fromName("ENTITY_CHICKEN_HURT");
+            ENTITY_CHICKEN_HURT = fromName("ENTITY_CHICKEN_HURT"),
+            ENTITY_VILLAGER_NO = fromName("ENTITY_VILLAGER_NO"),
+            ENTITY_ITEM_BREAK = fromName("ENTITY_ITEM_BREAK"),
+            UI_BUTTON_CLICK = fromName("UI_BUTTON_CLICK"),
+            ENTITY_GENERIC_EAT = fromName("ENTITY_GENERIC_EAT"),
+            BLOCK_IRON_DOOR_OPEN = fromName("BLOCK_IRON_DOOR_OPEN");
 
     @NotNull
     public static Sound fromName(String... candidates) {

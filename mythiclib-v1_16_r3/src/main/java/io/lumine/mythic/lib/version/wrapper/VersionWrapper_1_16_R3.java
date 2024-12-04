@@ -53,6 +53,11 @@ public class VersionWrapper_1_16_R3 implements VersionWrapper {
     }
 
     @Override
+    public String getSoundName(Sound sound) {
+        return sound.name();
+    }
+
+    @Override
     public Object getProfile(SkullMeta meta) {
         try {
             final Field profileField = meta.getClass().getDeclaredField("profile");
