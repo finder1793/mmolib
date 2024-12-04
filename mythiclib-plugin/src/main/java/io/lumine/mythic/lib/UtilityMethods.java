@@ -410,7 +410,7 @@ public class UtilityMethods {
      */
     public static void heal(@NotNull LivingEntity player, double heal, boolean allowNegatives) {
         if (heal > 0 || allowNegatives)
-            player.setHealth(Math.min(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue(), player.getHealth() + heal));
+            player.setHealth(Math.min(player.getAttribute(Attribute.MAX_HEALTH).getValue(), player.getHealth() + heal));
     }
 
     public static void closeOpenViewsOfType(Class<?> inventoryHolderClass) {

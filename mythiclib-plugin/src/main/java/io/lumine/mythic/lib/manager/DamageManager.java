@@ -130,7 +130,7 @@ public class DamageManager extends GeneralManager implements Listener {
 
         // Should knockback be applied
         if (!knockback) {
-            final AttributeInstance instance = target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE);
+            final AttributeInstance instance = target.getAttribute(Attribute.KNOCKBACK_RESISTANCE);
             try {
                 instance.addModifier(noKnockbackModifier);
                 applyDamage(damage, target, damager, true, ignoreImmunity);

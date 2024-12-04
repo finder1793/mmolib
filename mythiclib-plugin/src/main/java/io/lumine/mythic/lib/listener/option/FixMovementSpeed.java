@@ -9,6 +9,6 @@ public class FixMovementSpeed implements Listener {
 
     @EventHandler
     public void a(PlayerJoinEvent event) {
-        event.getPlayer().getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).setBaseValue(.1);
+        event.getPlayer().getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(.1);
     }
 }

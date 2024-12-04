@@ -50,7 +50,7 @@ public class Explosive_Turkey extends SkillHandler<VectorSkillResult> {
          * bug where you can kill the chicken for a brief few ticks after it
          * spawns in!
          */
-        chicken.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(2048);
+        chicken.getAttribute(Attribute.MAX_HEALTH).setBaseValue(2048);
         chicken.setHealth(2048);
 
         /*

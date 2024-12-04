@@ -38,7 +38,7 @@ public class HealMechanic extends TargetMechanic {
         if (called.isCancelled())
             return;
 
-        double maxHealth = living.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        double maxHealth = living.getAttribute(Attribute.MAX_HEALTH).getValue();
         living.setHealth(Math.max(0, Math.min(maxHealth, living.getHealth() + called.getAmount())));
     }
 }

@@ -31,7 +31,7 @@ public class RegenIndicators extends GameIndicators {
         Entity entity = event.getEntity();
         if (!(entity instanceof LivingEntity)
                 || event.getAmount() <= 0
-                || ((LivingEntity) entity).getHealth() + HEAL_EPSILON > ((LivingEntity) entity).getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue())
+                || ((LivingEntity) entity).getHealth() + HEAL_EPSILON > ((LivingEntity) entity).getAttribute(Attribute.MAX_HEALTH).getValue())
             return;
 
         // Display no indicator around vanished player

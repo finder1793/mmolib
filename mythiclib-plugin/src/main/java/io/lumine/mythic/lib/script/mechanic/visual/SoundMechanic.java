@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 @MechanicMetadata
 public class SoundMechanic extends LocationMechanic {
-    private Sound sound;
+    private final Sound sound;
     private final String soundString;
     private final DoubleFormula vol, pitch;
 
@@ -21,10 +21,11 @@ public class SoundMechanic extends LocationMechanic {
         super(config);
 
         config.validateKeys("sound");
+
         soundString = config.getString("sound");
         //The string given as input might not correspond to an element of the enum (custom sound)
-        if (Arrays.stream(Sound.values()).map(Enum::name).anyMatch(name -> UtilityMethods.enumName(soundString).equals(name)))
-            sound = Sound.valueOf(UtilityMethods.enumName(soundString));
+        sound = Arrays.stream(Sound.values()).map(Sound::name).anyMatch(name -> UtilityMethods.enumName(soundString).equals(name)) ?
+                Sound.valueOf(UtilityMethods.enumName(soundString)) : null;
         vol = config.getDoubleFormula("volume", DoubleFormula.constant(1));
         pitch = config.getDoubleFormula("pitch", DoubleFormula.constant(1));
     }

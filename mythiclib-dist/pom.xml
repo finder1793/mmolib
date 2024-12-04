@@ -50,10 +50,6 @@
 
                             <relocations>
                                 <relocation>
-                                    <pattern>org.apache.commons.math3</pattern>
-                                    <shadedPattern>io.lumine.mythic.lib.math3</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>com.google.gson</pattern>
                                     <shadedPattern>io.lumine.mythic.lib.gson</shadedPattern>
                                 </relocation>

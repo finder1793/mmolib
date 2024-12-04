@@ -251,7 +251,7 @@ public class AttributeExplorer extends PluginInventory {
         String tag = item.getItemMeta().getPersistentDataContainer().get(MODIFIER_KEY, PersistentDataType.STRING);
         if (tag != null && event.getAction() == InventoryAction.PICKUP_HALF) {
             final AttributeModifier mod = !legacy
-                    ? getPlayer().getAttribute(explored).getModifier(NamespacedKey.fromString(tag))
+                    ? VersionUtils.getModifier(getPlayer().getAttribute(explored), NamespacedKey.fromString(tag))
                     : getModifier(getPlayer().getAttribute(explored), UUID.fromString(tag));
             Validate.notNull(mod, "Could not find attribute modifier with tag '" + tag + "'");
             target.getAttribute(explored).removeModifier(mod);

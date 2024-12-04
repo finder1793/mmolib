@@ -12,7 +12,6 @@ import io.lumine.mythic.lib.comp.adventure.tag.implementation.decorations.*;
 import io.lumine.mythic.lib.util.AdventureUtils;
 import io.lumine.mythic.lib.util.Pair;
 import org.bukkit.ChatColor;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -29,7 +28,6 @@ import java.util.stream.Collectors;
  *
  * @author Roch Blondiaux (Kiwix).
  */
-@ApiStatus.NonExtendable
 public class AdventureParser {
 
     /* Constants */
@@ -38,7 +36,6 @@ public class AdventureParser {
 
     private final List<AdventureTag> tags = new ArrayList<>();
 
-    @ApiStatus.Internal
     @TestOnly
     public AdventureParser(boolean testing) {
     }
@@ -450,7 +447,6 @@ public class AdventureParser {
      *
      * @param tag The tag to register.
      */
-    @ApiStatus.Internal
     public void forceRegister(AdventureTag tag) {
         tags.add(tag);
     }

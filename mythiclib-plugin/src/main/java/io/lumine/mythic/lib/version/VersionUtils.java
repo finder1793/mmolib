@@ -3,11 +3,13 @@ package io.lumine.mythic.lib.version;
 import io.lumine.mythic.lib.MythicLib;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class VersionUtils {
 
@@ -17,11 +19,19 @@ public class VersionUtils {
     }
 
     private static final NamespacedKey NSK_TRICK = new NamespacedKey(MythicLib.plugin, "attr_mod_decoy");
-    private static final Attribute NSK_ATTRIBUTE = Attribute.GENERIC_FOLLOW_RANGE;
+    private static final Attribute NSK_ATTRIBUTE = Attribute.FOLLOW_RANGE;
 
     @NotNull
     public static AttributeModifier emptyAttributeModifier() {
         return MythicLib.plugin.getVersion().getWrapper().newAttributeModifier(NSK_TRICK, 0, AttributeModifier.Operation.ADD_NUMBER);
+    }
+
+    @Nullable
+    public static AttributeModifier getModifier(AttributeInstance instance, NamespacedKey key) {
+        for (AttributeModifier modifier : instance.getModifiers())
+            if (modifier.getKey().equals(key))
+                return modifier;
+        return null;
     }
 
     @NotNull
@@ -44,7 +54,7 @@ public class VersionUtils {
     }
 
     @NotNull
-    public static InventoryClickEvent invClickEvent(@NotNull VInventoryView view, @NotNull InventoryType.@NotNull SlotType type, int slot, @NotNull ClickType click, @NotNull InventoryAction action) {
+    public static InventoryClickEvent invClickEvent(@NotNull VInventoryView view, @NotNull InventoryType.SlotType type, int slot, @NotNull ClickType click, @NotNull InventoryAction action) {
         return MythicLib.plugin.getVersion().getWrapper().newInventoryClickEvent(view, type, slot, click, action);
     }
 }

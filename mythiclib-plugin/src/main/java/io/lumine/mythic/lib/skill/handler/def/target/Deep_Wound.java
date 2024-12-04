@@ -33,7 +33,7 @@ public class Deep_Wound extends SkillHandler<TargetSkillResult> {
         target.getWorld().spawnParticle(VParticle.BLOCK.get(), target.getLocation().add(0, target.getHeight() / 2, 0), 32, 0, 0, 0, 2,
                 Material.REDSTONE_BLOCK.createBlockData());
 
-        final double max = target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+        final double max = target.getAttribute(Attribute.MAX_HEALTH).getValue();
         final double ratio = (max - target.getHealth()) / max;
         final double damage = skillMeta.getParameter("damage") * (1 + skillMeta.getParameter("extra") * ratio / 100);
         skillMeta.getCaster().attack(target, damage, DamageType.SKILL, DamageType.PHYSICAL);
