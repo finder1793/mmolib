@@ -70,8 +70,8 @@ public class ConfigManager extends GeneralManager {
         castingDelayCancelOnMove = config.getBoolean("casting-delay.cancel-on-move");
         enableCastingDelayBossbar = config.getBoolean("casting-delay.bossbar.enabled");
         castingDelayBossbarFormat = config.getString("casting-delay.bossbar.format");
-        castingDelayBarColor = UtilityMethods.resolveEnumField(BarColor::valueOf, () -> BarColor.PURPLE, config.getString("casting-delay.bossbar.color", "PURPLE"));
-        castingDelayBarStyle = UtilityMethods.resolveEnumField(BarStyle::valueOf, () -> BarStyle.SEGMENTED_20, config.getString("casting-delay.bossbar.style", "SEGMENTED_20"));
+        castingDelayBarColor = UtilityMethods.resolveField(BarColor::valueOf, () -> BarColor.PURPLE, config.getString("casting-delay.bossbar.color", "PURPLE"));
+        castingDelayBarStyle = UtilityMethods.resolveField(BarStyle::valueOf, () -> BarStyle.SEGMENTED_20, config.getString("casting-delay.bossbar.style", "SEGMENTED_20"));
         try {
             skillCastScript = config.getBoolean("casting-delay.cast-script.enabled") ?
                     new SimpleSkill(TriggerType.CAST, new MythicLibSkillHandler(MythicLib.plugin.getSkills().loadScript(config.get("casting-delay.cast-script.script")))) : null;

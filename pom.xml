@@ -26,7 +26,6 @@
         <module>mythiclib-v1_21_r1</module>
         <module>mythiclib-v1_21_r2</module>
         <module>mythiclib-vr</module>
-        <module>mythiclib-v1_21_r2</module>
     </modules>
 
     <name>MythicLib</name>

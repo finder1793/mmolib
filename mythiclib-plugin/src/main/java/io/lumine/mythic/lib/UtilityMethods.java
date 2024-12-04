@@ -11,9 +11,11 @@ import io.lumine.mythic.lib.util.Tasks;
 import io.lumine.mythic.lib.util.annotation.BackwardsCompatibility;
 import io.lumine.mythic.lib.util.configobject.ConfigObject;
 import io.lumine.mythic.lib.util.lang3.Validate;
+import io.lumine.mythic.lib.version.Attributes;
 import io.lumine.mythic.lib.version.VInventoryView;
 import io.lumine.mythic.lib.version.VParticle;
 import io.lumine.mythic.lib.version.VersionUtils;
+import io.lumine.mythic.lib.version.wrapper.VersionWrapper;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -161,8 +163,8 @@ public class UtilityMethods {
     }
 
     public static void setTextureValue(@NotNull SkullMeta meta, @NotNull String textureValue, @NotNull UUID uniqueId) {
-        final Object profile = MythicLib.plugin.getVersion().getWrapper().newProfile(uniqueId, textureValue);
-        MythicLib.plugin.getVersion().getWrapper().setProfile(meta, profile);
+        final Object profile = VersionWrapper.get().newProfile(uniqueId, textureValue);
+        VersionWrapper.get().setProfile(meta, profile);
     }
 
     @Deprecated
@@ -301,12 +303,12 @@ public class UtilityMethods {
     }
 
     @NotNull
-    public static <T> T resolveEnumField(@NotNull Function<String, T> resolver, @NotNull String... candidates) {
-        return resolveEnumField(resolver, null, candidates);
+    public static <T> T resolveField(@NotNull Function<String, T> resolver, @NotNull String... candidates) {
+        return resolveField(resolver, null, candidates);
     }
 
     @NotNull
-    public static <T> T resolveEnumField(@NotNull Function<String, T> resolver, @Nullable Supplier<T> defaultValue, @NotNull String... candidates) {
+    public static <T> T resolveField(@NotNull Function<String, T> resolver, @Nullable Supplier<T> defaultValue, @NotNull String... candidates) {
 
         // Try all candidates
         for (String candidate : candidates)
@@ -347,7 +349,7 @@ public class UtilityMethods {
      */
     @BackwardsCompatibility(version = "1.3")
     public static void flushOldModifiers(@NotNull Player player) {
-        for (Attribute attribute : Attribute.values()) {
+        for (Attribute attribute : Attributes.getAll()) {
             final AttributeInstance ins = player.getAttribute(attribute);
             if (ins == null) continue;
             for (AttributeModifier mod : ins.getModifiers())
@@ -410,7 +412,7 @@ public class UtilityMethods {
      */
     public static void heal(@NotNull LivingEntity player, double heal, boolean allowNegatives) {
         if (heal > 0 || allowNegatives)
-            player.setHealth(Math.min(player.getAttribute(Attribute.MAX_HEALTH).getValue(), player.getHealth() + heal));
+            player.setHealth(Math.min(player.getAttribute(Attributes.MAX_HEALTH).getValue(), player.getHealth() + heal));
     }
 
     public static void closeOpenViewsOfType(Class<?> inventoryHolderClass) {

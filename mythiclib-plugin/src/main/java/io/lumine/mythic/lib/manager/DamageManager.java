@@ -10,12 +10,12 @@ import io.lumine.mythic.lib.entity.ProjectileMetadata;
 import io.lumine.mythic.lib.module.GeneralManager;
 import io.lumine.mythic.lib.module.MMOPluginImpl;
 import io.lumine.mythic.lib.module.ModuleInfo;
+import io.lumine.mythic.lib.version.Attributes;
 import io.lumine.mythic.lib.util.lang3.Validate;
 import io.lumine.mythic.lib.version.VersionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Entity;
@@ -130,7 +130,7 @@ public class DamageManager extends GeneralManager implements Listener {
 
         // Should knockback be applied
         if (!knockback) {
-            final AttributeInstance instance = target.getAttribute(Attribute.KNOCKBACK_RESISTANCE);
+            final AttributeInstance instance = target.getAttribute(Attributes.KNOCKBACK_RESISTANCE);
             try {
                 instance.addModifier(noKnockbackModifier);
                 applyDamage(damage, target, damager, true, ignoreImmunity);

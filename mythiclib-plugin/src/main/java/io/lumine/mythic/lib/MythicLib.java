@@ -101,7 +101,8 @@ public class MythicLib extends MMOPluginImpl {
             version = new ServerVersion();
             getLogger().log(Level.INFO, "Detected Bukkit Version: " + version.getCraftBukkitVersion());
         } catch (Exception exception) {
-            getLogger().log(Level.WARNING, "Your server version is not compatible.");
+            getLogger().log(Level.WARNING, "Internal error:");
+            exception.printStackTrace();
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
@@ -165,7 +166,7 @@ public class MythicLib extends MMOPluginImpl {
 
         if (getConfig().getBoolean("fix_reset_attribute_modifiers.enabled")) try {
             new FixAttributeModifiers(getConfig().getConfigurationSection("fix_reset_attribute_modifiers"));
-        } catch (RuntimeException exception) {
+        } catch (Throwable exception) {
             getLogger().log(Level.WARNING, "Could not enable fix_reset_attribute_modifiers: " + exception.getMessage());
         }
 
