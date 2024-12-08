@@ -183,7 +183,7 @@ public class SkillTriggers implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void equipArmor(ArmorEquipEvent event) {
-        final MMOPlayerData caster = MMOPlayerData.online(event.getPlayer());
+        final MMOPlayerData caster = MMOPlayerData.get(event.getPlayer());
         final boolean unequip = UtilityMethods.isAir(event.getNewArmorPiece());
         caster.triggerSkills(new TriggerMetadata(caster, unequip ? TriggerType.UNEQUIP_ARMOR : TriggerType.EQUIP_ARMOR));
     }

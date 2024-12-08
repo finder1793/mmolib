@@ -129,8 +129,8 @@ public class MythicLib extends MMOPluginImpl {
             getLogger().warning("(Your config version: '" + configVersion + "' | Expected config version: '" + defConfigVersion + "')");
         }
 
-        // Fixes left clicks 1.14 -> 1.20.4
-        if (version.isUnder(1, 20, 5)) new MythicPacketSniffer(this);
+        // Fixes left clicks
+        new MythicPacketSniffer(this, version);
 
         // Hologram provider TODO remove
         Bukkit.getServicesManager().register(HologramFactory.class, new LegacyBukkitHologramFactory(), this, ServicePriority.Lowest);
